@@ -1,12 +1,23 @@
-import { Text, View, StyleSheet } from "react-native";
+import { View, ActivityIndicator, StyleSheet } from "react-native";
+import { Redirect } from "expo-router";
+import { useAuth } from "@/providers/AuthProvider";
 
-export default function HomeScreen() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Forzza</Text>
-      <Text style={styles.subtitle}>Plataforma fitness — placeholder Fase 1</Text>
-    </View>
-  );
+export default function IndexScreen() {
+  const { session, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#C8FF00" />
+      </View>
+    );
+  }
+
+  if (session) {
+    return <Redirect href="/(tabs)" />;
+  }
+
+  return <Redirect href="/(auth)/login" />;
 }
 
 const styles = StyleSheet.create({
@@ -15,15 +26,5 @@ const styles = StyleSheet.create({
     backgroundColor: "#0A0A0A",
     alignItems: "center",
     justifyContent: "center",
-  },
-  title: {
-    fontSize: 48,
-    color: "#C8FF00",
-    fontWeight: "bold",
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#AAAAAA",
-    marginTop: 8,
   },
 });

@@ -1,14 +1,16 @@
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
-import { supabase } from "@/lib/supabase";
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from "react-native";
+import { useAuth } from "@/providers/AuthProvider";
 import { router } from "expo-router";
 
 export default function ProfileTab() {
+  const { user, signOut } = useAuth();
+
   async function handleSignOut() {
-    await supabase.auth.signOut();
+    await signOut();
     router.replace("/(auth)/login");
   }
 
-  async function handleDeleteAccount() {
+  function handleDeleteAccount() {
     Alert.alert(
       "Eliminar cuenta",
       "¿Estás seguro? Esta acción no se puede deshacer. Se cancelarán todas tus suscripciones.",
@@ -18,9 +20,8 @@ export default function ProfileTab() {
           text: "Eliminar",
           style: "destructive",
           onPress: async () => {
-            // TODO: llamar a Edge Function delete-account (Fase 3 completa)
-            // Por ahora: solo sign out
-            await supabase.auth.signOut();
+            // TODO: Edge Function delete-account (Fase 3 completa)
+            await signOut();
             router.replace("/(auth)/login");
           },
         },
@@ -30,42 +31,67 @@ export default function ProfileTab() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Perfil</Text>
-      <Text style={styles.muted}>TODO: Fase 3 completa</Text>
+      <Text style={styles.title}>Perfil</Text>
 
-      <TouchableOpacity
-        style={styles.signOutButton}
-        onPress={() => { void handleSignOut(); }}
-      >
-        <Text style={styles.signOutText}>Cerrar sesión</Text>
-      </TouchableOpacity>
+      {user && (
+        <Text style={styles.email}>{user.email}</Text>
+      )}
 
-      <TouchableOpacity
-        style={styles.deleteButton}
-        onPress={() => { void handleDeleteAccount(); }}
-      >
-        <Text style={styles.deleteText}>Eliminar cuenta</Text>
-      </TouchableOpacity>
+      <Text style={styles.muted}>TODO: completar en Fase 3 con perfil completo</Text>
+
+      <View style={styles.actions}>
+        <TouchableOpacity
+          style={styles.signOutButton}
+          onPress={() => { void handleSignOut(); }}
+        >
+          <Text style={styles.signOutText}>Cerrar sesión</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={handleDeleteAccount}
+        >
+          <Text style={styles.deleteText}>Eliminar cuenta</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0A0A0A", alignItems: "center", justifyContent: "center", padding: 24 },
-  text: { color: "#FAFAFA", fontSize: 24, fontWeight: "bold", marginBottom: 8 },
-  muted: { color: "#6A6A6A", marginBottom: 32 },
+  container: {
+    flex: 1,
+    backgroundColor: "#0A0A0A",
+    padding: 24,
+    paddingTop: 64,
+  },
+  title: {
+    color: "#FAFAFA",
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  email: {
+    color: "#AAAAAA",
+    fontSize: 14,
+    marginBottom: 8,
+  },
+  muted: {
+    color: "#6A6A6A",
+    marginBottom: 48,
+  },
+  actions: {
+    gap: 12,
+  },
   signOutButton: {
-    width: "100%",
     padding: 14,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#3A3A3A",
     alignItems: "center",
-    marginBottom: 12,
   },
   signOutText: { color: "#FAFAFA", fontSize: 16 },
   deleteButton: {
-    width: "100%",
     padding: 14,
     borderRadius: 8,
     backgroundColor: "#2A0000",

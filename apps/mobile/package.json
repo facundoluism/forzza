@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "babel-plugin-module-resolver": "^5.0.2",
     "@forzza/eslint-config": "workspace:*",
     "@forzza/tsconfig": "workspace:*",
     "@types/node": "^22.10.5",
