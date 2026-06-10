@@ -21,91 +21,171 @@ export type PaymentStatus = "pending" | "approved" | "rejected" | "refunded" | "
 export type SettlementStatus = "pending" | "pending_invoice" | "invoiced" | "transferred";
 export type WorkoutStatus = "in_progress" | "completed" | "abandoned";
 
-export interface Tables {
-  users: {
-    Row: {
-      id: string;
-      role: UserRole;
-      country: CountryCode;
-      created_at: string;
-      updated_at: string;
-      deleted_at: string | null;
-    };
-    Insert: Omit<Tables["users"]["Row"], "created_at" | "updated_at">;
-    Update: Partial<Tables["users"]["Insert"]>;
-  };
-  student_profiles: {
-    Row: {
-      id: string;
-      user_id: string;
-      display_name: string | null;
-      birth_date: string | null;
-      parental_consent_at: string | null;
-      parental_email: string | null;
-      goals: string[];
-      level: string | null;
-      avatar_url: string | null;
-      created_at: string;
-      updated_at: string;
-    };
-    Insert: Omit<Tables["student_profiles"]["Row"], "id" | "created_at" | "updated_at">;
-    Update: Partial<Tables["student_profiles"]["Insert"]>;
-  };
-  coach_profiles: {
-    Row: {
-      id: string;
-      user_id: string;
-      display_name: string;
-      bio: string | null;
-      specialties: string[];
-      avatar_url: string | null;
-      status: CoachStatus;
-      country: CountryCode;
-      legal_entity_type: string | null;
-      fiscal_id: string | null;
-      bank_account: string | null;
-      constancia_path: string | null;
-      billing_model: BillingModel;
-      active_student_count: number;
-      created_at: string;
-      updated_at: string;
-    };
-    Insert: Omit<Tables["coach_profiles"]["Row"], "id" | "created_at" | "updated_at">;
-    Update: Partial<Tables["coach_profiles"]["Insert"]>;
-  };
-  country_config: {
-    Row: {
-      country: CountryCode;
-      commission_rate: number;
-      currency: string;
-      currency_symbol: string;
-      min_coach_price: number;
-      active: boolean;
-      created_at: string;
-      updated_at: string;
-    };
-    Insert: Omit<Tables["country_config"]["Row"], "created_at" | "updated_at">;
-    Update: Partial<Tables["country_config"]["Insert"]>;
-  };
-  audit_log: {
-    Row: {
-      id: string;
-      actor_id: string | null;
-      action: string;
-      entity_type: string;
-      entity_id: string | null;
-      payload: Json;
-      ip_address: string | null;
-      created_at: string;
-    };
-    Insert: Omit<Tables["audit_log"]["Row"], "id" | "created_at">;
-    Update: never; // append-only
-  };
-}
-
-export interface Database {
+export type Database = {
   public: {
-    Tables: Tables;
+    Tables: {
+      users: {
+        Row: {
+          id: string;
+          role: UserRole;
+          country: CountryCode;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+        };
+        Insert: {
+          id: string;
+          role?: UserRole;
+          country: CountryCode;
+          deleted_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          role?: UserRole;
+          country?: CountryCode;
+          deleted_at?: string | null;
+        };
+        Relationships: [];
+      };
+      student_profiles: {
+        Row: {
+          id: string;
+          user_id: string;
+          display_name: string | null;
+          birth_date: string | null;
+          parental_consent_at: string | null;
+          parental_email: string | null;
+          goals: string[];
+          level: string | null;
+          avatar_url: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          display_name?: string | null;
+          birth_date?: string | null;
+          parental_consent_at?: string | null;
+          parental_email?: string | null;
+          goals?: string[];
+          level?: string | null;
+          avatar_url?: string | null;
+        };
+        Update: {
+          user_id?: string;
+          display_name?: string | null;
+          birth_date?: string | null;
+          parental_consent_at?: string | null;
+          parental_email?: string | null;
+          goals?: string[];
+          level?: string | null;
+          avatar_url?: string | null;
+        };
+        Relationships: [];
+      };
+      coach_profiles: {
+        Row: {
+          id: string;
+          user_id: string;
+          display_name: string;
+          bio: string | null;
+          specialties: string[];
+          avatar_url: string | null;
+          status: CoachStatus;
+          country: CountryCode;
+          legal_entity_type: string | null;
+          fiscal_id: string | null;
+          bank_account: string | null;
+          constancia_path: string | null;
+          billing_model: BillingModel;
+          active_student_count: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          display_name: string;
+          bio?: string | null;
+          specialties?: string[];
+          avatar_url?: string | null;
+          status?: CoachStatus;
+          country: CountryCode;
+          legal_entity_type?: string | null;
+          fiscal_id?: string | null;
+          bank_account?: string | null;
+          constancia_path?: string | null;
+          billing_model?: BillingModel;
+          active_student_count?: number;
+        };
+        Update: {
+          user_id?: string;
+          display_name?: string;
+          bio?: string | null;
+          specialties?: string[];
+          avatar_url?: string | null;
+          status?: CoachStatus;
+          country?: CountryCode;
+          legal_entity_type?: string | null;
+          fiscal_id?: string | null;
+          bank_account?: string | null;
+          constancia_path?: string | null;
+          billing_model?: BillingModel;
+          active_student_count?: number;
+        };
+        Relationships: [];
+      };
+      country_config: {
+        Row: {
+          country: CountryCode;
+          commission_rate: number;
+          currency: string;
+          currency_symbol: string;
+          min_coach_price: number;
+          active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          country: CountryCode;
+          commission_rate: number;
+          currency: string;
+          currency_symbol: string;
+          min_coach_price: number;
+          active?: boolean;
+        };
+        Update: {
+          country?: CountryCode;
+          commission_rate?: number;
+          currency?: string;
+          currency_symbol?: string;
+          min_coach_price?: number;
+          active?: boolean;
+        };
+        Relationships: [];
+      };
+      audit_log: {
+        Row: {
+          id: string;
+          actor_id: string | null;
+          action: string;
+          entity_type: string;
+          entity_id: string | null;
+          payload: Json;
+          ip_address: string | null;
+          created_at: string;
+        };
+        Insert: {
+          actor_id?: string | null;
+          action: string;
+          entity_type: string;
+          entity_id?: string | null;
+          payload: Json;
+          ip_address?: string | null;
+        };
+        Update: Record<string, never>;
+        Relationships: [];
+      };
+    };
     Views: Record<string, never>;
     Functions: {
       auth_role: {
@@ -130,4 +210,12 @@ export interface Database {
       workout_status: WorkoutStatus;
     };
   };
-}
+};
+
+// Re-export convenience types
+export type Tables<T extends keyof Database["public"]["Tables"]> =
+  Database["public"]["Tables"][T]["Row"];
+export type TablesInsert<T extends keyof Database["public"]["Tables"]> =
+  Database["public"]["Tables"][T]["Insert"];
+export type TablesUpdate<T extends keyof Database["public"]["Tables"]> =
+  Database["public"]["Tables"][T]["Update"];

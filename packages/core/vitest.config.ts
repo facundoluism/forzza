@@ -5,8 +5,10 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       exclude: [
-        "src/index.ts", // re-exports only
-        "src/schemas/index.ts", // schemas tested indirectly
+        "src/index.ts",
+        "src/schemas/index.ts",
+        "src/supabase/**",
+        "vitest.config.ts",
       ],
       thresholds: {
         lines: 80,

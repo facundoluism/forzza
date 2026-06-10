@@ -1,6 +1,7 @@
 import { z } from "zod";
 
-// Schemas Zod compartidos — TODO: expandir en Fase 3
+export * from "./auth";
+
 export const emailSchema = z.string().email();
 
 export const userRoleSchema = z.enum(["student", "coach", "owner", "promoter"]);
