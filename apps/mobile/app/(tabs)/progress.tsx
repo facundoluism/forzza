@@ -1,8 +1,12 @@
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { useState } from "react";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import { useAuth } from "@/providers/AuthProvider";
 import { useWorkoutStore } from "@/stores/workoutStore";
-import { EmptyState, Card } from "@forzza/ui/native";
-import { colors, spacing, typography } from "@forzza/ui/tokens";
+import { useEntitlements } from "@/hooks/useEntitlements";
+import { EmptyState, Card, UpgradeModal } from "@forzza/ui/native";
+import { colors, spacing, radius, typography } from "@forzza/ui/tokens";
+
+const TEN_DAYS_MS = 10 * 24 * 60 * 60 * 1000;
 
 interface CompletedSessionEntry {
   client_uuid: string;
@@ -58,7 +62,7 @@ function formatDuration(startedAt: string, finishedAt: string): string {
   return `${hours}h ${remaining}min`;
 }
 
-function SessionItem({ session }: { session: CompletedSessionEntry }) {
+function SessionItem({ session }: { session: CompletedSessionEntry }): React.JSX.Element {
   const date = new Date(session.started_at).toLocaleDateString("es-AR", {
     weekday: "short",
     day: "numeric",
@@ -84,7 +88,7 @@ function SessionItem({ session }: { session: CompletedSessionEntry }) {
   );
 }
 
-function StatCard({ label, value }: { label: string; value: string | number }) {
+function StatCard({ label, value }: { label: string; value: string | number }): React.JSX.Element {
   return (
     <Card style={styles.statCard}>
       <Text style={styles.statValue}>{value}</Text>
@@ -93,7 +97,7 @@ function StatCard({ label, value }: { label: string; value: string | number }) {
   );
 }
 
-function ProGatedCard({ title }: { title: string }) {
+function ProGatedCard({ title }: { title: string }): React.JSX.Element {
   return (
     <Card style={styles.proCard}>
       <Text style={styles.proLockIcon}>🔒</Text>
@@ -105,12 +109,16 @@ function ProGatedCard({ title }: { title: string }) {
   );
 }
 
-export default function ProgressTab() {
+export default function ProgressTab(): React.JSX.Element {
   const { user: _user } = useAuth();
   const syncQueue = useWorkoutStore((s) => s.syncQueue);
+  const { isPro } = useEntitlements();
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+  const tenDaysAgo = new Date(Date.now() - TEN_DAYS_MS);
 
   // Build list of completed sessions from local sync queue
-  const completedSessions: CompletedSessionEntry[] = syncQueue
+  const allCompletedSessions: CompletedSessionEntry[] = syncQueue
     .filter((item) => item.payload?.status === "completed")
     .map((item) => ({
       client_uuid: item.client_uuid,
@@ -126,6 +134,13 @@ export default function ProgressTab() {
     .sort(
       (a, b) => new Date(b.started_at).getTime() - new Date(a.started_at).getTime()
     );
+
+  // Free users: only show sessions from last 10 days (NEVER delete — filter only)
+  const completedSessions = isPro
+    ? allCompletedSessions
+    : allCompletedSessions.filter(
+        (s) => new Date(s.started_at) >= tenDaysAgo
+      );
 
   const weekCount = sessionsThisWeek(completedSessions);
   const streak = calcStreak(completedSessions);
@@ -159,6 +174,21 @@ export default function ProgressTab() {
             <SessionItem key={session.client_uuid} session={session} />
           ))
         )}
+
+        {/* Free-user history promo banner */}
+        {!isPro && (
+          <TouchableOpacity
+            style={styles.historyBanner}
+            onPress={() => setShowUpgradeModal(true)}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.historyBannerTitle}>Ver historial completo</Text>
+            <Text style={styles.historyBannerSub}>
+              Tu historial gratis muestra los últimos 10 días. Actualizá al plan PRO para acceder a todo.
+            </Text>
+            <Text style={styles.historyBannerCta}>Ver planes →</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* PRO gated features */}
@@ -168,6 +198,16 @@ export default function ProgressTab() {
         <View style={styles.sectionGap} />
         <ProGatedCard title="Fotos de progreso" />
       </View>
+
+      <UpgradeModal
+        visible={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        onUpgrade={() => {
+          setShowUpgradeModal(false);
+          // TODO: deep-link to upgrade page when mobile linking is set up
+        }}
+        feature="historial completo de sesiones"
+      />
     </ScrollView>
   );
 }
@@ -266,6 +306,34 @@ const styles = StyleSheet.create({
   sessionMetaDot: {
     color: colors.gray700,
     fontSize: 13,
+  },
+  historyBanner: {
+    backgroundColor: colors.gray900,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.lime,
+    padding: spacing[4],
+    marginTop: spacing[3],
+  },
+  historyBannerTitle: {
+    fontFamily: typography.heading,
+    color: colors.lime,
+    fontSize: 20,
+    letterSpacing: 0.5,
+    marginBottom: spacing[2],
+  },
+  historyBannerSub: {
+    fontFamily: typography.body,
+    color: colors.gray400,
+    fontSize: 13,
+    lineHeight: 20,
+    marginBottom: spacing[3],
+  },
+  historyBannerCta: {
+    fontFamily: typography.body,
+    color: colors.lime,
+    fontSize: 14,
+    fontWeight: "700",
   },
   proCard: {
     alignItems: "center",

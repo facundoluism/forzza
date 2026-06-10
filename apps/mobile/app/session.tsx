@@ -12,8 +12,11 @@ import { useRouter } from "expo-router";
 import { useWorkoutStore } from "@/stores/workoutStore";
 import { syncPendingItems } from "@/services/sync";
 import { supabase } from "@/lib/supabase";
-import { Button, Card } from "@forzza/ui/native";
+import { useEntitlements } from "@/hooks/useEntitlements";
+import { Button, Card, AutopromoOverlay } from "@forzza/ui/native";
 import { colors, spacing, radius, typography } from "@forzza/ui/tokens";
+
+const AUTOPROMO_SECONDS = 10;
 
 interface NumberInputProps {
   label: string;
@@ -22,7 +25,7 @@ interface NumberInputProps {
   placeholder?: string;
 }
 
-function NumberInput({ label, value, onChangeText, placeholder = "0" }: NumberInputProps) {
+function NumberInput({ label, value, onChangeText, placeholder = "0" }: NumberInputProps): React.JSX.Element {
   return (
     <View style={styles.inputGroup}>
       <Text style={styles.inputLabel}>{label}</Text>
@@ -39,7 +42,7 @@ function NumberInput({ label, value, onChangeText, placeholder = "0" }: NumberIn
   );
 }
 
-function RestTimer({ seconds, onDone }: { seconds: number; onDone: () => void }) {
+function RestTimer({ seconds, onDone }: { seconds: number; onDone: () => void }): React.JSX.Element {
   const [remaining, setRemaining] = useState(seconds);
 
   useEffect(() => {
@@ -62,7 +65,7 @@ function RestTimer({ seconds, onDone }: { seconds: number; onDone: () => void })
   );
 }
 
-export default function SessionScreen() {
+export default function SessionScreen(): React.JSX.Element | null {
   const router = useRouter();
   const {
     activeSession,
@@ -72,12 +75,41 @@ export default function SessionScreen() {
     finishSession,
   } = useWorkoutStore();
 
+  const { isPro, hasCoach, isLoading: entitlementsLoading } = useEntitlements();
+
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [reps, setReps] = useState("");
   const [weightKg, setWeightKg] = useState("");
   const [durationSeconds, setDurationSeconds] = useState("");
   const [showRestTimer, setShowRestTimer] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+
+  // Autopromo state
+  const [showAutopromo, setShowAutopromo] = useState(false);
+  const [autopromoSeconds, setAutopromoSeconds] = useState(AUTOPROMO_SECONDS);
+
+  // Show autopromo on mount for free users without a coach
+  useEffect(() => {
+    if (!entitlementsLoading && !isPro && !hasCoach) {
+      setShowAutopromo(true);
+      setAutopromoSeconds(AUTOPROMO_SECONDS);
+    }
+  }, [entitlementsLoading, isPro, hasCoach]);
+
+  // Countdown tick while autopromo is visible
+  useEffect(() => {
+    if (!showAutopromo) return;
+    if (autopromoSeconds <= 0) {
+      setShowAutopromo(false);
+      return;
+    }
+    const timer = setTimeout(() => setAutopromoSeconds((s) => s - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [showAutopromo, autopromoSeconds]);
+
+  const handleAutopromoDismiss = useCallback((): void => {
+    setShowAutopromo(false);
+  }, []);
 
   // Redirect if no active session
   useEffect(() => {
@@ -86,7 +118,7 @@ export default function SessionScreen() {
     }
   }, [activeSession, router]);
 
-  const handleRestDone = useCallback(() => {
+  const handleRestDone = useCallback((): void => {
     setShowRestTimer(false);
   }, []);
 
@@ -100,7 +132,7 @@ export default function SessionScreen() {
   const currentExerciseLog = activeSession.exercises[currentExerciseIndex];
   const currentSetsLogged = currentExerciseLog?.sets.length ?? 0;
 
-  const handleLogSet = () => {
+  const handleLogSet = (): void => {
     const parsedReps = reps !== "" ? parseInt(reps, 10) : null;
     const parsedWeight = weightKg !== "" ? parseFloat(weightKg) : null;
     const parsedDuration = durationSeconds !== "" ? parseInt(durationSeconds, 10) : null;
@@ -128,7 +160,7 @@ export default function SessionScreen() {
     setShowRestTimer(true);
   };
 
-  const handleFinish = () => {
+  const handleFinish = (): void => {
     Alert.alert(
       "Finalizar entreno",
       "¿Terminaste el entreno de hoy?",
@@ -158,6 +190,13 @@ export default function SessionScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Autopromo overlay — shown before session starts for free users */}
+      <AutopromoOverlay
+        visible={showAutopromo}
+        onDismiss={handleAutopromoDismiss}
+        secondsLeft={autopromoSeconds}
+      />
+
       {/* Header */}
       <View style={styles.header}>
         <View>

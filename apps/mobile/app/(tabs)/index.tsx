@@ -10,8 +10,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
 import { useWorkoutStore } from "@/stores/workoutStore";
+import { useEntitlements } from "@/hooks/useEntitlements";
 import { EmptyState, Card, Skeleton } from "@forzza/ui/native";
 import { colors, spacing, radius, typography } from "@forzza/ui/tokens";
+
+const TEN_DAYS_MS = 10 * 24 * 60 * 60 * 1000;
 
 interface StudentProfile {
   id: string;
@@ -27,7 +30,7 @@ interface Routine {
   student_id: string;
 }
 
-function SkeletonCard() {
+function SkeletonCard(): React.JSX.Element {
   return (
     <Card style={styles.skeletonCard}>
       <Skeleton width="60%" height={20} />
@@ -37,10 +40,25 @@ function SkeletonCard() {
   );
 }
 
-function RecentSessionCard({ session }: { session: { routine_name: string; started_at: string; exercises: Array<{ sets: unknown[] }> } }) {
+function RecentSessionCard({
+  session,
+}: {
+  session: {
+    routine_name: string;
+    started_at: string;
+    exercises: Array<{ sets: unknown[] }>;
+  };
+}): React.JSX.Element {
   const date = new Date(session.started_at);
-  const formatted = date.toLocaleDateString("es-AR", { weekday: "short", day: "numeric", month: "short" });
-  const totalSets = session.exercises.reduce((acc, ex) => acc + ex.sets.length, 0);
+  const formatted = date.toLocaleDateString("es-AR", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
+  const totalSets = session.exercises.reduce(
+    (acc, ex) => acc + ex.sets.length,
+    0
+  );
 
   return (
     <Card style={styles.sessionCard}>
@@ -54,14 +72,17 @@ function RecentSessionCard({ session }: { session: { routine_name: string; start
   );
 }
 
-export default function HomeTab() {
+export default function HomeTab(): React.JSX.Element {
   const { user } = useAuth();
   const router = useRouter();
   const syncQueue = useWorkoutStore((s) => s.syncQueue);
+  const { isPro } = useEntitlements();
+
+  const tenDaysAgo = new Date(Date.now() - TEN_DAYS_MS).toISOString();
 
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["student_profile", user?.id],
-    queryFn: async () => {
+    queryFn: async (): Promise<StudentProfile | null> => {
       if (!user) return null;
       const { data, error } = await supabase
         .from("student_profiles")
@@ -76,7 +97,7 @@ export default function HomeTab() {
 
   const { data: routine, isLoading: routineLoading } = useQuery({
     queryKey: ["active_routine", profile?.active_routine_id],
-    queryFn: async () => {
+    queryFn: async (): Promise<Routine | null> => {
       if (!profile?.active_routine_id) return null;
       const { data, error } = await supabase
         .from("routines" as never)
@@ -90,13 +111,14 @@ export default function HomeTab() {
     enabled: !!profile?.active_routine_id,
   });
 
-  const displayName = profile?.display_name ?? user?.email?.split("@")[0] ?? "atleta";
+  const displayName =
+    profile?.display_name ?? user?.email?.split("@")[0] ?? "atleta";
   const hour = new Date().getHours();
   const greeting =
     hour < 12 ? "Buenos días" : hour < 19 ? "Buenas tardes" : "Buenas noches";
 
-  // Last 3 completed sessions from sync queue history (local store only for now)
-  const recentSessions = syncQueue
+  // Last 3 completed sessions — free users: only from last 10 days
+  const allRecentSessions = syncQueue
     .filter((item) => item.payload?.status === "completed")
     .slice(-3)
     .reverse()
@@ -105,6 +127,10 @@ export default function HomeTab() {
       started_at: item.payload?.started_at ?? new Date().toISOString(),
       exercises: item.payload?.exercises ?? [],
     }));
+
+  const recentSessions = isPro
+    ? allRecentSessions
+    : allRecentSessions.filter((s) => s.started_at >= tenDaysAgo);
 
   const isLoading = profileLoading || routineLoading;
 
