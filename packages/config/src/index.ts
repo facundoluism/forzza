@@ -4,6 +4,10 @@ export const FEATURE_FLAGS = {
   APPLE_SIGN_IN: false, // HUMAN_REQUIRED: credenciales OAuth Apple
   GOOGLE_SIGN_IN: false, // HUMAN_REQUIRED: credenciales OAuth Google
 
+  // Pagos in-app (IAP) — V1: false, pagos van por Mercado Pago web
+  APPLE_PAYMENTS: false, // HUMAN_REQUIRED: App Store IAP (react-native-purchases)
+  GOOGLE_PAYMENTS: false, // HUMAN_REQUIRED: Google Play IAP (react-native-purchases)
+
   // Países
   CHILE_ACTIVE: false, // preparado en DB, no activo en V1
 

@@ -45,6 +45,7 @@ function RootLayoutNav() {
         <Stack.Screen name="index" />
         <Stack.Screen name="session" options={{ presentation: "modal" }} />
         <Stack.Screen name="routine/[id]" />
+        <Stack.Screen name="upgrade" options={{ title: "Planes", presentation: "modal" }} />
       </Stack>
     </>
   );

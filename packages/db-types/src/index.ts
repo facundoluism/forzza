@@ -12,7 +12,7 @@ export type Json =
 
 export type UserRole = "student" | "coach" | "owner" | "promoter";
 export type CountryCode = "AR" | "CL";
-export type SubscriptionStatus = "active" | "past_due" | "canceled" | "trialing";
+export type SubscriptionStatus = "active" | "past_due" | "canceled" | "trialing" | "pending" | "suspended" | "expired" | "cancelled";
 export type BillingModel = "fixed" | "comision";
 export type CoachStatus = "pending" | "approved" | "rejected" | "suspended";
 export type PackageTier = "starter" | "pro" | "elite";
@@ -136,31 +136,92 @@ export type Database = {
       };
       country_config: {
         Row: {
-          country: CountryCode;
+          country_code: CountryCode;
           commission_rate: number;
           currency: string;
+          currency_code: string;
           currency_symbol: string;
           min_coach_price: number;
+          pro_monthly_price_cents: number;
           active: boolean;
           created_at: string;
           updated_at: string;
         };
         Insert: {
-          country: CountryCode;
+          country_code: CountryCode;
           commission_rate: number;
           currency: string;
+          currency_code: string;
           currency_symbol: string;
           min_coach_price: number;
+          pro_monthly_price_cents?: number;
           active?: boolean;
         };
         Update: {
-          country?: CountryCode;
+          country_code?: CountryCode;
           commission_rate?: number;
           currency?: string;
+          currency_code?: string;
           currency_symbol?: string;
           min_coach_price?: number;
+          pro_monthly_price_cents?: number;
           active?: boolean;
         };
+        Relationships: [];
+      };
+      subscriptions: {
+        Row: {
+          id: string;
+          user_id: string;
+          plan: "free" | "pro" | "elite";
+          status: SubscriptionStatus;
+          provider: "mercadopago" | "revenuecat" | "manual";
+          provider_subscription_id: string | null;
+          started_at: string | null;
+          expires_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          plan: "free" | "pro" | "elite";
+          status?: SubscriptionStatus;
+          provider: "mercadopago" | "revenuecat" | "manual";
+          provider_subscription_id?: string | null;
+          started_at?: string | null;
+          expires_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          plan?: "free" | "pro" | "elite";
+          status?: SubscriptionStatus;
+          provider?: "mercadopago" | "revenuecat" | "manual";
+          provider_subscription_id?: string | null;
+          started_at?: string | null;
+          expires_at?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      processed_events: {
+        Row: {
+          id: string;
+          event_id: string;
+          provider: "mercadopago" | "revenuecat";
+          event_type: string | null;
+          payload: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          event_id: string;
+          provider: "mercadopago" | "revenuecat";
+          event_type?: string | null;
+          payload?: Json;
+        };
+        Update: Record<string, never>;
         Relationships: [];
       };
       audit_log: {
@@ -171,6 +232,7 @@ export type Database = {
           entity_type: string;
           entity_id: string | null;
           payload: Json;
+          metadata: Json | null;
           ip_address: string | null;
           created_at: string;
         };
@@ -179,7 +241,8 @@ export type Database = {
           action: string;
           entity_type: string;
           entity_id?: string | null;
-          payload: Json;
+          payload?: Json;
+          metadata?: Json | null;
           ip_address?: string | null;
         };
         Update: Record<string, never>;
