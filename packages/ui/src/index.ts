@@ -1,3 +1,3 @@
-// UI package — tokens y componentes compartidos
-// Implementación en Fase 4 (Design System)
+// packages/ui — tokens y tipos compartidos
 export * from "./tokens";
+export type * from "./types";

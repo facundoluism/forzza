@@ -1,5 +1,8 @@
 {
   "extends": "@forzza/tsconfig/base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx"
+  },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules", "dist"]
 }
