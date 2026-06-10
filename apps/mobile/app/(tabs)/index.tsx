@@ -169,7 +169,7 @@ export default function HomeTab(): React.JSX.Element {
             description="Encontrá un coach que se adapte a tus objetivos."
             icon="🔍"
             actionLabel="¿Querés un coach?"
-            onAction={() => router.push("/marketplace" as never)}
+            onAction={() => router.push("/marketplace/index" as never)}
           />
         )}
       </View>

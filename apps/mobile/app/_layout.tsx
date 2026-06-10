@@ -46,6 +46,37 @@ function RootLayoutNav() {
         <Stack.Screen name="session" options={{ presentation: "modal" }} />
         <Stack.Screen name="routine/[id]" />
         <Stack.Screen name="upgrade" options={{ title: "Planes", presentation: "modal" }} />
+        <Stack.Screen
+          name="marketplace/index"
+          options={{
+            headerShown: true,
+            title: "Coaches",
+            headerStyle: { backgroundColor: "#0A0A0A" },
+            headerTintColor: "#FAFAFA",
+            headerTitleStyle: { fontFamily: "BebasNeue", fontSize: 20 },
+          }}
+        />
+        <Stack.Screen
+          name="marketplace/[coachId]"
+          options={{
+            headerShown: true,
+            title: "Perfil del coach",
+            headerStyle: { backgroundColor: "#0A0A0A" },
+            headerTintColor: "#FAFAFA",
+            headerTitleStyle: { fontFamily: "BebasNeue", fontSize: 20 },
+          }}
+        />
+        <Stack.Screen
+          name="marketplace/checkout"
+          options={{
+            headerShown: true,
+            title: "Contratar",
+            presentation: "modal",
+            headerStyle: { backgroundColor: "#0A0A0A" },
+            headerTintColor: "#FAFAFA",
+            headerTitleStyle: { fontFamily: "BebasNeue", fontSize: 20 },
+          }}
+        />
       </Stack>
     </>
   );

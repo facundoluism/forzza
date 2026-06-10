@@ -15,6 +15,8 @@ export type CountryCode = "AR" | "CL";
 export type SubscriptionStatus = "active" | "past_due" | "canceled" | "trialing" | "pending" | "suspended" | "expired" | "cancelled";
 export type BillingModel = "fixed" | "comision";
 export type CoachStatus = "pending" | "approved" | "rejected" | "suspended";
+export type BillingType = "mensual" | "paquete";
+export type PaymentProvider = "mercadopago";
 export type PackageTier = "starter" | "pro" | "elite";
 export type AssignmentStatus = "pending" | "active" | "completed" | "refunded" | "canceled";
 export type PaymentStatus = "pending" | "approved" | "rejected" | "refunded" | "in_process";
@@ -97,7 +99,11 @@ export type Database = {
           fiscal_id: string | null;
           bank_account: string | null;
           constancia_path: string | null;
+          constancia_url: string | null;
+          cbu: string | null;
+          alias_cbu: string | null;
           billing_model: BillingModel;
+          years_experience: number | null;
           active_student_count: number;
           created_at: string;
           updated_at: string;
@@ -114,7 +120,11 @@ export type Database = {
           fiscal_id?: string | null;
           bank_account?: string | null;
           constancia_path?: string | null;
+          constancia_url?: string | null;
+          cbu?: string | null;
+          alias_cbu?: string | null;
           billing_model?: BillingModel;
+          years_experience?: number | null;
           active_student_count?: number;
         };
         Update: {
@@ -129,8 +139,87 @@ export type Database = {
           fiscal_id?: string | null;
           bank_account?: string | null;
           constancia_path?: string | null;
+          constancia_url?: string | null;
+          cbu?: string | null;
+          alias_cbu?: string | null;
           billing_model?: BillingModel;
+          years_experience?: number | null;
           active_student_count?: number;
+        };
+        Relationships: [];
+      };
+      coach_packages: {
+        Row: {
+          id: string;
+          coach_id: string;
+          name: string;
+          description: string | null;
+          price_cents: number;
+          billing_type: BillingType;
+          features: string[];
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          coach_id: string;
+          name: string;
+          description?: string | null;
+          price_cents: number;
+          billing_type: BillingType;
+          features?: string[];
+          is_active?: boolean;
+        };
+        Update: {
+          id?: string;
+          coach_id?: string;
+          name?: string;
+          description?: string | null;
+          price_cents?: number;
+          billing_type?: BillingType;
+          features?: string[];
+          is_active?: boolean;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      payments: {
+        Row: {
+          id: string;
+          payer_id: string;
+          payee_id: string;
+          amount_cents: number;
+          currency_code: string;
+          status: PaymentStatus;
+          provider: PaymentProvider;
+          provider_payment_id: string | null;
+          metadata: Json | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          payer_id: string;
+          payee_id: string;
+          amount_cents: number;
+          currency_code: string;
+          status?: PaymentStatus;
+          provider: PaymentProvider;
+          provider_payment_id?: string | null;
+          metadata?: Json | null;
+        };
+        Update: {
+          id?: string;
+          payer_id?: string;
+          payee_id?: string;
+          amount_cents?: number;
+          currency_code?: string;
+          status?: PaymentStatus;
+          provider?: PaymentProvider;
+          provider_payment_id?: string | null;
+          metadata?: Json | null;
+          updated_at?: string;
         };
         Relationships: [];
       };
@@ -265,10 +354,12 @@ export type Database = {
       country_code: CountryCode;
       subscription_status: SubscriptionStatus;
       billing_model: BillingModel;
+      billing_type: BillingType;
       coach_status: CoachStatus;
       package_tier: PackageTier;
       assignment_status: AssignmentStatus;
       payment_status: PaymentStatus;
+      payment_provider: PaymentProvider;
       settlement_status: SettlementStatus;
       workout_status: WorkoutStatus;
     };
