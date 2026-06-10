@@ -1,0 +1,43 @@
+# Dependencias
+node_modules/
+.pnpm-store/
+
+# Entorno (NUNCA commitear)
+.env
+.env.*
+!.env.example
+
+# Expo / Mobile
+.expo/
+dist/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Next.js
+.next/
+out/
+
+# Turborepo
+.turbo/
+
+# Build
+dist/
+build/
+coverage/
+
+# Claude Code local
+CLAUDE.local.md
+
+# Supabase local
+supabase/.branches/
+supabase/.temp/
+
+# Vercel
+.vercel
+
+# OS
+.DS_Store
+Thumbs.db
