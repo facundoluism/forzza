@@ -2,8 +2,12 @@
   "extends": "@forzza/tsconfig/expo.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@forzza/ui/native": ["./node_modules/@forzza/ui/src/native/index.ts"],
+      "@forzza/ui/tokens": ["./node_modules/@forzza/ui/src/tokens.ts"]
     },
     "types": ["node"]
   },

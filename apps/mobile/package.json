@@ -16,22 +16,25 @@
     "@forzza/core": "workspace:*",
     "@forzza/db-types": "workspace:*",
     "@forzza/ui": "workspace:*",
+    "@react-native-async-storage/async-storage": "^3.1.1",
     "@supabase/supabase-js": "^2.47.10",
+    "@tanstack/react-query": "^5.101.0",
     "expo": "^52.0.24",
     "expo-router": "~4.0.14",
     "expo-secure-store": "~14.0.1",
     "expo-status-bar": "~2.0.1",
     "react": "18.3.1",
     "react-native": "0.76.6",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
-    "babel-plugin-module-resolver": "^5.0.2",
     "@forzza/eslint-config": "workspace:*",
     "@forzza/tsconfig": "workspace:*",
     "@types/node": "^22.10.5",
     "@types/react": "~18.3.12",
+    "babel-plugin-module-resolver": "^5.0.2",
     "eslint": "^9.17.0",
     "rimraf": "^6.0.1",
     "typescript": "^5.7.2"
