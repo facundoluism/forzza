@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm *)",
+      "Bash(git *)",
+      "Bash(node scripts/*)",
+      "Bash(npx *)",
+      "Bash(supabase *)",
+      "Bash(docker *)"
+    ]
+  }
+}

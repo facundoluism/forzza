@@ -1,0 +1,5 @@
+{
+  "extends": "@forzza/tsconfig/expo.json",
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "dist"]
+}
