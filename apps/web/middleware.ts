@@ -1,3 +1,10 @@
+// TODO: Add rate limiting for /api/leads and /api/mp-preapproval
+// Recommended: Upstash Redis with @upstash/ratelimit in production
+//   npm i @upstash/ratelimit @upstash/redis
+//   See: https://github.com/upstash/ratelimit-js
+// V1: Supabase RLS and Mercado Pago's own rate limiting provide some protection
+//     until Upstash is wired in.
+
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 

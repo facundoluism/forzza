@@ -15,12 +15,20 @@
     "lint:fix": "turbo run lint:fix",
     "db:reset": "node scripts/db-reset.js",
     "db:types": "node scripts/db-types.js",
-    "clean": "turbo run clean && node scripts/clean.js"
+    "clean": "turbo run clean && node scripts/clean.js",
+    "validate-env": "node scripts/validate-env.js",
+    "smoke-test": "node scripts/smoke-test.js",
+    "smoke-test:staging": "node scripts/smoke-test.js --url https://staging.forzza.app"
   },
   "devDependencies": {
     "turbo": "^2.3.3",
     "typescript": "^5.7.2",
     "prettier": "^3.4.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "~18.3.12"
+    }
   },
   "engines": {
     "node": ">=22.0.0",
