@@ -12,7 +12,8 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { supabase } from "@/lib/supabase";
-import { signupSchema } from "@forzza/core";
+import { signupSchema, TRACKED_EVENTS } from "@forzza/core";
+import { track } from "@/lib/analytics";
 
 export default function SignupScreen() {
   const [email, setEmail] = useState("");
@@ -42,6 +43,7 @@ export default function SignupScreen() {
       return;
     }
 
+    track(TRACKED_EVENTS.SIGNUP_COMPLETED);
     setSuccess(true);
     setLoading(false);
   }

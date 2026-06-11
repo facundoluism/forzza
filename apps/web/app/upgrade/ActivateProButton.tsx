@@ -2,12 +2,15 @@
 
 import { useState } from "react";
 import { colors, spacing, radius } from "@forzza/ui";
+import { TRACKED_EVENTS } from "@forzza/core";
+import { track } from "@/lib/analytics";
 
 export function ActivateProButton() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleActivate() {
+    track(TRACKED_EVENTS.UPGRADE_CTA_TAPPED);
     setLoading(true);
     setError(null);
     try {

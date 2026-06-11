@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   View,
   Text,
@@ -13,6 +13,8 @@ import { useWorkoutStore } from "@/stores/workoutStore";
 import { syncPendingItems } from "@/services/sync";
 import { supabase } from "@/lib/supabase";
 import { useEntitlements } from "@/hooks/useEntitlements";
+import { TRACKED_EVENTS } from "@forzza/core";
+import { track } from "@/lib/analytics";
 import { Button, Card, AutopromoOverlay } from "@forzza/ui/native";
 import { colors, spacing, radius, typography } from "@forzza/ui/tokens";
 
@@ -77,6 +79,8 @@ export default function SessionScreen(): React.JSX.Element | null {
 
   const { isPro, hasCoach, isLoading: entitlementsLoading } = useEntitlements();
 
+  const workoutFinishedRef = useRef(false);
+
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [reps, setReps] = useState("");
   const [weightKg, setWeightKg] = useState("");
@@ -109,6 +113,19 @@ export default function SessionScreen(): React.JSX.Element | null {
 
   const handleAutopromoDismiss = useCallback((): void => {
     setShowAutopromo(false);
+  }, []);
+
+  // Track workout started on mount when session is active; abandoned on unmount if not finished
+  useEffect(() => {
+    if (activeSession) {
+      track(TRACKED_EVENTS.WORKOUT_STARTED);
+    }
+    return () => {
+      if (!workoutFinishedRef.current) {
+        track(TRACKED_EVENTS.WORKOUT_ABANDONED);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Redirect if no active session
@@ -171,6 +188,8 @@ export default function SessionScreen(): React.JSX.Element | null {
           style: "default",
           onPress: async () => {
             setIsSyncing(true);
+            workoutFinishedRef.current = true;
+            track(TRACKED_EVENTS.WORKOUT_COMPLETED);
             finishSession();
             try {
               await syncPendingItems(supabase);

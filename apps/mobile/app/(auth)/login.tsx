@@ -11,7 +11,8 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { supabase } from "@/lib/supabase";
-import { loginSchema } from "@forzza/core";
+import { loginSchema, TRACKED_EVENTS } from "@forzza/core";
+import { track } from "@/lib/analytics";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -39,6 +40,7 @@ export default function LoginScreen() {
       return;
     }
 
+    track(TRACKED_EVENTS.LOGIN, { role: 'student' });
     router.replace("/(tabs)");
   }
 

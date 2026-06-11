@@ -10,7 +10,8 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { supabase } from "@/lib/supabase";
-import { isMinor } from "@forzza/core";
+import { isMinor, TRACKED_EVENTS } from "@forzza/core";
+import { track } from "@/lib/analytics";
 import type { TablesInsert } from "@forzza/db-types";
 
 type Step = 1 | 2 | 3;
@@ -123,6 +124,7 @@ export default function OnboardingScreen() {
       return;
     }
 
+    track(TRACKED_EVENTS.ONBOARDING_STUDENT_COMPLETED, { country_code: 'AR' });
     router.replace("/(tabs)");
   }
 

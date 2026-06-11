@@ -12,7 +12,9 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { restorePurchases } from "@/services/revenuecat";
 import { colors, spacing, radius, typography } from "@forzza/ui/tokens";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { TRACKED_EVENTS } from "@forzza/core";
+import { track } from "@/lib/analytics";
 
 interface CountryConfig {
   pro_monthly_price_cents: number;
@@ -71,6 +73,10 @@ export default function UpgradeScreen() {
   const [activating, setActivating] = useState(false);
   const [restoring, setRestoring] = useState(false);
 
+  useEffect(() => {
+    track(TRACKED_EVENTS.UPGRADE_MODAL_SHOWN);
+  }, []);
+
   const { data: config, isLoading: configLoading } = useQuery<CountryConfig>({
     queryKey: ["country-config"],
     queryFn: async (): Promise<CountryConfig> => {
@@ -94,6 +100,7 @@ export default function UpgradeScreen() {
   }
 
   async function handleActivatePro() {
+    track(TRACKED_EVENTS.UPGRADE_CTA_TAPPED);
     setActivating(true);
     try {
       const { data, error } = await supabase.functions.invoke<{
