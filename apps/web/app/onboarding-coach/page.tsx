@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 type Step = 1 | 2 | 3 | 4;
@@ -43,6 +43,16 @@ export default function OnboardingCoachPage() {
   async function handleFinish() {
     setLoading(true);
     setError(null);
+
+    const supabaseUrl = process.env["NEXT_PUBLIC_SUPABASE_URL"] ?? "";
+    const isDevMode = !supabaseUrl || supabaseUrl.includes("placeholder");
+
+    // Dev bypass: skip Supabase, go straight to pendiente
+    if (isDevMode) {
+      await new Promise((r) => setTimeout(r, 500));
+      window.location.href = "/onboarding-coach/pendiente";
+      return;
+    }
 
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -207,22 +217,11 @@ export default function OnboardingCoachPage() {
               />
             </div>
 
-            <div style={{ marginBottom: "24px" }}>
-              <label style={{ display: "block", color: "#AAAAAA", marginBottom: "8px", fontSize: "14px" }}>
-                Constancia de inscripción (PDF o JPG, máx. 10MB)
-              </label>
-              <input
-                type="file"
-                accept=".pdf,.jpg,.jpeg,.png"
-                onChange={(e) => updateData({ constancia_file: e.target.files?.[0] ?? null })}
-                style={{ color: "#FAFAFA", fontSize: "14px" }}
-              />
-              {data.constancia_file && (
-                <p style={{ color: "#00CC66", fontSize: "12px", marginTop: "4px" }}>
-                  ✓ {data.constancia_file.name}
-                </p>
-              )}
-            </div>
+            <PdfDropzone
+              file={data.constancia_file}
+              onFile={(f) => updateData({ constancia_file: f })}
+              onError={setError}
+            />
 
             {error && <p style={{ color: "#FF4444", marginBottom: "16px", fontSize: "14px" }}>{error}</p>}
 
@@ -325,6 +324,165 @@ export default function OnboardingCoachPage() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+
+function PdfDropzone({
+  file,
+  onFile,
+  onError,
+}: {
+  file: File | null;
+  onFile: (f: File | null) => void;
+  onError: (msg: string | null) => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [dragging, setDragging] = useState(false);
+
+  const handleFile = useCallback(
+    (f: File) => {
+      if (f.type !== "application/pdf") {
+        onError("Solo se aceptan archivos PDF.");
+        return;
+      }
+      if (f.size > MAX_FILE_SIZE) {
+        onError(`El archivo supera el límite de 5 MB (${(f.size / 1024 / 1024).toFixed(1)} MB).`);
+        return;
+      }
+      onError(null);
+      onFile(f);
+    },
+    [onFile, onError],
+  );
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setDragging(false);
+    const f = e.dataTransfer.files[0];
+    if (f) handleFile(f);
+  }
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (f) handleFile(f);
+  }
+
+  if (file) {
+    return (
+      <div style={{ marginBottom: "24px" }}>
+        <label style={{ display: "block", color: "#9898C0", marginBottom: "8px", fontSize: "14px" }}>
+          Constancia de inscripción
+        </label>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            padding: "16px",
+            backgroundColor: "#0E0E18",
+            border: "1px solid #242436",
+            borderRadius: "12px",
+          }}
+        >
+          {/* PDF icon */}
+          <div
+            style={{
+              width: "44px",
+              height: "44px",
+              borderRadius: "10px",
+              backgroundColor: "rgba(200,255,0,0.1)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="#C8FF00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M14 2v6h6" stroke="#C8FF00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <text x="7" y="18" fill="#C8FF00" fontSize="6" fontWeight="700" fontFamily="monospace">PDF</text>
+            </svg>
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ color: "#F0F0FF", fontSize: "14px", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {file.name}
+            </p>
+            <p style={{ color: "#6868A0", fontSize: "12px", margin: "2px 0 0", fontFamily: "var(--font-mono)" }}>
+              {(file.size / 1024).toFixed(0)} KB
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              onFile(null);
+              if (inputRef.current) inputRef.current.value = "";
+            }}
+            style={{
+              background: "none",
+              border: "none",
+              color: "#6868A0",
+              cursor: "pointer",
+              padding: "8px",
+              fontSize: "18px",
+              lineHeight: 1,
+            }}
+            title="Quitar archivo"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ marginBottom: "24px" }}>
+      <label style={{ display: "block", color: "#9898C0", marginBottom: "8px", fontSize: "14px" }}>
+        Constancia de inscripción *
+      </label>
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => inputRef.current?.click()}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") inputRef.current?.click(); }}
+        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={handleDrop}
+        style={{
+          border: `2px dashed ${dragging ? "#C8FF00" : "#242436"}`,
+          borderRadius: "12px",
+          padding: "32px 16px",
+          textAlign: "center",
+          cursor: "pointer",
+          backgroundColor: dragging ? "rgba(200,255,0,0.04)" : "#0E0E18",
+          transition: "all 0.15s ease",
+        }}
+      >
+        {/* Upload icon */}
+        <div style={{ marginBottom: "12px" }}>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" style={{ margin: "0 auto" }}>
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke={dragging ? "#C8FF00" : "#6868A0"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M17 8l-5-5-5 5" stroke={dragging ? "#C8FF00" : "#6868A0"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M12 3v12" stroke={dragging ? "#C8FF00" : "#6868A0"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+        <p style={{ color: "#F0F0FF", fontSize: "15px", margin: "0 0 4px", fontWeight: 600 }}>
+          Arrastrá tu archivo o <span style={{ color: "#C8FF00" }}>buscá en tu dispositivo</span>
+        </p>
+        <p style={{ color: "#6868A0", fontSize: "12px", margin: 0, fontFamily: "var(--font-mono)" }}>
+          Solo PDF · Máx. 5 MB
+        </p>
+      </div>
+      <input
+        ref={inputRef}
+        type="file"
+        accept=".pdf,application/pdf"
+        onChange={handleChange}
+        style={{ display: "none" }}
+      />
     </div>
   );
 }

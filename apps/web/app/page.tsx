@@ -30,11 +30,11 @@ export default function HomePage() {
 
       {/* NAV */}
       <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', borderBottom: '1px solid var(--color-border)', position: 'sticky', top: 0, background: 'rgba(10,10,10,0.92)', backdropFilter: 'blur(12px)', zIndex: 50 }}>
-        <span style={{ color: 'var(--color-lime)', fontSize: '24px', fontWeight: 900, letterSpacing: '4px', fontFamily: 'var(--font-display)' }}>FORZZA</span>
+        <span style={{ color: 'var(--color-lime)', fontSize: '24px', fontWeight: 800, letterSpacing: '6px', fontFamily: 'var(--font-display)' }}>FORZZA</span>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           <Link href="/coaches" style={{ color: 'var(--color-muted)', fontSize: '14px', padding: '8px 12px', textDecoration: 'none', transition: 'color 200ms' }}>Coaches</Link>
-          <Link href="/auth/login" style={{ fontSize: '14px', padding: '8px 16px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: 'var(--color-text)', textDecoration: 'none' }}>Ingresar</Link>
-          <Link href="/auth/login" style={{ fontSize: '14px', padding: '8px 20px', background: 'var(--color-lime)', borderRadius: '8px', color: '#000', fontWeight: 700, textDecoration: 'none' }}>Empezar gratis</Link>
+          <Link href="/login" style={{ fontSize: '14px', padding: '8px 16px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: 'var(--color-text)', textDecoration: 'none' }}>Ingresar</Link>
+          <Link href="/login" style={{ fontSize: '14px', padding: '8px 20px', background: 'var(--color-lime)', borderRadius: '8px', color: '#000', fontWeight: 700, textDecoration: 'none' }}>Empezar gratis</Link>
         </div>
       </nav>
 
@@ -45,7 +45,7 @@ export default function HomePage() {
           <span style={{ color: 'var(--color-lime)', fontSize: '13px', fontFamily: 'var(--font-mono)' }}>Beta · Argentina 🇦🇷</span>
         </div>
 
-        <h1 style={{ fontSize: 'clamp(72px, 14vw, 140px)', fontWeight: 900, lineHeight: 0.9, letterSpacing: '-2px', color: 'var(--color-lime)', margin: '0 0 24px', fontFamily: 'var(--font-display)', textShadow: '0 0 60px rgba(200,255,0,0.2)' }}>
+        <h1 style={{ fontSize: 'clamp(64px, 12vw, 120px)', fontWeight: 900, lineHeight: 1, letterSpacing: '2px', color: 'var(--color-lime)', margin: '0 0 24px', fontFamily: 'var(--font-display)', textShadow: '0 0 60px rgba(200,255,0,0.2)' }}>
           FORZZA
         </h1>
         <p style={{ fontSize: 'clamp(22px, 3.5vw, 32px)', color: 'var(--color-text)', marginBottom: '16px', lineHeight: 1.3, fontWeight: 600 }}>
@@ -55,7 +55,7 @@ export default function HomePage() {
           Conectamos alumnos con coaches certificados. Rutinas, check-ins, progreso y pagos en un solo lugar.
         </p>
         <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '24px' }}>
-          <Link href="/auth/login" style={{ padding: '16px 36px', background: 'var(--color-lime)', borderRadius: '12px', color: '#000', fontWeight: 700, fontSize: '18px', textDecoration: 'none', boxShadow: '0 0 24px rgba(200,255,0,0.35)', transition: 'all 200ms' }}>
+          <Link href="/login" style={{ padding: '16px 36px', background: 'var(--color-lime)', borderRadius: '12px', color: '#000', fontWeight: 700, fontSize: '18px', textDecoration: 'none', boxShadow: '0 0 24px rgba(200,255,0,0.35)', transition: 'all 200ms' }}>
             Empezar gratis →
           </Link>
           <Link href="/coaches" style={{ padding: '16px 36px', border: '2px solid rgba(255,255,255,0.15)', borderRadius: '12px', color: 'var(--color-text)', fontWeight: 700, fontSize: '18px', textDecoration: 'none', transition: 'all 200ms' }}>
@@ -69,7 +69,7 @@ export default function HomePage() {
       <section style={{ borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)', padding: '24px', display: 'flex', justifyContent: 'center', gap: '64px', flexWrap: 'wrap' }}>
         {[['72h', 'Garantía de devolución'], ['20%', 'Comisión plataforma'], ['100%', 'Coaches verificados']].map(([n, l]) => (
           <div key={n} style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '36px', fontWeight: 900, color: 'var(--color-lime)', fontFamily: 'var(--font-display)', lineHeight: 1 }}>{n}</div>
+            <div style={{ fontSize: '36px', fontWeight: 800, color: 'var(--color-lime)', fontFamily: 'var(--font-display)', lineHeight: 1, letterSpacing: '1px' }}>{n}</div>
             <div style={{ color: 'var(--color-muted)', fontSize: '13px', marginTop: '4px', fontFamily: 'var(--font-mono)' }}>{l}</div>
           </div>
         ))}
@@ -77,7 +77,7 @@ export default function HomePage() {
 
       {/* FEATURES */}
       <section style={{ padding: '80px 24px', maxWidth: '1100px', margin: '0 auto' }}>
-        <h2 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 700, textAlign: 'center', marginBottom: '12px', fontFamily: 'var(--font-display)', letterSpacing: '-0.5px' }}>
+        <h2 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 700, textAlign: 'center', marginBottom: '12px', fontFamily: 'var(--font-display)', letterSpacing: '0.5px' }}>
           Todo lo que necesitás para entrenar mejor
         </h2>
         <p style={{ color: 'var(--color-muted)', textAlign: 'center', marginBottom: '48px', fontSize: '17px' }}>Una plataforma. Alumnos, coaches y dueños.</p>
@@ -88,7 +88,7 @@ export default function HomePage() {
                 <span style={{ fontSize: '36px' }}>{f.icon}</span>
                 <span style={{ fontSize: '10px', fontFamily: 'var(--font-mono)', color: 'var(--color-lime)', background: 'rgba(200,255,0,0.1)', border: '1px solid rgba(200,255,0,0.2)', borderRadius: '4px', padding: '2px 8px', letterSpacing: '1px' }}>{f.tag}</span>
               </div>
-              <h3 style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: '18px', marginBottom: '8px', fontFamily: 'var(--font-display)', letterSpacing: '0.3px' }}>{f.title}</h3>
+              <h3 style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: '18px', marginBottom: '8px', fontFamily: 'var(--font-display)', letterSpacing: '0.5px' }}>{f.title}</h3>
               <p style={{ color: 'var(--color-muted)', fontSize: '14px', lineHeight: 1.7, margin: 0 }}>{f.desc}</p>
             </div>
           ))}
@@ -102,7 +102,7 @@ export default function HomePage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '40px' }}>
             {steps.map((s) => (
               <div key={s.n} style={{ position: 'relative' }}>
-                <div style={{ fontSize: '72px', fontWeight: 900, color: 'rgba(200,255,0,0.15)', fontFamily: 'var(--font-display)', lineHeight: 1, marginBottom: '16px', textShadow: '0 0 30px rgba(200,255,0,0.1)' }}>{s.n}</div>
+                <div style={{ fontSize: '72px', fontWeight: 800, color: 'rgba(200,255,0,0.15)', fontFamily: 'var(--font-display)', lineHeight: 1, marginBottom: '16px', letterSpacing: '2px', textShadow: '0 0 30px rgba(200,255,0,0.1)' }}>{s.n}</div>
                 <h3 style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: '20px', marginBottom: '8px', fontFamily: 'var(--font-display)' }}>{s.title}</h3>
                 <p style={{ color: 'var(--color-muted)', fontSize: '14px', lineHeight: 1.6 }}>{s.desc}</p>
               </div>
@@ -119,7 +119,7 @@ export default function HomePage() {
           {/* Free */}
           <div style={{ padding: '36px', background: 'var(--color-surface)', borderRadius: '20px', border: '1px solid var(--color-border)' }}>
             <div style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', letterSpacing: '3px', color: '#6A6A6A', marginBottom: '16px' }}>{"// FREE"}</div>
-            <div style={{ fontSize: '64px', fontWeight: 900, color: 'var(--color-text)', fontFamily: 'var(--font-display)', lineHeight: 1, marginBottom: '4px' }}>$0</div>
+            <div style={{ fontSize: '64px', fontWeight: 800, color: 'var(--color-text)', fontFamily: 'var(--font-display)', lineHeight: 1, letterSpacing: '1px', marginBottom: '4px' }}>$0</div>
             <div style={{ color: '#6A6A6A', fontSize: '14px', marginBottom: '28px', fontFamily: 'var(--font-mono)' }}>Para siempre</div>
             <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {freeFeatures.map(f => (
@@ -128,7 +128,7 @@ export default function HomePage() {
                 </li>
               ))}
             </ul>
-            <Link href="/auth/login" style={{ display: 'block', textAlign: 'center', padding: '14px', border: '2px solid rgba(255,255,255,0.12)', borderRadius: '12px', color: 'var(--color-text)', fontWeight: 700, textDecoration: 'none', transition: 'all 200ms' }}>
+            <Link href="/login" style={{ display: 'block', textAlign: 'center', padding: '14px', border: '2px solid rgba(255,255,255,0.12)', borderRadius: '12px', color: 'var(--color-text)', fontWeight: 700, textDecoration: 'none', transition: 'all 200ms' }}>
               Empezar gratis
             </Link>
           </div>
@@ -138,7 +138,7 @@ export default function HomePage() {
             <div style={{ position: 'absolute', top: 0, left: '20px', right: '20px', height: '2px', background: 'linear-gradient(90deg, transparent, var(--color-lime), transparent)', borderRadius: '2px' }} />
             <div style={{ position: 'absolute', top: '-14px', left: '50%', transform: 'translateX(-50%)', background: 'var(--color-lime)', color: '#000', padding: '4px 14px', borderRadius: '999px', fontSize: '11px', fontWeight: 700, letterSpacing: '1px', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>⚡ RECOMENDADO</div>
             <div style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', letterSpacing: '3px', color: 'var(--color-lime)', marginBottom: '16px' }}>{"// PRO"}</div>
-            <div style={{ fontSize: '64px', fontWeight: 900, color: 'var(--color-text)', fontFamily: 'var(--font-display)', lineHeight: 1, marginBottom: '4px' }}>$9.999</div>
+            <div style={{ fontSize: '64px', fontWeight: 800, color: 'var(--color-text)', fontFamily: 'var(--font-display)', lineHeight: 1, letterSpacing: '1px', marginBottom: '4px' }}>$9.999</div>
             <div style={{ color: '#6A6A6A', fontSize: '14px', marginBottom: '28px', fontFamily: 'var(--font-mono)' }}>por mes · cancelás cuando querés</div>
             <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {proFeatures.map(f => (
@@ -174,7 +174,7 @@ export default function HomePage() {
       {/* FOOTER */}
       <footer style={{ borderTop: '1px solid var(--color-border)', padding: '40px 24px' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '24px' }}>
-          <span style={{ color: 'var(--color-lime)', fontSize: '20px', fontWeight: 900, letterSpacing: '4px', fontFamily: 'var(--font-display)' }}>FORZZA</span>
+          <span style={{ color: 'var(--color-lime)', fontSize: '20px', fontWeight: 800, letterSpacing: '6px', fontFamily: 'var(--font-display)' }}>FORZZA</span>
           <div style={{ display: 'flex', gap: '24px' }}>
             {([['Coaches', '/coaches'], ['Planes', '/upgrade'], ['Términos', '/legales/terminos'], ['Privacidad', '/legales/privacidad']] as [string, string][]).map(([l, h]) => (
               <Link key={l} href={h} style={{ color: '#4A4A4A', fontSize: '14px', textDecoration: 'none' }}>{l}</Link>

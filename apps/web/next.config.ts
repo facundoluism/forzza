@@ -22,13 +22,13 @@ const CSP = [
   // Next.js inline scripts (e.g. _buildManifest) need 'unsafe-inline' during
   // development. In production, replace with a nonce-based policy.
   "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-  "style-src 'self' 'unsafe-inline'",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  // Google Fonts font files
+  "font-src 'self' https://fonts.gstatic.com",
   // Supabase storage for images/avatars
   "img-src 'self' data: blob: https://*.supabase.co",
   // Supabase API, Mercado Pago SDK, PostHog, Sentry
   "connect-src 'self' https://*.supabase.co https://api.mercadopago.com https://app.posthog.com https://ingest.sentry.io",
-  // Fonts served from self only
-  "font-src 'self'",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
