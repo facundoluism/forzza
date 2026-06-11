@@ -77,6 +77,26 @@ function RootLayoutNav() {
             headerTitleStyle: { fontFamily: "BebasNeue", fontSize: 20 },
           }}
         />
+        <Stack.Screen
+          name="notifications"
+          options={{
+            headerShown: true,
+            title: "Notificaciones",
+            headerStyle: { backgroundColor: "#0A0A0A" },
+            headerTintColor: "#FAFAFA",
+            headerTitleStyle: { fontFamily: "BebasNeue", fontSize: 20 },
+          }}
+        />
+        <Stack.Screen
+          name="chat/[conversationId]"
+          options={{
+            headerShown: true,
+            title: "Chat",
+            headerStyle: { backgroundColor: "#0A0A0A" },
+            headerTintColor: "#FAFAFA",
+            headerTitleStyle: { fontFamily: "BebasNeue", fontSize: 20 },
+          }}
+        />
       </Stack>
     </>
   );
