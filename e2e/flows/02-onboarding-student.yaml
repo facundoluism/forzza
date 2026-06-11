@@ -1,0 +1,15 @@
+appId: com.forzza.app
+---
+- launchApp
+- assertVisible: "¿Cuál es tu nombre?"
+- inputText:
+    id: "name-input"
+    text: "Test E2E"
+- tapOn: "Continuar"
+- assertVisible: "¿Qué querés lograr?"
+- tapOn: "Perder peso"
+- tapOn: "Continuar"
+- assertVisible: "¿Cuál es tu nivel?"
+- tapOn: "Principiante"
+- tapOn: "Comenzar"
+- assertVisible: "Tu entrenamiento"

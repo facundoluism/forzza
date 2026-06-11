@@ -1,0 +1,10 @@
+appId: com.forzza.app
+---
+- launchApp
+- tapOn: "Progreso"
+- assertVisible: "Ver historial completo"
+- tapOn: "Ver historial completo"
+- assertVisible: "Funcionalidad PRO"
+- assertVisible: "Ver planes"
+- tapOn: "Más tarde"
+- assertNotVisible: "Funcionalidad PRO"

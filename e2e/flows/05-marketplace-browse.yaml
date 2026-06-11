@@ -1,0 +1,6 @@
+appId: com.forzza.app
+---
+- launchApp
+- tapOn: "¿Querés un coach?"
+- assertVisible: "Coaches"
+- assertVisible: "Buscar coach"

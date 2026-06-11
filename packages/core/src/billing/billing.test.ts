@@ -33,4 +33,25 @@ describe("calculateSettlement", () => {
     });
     expect(result.commission + result.net).toBe(result.gross);
   });
+
+  it("comisión 0% → net === gross (coach retiene todo)", () => {
+    const result = calculateSettlement({
+      grossAmount: 50000,
+      commissionRate: 0,
+      currency: "ARS",
+    });
+    expect(result.commission).toBe(0);
+    expect(result.net).toBe(result.gross);
+    expect(result.net).toBe(50000);
+  });
+
+  it("comisión 100% → net === 0 (plataforma retiene todo)", () => {
+    const result = calculateSettlement({
+      grossAmount: 50000,
+      commissionRate: 1,
+      currency: "ARS",
+    });
+    expect(result.commission).toBe(50000);
+    expect(result.net).toBe(0);
+  });
 });

@@ -24,6 +24,14 @@ describe("canViewWorkoutHistory", () => {
     expect(canViewWorkoutHistory({ isPro: false, hasActiveCoach: false, routineCount: 0 }, 10)).toBe(true);
     expect(canViewWorkoutHistory({ isPro: false, hasActiveCoach: false, routineCount: 0 }, 11)).toBe(false);
   });
+
+  it("FREE: sesión de 15 días no es visible (fuera de ventana de 10 días)", () => {
+    expect(canViewWorkoutHistory({ isPro: false, hasActiveCoach: false, routineCount: 0 }, 15)).toBe(false);
+  });
+
+  it("PRO: sesión de 15 días sí es visible (sin restricción de ventana)", () => {
+    expect(canViewWorkoutHistory({ isPro: true, hasActiveCoach: false, routineCount: 0 }, 15)).toBe(true);
+  });
 });
 
 describe("shouldShowAutopromo", () => {
@@ -33,5 +41,13 @@ describe("shouldShowAutopromo", () => {
 
   it("PRO NO ve autopromo", () => {
     expect(shouldShowAutopromo({ isPro: true, hasActiveCoach: false, routineCount: 0 })).toBe(false);
+  });
+
+  it("alumno con coach activo NO ve autopromo (hasCoach=true → false)", () => {
+    expect(shouldShowAutopromo({ isPro: false, hasActiveCoach: true, routineCount: 0 })).toBe(false);
+  });
+
+  it("isPro=true con coach también oculta autopromo", () => {
+    expect(shouldShowAutopromo({ isPro: true, hasActiveCoach: true, routineCount: 0 })).toBe(false);
   });
 });

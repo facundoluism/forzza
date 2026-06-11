@@ -1,0 +1,14 @@
+appId: com.forzza.app
+---
+- launchApp:
+    clearState: true
+- assertVisible: "Ingresá tu email"
+- tapOn: "Registrate"
+- inputText:
+    id: "email-input"
+    text: "test_e2e@forzza.test"
+- inputText:
+    id: "password-input"
+    text: "Test1234!"
+- tapOn: "Crear cuenta"
+- assertVisible: "¿Cuál es tu nombre?"

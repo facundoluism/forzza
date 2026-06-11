@@ -21,5 +21,7 @@ export function canViewWorkoutHistory(
 }
 
 export function shouldShowAutopromo(entitlements: UserEntitlements): boolean {
+  // Coached students and PRO users never see the autopromo modal
+  if (entitlements.hasActiveCoach) return false;
   return !entitlements.isPro;
 }

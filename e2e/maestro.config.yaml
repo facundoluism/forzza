@@ -1,0 +1,6 @@
+flows:
+  - flows/01-auth-signup.yaml
+  - flows/02-onboarding-student.yaml
+  - flows/03-workout-session.yaml
+  - flows/04-upgrade-modal.yaml
+  - flows/05-marketplace-browse.yaml

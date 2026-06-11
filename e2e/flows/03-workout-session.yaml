@@ -1,0 +1,20 @@
+appId: com.forzza.app
+---
+- launchApp
+- assertVisible: "Tu entrenamiento"
+- tapOn: "Rutinas"
+- assertVisible: "Mis rutinas"
+- tapOn:
+    text: "Ver rutina"
+    index: 0
+- assertVisible: "Iniciar entreno"
+- tapOn: "Iniciar entreno"
+- assertVisible: "Serie 1"
+- inputText:
+    id: "reps-input"
+    text: "10"
+- tapOn: "Registrar serie"
+- assertVisible: "Serie 2"
+- tapOn: "Finalizar"
+- tapOn: "Confirmar"
+- assertVisible: "Tu entrenamiento"
