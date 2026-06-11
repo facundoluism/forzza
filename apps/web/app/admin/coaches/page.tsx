@@ -81,12 +81,12 @@ export default async function AdminCoachesPage({ searchParams }: PageProps) {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-6 bg-[#111111] border border-[#1E1E1E] rounded-xl p-1 w-fit">
+      <div className="grid grid-cols-4 gap-1 mb-6 bg-[#111111] border border-[#1E1E1E] rounded-xl p-1">
         {tabs.map((t) => (
           <a
             key={t.key}
             href={`/admin/coaches?tab=${t.key}`}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`px-2 sm:px-4 py-2 rounded-lg text-[11px] sm:text-sm font-medium transition-colors text-center truncate ${
               tab === t.key
                 ? "bg-[#C8FF00] text-[#0A0A0A]"
                 : "text-[#666666] hover:text-[#FAFAFA]"
@@ -104,14 +104,48 @@ export default async function AdminCoachesPage({ searchParams }: PageProps) {
           </p>
         </div>
       ) : (
-        <div className="rounded-xl border border-[#1E1E1E] bg-[#111111] overflow-hidden">
+        <>
+        {/* Mobile: card layout */}
+        <div className="md:hidden space-y-3">
+          {rows.map((coach) => (
+            <div key={coach.id} className="rounded-xl border border-[#1E1E1E] bg-[#111111] p-4 space-y-3">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <p className="font-medium text-[#FAFAFA] text-sm">{coach.display_name}</p>
+                  <p className="text-[#444444] font-mono text-xs">{coach.user_id.slice(0, 8)}…</p>
+                </div>
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium shrink-0 ${statusColors[coach.status]}`}>
+                  {statusLabel[coach.status]}
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#666666]">
+                <span>{coach.country}</span>
+                <span className="capitalize">{coach.billing_model}</span>
+                <span>{formatDate(coach.created_at)}</span>
+              </div>
+              <div className="flex items-center justify-between pt-1 border-t border-[#1A1A1A]">
+                {coach.constancia_url ? (
+                  <a href={coach.constancia_url} target="_blank" rel="noopener noreferrer" className="text-[#C8FF00] hover:text-[#AADD00] text-xs transition-colors">
+                    Ver doc →
+                  </a>
+                ) : (
+                  <span className="text-[#444444] text-xs">Sin doc</span>
+                )}
+                <ApproveRejectButtons coachId={coach.id} currentStatus={coach.status} />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop: table layout */}
+        <div className="hidden md:block rounded-xl border border-[#1E1E1E] bg-[#111111] overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-[#555555] text-xs uppercase tracking-wider border-b border-[#1A1A1A]">
                 <th className="text-left px-6 py-3">Coach</th>
-                <th className="text-left px-6 py-3 hidden md:table-cell">País</th>
+                <th className="text-left px-6 py-3">País</th>
                 <th className="text-left px-6 py-3 hidden lg:table-cell">Modelo</th>
-                <th className="text-left px-6 py-3 hidden sm:table-cell">Registro</th>
+                <th className="text-left px-6 py-3">Registro</th>
                 <th className="text-left px-6 py-3">Estado</th>
                 <th className="text-left px-6 py-3">Docs</th>
                 <th className="text-right px-6 py-3">Acción</th>
@@ -121,37 +155,20 @@ export default async function AdminCoachesPage({ searchParams }: PageProps) {
               {rows.map((coach) => (
                 <tr key={coach.id} className="hover:bg-[#161616] transition-colors">
                   <td className="px-6 py-4">
-                    <p className="font-medium text-[#FAFAFA]">
-                      {coach.display_name}
-                    </p>
-                    <p className="text-[#444444] font-mono text-xs">
-                      {coach.user_id.slice(0, 8)}…
-                    </p>
+                    <p className="font-medium text-[#FAFAFA]">{coach.display_name}</p>
+                    <p className="text-[#444444] font-mono text-xs">{coach.user_id.slice(0, 8)}…</p>
                   </td>
-                  <td className="px-6 py-4 text-[#888888] hidden md:table-cell">
-                    {coach.country}
-                  </td>
-                  <td className="px-6 py-4 text-[#888888] capitalize hidden lg:table-cell">
-                    {coach.billing_model}
-                  </td>
-                  <td className="px-6 py-4 text-[#555555] text-xs hidden sm:table-cell">
-                    {formatDate(coach.created_at)}
-                  </td>
+                  <td className="px-6 py-4 text-[#888888]">{coach.country}</td>
+                  <td className="px-6 py-4 text-[#888888] capitalize hidden lg:table-cell">{coach.billing_model}</td>
+                  <td className="px-6 py-4 text-[#555555] text-xs">{formatDate(coach.created_at)}</td>
                   <td className="px-6 py-4">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[coach.status]}`}
-                    >
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[coach.status]}`}>
                       {statusLabel[coach.status]}
                     </span>
                   </td>
                   <td className="px-6 py-4">
                     {coach.constancia_url ? (
-                      <a
-                        href={coach.constancia_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[#C8FF00] hover:text-[#AADD00] text-xs transition-colors"
-                      >
+                      <a href={coach.constancia_url} target="_blank" rel="noopener noreferrer" className="text-[#C8FF00] hover:text-[#AADD00] text-xs transition-colors">
                         Ver doc →
                       </a>
                     ) : (
@@ -159,16 +176,14 @@ export default async function AdminCoachesPage({ searchParams }: PageProps) {
                     )}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <ApproveRejectButtons
-                      coachId={coach.id}
-                      currentStatus={coach.status}
-                    />
+                    <ApproveRejectButtons coachId={coach.id} currentStatus={coach.status} />
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+        </>
       )}
     </div>
   );

@@ -53,6 +53,48 @@ a {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
+/* Button hover — outline variant */
+.btn-outline {
+  transition: background 200ms, border-color 200ms, transform 150ms, box-shadow 200ms;
+}
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+.btn-outline:active {
+  transform: translateY(0);
+}
+
+/* Button hover — lime filled variant (class-based and Tailwind bg) */
+.btn-lime,
+.bg-\[\#C8FF00\] {
+  color: #000 !important;
+  transition: background 200ms, transform 150ms, box-shadow 200ms;
+}
+.btn-lime {
+  background: #C8FF00 !important;
+}
+.btn-lime:hover,
+.bg-\[\#C8FF00\]:hover {
+  filter: brightness(1.1);
+  color: #000 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 0 28px rgba(200, 255, 0, 0.45);
+}
+.btn-lime:active,
+.bg-\[\#C8FF00\]:active {
+  transform: translateY(0);
+  box-shadow: 0 0 12px rgba(200, 255, 0, 0.3);
+}
+
+/* Mobile responsive — hide elements on small screens */
+@media (max-width: 640px) {
+  .hide-mobile { display: none !important; }
+  .nav-mobile { gap: 8px !important; }
+  .nav-mobile a, .nav-mobile span { font-size: 12px !important; padding: 6px 10px !important; }
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #0A0A0A; }
