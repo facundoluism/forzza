@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /coach/
+Disallow: /admin/
+Disallow: /upgrade
+
+Sitemap: https://forzza.app/sitemap.xml
