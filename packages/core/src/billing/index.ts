@@ -1,4 +1,4 @@
-// billing — TODO: implementar en Fase 9
+// billing — Phase 13: settlement generation
 export type CommissionRate = number; // 0.20 para AR/CL
 
 export interface SettlementInput {
@@ -24,5 +24,35 @@ export function calculateSettlement(input: SettlementInput): SettlementResult {
     gross: input.grossAmount,
     commission,
     net,
+  };
+}
+
+// ─── Phase 13: cents-named variant used by Edge Functions and tests ───────────
+
+export interface SettlementInputCents {
+  grossCents: number;
+  commissionRate: CommissionRate;
+}
+
+export interface SettlementResultCents {
+  grossCents: number;
+  commissionCents: number;
+  netCents: number;
+}
+
+/**
+ * Calculates settlement amounts using explicit cents naming.
+ * All arithmetic is integer-based (Math.round). Commission rate comes from
+ * country_config.commission_rate — never hardcoded.
+ */
+export function calculateSettlementCents(
+  input: SettlementInputCents
+): SettlementResultCents {
+  const commissionCents = Math.round(input.grossCents * input.commissionRate);
+  const netCents = input.grossCents - commissionCents;
+  return {
+    grossCents: input.grossCents,
+    commissionCents,
+    netCents,
   };
 }

@@ -19,7 +19,7 @@ export type BillingType = "mensual" | "paquete";
 export type PaymentProvider = "mercadopago";
 export type PackageTier = "starter" | "pro" | "elite";
 export type AssignmentStatus = "pending" | "active" | "completed" | "refunded" | "canceled";
-export type PaymentStatus = "pending" | "approved" | "rejected" | "refunded" | "in_process";
+export type PaymentStatus = "pending" | "approved" | "rejected" | "refunded" | "in_process" | "completed";
 export type SettlementStatus = "pending" | "pending_invoice" | "invoiced" | "transferred";
 export type WorkoutStatus = "in_progress" | "completed" | "abandoned";
 export type QuestionType = "text" | "number" | "boolean" | "photo";
@@ -300,7 +300,7 @@ export type Database = {
         Row: {
           id: string;
           event_id: string;
-          provider: "mercadopago" | "revenuecat";
+          provider: "mercadopago" | "revenuecat" | "mercadopago_assignment";
           event_type: string | null;
           payload: Json;
           created_at: string;
@@ -308,7 +308,7 @@ export type Database = {
         Insert: {
           id?: string;
           event_id: string;
-          provider: "mercadopago" | "revenuecat";
+          provider: "mercadopago" | "revenuecat" | "mercadopago_assignment";
           event_type?: string | null;
           payload?: Json;
         };
@@ -648,6 +648,32 @@ export type Database = {
           total_referrals?: number;
           active?: boolean;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      notifications: {
+        Row: {
+          id: string;
+          user_id: string;
+          type: string;
+          title: string;
+          body: string;
+          read_at: string | null;
+          metadata: Json | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          type: string;
+          title: string;
+          body: string;
+          read_at?: string | null;
+          metadata?: Json | null;
+          created_at?: string;
+        };
+        Update: {
+          read_at?: string | null;
         };
         Relationships: [];
       };
