@@ -16,6 +16,9 @@ dist/
 *.key
 *.mobileprovision
 
+# Store credentials (never commit)
+apps/mobile/google-play-service-account.json
+
 # Next.js
 .next/
 out/

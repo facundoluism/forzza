@@ -41,3 +41,15 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+  # eas-build:
+  #   needs: [lint, typecheck, test]
+  #   if: github.ref == 'refs/heads/main'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: expo/expo-github-action@v8
+  #       with:
+  #         eas-version: latest
+  #         token: ${{ secrets.EXPO_TOKEN }}
+  #     - run: cd apps/mobile && eas build --platform all --profile preview --non-interactive
