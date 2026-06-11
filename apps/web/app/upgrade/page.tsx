@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { colors, spacing } from "@forzza/ui";
-import { createClient } from "@/lib/supabase/server";
+import Link from "next/link";
+import { isSupabaseConfigured, createClient } from "@/lib/supabase/server";
 import { ActivateProButton } from "./ActivateProButton";
 
 export const metadata: Metadata = {
@@ -36,34 +36,11 @@ const PRO_FEATURES: PlanFeature[] = [
 
 function FeatureRow({ feature }: { feature: PlanFeature }): React.JSX.Element {
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: `${spacing[3]}px`,
-        paddingTop: `${spacing[2]}px`,
-        paddingBottom: `${spacing[2]}px`,
-        borderBottom: `1px solid ${colors.gray800}`,
-      }}
-    >
-      <span
-        style={{
-          color: feature.available ? colors.lime : colors.gray600,
-          fontWeight: "700",
-          fontSize: "16px",
-          width: "20px",
-          textAlign: "center",
-          flexShrink: 0,
-        }}
-      >
+    <div className="flex items-center gap-3 py-2 border-b border-[#2A2A2A]">
+      <span className={`font-bold text-base w-5 text-center flex-shrink-0 ${feature.available ? "text-[#C8FF00]" : "text-[#4A4A4A]"}`}>
         {feature.available ? "✓" : "✕"}
       </span>
-      <span
-        style={{
-          color: feature.available ? colors.white : colors.gray600,
-          fontSize: "15px",
-        }}
-      >
+      <span className={`text-[15px] ${feature.available ? "text-[#FAFAFA]" : "text-[#4A4A4A]"}`}>
         {feature.text}
       </span>
     </div>
@@ -77,6 +54,9 @@ interface CountryConfig {
 }
 
 async function getProPrice(): Promise<{ formatted: string; note: string }> {
+  if (!isSupabaseConfigured()) {
+    return { formatted: "$ 9.999", note: "por mes en ARS · cancelá cuando quieras" };
+  }
   try {
     const supabase = await createClient();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -86,7 +66,7 @@ async function getProPrice(): Promise<{ formatted: string; note: string }> {
       .eq("country_code", "AR")
       .single();
 
-    if (!data) return { formatted: "—", note: "por mes · cancelá cuando quieras" };
+    if (!data) return { formatted: "$ 9.999", note: "por mes en ARS · cancelá cuando quieras" };
 
     const config = data as CountryConfig;
     const amount = config.pro_monthly_price_cents / 100;
@@ -97,7 +77,7 @@ async function getProPrice(): Promise<{ formatted: string; note: string }> {
       note: `por mes en ${config.currency_code} · cancelá cuando quieras`,
     };
   } catch {
-    return { formatted: "—", note: "por mes · cancelá cuando quieras" };
+    return { formatted: "$ 9.999", note: "por mes en ARS · cancelá cuando quieras" };
   }
 }
 
@@ -105,207 +85,71 @@ export default async function UpgradePage(): Promise<React.JSX.Element> {
   const proPrice = await getProPrice();
 
   return (
-    <main
-      style={{
-        backgroundColor: colors.black,
-        minHeight: "100vh",
-        padding: `${spacing[12]}px ${spacing[6]}px ${spacing[20]}px`,
-      }}
-    >
+    <main className="bg-[#0A0A0A] min-h-screen text-[#FAFAFA] px-6 py-12 pb-20">
+      {/* Back link */}
+      <div className="max-w-[900px] mx-auto mb-8">
+        <Link href="/" className="text-[#6A6A6A] text-sm hover:text-[#FAFAFA] transition-colors">
+          {"← Volver al inicio"}
+        </Link>
+      </div>
+
       {/* Header */}
-      <div
-        style={{
-          maxWidth: "800px",
-          margin: "0 auto",
-          textAlign: "center",
-          marginBottom: `${spacing[12]}px`,
-        }}
-      >
-        <h1
-          style={{
-            color: colors.white,
-            fontSize: "clamp(36px, 6vw, 64px)",
-            fontWeight: "900",
-            letterSpacing: "-1px",
-            margin: 0,
-            marginBottom: `${spacing[4]}px`,
-            textTransform: "uppercase",
-          }}
-        >
+      <div className="max-w-[800px] mx-auto text-center mb-12">
+        <h1 className="text-[clamp(36px,6vw,64px)] font-black tracking-tight text-[#FAFAFA] mb-4 uppercase">
           Elegí tu{" "}
-          <span style={{ color: colors.lime }}>plan</span>
+          <span className="text-[#C8FF00]">plan</span>
         </h1>
-        <p
-          style={{
-            color: colors.gray400,
-            fontSize: "18px",
-            lineHeight: 1.6,
-            margin: 0,
-          }}
-        >
+        <p className="text-[#8A8A8A] text-lg leading-relaxed">
           Empezá gratis y actualizá cuando estés listo para llevar tu
           entrenamiento al siguiente nivel.
         </p>
       </div>
 
       {/* Plan cards */}
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: `${spacing[6]}px`,
-          justifyContent: "center",
-          maxWidth: "900px",
-          margin: "0 auto",
-        }}
-      >
+      <div className="flex flex-wrap gap-6 justify-center max-w-[900px] mx-auto">
         {/* Free card */}
-        <div
-          style={{
-            backgroundColor: colors.gray900,
-            borderRadius: "16px",
-            border: `2px solid ${colors.gray700}`,
-            padding: `${spacing[6]}px`,
-            flex: 1,
-            minWidth: "280px",
-            maxWidth: "400px",
-            display: "flex",
-            flexDirection: "column",
-            gap: `${spacing[4]}px`,
-          }}
-        >
+        <div className="bg-[#111111] rounded-2xl border-2 border-[#3A3A3A] p-6 flex-1 min-w-[280px] max-w-[400px] flex flex-col gap-4">
           <div>
-            <h2
-              style={{
-                color: colors.white,
-                fontSize: "28px",
-                fontWeight: "900",
-                letterSpacing: "1px",
-                textTransform: "uppercase",
-                margin: 0,
-                marginBottom: `${spacing[2]}px`,
-              }}
-            >
+            <h2 className="text-[#FAFAFA] text-2xl font-black tracking-wide uppercase mb-2">
               Free
             </h2>
-            <div
-              style={{
-                color: colors.white,
-                fontSize: "36px",
-                fontWeight: "900",
-                lineHeight: 1,
-              }}
-            >
-              $0
-            </div>
-            <div
-              style={{
-                color: colors.gray400,
-                fontSize: "13px",
-                marginTop: `${spacing[1]}px`,
-              }}
-            >
-              Para siempre gratis
-            </div>
+            <div className="text-[#FAFAFA] text-4xl font-black leading-none">$0</div>
+            <div className="text-[#6A6A6A] text-sm mt-1">Para siempre gratis</div>
           </div>
 
-          <div style={{ flex: 1 }}>
+          <div className="flex-1">
             {FREE_FEATURES.map((f) => (
               <FeatureRow key={f.text} feature={f} />
             ))}
           </div>
 
-          <a
+          <Link
             href="/auth/login"
-            style={{
-              display: "block",
-              textAlign: "center",
-              padding: `${spacing[4]}px`,
-              backgroundColor: colors.gray800,
-              color: colors.white,
-              borderRadius: "8px",
-              fontWeight: "700",
-              fontSize: "16px",
-              textDecoration: "none",
-              letterSpacing: "0.5px",
-            }}
+            className="block text-center py-4 bg-[#2A2A2A] text-[#FAFAFA] rounded-xl font-bold text-base hover:bg-[#3A3A3A] transition-colors"
           >
             Tu plan actual
-          </a>
+          </Link>
         </div>
 
         {/* PRO card */}
-        <div
-          style={{
-            backgroundColor: colors.gray900,
-            borderRadius: "16px",
-            border: `2px solid ${colors.lime}`,
-            padding: `${spacing[6]}px`,
-            flex: 1,
-            minWidth: "280px",
-            maxWidth: "400px",
-            display: "flex",
-            flexDirection: "column",
-            gap: `${spacing[4]}px`,
-            position: "relative",
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              top: "-14px",
-              left: "50%",
-              transform: "translateX(-50%)",
-              backgroundColor: colors.lime,
-              color: colors.black,
-              fontWeight: "700",
-              fontSize: "12px",
-              letterSpacing: "1px",
-              textTransform: "uppercase",
-              padding: `${spacing[1]}px ${spacing[3]}px`,
-              borderRadius: "999px",
-              whiteSpace: "nowrap",
-            }}
-          >
+        <div className="bg-[#111111] rounded-2xl border-2 border-[#C8FF00] p-6 flex-1 min-w-[280px] max-w-[400px] flex flex-col gap-4 relative">
+          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#C8FF00] text-black font-bold text-xs tracking-wide uppercase px-3 py-1 rounded-full whitespace-nowrap">
             Recomendado
           </div>
 
           <div>
-            <h2
-              style={{
-                color: colors.lime,
-                fontSize: "28px",
-                fontWeight: "900",
-                letterSpacing: "1px",
-                textTransform: "uppercase",
-                margin: 0,
-                marginBottom: `${spacing[2]}px`,
-              }}
-            >
+            <h2 className="text-[#C8FF00] text-2xl font-black tracking-wide uppercase mb-2">
               PRO
             </h2>
-            <div
-              style={{
-                color: colors.white,
-                fontSize: "36px",
-                fontWeight: "900",
-                lineHeight: 1,
-              }}
-            >
+            <div className="text-[#FAFAFA] text-4xl font-black leading-none">
               {proPrice.formatted}
             </div>
-            <div
-              style={{
-                color: colors.gray400,
-                fontSize: "13px",
-                marginTop: `${spacing[1]}px`,
-              }}
-            >
+            <div className="text-[#6A6A6A] text-sm mt-1">
               {proPrice.note}
             </div>
           </div>
 
-          <div style={{ flex: 1 }}>
+          <div className="flex-1">
             {PRO_FEATURES.map((f) => (
               <FeatureRow key={f.text} feature={f} />
             ))}
@@ -317,17 +161,7 @@ export default async function UpgradePage(): Promise<React.JSX.Element> {
       </div>
 
       {/* Footer note */}
-      <p
-        style={{
-          textAlign: "center",
-          color: colors.gray600,
-          fontSize: "13px",
-          marginTop: `${spacing[10]}px`,
-          maxWidth: "500px",
-          margin: `${spacing[10]}px auto 0`,
-          lineHeight: 1.6,
-        }}
-      >
+      <p className="text-center text-[#4A4A4A] text-[13px] mt-10 max-w-[500px] mx-auto leading-relaxed">
         Todos los precios en ARS. Sin sorpresas: cancelá en cualquier momento
         desde tu perfil.
       </p>

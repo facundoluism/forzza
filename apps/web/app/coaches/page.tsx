@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
-import { colors, spacing } from "@forzza/ui";
+import { isSupabaseConfigured, createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Coaches — Forzza",
@@ -41,6 +40,24 @@ function getInitials(name: string): string {
     .join("");
 }
 
+async function getCoaches(): Promise<Coach[]> {
+  if (!isSupabaseConfigured()) return [];
+  try {
+    const supabase = await createClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: coaches } = await (supabase as any)
+      .from("coach_profiles")
+      .select(
+        "id, display_name, bio, specialties, avatar_url, years_experience, packages:coach_packages(id, price_cents, billing_type)"
+      )
+      .eq("status", "approved")
+      .order("created_at", { ascending: false });
+    return (coaches ?? []) as Coach[];
+  } catch {
+    return [];
+  }
+}
+
 function CoachCard({ coach }: { coach: Coach }) {
   const minPrice = cheapestPrice(coach.packages);
   const bioSnippet = coach.bio
@@ -50,72 +67,28 @@ function CoachCard({ coach }: { coach: Coach }) {
     : null;
 
   return (
-    <Link
-      href={`/coaches/${coach.id}`}
-      style={{ textDecoration: "none" }}
-    >
-      <div
-        style={{
-          backgroundColor: colors.gray900,
-          borderRadius: "16px",
-          border: `1px solid ${colors.gray800}`,
-          padding: `${spacing[6]}px`,
-          display: "flex",
-          flexDirection: "column",
-          gap: `${spacing[3]}px`,
-          cursor: "pointer",
-          transition: "border-color 0.15s",
-          height: "100%",
-        }}
-      >
+    <Link href={`/coaches/${coach.id}`} className="block h-full">
+      <div className="bg-[#111111] rounded-2xl border border-[#2A2A2A] hover:border-[#3A3A3A] p-6 flex flex-col gap-3 cursor-pointer transition-colors h-full">
         {/* Avatar + name */}
-        <div style={{ display: "flex", alignItems: "center", gap: `${spacing[3]}px` }}>
+        <div className="flex items-center gap-3">
           {coach.avatar_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={coach.avatar_url}
               alt={coach.display_name}
-              style={{
-                width: "60px",
-                height: "60px",
-                borderRadius: "50%",
-                objectFit: "cover",
-              }}
+              className="w-[60px] h-[60px] rounded-full object-cover flex-shrink-0"
             />
           ) : (
-            <div
-              style={{
-                width: "60px",
-                height: "60px",
-                borderRadius: "50%",
-                backgroundColor: colors.gray700,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "22px",
-                fontWeight: "900",
-                color: colors.lime,
-                letterSpacing: "1px",
-                flexShrink: 0,
-              }}
-            >
+            <div className="w-[60px] h-[60px] rounded-full bg-[#3A3A3A] flex items-center justify-center text-[22px] font-black text-[#C8FF00] tracking-wide flex-shrink-0">
               {getInitials(coach.display_name)}
             </div>
           )}
           <div>
-            <h3
-              style={{
-                color: colors.white,
-                fontSize: "20px",
-                fontWeight: "800",
-                margin: 0,
-                letterSpacing: "-0.5px",
-              }}
-            >
+            <h3 className="text-[#FAFAFA] text-xl font-extrabold tracking-tight m-0">
               {coach.display_name}
             </h3>
             {coach.years_experience !== null && (
-              <p style={{ color: colors.gray400, fontSize: "13px", margin: 0 }}>
+              <p className="text-[#8A8A8A] text-[13px] m-0">
                 {coach.years_experience}{" "}
                 {coach.years_experience === 1 ? "año" : "años"} de experiencia
               </p>
@@ -125,18 +98,11 @@ function CoachCard({ coach }: { coach: Coach }) {
 
         {/* Specialties */}
         {coach.specialties.length > 0 && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: `${spacing[1]}px` }}>
+          <div className="flex flex-wrap gap-1">
             {coach.specialties.slice(0, 3).map((s) => (
               <span
                 key={s}
-                style={{
-                  backgroundColor: colors.gray800,
-                  color: colors.gray300,
-                  borderRadius: "9999px",
-                  padding: `${spacing[1]}px ${spacing[3]}px`,
-                  fontSize: "12px",
-                  fontWeight: "600",
-                }}
+                className="bg-[#2A2A2A] text-[#AAAAAA] rounded-full px-3 py-1 text-xs font-semibold"
               >
                 {s}
               </span>
@@ -146,31 +112,16 @@ function CoachCard({ coach }: { coach: Coach }) {
 
         {/* Bio snippet */}
         {bioSnippet && (
-          <p
-            style={{
-              color: colors.gray400,
-              fontSize: "14px",
-              lineHeight: "1.6",
-              margin: 0,
-              flex: 1,
-            }}
-          >
+          <p className="text-[#8A8A8A] text-sm leading-relaxed m-0 flex-1">
             {bioSnippet}
           </p>
         )}
 
         {/* Price */}
         {minPrice !== null && (
-          <p style={{ color: colors.gray500, fontSize: "13px", margin: 0 }}>
+          <p className="text-[#6A6A6A] text-[13px] m-0">
             Desde{" "}
-            <span
-              style={{
-                color: colors.lime,
-                fontWeight: "700",
-                fontFamily: "monospace",
-                fontSize: "16px",
-              }}
-            >
+            <span className="text-[#C8FF00] font-bold font-mono text-base">
               ${(minPrice / 100).toLocaleString("es-AR")}
             </span>
             {"/mes"}
@@ -178,18 +129,7 @@ function CoachCard({ coach }: { coach: Coach }) {
         )}
 
         {/* CTA */}
-        <div
-          style={{
-            display: "inline-block",
-            backgroundColor: colors.lime,
-            color: colors.black,
-            borderRadius: "8px",
-            padding: `${spacing[2]}px ${spacing[4]}px`,
-            fontWeight: "700",
-            fontSize: "14px",
-            textAlign: "center",
-          }}
-        >
+        <div className="inline-block bg-[#C8FF00] text-black rounded-lg px-4 py-2 font-bold text-sm text-center">
           Ver perfil
         </div>
       </div>
@@ -198,76 +138,36 @@ function CoachCard({ coach }: { coach: Coach }) {
 }
 
 export default async function CoachesPage() {
-  const supabase = await createClient();
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: coaches } = await (supabase as any)
-    .from("coach_profiles")
-    .select(
-      "id, display_name, bio, specialties, avatar_url, years_experience, packages:coach_packages(id, price_cents, billing_type)"
-    )
-    .eq("status", "approved")
-    .order("created_at", { ascending: false });
-
-  const coachList = (coaches ?? []) as Coach[];
+  const coachList = await getCoaches();
 
   return (
-    <main style={{ backgroundColor: colors.black, minHeight: "100vh" }}>
+    <main className="bg-[#0A0A0A] min-h-screen text-[#FAFAFA]">
       {/* Header */}
-      <section
-        style={{
-          padding: `${spacing[16]}px ${spacing[6]}px ${spacing[8]}px`,
-          maxWidth: "1200px",
-          margin: "0 auto",
-        }}
-      >
-        <Link href="/" style={{ color: colors.gray500, fontSize: "14px", textDecoration: "none" }}>
+      <section className="px-6 pt-16 pb-8 max-w-[1200px] mx-auto">
+        <Link href="/" className="text-[#6A6A6A] text-sm hover:text-[#FAFAFA] transition-colors">
           {"← Volver al inicio"}
         </Link>
-        <h1
-          style={{
-            fontSize: "clamp(36px, 5vw, 64px)",
-            fontWeight: "900",
-            color: colors.white,
-            marginTop: `${spacing[4]}px`,
-            marginBottom: `${spacing[2]}px`,
-            letterSpacing: "-1px",
-          }}
-        >
+        <h1 className="text-[clamp(36px,5vw,64px)] font-black text-[#FAFAFA] mt-4 mb-2 tracking-tight">
           Coaches verificados
         </h1>
-        <p style={{ color: colors.gray400, fontSize: "18px", maxWidth: "600px" }}>
+        <p className="text-[#8A8A8A] text-lg max-w-[600px]">
           Todos nuestros coaches pasan por un proceso de validación. Encontrá al que mejor se adapte a tus objetivos.
         </p>
       </section>
 
       {/* Grid */}
-      <section
-        style={{
-          padding: `0 ${spacing[6]}px ${spacing[16]}px`,
-          maxWidth: "1200px",
-          margin: "0 auto",
-        }}
-      >
+      <section className="px-6 pb-16 max-w-[1200px] mx-auto">
         {coachList.length === 0 ? (
-          <div
-            style={{
-              textAlign: "center",
-              padding: `${spacing[16]}px`,
-              color: colors.gray500,
-              fontSize: "16px",
-            }}
-          >
-            No hay coaches disponibles todavía. Volvé pronto.
+          <div className="text-center py-24">
+            <p className="text-6xl mb-4">🏋️</p>
+            <h2 className="text-2xl font-bold text-[#FAFAFA] mb-3">Coaches próximamente</h2>
+            <p className="text-[#8A8A8A]">Estamos incorporando los primeros coaches verificados.</p>
+            <Link href="/" className="mt-6 inline-block px-6 py-3 bg-[#C8FF00] text-black font-bold rounded-xl hover:bg-[#b8ef00] transition-colors">
+              Volver al inicio
+            </Link>
           </div>
         ) : (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-              gap: `${spacing[6]}px`,
-            }}
-          >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {coachList.map((coach) => (
               <CoachCard key={coach.id} coach={coach} />
             ))}

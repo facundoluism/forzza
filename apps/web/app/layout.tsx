@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import "./globals.css";
 import { InstallPrompt } from "../components/InstallPrompt";
 
 export const metadata: Metadata = {
@@ -39,14 +40,7 @@ export default function RootLayout({
           />
         )}
       </head>
-      <body
-        style={{
-          margin: 0,
-          padding: 0,
-          backgroundColor: "#0A0A0A",
-          fontFamily: "system-ui, -apple-system, sans-serif",
-        }}
-      >
+      <body className="bg-[#0A0A0A] text-[#FAFAFA] m-0 p-0">
         {children}
         <InstallPrompt />
       </body>

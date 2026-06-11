@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { colors, spacing, radius } from "@forzza/ui";
 import { TRACKED_EVENTS } from "@forzza/core";
 import { track } from "@/lib/analytics";
 
@@ -16,7 +15,6 @@ export function ActivateProButton() {
     try {
       const res = await fetch("/api/mp-preapproval", { method: "POST" });
       if (res.status === 401) {
-        // Not logged in — redirect to login
         window.location.href = "/auth/login?redirect=/upgrade";
         return;
       }
@@ -39,35 +37,20 @@ export function ActivateProButton() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: `${spacing[2]}px` }}>
+    <div className="flex flex-col gap-2">
       <button
         onClick={() => { void handleActivate(); }}
         disabled={loading}
-        style={{
-          display: "block",
-          width: "100%",
-          textAlign: "center",
-          padding: `${spacing[4]}px`,
-          backgroundColor: loading ? colors.gray700 : colors.lime,
-          color: colors.black,
-          borderRadius: `${radius.md}px`,
-          fontWeight: "700",
-          fontSize: "16px",
-          letterSpacing: "0.5px",
-          border: "none",
-          cursor: loading ? "not-allowed" : "pointer",
-          transition: "background-color 0.15s ease",
-        }}
+        className={`block w-full text-center py-4 rounded-xl font-bold text-base tracking-wide border-none cursor-pointer transition-colors ${
+          loading
+            ? "bg-[#3A3A3A] text-[#6A6A6A] cursor-not-allowed"
+            : "bg-[#C8FF00] text-black hover:bg-[#b8ef00]"
+        }`}
       >
         {loading ? "Procesando..." : "Activar PRO"}
       </button>
       {error && (
-        <p style={{
-          color: colors.error,
-          fontSize: "13px",
-          margin: 0,
-          textAlign: "center",
-        }}>
+        <p className="text-[#FF4444] text-[13px] m-0 text-center">
           {error}
         </p>
       )}

@@ -6,14 +6,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   slug: 'forzza',
   version: '1.0.0',
   orientation: 'portrait',
-  icon: './assets/icon.png',
   scheme: 'forzza',
   userInterfaceStyle: 'dark',
-  splash: {
-    image: './assets/splash.png',
-    resizeMode: 'contain',
-    backgroundColor: '#0A0A0A',
-  },
   assetBundlePatterns: ['**/*'],
   ios: {
     supportsTablet: false,
@@ -29,7 +23,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     package: 'com.forzza.app',
     versionCode: 1,
     adaptiveIcon: {
-      foregroundImage: './assets/adaptive-icon.png',
+      foregroundImage: './assets/icon.png',
       backgroundColor: '#0A0A0A',
     },
     permissions: [
@@ -47,7 +41,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-build-properties',
       {
-        ios: { deploymentTarget: '15.1' },
+        ios: { deploymentTarget: '16.4' },
         android: { compileSdkVersion: 35, targetSdkVersion: 35, buildToolsVersion: '35.0.0' },
       },
     ],

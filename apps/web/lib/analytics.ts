@@ -12,13 +12,18 @@ interface PostHogInstance {
 
 let posthog: PostHogInstance | null = null
 
+// Dynamically load posthog-js only when the key is configured.
+// The module name is computed at runtime so bundlers skip static analysis.
 if (typeof window !== 'undefined' && POSTHOG_KEY) {
+  const moduleName = 'posthog-js'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  import('posthog-js' as any).then((mod: any) => {
+  import(/* webpackIgnore: true */ moduleName as any).then((mod: any) => {
     const ph = mod.default as PostHogInstance
     ph.init(POSTHOG_KEY, { api_host: POSTHOG_HOST, capture_pageview: false })
     posthog = ph
-  }).catch(() => {})
+  }).catch(() => {
+    // posthog-js not installed — analytics disabled
+  })
 }
 
 export function track(event: TrackedEvent, properties?: Record<string, unknown>): void {

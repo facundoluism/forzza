@@ -9,11 +9,17 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
+  // Dev mode: skip auth when Supabase not configured
+  const supabaseUrl = process.env["NEXT_PUBLIC_SUPABASE_URL"] ?? "";
+  const supabaseKey = process.env["NEXT_PUBLIC_SUPABASE_ANON_KEY"] ?? "";
+  const isDevMode = !supabaseUrl || supabaseUrl.includes("placeholder");
+  if (isDevMode) return NextResponse.next({ request });
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
-    process.env["NEXT_PUBLIC_SUPABASE_URL"]!,
-    process.env["NEXT_PUBLIC_SUPABASE_ANON_KEY"]!,
+    supabaseUrl,
+    supabaseKey,
     {
       cookies: {
         getAll() {

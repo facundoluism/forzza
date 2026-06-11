@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { colors, spacing } from "@forzza/ui";
+import { isSupabaseConfigured, createClient } from "@/lib/supabase/server";
 
 interface CoachPackage {
   id: string;
@@ -30,22 +29,31 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { coachId } = await params;
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("coach_profiles")
-    .select("display_name, bio")
-    .eq("id", coachId)
-    .eq("status", "approved")
-    .single();
 
-  if (!data) {
-    return { title: "Coach no encontrado — Forzza" };
+  if (!isSupabaseConfigured()) {
+    return { title: "Coach — Forzza" };
   }
 
-  return {
-    title: `${data.display_name} — Coach en Forzza`,
-    description: data.bio ?? `Contratá a ${data.display_name} como tu coach personal en Forzza.`,
-  };
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("coach_profiles")
+      .select("display_name, bio")
+      .eq("id", coachId)
+      .eq("status", "approved")
+      .single();
+
+    if (!data) {
+      return { title: "Coach no encontrado — Forzza" };
+    }
+
+    return {
+      title: `${data.display_name} — Coach en Forzza`,
+      description: data.bio ?? `Contratá a ${data.display_name} como tu coach personal en Forzza.`,
+    };
+  } catch {
+    return { title: "Coach — Forzza" };
+  }
 }
 
 function getInitials(name: string): string {
@@ -58,119 +66,75 @@ function getInitials(name: string): string {
 
 export default async function CoachProfilePage({ params }: PageProps) {
   const { coachId } = await params;
-  const supabase = await createClient();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: coach } = await (supabase as any)
-    .from("coach_profiles")
-    .select(
-      "id, display_name, bio, specialties, avatar_url, years_experience, packages:coach_packages(id, name, description, price_cents, billing_type, features, is_active)"
-    )
-    .eq("id", coachId)
-    .eq("status", "approved")
-    .single();
-
-  if (!coach) {
+  if (!isSupabaseConfigured()) {
     notFound();
   }
 
-  const coachData = coach as unknown as CoachProfile;
+  let coachData: CoachProfile;
+  try {
+    const supabase = await createClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: coach } = await (supabase as any)
+      .from("coach_profiles")
+      .select(
+        "id, display_name, bio, specialties, avatar_url, years_experience, packages:coach_packages(id, name, description, price_cents, billing_type, features, is_active)"
+      )
+      .eq("id", coachId)
+      .eq("status", "approved")
+      .single();
+
+    if (!coach) {
+      notFound();
+    }
+    coachData = coach as unknown as CoachProfile;
+  } catch {
+    notFound();
+  }
+
   const activePackages = coachData.packages.filter((p) => p.is_active);
   const initials = getInitials(coachData.display_name);
 
   return (
-    <main style={{ backgroundColor: colors.black, minHeight: "100vh" }}>
-      <div
-        style={{
-          maxWidth: "800px",
-          margin: "0 auto",
-          padding: `${spacing[16]}px ${spacing[6]}px ${spacing[16]}px`,
-        }}
-      >
+    <main className="bg-[#0A0A0A] min-h-screen text-[#FAFAFA]">
+      <div className="max-w-[800px] mx-auto px-6 py-16">
         {/* Back link */}
-        <Link
-          href="/coaches"
-          style={{ color: colors.gray500, fontSize: "14px", textDecoration: "none" }}
-        >
+        <Link href="/coaches" className="text-[#6A6A6A] text-sm hover:text-[#FAFAFA] transition-colors">
           {"← Todos los coaches"}
         </Link>
 
         {/* Hero */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            textAlign: "center",
-            gap: `${spacing[4]}px`,
-            paddingTop: `${spacing[8]}px`,
-            paddingBottom: `${spacing[8]}px`,
-          }}
-        >
+        <div className="flex flex-col items-center text-center gap-4 pt-8 pb-8">
           {coachData.avatar_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={coachData.avatar_url}
               alt={coachData.display_name}
-              style={{
-                width: "96px",
-                height: "96px",
-                borderRadius: "50%",
-                objectFit: "cover",
-              }}
+              className="w-24 h-24 rounded-full object-cover"
             />
           ) : (
-            <div
-              style={{
-                width: "96px",
-                height: "96px",
-                borderRadius: "50%",
-                backgroundColor: colors.gray700,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "32px",
-                fontWeight: "900",
-                color: colors.lime,
-                letterSpacing: "2px",
-              }}
-            >
+            <div className="w-24 h-24 rounded-full bg-[#3A3A3A] flex items-center justify-center text-3xl font-black text-[#C8FF00] tracking-wide">
               {initials}
             </div>
           )}
 
-          <h1
-            style={{
-              color: colors.white,
-              fontSize: "clamp(28px, 4vw, 48px)",
-              fontWeight: "900",
-              margin: 0,
-              letterSpacing: "-1px",
-            }}
-          >
+          <h1 className="text-[clamp(28px,4vw,48px)] font-black text-[#FAFAFA] m-0 tracking-tight">
             {coachData.display_name}
           </h1>
 
           {coachData.years_experience !== null && (
-            <p style={{ color: colors.gray400, fontSize: "15px", margin: 0 }}>
+            <p className="text-[#8A8A8A] text-[15px] m-0">
               {coachData.years_experience}{" "}
               {coachData.years_experience === 1 ? "año" : "años"} de experiencia
             </p>
           )}
 
           {coachData.specialties.length > 0 && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: `${spacing[2]}px`, justifyContent: "center" }}>
+            <div className="flex flex-wrap gap-2 justify-center">
               {coachData.specialties.map((s) => (
                 <span
                   key={s}
-                  style={{
-                    backgroundColor: colors.gray800,
-                    color: colors.gray300,
-                    borderRadius: "9999px",
-                    padding: `${spacing[1]}px ${spacing[3]}px`,
-                    fontSize: "13px",
-                    fontWeight: "600",
-                  }}
+                  className="bg-[#2A2A2A] text-[#AAAAAA] rounded-full px-3 py-1 text-[13px] font-semibold"
                 >
                   {s}
                 </span>
@@ -181,27 +145,11 @@ export default async function CoachProfilePage({ params }: PageProps) {
 
         {/* Bio */}
         {coachData.bio && (
-          <section style={{ marginBottom: `${spacing[10]}px` }}>
-            <h2
-              style={{
-                color: colors.gray300,
-                fontSize: "12px",
-                fontWeight: "700",
-                textTransform: "uppercase",
-                letterSpacing: "2px",
-                marginBottom: `${spacing[3]}px`,
-              }}
-            >
+          <section className="mb-10">
+            <h2 className="text-[#6A6A6A] text-xs font-bold uppercase tracking-[2px] mb-3">
               Sobre el coach
             </h2>
-            <p
-              style={{
-                color: colors.gray300,
-                fontSize: "16px",
-                lineHeight: "1.7",
-                margin: 0,
-              }}
-            >
+            <p className="text-[#AAAAAA] text-base leading-[1.7] m-0">
               {coachData.bio}
             </p>
           </section>
@@ -209,35 +157,16 @@ export default async function CoachProfilePage({ params }: PageProps) {
 
         {/* Packages */}
         <section>
-          <h2
-            style={{
-              color: colors.gray300,
-              fontSize: "12px",
-              fontWeight: "700",
-              textTransform: "uppercase",
-              letterSpacing: "2px",
-              marginBottom: `${spacing[4]}px`,
-            }}
-          >
+          <h2 className="text-[#6A6A6A] text-xs font-bold uppercase tracking-[2px] mb-4">
             Paquetes disponibles
           </h2>
 
           {activePackages.length === 0 ? (
-            <div
-              style={{
-                backgroundColor: colors.gray900,
-                borderRadius: "12px",
-                border: `1px solid ${colors.gray800}`,
-                padding: `${spacing[6]}px`,
-                textAlign: "center",
-                color: colors.gray500,
-                fontSize: "15px",
-              }}
-            >
+            <div className="bg-[#111111] rounded-xl border border-[#2A2A2A] p-6 text-center text-[#6A6A6A] text-[15px]">
               Este coach no tiene paquetes publicados todavía.
             </div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: `${spacing[4]}px` }}>
+            <div className="flex flex-col gap-4">
               {activePackages.map((pkg) => {
                 const price = (pkg.price_cents / 100).toLocaleString("es-AR");
                 const billingLabel =
@@ -246,124 +175,43 @@ export default async function CoachProfilePage({ params }: PageProps) {
                 return (
                   <div
                     key={pkg.id}
-                    style={{
-                      backgroundColor: colors.gray900,
-                      borderRadius: "16px",
-                      border: `1px solid ${colors.gray800}`,
-                      padding: `${spacing[6]}px`,
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: `${spacing[3]}px`,
-                    }}
+                    className="bg-[#111111] rounded-2xl border border-[#2A2A2A] p-6 flex flex-col gap-3"
                   >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "flex-start",
-                        flexWrap: "wrap",
-                        gap: `${spacing[3]}px`,
-                      }}
-                    >
-                      <h3
-                        style={{
-                          color: colors.white,
-                          fontSize: "22px",
-                          fontWeight: "800",
-                          margin: 0,
-                          letterSpacing: "-0.5px",
-                        }}
-                      >
+                    <div className="flex justify-between items-start flex-wrap gap-3">
+                      <h3 className="text-[#FAFAFA] text-[22px] font-extrabold m-0 tracking-tight">
                         {pkg.name}
                       </h3>
-                      <div style={{ textAlign: "right" }}>
-                        <span
-                          style={{
-                            color: colors.lime,
-                            fontWeight: "700",
-                            fontSize: "22px",
-                            fontFamily: "monospace",
-                          }}
-                        >
+                      <div className="text-right">
+                        <span className="text-[#C8FF00] font-bold text-[22px] font-mono">
                           ${price}
                         </span>
-                        <span style={{ color: colors.gray500, fontSize: "13px" }}>
+                        <span className="text-[#6A6A6A] text-[13px]">
                           {billingLabel}
                         </span>
                       </div>
                     </div>
 
                     {pkg.description && (
-                      <p
-                        style={{
-                          color: colors.gray400,
-                          fontSize: "14px",
-                          lineHeight: "1.6",
-                          margin: 0,
-                        }}
-                      >
+                      <p className="text-[#8A8A8A] text-sm leading-relaxed m-0">
                         {pkg.description}
                       </p>
                     )}
 
                     {pkg.features.length > 0 && (
-                      <ul
-                        style={{
-                          listStyle: "none",
-                          padding: 0,
-                          margin: 0,
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: `${spacing[1]}px`,
-                        }}
-                      >
+                      <ul className="list-none p-0 m-0 flex flex-col gap-1">
                         {pkg.features.map((feat, idx) => (
-                          <li
-                            key={idx}
-                            style={{
-                              color: colors.gray300,
-                              fontSize: "14px",
-                              paddingLeft: "20px",
-                              position: "relative",
-                            }}
-                          >
-                            <span
-                              style={{
-                                position: "absolute",
-                                left: 0,
-                                color: colors.lime,
-                              }}
-                            >
-                              {"•"}
-                            </span>
+                          <li key={idx} className="text-[#AAAAAA] text-sm pl-5 relative">
+                            <span className="absolute left-0 text-[#C8FF00]">{"•"}</span>
                             {feat}
                           </li>
                         ))}
                       </ul>
                     )}
 
-                    {/* CTA — placeholder for V1: redirect to app */}
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: `${spacing[3]}px`,
-                        marginTop: `${spacing[2]}px`,
-                        flexWrap: "wrap",
-                      }}
-                    >
+                    <div className="flex items-center gap-3 mt-2 flex-wrap">
                       <Link
                         href={`/coaches/${coachData.id}/checkout?package_id=${pkg.id}`}
-                        style={{
-                          display: "inline-block",
-                          backgroundColor: colors.lime,
-                          color: colors.black,
-                          borderRadius: "8px",
-                          padding: `${spacing[3]}px ${spacing[6]}px`,
-                          fontWeight: "700",
-                          fontSize: "15px",
-                          textDecoration: "none",
-                        }}
+                        className="inline-block bg-[#C8FF00] text-black rounded-lg px-6 py-3 font-bold text-[15px] hover:bg-[#b8ef00] transition-colors"
                       >
                         Contratar
                       </Link>
