@@ -23,6 +23,7 @@ export type PaymentStatus = "pending" | "approved" | "rejected" | "refunded" | "
 export type SettlementStatus = "pending" | "pending_invoice" | "invoiced" | "transferred";
 export type WorkoutStatus = "in_progress" | "completed" | "abandoned";
 export type QuestionType = "text" | "number" | "boolean" | "photo";
+export type TicketStatus = "open" | "in_progress" | "resolved" | "closed";
 
 export type Database = {
   public: {
@@ -573,6 +574,83 @@ export type Database = {
         };
         Relationships: [];
       };
+      tickets: {
+        Row: {
+          id: string;
+          user_id: string;
+          subject: string;
+          body: string | null;
+          status: TicketStatus;
+          assigned_to: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          subject: string;
+          body?: string | null;
+          status?: TicketStatus;
+          assigned_to?: string | null;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          subject?: string;
+          body?: string | null;
+          status?: TicketStatus;
+          assigned_to?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      ticket_messages: {
+        Row: {
+          id: string;
+          ticket_id: string;
+          sender_id: string;
+          body: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          ticket_id: string;
+          sender_id: string;
+          body: string;
+        };
+        Update: Record<string, never>;
+        Relationships: [];
+      };
+      promoters: {
+        Row: {
+          id: string;
+          user_id: string;
+          code: string;
+          commission_rate: number;
+          total_referrals: number;
+          active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          code: string;
+          commission_rate?: number;
+          total_referrals?: number;
+          active?: boolean;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          code?: string;
+          commission_rate?: number;
+          total_referrals?: number;
+          active?: boolean;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       audit_log: {
         Row: {
           id: string;
@@ -623,6 +701,7 @@ export type Database = {
       settlement_status: SettlementStatus;
       workout_status: WorkoutStatus;
       question_type: QuestionType;
+      ticket_status: TicketStatus;
     };
   };
 };
