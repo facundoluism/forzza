@@ -1,47 +1,41 @@
 import { useEffect, useRef, useState } from "react";
-import { Text, View } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
 import { Tabs } from "expo-router";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/providers/AuthProvider";
-import { colors, radius, spacing, typography } from "@forzza/ui/tokens";
+import { colors, spacing, typography } from "@forzza/ui/tokens";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
-function TabIcon({ label }: { label: string }) {
-  return <Text style={{ color: "#6A6A6A", fontSize: 20 }}>{label}</Text>;
+interface TabIconProps {
+  label: string;
+  focused: boolean;
+}
+
+function TabIcon({ label, focused }: TabIconProps) {
+  return (
+    <Text
+      style={[
+        styles.tabIcon,
+        focused ? styles.tabIconActive : styles.tabIconInactive,
+      ]}
+    >
+      {label}
+    </Text>
+  );
 }
 
 function NotificationBadge({ count }: { count: number }): React.JSX.Element | null {
   if (count === 0) return null;
   return (
-    <View
-      style={{
-        position: "absolute",
-        top: -4,
-        right: -8,
-        backgroundColor: colors.lime,
-        borderRadius: radius.full,
-        minWidth: 16,
-        height: 16,
-        alignItems: "center",
-        justifyContent: "center",
-        paddingHorizontal: spacing[1],
-      }}
-    >
-      <Text
-        style={{
-          fontFamily: typography.body,
-          color: colors.black,
-          fontSize: 9,
-          fontWeight: "700",
-        }}
-      >
+    <View style={styles.badge}>
+      <Text style={styles.badgeText}>
         {count > 99 ? "99+" : String(count)}
       </Text>
     </View>
   );
 }
 
-function HomeTabIcon(): React.JSX.Element {
+function HomeTabIcon({ focused }: { focused: boolean }): React.JSX.Element {
   const { user } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
   const channelRef = useRef<RealtimeChannel | null>(null);
@@ -102,8 +96,15 @@ function HomeTabIcon(): React.JSX.Element {
   }, [user]);
 
   return (
-    <View style={{ position: "relative" }}>
-      <Text style={{ color: "#6A6A6A", fontSize: 20 }}>{"🏠"}</Text>
+    <View style={styles.iconWrapper}>
+      <Text
+        style={[
+          styles.tabIcon,
+          focused ? styles.tabIconActive : styles.tabIconInactive,
+        ]}
+      >
+        {"🏠"}
+      </Text>
       <NotificationBadge count={unreadCount} />
     </View>
   );
@@ -114,46 +115,94 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarStyle: { backgroundColor: "#0A0A0A", borderTopColor: "#2A2A2A" },
-        tabBarActiveTintColor: "#C8FF00",
-        tabBarInactiveTintColor: "#6A6A6A",
+        tabBarStyle: styles.tabBar,
+        tabBarActiveTintColor: colors.lime,
+        tabBarInactiveTintColor: "#4A4A4A",
+        tabBarLabelStyle: styles.tabLabel,
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: "Inicio",
-          tabBarIcon: () => <HomeTabIcon />,
+          tabBarIcon: ({ focused }) => <HomeTabIcon focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="routines"
         options={{
           title: "Rutinas",
-          tabBarIcon: () => <TabIcon label="📋" />,
+          tabBarIcon: ({ focused }) => <TabIcon label="📋" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="progress"
         options={{
           title: "Progreso",
-          tabBarIcon: () => <TabIcon label="📈" />,
+          tabBarIcon: ({ focused }) => <TabIcon label="📈" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="chat"
         options={{
           title: "Chat",
-          tabBarIcon: () => <TabIcon label="💬" />,
+          tabBarIcon: ({ focused }) => <TabIcon label="💬" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: "Perfil",
-          tabBarIcon: () => <TabIcon label="👤" />,
+          tabBarIcon: ({ focused }) => <TabIcon label="👤" focused={focused} />,
         }}
       />
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBar: {
+    backgroundColor: colors.bg,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  tabLabel: {
+    fontSize: 11,
+    fontFamily: typography.body,
+    fontWeight: "600",
+  },
+  tabIcon: {
+    fontSize: 20,
+  },
+  tabIconActive: {
+    // Lime glow on active emoji icons
+    shadowColor: colors.lime,
+    shadowOpacity: 0.8,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 0 },
+  },
+  tabIconInactive: {
+    opacity: 0.5,
+  },
+  iconWrapper: {
+    position: "relative",
+  },
+  badge: {
+    position: "absolute",
+    top: -4,
+    right: -8,
+    backgroundColor: colors.lime,
+    borderRadius: 9999,
+    minWidth: 16,
+    height: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: spacing[1],
+  },
+  badgeText: {
+    fontFamily: typography.body,
+    color: colors.black,
+    fontSize: 9,
+    fontWeight: "700",
+  },
+});

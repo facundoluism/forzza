@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
 import { useAuth } from "@/providers/AuthProvider";
 import { useWorkoutStore } from "@/stores/workoutStore";
 import { useEntitlements } from "@/hooks/useEntitlements";
@@ -81,16 +81,17 @@ function SessionItem({ session }: { session: CompletedSessionEntry }): React.JSX
         <Text style={styles.sessionMetaItem}>{duration}</Text>
         <Text style={styles.sessionMetaDot}>·</Text>
         <Text style={styles.sessionMetaItem}>
-          {session.total_sets} {session.total_sets === 1 ? "serie" : "series"}
+          <Text style={styles.sessionMetaMono}>{session.total_sets}</Text>
+          {" "}{session.total_sets === 1 ? "serie" : "series"}
         </Text>
       </View>
     </Card>
   );
 }
 
-function StatCard({ label, value }: { label: string; value: string | number }): React.JSX.Element {
+function StatCard({ label, value, featured = false }: { label: string; value: string | number; featured?: boolean }): React.JSX.Element {
   return (
-    <Card style={styles.statCard}>
+    <Card style={styles.statCard} featured={featured}>
       <Text style={styles.statValue}>{value}</Text>
       <Text style={styles.statLabel}>{label}</Text>
     </Card>
@@ -153,10 +154,14 @@ export default function ProgressTab(): React.JSX.Element {
       {/* Stats row */}
       <View style={styles.statsRow}>
         <View style={styles.statCell}>
-          <StatCard label="Esta semana" value={weekCount} />
+          <StatCard label="Esta semana" value={weekCount} featured={weekCount > 0} />
         </View>
         <View style={styles.statCell}>
-          <StatCard label={streak === 1 ? "Día seguido" : "Días seguidos"} value={streak} />
+          <StatCard
+            label={streak === 1 ? "Día seguido" : "Días seguidos"}
+            value={streak}
+            featured={streak > 1}
+          />
         </View>
       </View>
 
@@ -177,17 +182,17 @@ export default function ProgressTab(): React.JSX.Element {
 
         {/* Free-user history promo banner */}
         {!isPro && (
-          <TouchableOpacity
+          <Pressable
             style={styles.historyBanner}
             onPress={() => setShowUpgradeModal(true)}
-            activeOpacity={0.8}
+            hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
           >
             <Text style={styles.historyBannerTitle}>Ver historial completo</Text>
             <Text style={styles.historyBannerSub}>
               Tu historial gratis muestra los últimos 10 días. Actualizá al plan PRO para acceder a todo.
             </Text>
             <Text style={styles.historyBannerCta}>Ver planes →</Text>
-          </TouchableOpacity>
+          </Pressable>
         )}
       </View>
 
@@ -215,7 +220,7 @@ export default function ProgressTab(): React.JSX.Element {
 const styles = StyleSheet.create({
   scroll: {
     flex: 1,
-    backgroundColor: colors.black,
+    backgroundColor: colors.bg,
   },
   content: {
     padding: spacing[4],
@@ -224,9 +229,10 @@ const styles = StyleSheet.create({
   },
   screenTitle: {
     fontFamily: typography.heading,
-    color: colors.white,
+    color: colors.text,
     fontSize: 32,
-    letterSpacing: 1,
+    fontWeight: "900",
+    letterSpacing: -1,
     textTransform: "uppercase",
     marginBottom: spacing[5],
   },
@@ -245,12 +251,13 @@ const styles = StyleSheet.create({
   statValue: {
     fontFamily: typography.mono,
     color: colors.lime,
-    fontSize: 42,
-    fontWeight: "700",
+    fontSize: 48,
+    fontWeight: "900",
+    letterSpacing: -1,
   },
   statLabel: {
     fontFamily: typography.body,
-    color: colors.gray400,
+    color: colors.muted,
     fontSize: 13,
     marginTop: spacing[1],
     textAlign: "center",
@@ -260,11 +267,11 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontFamily: typography.body,
-    color: colors.gray300,
-    fontSize: 13,
+    color: colors.muted,
+    fontSize: 11,
     fontWeight: "700",
     textTransform: "uppercase",
-    letterSpacing: 1,
+    letterSpacing: 1.5,
     marginBottom: spacing[3],
   },
   sectionGap: {
@@ -281,14 +288,14 @@ const styles = StyleSheet.create({
   },
   sessionName: {
     fontFamily: typography.body,
-    color: colors.white,
+    color: colors.text,
     fontSize: 16,
     fontWeight: "600",
     flex: 1,
   },
   sessionDate: {
     fontFamily: typography.body,
-    color: colors.gray500,
+    color: colors.muted,
     fontSize: 13,
     flexShrink: 0,
     marginLeft: spacing[2],
@@ -300,15 +307,20 @@ const styles = StyleSheet.create({
   },
   sessionMetaItem: {
     fontFamily: typography.body,
-    color: colors.gray500,
+    color: colors.muted,
+    fontSize: 13,
+  },
+  sessionMetaMono: {
+    fontFamily: typography.mono,
+    color: colors.muted,
     fontSize: 13,
   },
   sessionMetaDot: {
-    color: colors.gray700,
+    color: colors.border,
     fontSize: 13,
   },
   historyBanner: {
-    backgroundColor: colors.gray900,
+    backgroundColor: colors.surface,
     borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.lime,
@@ -319,12 +331,13 @@ const styles = StyleSheet.create({
     fontFamily: typography.heading,
     color: colors.lime,
     fontSize: 20,
-    letterSpacing: 0.5,
+    fontWeight: "900",
+    letterSpacing: -0.5,
     marginBottom: spacing[2],
   },
   historyBannerSub: {
     fontFamily: typography.body,
-    color: colors.gray400,
+    color: colors.muted,
     fontSize: 13,
     lineHeight: 20,
     marginBottom: spacing[3],
@@ -339,7 +352,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: spacing[6],
     borderStyle: "dashed",
-    borderColor: colors.gray700,
+    borderColor: colors.border,
   },
   proLockIcon: {
     fontSize: 32,
@@ -354,7 +367,7 @@ const styles = StyleSheet.create({
   },
   proDescription: {
     fontFamily: typography.body,
-    color: colors.gray600,
+    color: colors.muted,
     fontSize: 13,
     textAlign: "center",
   },

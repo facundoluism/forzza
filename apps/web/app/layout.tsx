@@ -40,7 +40,7 @@ export default function RootLayout({
           />
         )}
       </head>
-      <body className="bg-[#0A0A0A] text-[#FAFAFA] m-0 p-0">
+      <body>
         {children}
         <InstallPrompt />
       </body>

@@ -3,8 +3,10 @@ import {
   Text,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
+  Pressable,
+  Animated,
 } from "react-native";
+import { useRef } from "react";
 import { useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/providers/AuthProvider";
@@ -66,9 +68,34 @@ function RecentSessionCard({
       <View style={styles.sessionMeta}>
         <Text style={styles.sessionMetaText}>{formatted}</Text>
         <Text style={styles.sessionMetaDot}>·</Text>
-        <Text style={styles.sessionMetaText}>{totalSets} series</Text>
+        <Text style={styles.sessionMetaText}>
+          <Text style={styles.sessionMetaMono}>{totalSets}</Text> series
+        </Text>
       </View>
     </Card>
+  );
+}
+
+function QuickStartButton({ onPress }: { onPress: () => void }): React.JSX.Element {
+  const scale = useRef(new Animated.Value(1)).current;
+
+  const onPressIn = () =>
+    Animated.spring(scale, { toValue: 0.97, useNativeDriver: true, speed: 50, bounciness: 0 }).start();
+
+  const onPressOut = () =>
+    Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 50, bounciness: 2 }).start();
+
+  return (
+    <Pressable
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
+      onPress={onPress}
+      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+    >
+      <Animated.View style={[styles.quickStartBtn, { transform: [{ scale }] }]}>
+        <Text style={styles.quickStartText}>Empezar entreno</Text>
+      </Animated.View>
+    </Pressable>
   );
 }
 
@@ -148,15 +175,14 @@ export default function HomeTab(): React.JSX.Element {
         {isLoading ? (
           <SkeletonCard />
         ) : routine ? (
-          <TouchableOpacity
-            activeOpacity={0.8}
+          <Card
+            featured
+            style={styles.routineCard}
             onPress={() => router.push(`/routine/${routine.id}`)}
           >
-            <Card style={styles.routineCard}>
-              <Text style={styles.routineName}>{routine.name}</Text>
-              <Text style={styles.routineHint}>Tocá para ver los ejercicios</Text>
-            </Card>
-          </TouchableOpacity>
+            <Text style={styles.routineName}>{routine.name}</Text>
+            <Text style={styles.routineHint}>Tocá para ver los ejercicios</Text>
+          </Card>
         ) : profile?.coach_id ? (
           <EmptyState
             title="Tu coach todavía no asignó una rutina"
@@ -176,13 +202,7 @@ export default function HomeTab(): React.JSX.Element {
 
       {/* Quick start */}
       <View style={styles.section}>
-        <TouchableOpacity
-          style={styles.quickStartBtn}
-          activeOpacity={0.8}
-          onPress={() => router.push("/(tabs)/routines")}
-        >
-          <Text style={styles.quickStartText}>Empezar entreno</Text>
-        </TouchableOpacity>
+        <QuickStartButton onPress={() => router.push("/(tabs)/routines")} />
       </View>
 
       {/* Últimas sesiones */}
@@ -207,7 +227,7 @@ export default function HomeTab(): React.JSX.Element {
 const styles = StyleSheet.create({
   scroll: {
     flex: 1,
-    backgroundColor: colors.black,
+    backgroundColor: colors.bg,
   },
   content: {
     padding: spacing[4],
@@ -218,14 +238,15 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontFamily: typography.body,
-    color: colors.gray400,
+    color: colors.muted,
     fontSize: 16,
   },
   displayName: {
     fontFamily: typography.heading,
-    color: colors.white,
+    color: colors.text,
     fontSize: 36,
-    letterSpacing: 1,
+    fontWeight: "900",
+    letterSpacing: -1,
     textTransform: "uppercase",
   },
   section: {
@@ -233,25 +254,28 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontFamily: typography.body,
-    color: colors.gray300,
-    fontSize: 13,
+    color: colors.muted,
+    fontSize: 11,
     fontWeight: "700",
     textTransform: "uppercase",
-    letterSpacing: 1,
+    letterSpacing: 1.5,
     marginBottom: spacing[3],
   },
   routineCard: {
     gap: spacing[2],
+    paddingTop: spacing[5],
   },
   routineName: {
     fontFamily: typography.heading,
-    color: colors.white,
+    color: colors.text,
     fontSize: 22,
-    letterSpacing: 0.5,
+    fontWeight: "900",
+    letterSpacing: -0.5,
+    textTransform: "uppercase",
   },
   routineHint: {
     fontFamily: typography.body,
-    color: colors.gray500,
+    color: colors.muted,
     fontSize: 13,
   },
   skeletonCard: {
@@ -263,14 +287,20 @@ const styles = StyleSheet.create({
   },
   quickStartBtn: {
     backgroundColor: colors.lime,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     paddingVertical: spacing[4],
     alignItems: "center",
+    shadowColor: colors.lime,
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 10,
   },
   quickStartText: {
     fontFamily: typography.heading,
     color: colors.black,
     fontSize: 20,
+    fontWeight: "900",
     letterSpacing: 1,
     textTransform: "uppercase",
   },
@@ -279,7 +309,7 @@ const styles = StyleSheet.create({
   },
   sessionName: {
     fontFamily: typography.body,
-    color: colors.white,
+    color: colors.text,
     fontSize: 16,
     fontWeight: "600",
     marginBottom: spacing[1],
@@ -291,11 +321,16 @@ const styles = StyleSheet.create({
   },
   sessionMetaText: {
     fontFamily: typography.body,
-    color: colors.gray500,
+    color: colors.muted,
+    fontSize: 13,
+  },
+  sessionMetaMono: {
+    fontFamily: typography.mono,
+    color: colors.muted,
     fontSize: 13,
   },
   sessionMetaDot: {
-    color: colors.gray700,
+    color: colors.border,
     fontSize: 13,
   },
   emptySessionsCard: {
@@ -304,7 +339,7 @@ const styles = StyleSheet.create({
   },
   emptySessionsText: {
     fontFamily: typography.body,
-    color: colors.gray500,
+    color: colors.muted,
     fontSize: 14,
     textAlign: "center",
   },

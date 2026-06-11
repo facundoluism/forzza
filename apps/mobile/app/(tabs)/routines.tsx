@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import {
   View,
   Text,
   FlatList,
-  TouchableOpacity,
   StyleSheet,
+  Pressable,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
@@ -36,7 +36,7 @@ function SkeletonRoutineCard(): React.JSX.Element {
   );
 }
 
-function RoutineCard({ routine }: { routine: Routine }): React.JSX.Element {
+const RoutineCard = memo(function RoutineCard({ routine }: { routine: Routine }): React.JSX.Element {
   const router = useRouter();
   const exerciseCount = routine.exercise_count[0]?.count ?? 0;
   const createdDate = new Date(routine.created_at).toLocaleDateString("es-AR", {
@@ -46,26 +46,25 @@ function RoutineCard({ routine }: { routine: Routine }): React.JSX.Element {
   });
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.8}
+    <Card
+      style={styles.card}
       onPress={() => router.push(`/routine/${routine.id}`)}
     >
-      <Card style={styles.card}>
-        <Text style={styles.routineName}>{routine.name}</Text>
-        <View style={styles.meta}>
-          <Text style={styles.metaText}>
-            {exerciseCount} {exerciseCount === 1 ? "ejercicio" : "ejercicios"}
-          </Text>
-          <Text style={styles.metaDot}>·</Text>
-          <Text style={styles.metaText}>Creada el {createdDate}</Text>
-        </View>
-        <View style={styles.arrow}>
-          <Text style={styles.arrowText}>›</Text>
-        </View>
-      </Card>
-    </TouchableOpacity>
+      <Text style={styles.routineName}>{routine.name}</Text>
+      <View style={styles.meta}>
+        <Text style={styles.metaText}>
+          <Text style={styles.metaMono}>{exerciseCount}</Text>
+          {" "}{exerciseCount === 1 ? "ejercicio" : "ejercicios"}
+        </Text>
+        <Text style={styles.metaDot}>·</Text>
+        <Text style={styles.metaText}>Creada el {createdDate}</Text>
+      </View>
+      <View style={styles.arrow}>
+        <Text style={styles.arrowText}>›</Text>
+      </View>
+    </Card>
   );
-}
+});
 
 export default function RoutinesTab(): React.JSX.Element {
   const { user } = useAuth();
@@ -106,7 +105,9 @@ export default function RoutinesTab(): React.JSX.Element {
           <Text style={styles.screenTitle}>Mis Rutinas</Text>
         </View>
         <SkeletonRoutineCard />
+        <View style={{ height: spacing[3] }} />
         <SkeletonRoutineCard />
+        <View style={{ height: spacing[3] }} />
         <SkeletonRoutineCard />
       </View>
     );
@@ -133,13 +134,13 @@ export default function RoutinesTab(): React.JSX.Element {
     <View style={styles.container}>
       <View style={styles.titleRow}>
         <Text style={styles.screenTitle}>Mis Rutinas</Text>
-        <TouchableOpacity
+        <Pressable
           style={[styles.addButton, atLimit && styles.addButtonLimited]}
           onPress={handleCreateRoutine}
-          activeOpacity={0.8}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Text style={styles.addButtonText}>+</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {atLimit && (
@@ -181,7 +182,7 @@ export default function RoutinesTab(): React.JSX.Element {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.black,
+    backgroundColor: colors.bg,
     paddingTop: spacing[12],
     paddingHorizontal: spacing[4],
   },
@@ -193,21 +194,30 @@ const styles = StyleSheet.create({
   },
   screenTitle: {
     fontFamily: typography.heading,
-    color: colors.white,
+    color: colors.text,
     fontSize: 32,
-    letterSpacing: 1,
+    fontWeight: "900",
+    letterSpacing: -1,
     textTransform: "uppercase",
   },
   addButton: {
     backgroundColor: colors.lime,
     borderRadius: radius.full,
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     alignItems: "center",
     justifyContent: "center",
+    shadowColor: colors.lime,
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 6,
   },
   addButtonLimited: {
     backgroundColor: colors.gray700,
+    shadowColor: "transparent",
+    shadowOpacity: 0,
+    elevation: 0,
   },
   addButtonText: {
     fontFamily: typography.heading,
@@ -216,17 +226,17 @@ const styles = StyleSheet.create({
     lineHeight: 32,
   },
   limitBanner: {
-    backgroundColor: colors.gray900,
-    borderRadius: radius.md,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: colors.gray700,
+    borderColor: colors.border,
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[3],
     marginBottom: spacing[4],
   },
   limitBannerText: {
     fontFamily: typography.body,
-    color: colors.gray400,
+    color: colors.muted,
     fontSize: 13,
     textAlign: "center",
   },
@@ -239,7 +249,7 @@ const styles = StyleSheet.create({
   },
   routineName: {
     fontFamily: typography.body,
-    color: colors.white,
+    color: colors.text,
     fontSize: 18,
     fontWeight: "700",
     marginBottom: spacing[2],
@@ -251,11 +261,16 @@ const styles = StyleSheet.create({
   },
   metaText: {
     fontFamily: typography.body,
-    color: colors.gray500,
+    color: colors.muted,
+    fontSize: 13,
+  },
+  metaMono: {
+    fontFamily: typography.mono,
+    color: colors.muted,
     fontSize: 13,
   },
   metaDot: {
-    color: colors.gray700,
+    color: colors.border,
     fontSize: 13,
   },
   arrow: {
@@ -264,7 +279,7 @@ const styles = StyleSheet.create({
     top: "50%",
   },
   arrowText: {
-    color: colors.gray600,
+    color: colors.gray500,
     fontSize: 24,
   },
 });

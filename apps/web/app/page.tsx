@@ -1,86 +1,110 @@
-import Link from "next/link";
+import Link from 'next/link'
+import type { Metadata } from 'next'
 
-export const metadata = {
-  title: "Forzza — Tu plataforma de entrenamiento personalizado",
-  description: "Entrená con el coach correcto. Rutinas, seguimiento y resultados reales.",
-};
+export const metadata: Metadata = {
+  title: 'Forzza — Entrenamiento con coach que funciona',
+  description: 'Conectamos alumnos con coaches certificados. Rutinas personalizadas, check-ins, progreso y pagos en un solo lugar.',
+}
 
 const features = [
-  { icon: "🏋️", title: "Rutinas personalizadas", desc: "Tu coach crea rutinas según tus objetivos y nivel." },
-  { icon: "📊", title: "Progreso visible", desc: "Registrá entrenamientos y fotos. Ves la evolución real." },
-  { icon: "💬", title: "Chat directo", desc: "Feedback de tu coach en tiempo real." },
-  { icon: "🔒", title: "Pagos seguros", desc: "Mercado Pago. El coach cobra cuando cumple." },
-  { icon: "📱", title: "Offline-first", desc: "Entrená sin conexión, sync automático." },
-  { icon: "✅", title: "Coaches verificados", desc: "Proceso de validación real. Constancia incluida." },
-];
+  { icon: '⚡', title: 'Rutinas personalizadas', desc: 'Tu coach arma tu plan según tus objetivos y nivel. Vos lo seguís con guía paso a paso.', tag: 'CORE' },
+  { icon: '📈', title: 'Progreso medible', desc: 'Registrá sesiones, peso y fotos. Ves la evolución real semana a semana.', tag: 'TRACKING' },
+  { icon: '💬', title: 'Chat directo', desc: 'Feedback de tu coach en tiempo real. Corregís técnica, ajustás plan.', tag: 'REALTIME' },
+  { icon: '🔐', title: 'Pagos seguros', desc: 'Mercado Pago con 72h de garantía. El coach cobra cuando cumple.', tag: 'PAGOS' },
+  { icon: '📱', title: 'Offline-first', desc: 'Entrená sin conexión. Sync automático cuando volvés a tener internet.', tag: 'MOBILE' },
+  { icon: '✅', title: 'Coaches verificados', desc: 'Proceso de validación real. Constancia del ejercicio profesional incluida.', tag: 'TRUST' },
+]
+
+const steps = [
+  { n: '01', title: 'Elegís tu coach', desc: 'Explorás el marketplace, ves perfiles, precios y especialidades.' },
+  { n: '02', title: 'Empezás a entrenar', desc: 'Tu coach te arma la rutina y te da seguimiento personalizado.' },
+  { n: '03', title: 'Medís tu progreso', desc: 'Check-ins semanales, fotos corporales y métricas. Sin excusas.' },
+]
+
+const freeFeatures = ['3 rutinas activas', 'Historial 10 días', 'Registro de sesiones', 'Marketplace de coaches']
+const proFeatures = ['Rutinas ilimitadas', 'Historial completo', 'Fotos de progreso (privadas)', 'Análisis avanzado', 'Sin publicidad', 'Prioridad de soporte']
 
 export default function HomePage() {
   return (
-    <main className="bg-[#0A0A0A] min-h-screen text-[#FAFAFA]">
+    <main style={{ background: 'var(--color-bg)', minHeight: '100vh', color: 'var(--color-text)', fontFamily: 'var(--font-body)' }}>
+
       {/* NAV */}
-      <nav className="flex items-center justify-between px-6 py-4 border-b border-[#1A1A1A] sticky top-0 bg-[#0A0A0A]/95 backdrop-blur-sm z-50">
-        <span className="text-[#C8FF00] text-2xl font-black tracking-widest">FORZZA</span>
-        <div className="flex gap-3">
-          <Link href="/coaches" className="text-[#8A8A8A] hover:text-[#FAFAFA] text-sm px-3 py-2 transition-colors">Ver coaches</Link>
-          <Link href="/auth/login" className="text-sm px-4 py-2 border border-[#3A3A3A] rounded-lg hover:border-[#C8FF00] transition-colors">Ingresar</Link>
-          <Link href="/auth/login" className="text-sm px-4 py-2 bg-[#C8FF00] text-black font-bold rounded-lg hover:bg-[#b8ef00] transition-colors">Empezar gratis</Link>
+      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', borderBottom: '1px solid var(--color-border)', position: 'sticky', top: 0, background: 'rgba(10,10,10,0.92)', backdropFilter: 'blur(12px)', zIndex: 50 }}>
+        <span style={{ color: 'var(--color-lime)', fontSize: '24px', fontWeight: 900, letterSpacing: '4px', fontFamily: 'var(--font-display)' }}>FORZZA</span>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <Link href="/coaches" style={{ color: 'var(--color-muted)', fontSize: '14px', padding: '8px 12px', textDecoration: 'none', transition: 'color 200ms' }}>Coaches</Link>
+          <Link href="/auth/login" style={{ fontSize: '14px', padding: '8px 16px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: 'var(--color-text)', textDecoration: 'none' }}>Ingresar</Link>
+          <Link href="/auth/login" style={{ fontSize: '14px', padding: '8px 20px', background: 'var(--color-lime)', borderRadius: '8px', color: '#000', fontWeight: 700, textDecoration: 'none' }}>Empezar gratis</Link>
         </div>
       </nav>
 
       {/* HERO */}
-      <section className="px-6 py-24 text-center max-w-4xl mx-auto">
-        <div className="inline-block bg-[#1A1A1A] border border-[#2A2A2A] text-[#C8FF00] text-xs font-mono px-3 py-1 rounded-full mb-6 tracking-widest">
-          BETA — ARGENTINA
+      <section style={{ padding: '80px 24px 60px', textAlign: 'center', maxWidth: '900px', margin: '0 auto' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(200,255,0,0.1)', border: '1px solid rgba(200,255,0,0.3)', borderRadius: '999px', padding: '4px 12px 4px 4px', marginBottom: '32px' }}>
+          <span style={{ background: 'var(--color-lime)', color: '#000', fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', letterSpacing: '1px' }}>NUEVO</span>
+          <span style={{ color: 'var(--color-lime)', fontSize: '13px', fontFamily: 'var(--font-mono)' }}>Beta · Argentina 🇦🇷</span>
         </div>
-        <h1 className="text-[clamp(64px,12vw,120px)] font-black leading-none tracking-tighter text-[#C8FF00] mb-6">
+
+        <h1 style={{ fontSize: 'clamp(72px, 14vw, 140px)', fontWeight: 900, lineHeight: 0.9, letterSpacing: '-2px', color: 'var(--color-lime)', margin: '0 0 24px', fontFamily: 'var(--font-display)', textShadow: '0 0 60px rgba(200,255,0,0.2)' }}>
           FORZZA
         </h1>
-        <p className="text-[clamp(20px,3vw,28px)] text-[#FAFAFA] mb-4 leading-snug">
+        <p style={{ fontSize: 'clamp(22px, 3.5vw, 32px)', color: 'var(--color-text)', marginBottom: '16px', lineHeight: 1.3, fontWeight: 600 }}>
           Entrenamiento con coach que realmente funciona.
         </p>
-        <p className="text-lg text-[#8A8A8A] mb-10 max-w-xl mx-auto">
+        <p style={{ fontSize: '18px', color: 'var(--color-muted)', marginBottom: '40px', maxWidth: '560px', margin: '0 auto 40px', lineHeight: 1.7 }}>
           Conectamos alumnos con coaches certificados. Rutinas, check-ins, progreso y pagos en un solo lugar.
         </p>
-        <div className="flex gap-4 justify-center flex-wrap">
-          <Link href="/auth/login" className="px-8 py-4 bg-[#C8FF00] text-black font-bold text-lg rounded-xl hover:bg-[#b8ef00] transition-colors">
-            Empezar gratis
+        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '24px' }}>
+          <Link href="/auth/login" style={{ padding: '16px 36px', background: 'var(--color-lime)', borderRadius: '12px', color: '#000', fontWeight: 700, fontSize: '18px', textDecoration: 'none', boxShadow: '0 0 24px rgba(200,255,0,0.35)', transition: 'all 200ms' }}>
+            Empezar gratis →
           </Link>
-          <Link href="/coaches" className="px-8 py-4 border-2 border-[#3A3A3A] text-[#FAFAFA] font-bold text-lg rounded-xl hover:border-[#C8FF00] transition-colors">
+          <Link href="/coaches" style={{ padding: '16px 36px', border: '2px solid rgba(255,255,255,0.15)', borderRadius: '12px', color: 'var(--color-text)', fontWeight: 700, fontSize: '18px', textDecoration: 'none', transition: 'all 200ms' }}>
             Ver coaches
           </Link>
         </div>
-        <p className="mt-8 text-[#4A4A4A] text-sm">Sin tarjeta de crédito · Gratis para siempre en plan Free</p>
+        <p style={{ color: '#4A4A4A', fontSize: '13px', fontFamily: 'var(--font-mono)' }}>Sin tarjeta · Plan Free para siempre</p>
+      </section>
+
+      {/* STATS STRIP */}
+      <section style={{ borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)', padding: '24px', display: 'flex', justifyContent: 'center', gap: '64px', flexWrap: 'wrap' }}>
+        {[['72h', 'Garantía de devolución'], ['20%', 'Comisión plataforma'], ['100%', 'Coaches verificados']].map(([n, l]) => (
+          <div key={n} style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '36px', fontWeight: 900, color: 'var(--color-lime)', fontFamily: 'var(--font-display)', lineHeight: 1 }}>{n}</div>
+            <div style={{ color: 'var(--color-muted)', fontSize: '13px', marginTop: '4px', fontFamily: 'var(--font-mono)' }}>{l}</div>
+          </div>
+        ))}
       </section>
 
       {/* FEATURES */}
-      <section className="px-6 py-20 max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold text-center text-[#FAFAFA] mb-3">Todo lo que necesitás para entrenar mejor</h2>
-        <p className="text-[#8A8A8A] text-center mb-12">Una plataforma. Tres roles. Un objetivo.</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <section style={{ padding: '80px 24px', maxWidth: '1100px', margin: '0 auto' }}>
+        <h2 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 700, textAlign: 'center', marginBottom: '12px', fontFamily: 'var(--font-display)', letterSpacing: '-0.5px' }}>
+          Todo lo que necesitás para entrenar mejor
+        </h2>
+        <p style={{ color: 'var(--color-muted)', textAlign: 'center', marginBottom: '48px', fontSize: '17px' }}>Una plataforma. Alumnos, coaches y dueños.</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
           {features.map((f) => (
-            <div key={f.title} className="p-6 bg-[#111111] rounded-2xl border border-[#2A2A2A] hover:border-[#3A3A3A] transition-colors group">
-              <span className="text-4xl mb-4 block">{f.icon}</span>
-              <h3 className="text-[#FAFAFA] font-semibold text-lg mb-2 group-hover:text-[#C8FF00] transition-colors">{f.title}</h3>
-              <p className="text-[#8A8A8A] text-sm leading-relaxed">{f.desc}</p>
+            <div key={f.title} className="card-hover" style={{ padding: '28px', background: 'var(--color-surface)', borderRadius: '16px', border: '1px solid var(--color-border)', cursor: 'default' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                <span style={{ fontSize: '36px' }}>{f.icon}</span>
+                <span style={{ fontSize: '10px', fontFamily: 'var(--font-mono)', color: 'var(--color-lime)', background: 'rgba(200,255,0,0.1)', border: '1px solid rgba(200,255,0,0.2)', borderRadius: '4px', padding: '2px 8px', letterSpacing: '1px' }}>{f.tag}</span>
+              </div>
+              <h3 style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: '18px', marginBottom: '8px', fontFamily: 'var(--font-display)', letterSpacing: '0.3px' }}>{f.title}</h3>
+              <p style={{ color: 'var(--color-muted)', fontSize: '14px', lineHeight: 1.7, margin: 0 }}>{f.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="px-6 py-20 bg-[#080808]">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-[#FAFAFA] mb-12">¿Cómo funciona?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { step: "01", title: "Elegís tu coach", desc: "Explorás el marketplace, ves perfiles y paquetes." },
-              { step: "02", title: "Empezás a entrenar", desc: "Tu coach te arma la rutina y te hace seguimiento." },
-              { step: "03", title: "Medís tu progreso", desc: "Check-ins semanales, fotos y métricas. Sin excusas." },
-            ].map((s) => (
-              <div key={s.step} className="text-center">
-                <div className="text-[#C8FF00] text-5xl font-black font-mono mb-4">{s.step}</div>
-                <h3 className="text-[#FAFAFA] font-bold text-lg mb-2">{s.title}</h3>
-                <p className="text-[#8A8A8A] text-sm">{s.desc}</p>
+      <section style={{ padding: '80px 24px', background: '#080808' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 700, marginBottom: '56px', fontFamily: 'var(--font-display)' }}>Tres pasos para empezar</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '40px' }}>
+            {steps.map((s) => (
+              <div key={s.n} style={{ position: 'relative' }}>
+                <div style={{ fontSize: '72px', fontWeight: 900, color: 'rgba(200,255,0,0.15)', fontFamily: 'var(--font-display)', lineHeight: 1, marginBottom: '16px', textShadow: '0 0 30px rgba(200,255,0,0.1)' }}>{s.n}</div>
+                <h3 style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: '20px', marginBottom: '8px', fontFamily: 'var(--font-display)' }}>{s.title}</h3>
+                <p style={{ color: 'var(--color-muted)', fontSize: '14px', lineHeight: 1.6 }}>{s.desc}</p>
               </div>
             ))}
           </div>
@@ -88,69 +112,77 @@ export default function HomePage() {
       </section>
 
       {/* PRICING */}
-      <section id="pricing" className="px-6 py-20 max-w-4xl mx-auto text-center">
-        <h2 className="text-3xl font-bold text-[#FAFAFA] mb-3">Planes para alumnos</h2>
-        <p className="text-[#8A8A8A] mb-12">Empezás gratis. Subís cuando querés más.</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <section id="pricing" style={{ padding: '80px 24px', maxWidth: '860px', margin: '0 auto' }}>
+        <h2 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 700, textAlign: 'center', marginBottom: '12px', fontFamily: 'var(--font-display)' }}>Planes para alumnos</h2>
+        <p style={{ color: 'var(--color-muted)', textAlign: 'center', marginBottom: '48px' }}>Empezás gratis. Subís cuando querés más.</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
           {/* Free */}
-          <div className="p-8 bg-[#111111] rounded-2xl border border-[#2A2A2A] text-left">
-            <span className="text-xs font-mono tracking-widest text-[#6A6A6A] uppercase">Free</span>
-            <div className="mt-3 mb-1 text-5xl font-black text-[#FAFAFA]">$0</div>
-            <div className="text-[#6A6A6A] text-sm mb-6">Para siempre</div>
-            <ul className="space-y-3 mb-8">
-              {["3 rutinas activas", "Historial últimos 10 días", "Registro de entrenamientos", "Marketplace de coaches"].map((item) => (
-                <li key={item} className="flex items-center gap-3 text-[#AAAAAA] text-sm">
-                  <span className="text-[#4A4A4A]">✓</span>{item}
+          <div style={{ padding: '36px', background: 'var(--color-surface)', borderRadius: '20px', border: '1px solid var(--color-border)' }}>
+            <div style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', letterSpacing: '3px', color: '#6A6A6A', marginBottom: '16px' }}>// FREE</div>
+            <div style={{ fontSize: '64px', fontWeight: 900, color: 'var(--color-text)', fontFamily: 'var(--font-display)', lineHeight: 1, marginBottom: '4px' }}>$0</div>
+            <div style={{ color: '#6A6A6A', fontSize: '14px', marginBottom: '28px', fontFamily: 'var(--font-mono)' }}>Para siempre</div>
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {freeFeatures.map(f => (
+                <li key={f} style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--color-muted)', fontSize: '15px' }}>
+                  <span style={{ color: '#4A4A4A', fontSize: '16px' }}>○</span>{f}
                 </li>
               ))}
             </ul>
-            <Link href="/auth/login" className="block text-center py-3 border-2 border-[#3A3A3A] rounded-xl text-[#FAFAFA] font-bold hover:border-[#C8FF00] transition-colors">
+            <Link href="/auth/login" style={{ display: 'block', textAlign: 'center', padding: '14px', border: '2px solid rgba(255,255,255,0.12)', borderRadius: '12px', color: 'var(--color-text)', fontWeight: 700, textDecoration: 'none', transition: 'all 200ms' }}>
               Empezar gratis
             </Link>
           </div>
           {/* PRO */}
-          <div className="p-8 bg-[#111111] rounded-2xl border-2 border-[#C8FF00] text-left relative">
-            <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#C8FF00] text-black text-xs font-bold px-3 py-1 rounded-full">RECOMENDADO</span>
-            <span className="text-xs font-mono tracking-widest text-[#C8FF00] uppercase">PRO</span>
-            <div className="mt-3 mb-1 text-5xl font-black text-[#FAFAFA]">$ 9.999</div>
-            <div className="text-[#6A6A6A] text-sm mb-6">por mes · cancelás cuando querés</div>
-            <ul className="space-y-3 mb-8">
-              {["Rutinas ilimitadas", "Historial completo", "Análisis de progreso avanzado", "Fotos de progreso privadas", "Sin publicidad", "Todo lo de Free"].map((item) => (
-                <li key={item} className="flex items-center gap-3 text-[#AAAAAA] text-sm">
-                  <span className="text-[#C8FF00]">✓</span>{item}
+          <div style={{ padding: '36px', background: 'var(--color-surface)', borderRadius: '20px', border: '2px solid var(--color-lime)', position: 'relative', boxShadow: '0 0 40px rgba(200,255,0,0.1)' }}>
+            {/* Top highlight strip */}
+            <div style={{ position: 'absolute', top: 0, left: '20px', right: '20px', height: '2px', background: 'linear-gradient(90deg, transparent, var(--color-lime), transparent)', borderRadius: '2px' }} />
+            <div style={{ position: 'absolute', top: '-14px', left: '50%', transform: 'translateX(-50%)', background: 'var(--color-lime)', color: '#000', padding: '4px 14px', borderRadius: '999px', fontSize: '11px', fontWeight: 700, letterSpacing: '1px', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>⚡ RECOMENDADO</div>
+            <div style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', letterSpacing: '3px', color: 'var(--color-lime)', marginBottom: '16px' }}>// PRO</div>
+            <div style={{ fontSize: '64px', fontWeight: 900, color: 'var(--color-text)', fontFamily: 'var(--font-display)', lineHeight: 1, marginBottom: '4px' }}>$9.999</div>
+            <div style={{ color: '#6A6A6A', fontSize: '14px', marginBottom: '28px', fontFamily: 'var(--font-mono)' }}>por mes · cancelás cuando querés</div>
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {proFeatures.map(f => (
+                <li key={f} style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--color-muted)', fontSize: '15px' }}>
+                  <span style={{ color: 'var(--color-lime)', fontSize: '16px' }}>●</span>{f}
                 </li>
               ))}
             </ul>
-            <Link href="/upgrade" className="block text-center py-3 bg-[#C8FF00] rounded-xl text-black font-bold hover:bg-[#b8ef00] transition-colors">
-              Activar PRO
+            <Link href="/upgrade" style={{ display: 'block', textAlign: 'center', padding: '14px', background: 'var(--color-lime)', borderRadius: '12px', color: '#000', fontWeight: 700, fontSize: '16px', textDecoration: 'none', boxShadow: '0 0 20px rgba(200,255,0,0.3)' }}>
+              Activar PRO →
             </Link>
           </div>
         </div>
       </section>
 
       {/* COACH CTA */}
-      <section className="px-6 py-20 bg-[#080808]">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-[#FAFAFA] mb-4">¿Sos coach?</h2>
-          <p className="text-[#8A8A8A] text-lg mb-8">Creá tu perfil, publicá tus paquetes y manejá tus alumnos desde un solo lugar. Sin suscripción fija al principio.</p>
-          <Link href="/onboarding-coach" className="inline-block px-8 py-4 bg-[#C8FF00] text-black font-bold text-lg rounded-xl hover:bg-[#b8ef00] transition-colors">
+      <section style={{ padding: '80px 24px', background: '#050505' }}>
+        <div style={{ maxWidth: '700px', margin: '0 auto', textAlign: 'center', padding: '56px 40px', background: 'var(--color-surface)', borderRadius: '24px', border: '1px solid var(--color-border)', position: 'relative', overflow: 'hidden' }}>
+          {/* Corner accent */}
+          <div style={{ position: 'absolute', top: 0, right: 0, width: '120px', height: '120px', background: 'radial-gradient(circle at top right, rgba(200,255,0,0.15), transparent 70%)' }} />
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>🏋️</div>
+          <h2 style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 700, marginBottom: '16px', fontFamily: 'var(--font-display)' }}>¿Sos coach?</h2>
+          <p style={{ color: 'var(--color-muted)', fontSize: '17px', marginBottom: '32px', lineHeight: 1.7 }}>
+            Creá tu perfil, publicá tus paquetes y manejá tus alumnos desde un solo lugar.<br />
+            Sin suscripción fija. Comisión solo cuando vendés.
+          </p>
+          <Link href="/onboarding-coach" style={{ display: 'inline-block', padding: '16px 36px', background: 'var(--color-lime)', borderRadius: '12px', color: '#000', fontWeight: 700, fontSize: '18px', textDecoration: 'none', boxShadow: '0 0 20px rgba(200,255,0,0.3)' }}>
             Registrarme como coach →
           </Link>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-[#1A1A1A] px-6 py-10">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <span className="text-[#C8FF00] text-xl font-black tracking-widest">FORZZA</span>
-          <div className="flex gap-6 text-sm text-[#6A6A6A]">
-            <Link href="/legales/terminos" className="hover:text-[#FAFAFA] transition-colors">Términos</Link>
-            <Link href="/legales/privacidad" className="hover:text-[#FAFAFA] transition-colors">Privacidad</Link>
-            <Link href="/coaches" className="hover:text-[#FAFAFA] transition-colors">Coaches</Link>
+      <footer style={{ borderTop: '1px solid var(--color-border)', padding: '40px 24px' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '24px' }}>
+          <span style={{ color: 'var(--color-lime)', fontSize: '20px', fontWeight: 900, letterSpacing: '4px', fontFamily: 'var(--font-display)' }}>FORZZA</span>
+          <div style={{ display: 'flex', gap: '24px' }}>
+            {([['Coaches', '/coaches'], ['Planes', '/upgrade'], ['Términos', '/legales/terminos'], ['Privacidad', '/legales/privacidad']] as [string, string][]).map(([l, h]) => (
+              <Link key={l} href={h} style={{ color: '#4A4A4A', fontSize: '14px', textDecoration: 'none' }}>{l}</Link>
+            ))}
           </div>
-          <p className="text-[#4A4A4A] text-xs">© 2026 Forzza. Argentina.</p>
+          <p style={{ color: '#2A2A2A', fontSize: '13px', fontFamily: 'var(--font-mono)', margin: 0 }}>© 2026 Forzza · Argentina</p>
         </div>
       </footer>
     </main>
-  );
+  )
 }

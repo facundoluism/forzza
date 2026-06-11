@@ -1,14 +1,16 @@
+import { useRef } from "react";
 import {
-  TouchableOpacity,
+  Animated,
+  Pressable,
   Text,
   ActivityIndicator,
   StyleSheet,
-  type TouchableOpacityProps,
+  type PressableProps,
 } from "react-native";
 import { colors, spacing, radius } from "../tokens";
 import type { ButtonVariant, ButtonSize } from "../types";
 
-export interface ButtonProps extends Omit<TouchableOpacityProps, "style"> {
+export interface ButtonProps extends Omit<PressableProps, "style"> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   loading?: boolean;
@@ -23,51 +25,82 @@ export function Button({
   label,
   fullWidth = false,
   disabled,
+  onPress,
   ...rest
 }: ButtonProps) {
   const isDisabled = disabled ?? loading;
+  const scale = useRef(new Animated.Value(1)).current;
+
+  const onPressIn = () =>
+    Animated.spring(scale, {
+      toValue: 0.97,
+      useNativeDriver: true,
+      speed: 50,
+      bounciness: 0,
+    }).start();
+
+  const onPressOut = () =>
+    Animated.spring(scale, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 50,
+      bounciness: 2,
+    }).start();
 
   return (
-    <TouchableOpacity
-      style={[
-        styles.base,
-        styles[`variant_${variant}`],
-        styles[`size_${size}`],
-        isDisabled && styles.disabled,
-        fullWidth && styles.fullWidth,
-      ]}
+    <Pressable
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
+      onPress={onPress}
       disabled={isDisabled}
-      activeOpacity={0.8}
+      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      style={fullWidth ? { width: "100%" } : undefined}
       {...rest}
     >
-      {loading ? (
-        <ActivityIndicator
-          color={variant === "primary" ? colors.black : colors.lime}
-          size="small"
-        />
-      ) : (
-        <Text style={[styles.label, styles[`label_${variant}`], styles[`labelSize_${size}`]]}>
-          {label}
-        </Text>
-      )}
-    </TouchableOpacity>
+      <Animated.View
+        style={[
+          styles.base,
+          styles[`variant_${variant}`],
+          styles[`size_${size}`],
+          isDisabled && styles.disabled,
+          { transform: [{ scale }] },
+        ]}
+      >
+        {loading ? (
+          <ActivityIndicator
+            color={variant === "primary" ? colors.black : colors.lime}
+            size="small"
+          />
+        ) : (
+          <Text style={[styles.label, styles[`label_${variant}`], styles[`labelSize_${size}`]]}>
+            {label}
+          </Text>
+        )}
+      </Animated.View>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
   },
-  fullWidth: { width: "100%" },
   // Variants
-  variant_primary: { backgroundColor: colors.lime },
+  variant_primary: {
+    backgroundColor: colors.lime,
+    shadowColor: colors.lime,
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 8,
+  },
   variant_secondary: {
     backgroundColor: "transparent",
     borderWidth: 1,
-    borderColor: colors.gray700,
+    borderColor: colors.border,
   },
   variant_ghost: { backgroundColor: "transparent" },
   variant_danger: { backgroundColor: colors.error },
@@ -84,7 +117,7 @@ const styles = StyleSheet.create({
   // Label sizes
   labelSize_sm: { fontSize: 14 },
   labelSize_md: { fontSize: 16 },
-  labelSize_lg: { fontSize: 18 },
+  labelSize_lg: { fontSize: 18, fontWeight: "900", letterSpacing: 0.5, textTransform: "uppercase" },
   // Disabled
   disabled: { opacity: 0.4 },
 });

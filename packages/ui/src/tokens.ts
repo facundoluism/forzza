@@ -4,25 +4,39 @@
 export const colors = {
   // Primario
   lime: "#C8FF00",
-  limeDark: "#A8E000",
+  limeDark: "#A3D900",
+  limeDim: "#A3D900",
+  limeGlow: "rgba(200,255,0,0.15)",
 
-  // Neutros
+  // Superficies (OLED-safe, premium dark)
+  bg: "#0A0A0A",
+  surface: "#111827",
+  surface2: "#1F2937",
+
+  // Bordes
+  border: "rgba(255,255,255,0.08)",
+
+  // Texto
+  text: "#F8FAFC",
+  muted: "#94A3B8",
+
+  // Neutros (mantenidos para compatibilidad)
   black: "#0A0A0A",
   white: "#FAFAFA",
-  gray900: "#1A1A1A",
-  gray800: "#2A2A2A",
-  gray700: "#3A3A3A",
-  gray600: "#4A4A4A",
-  gray500: "#6A6A6A",
-  gray400: "#8A8A8A",
-  gray300: "#AAAAAA",
-  gray200: "#CCCCCC",
-  gray100: "#EEEEEE",
+  gray900: "#111827",
+  gray800: "#1F2937",
+  gray700: "#374151",
+  gray600: "#4B5563",
+  gray500: "#6B7280",
+  gray400: "#94A3B8",
+  gray300: "#CBD5E1",
+  gray200: "#E2E8F0",
+  gray100: "#F1F5F9",
 
   // Semánticos
-  error: "#FF4444",
-  success: "#00CC66",
-  warning: "#FFAA00",
+  error: "#EF4444",
+  success: "#22C55E",
+  warning: "#F59E0B",
   info: "#0088FF",
 } as const;
 
@@ -42,11 +56,11 @@ export const spacing = {
 } as const;
 
 export const typography = {
-  // Bebas Neue — headings
+  // BebasNeue — headings (condensed feel with fontWeight 900, letterSpacing -1)
   heading: "BebasNeue",
-  // DM Sans — cuerpo
+  // DM Sans — body text
   body: "DMSans",
-  // Space Mono — números, dinero (derecha)
+  // Space Mono — numbers, timers, prices, codes
   mono: "SpaceMono",
 } as const;
 

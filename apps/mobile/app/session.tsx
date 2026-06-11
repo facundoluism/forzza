@@ -5,7 +5,8 @@ import {
   TextInput,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
+  Pressable,
+  Animated,
   Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
@@ -39,6 +40,7 @@ function NumberInput({ label, value, onChangeText, placeholder = "0" }: NumberIn
         placeholder={placeholder}
         placeholderTextColor={colors.gray600}
         returnKeyType="done"
+        textAlign="center"
       />
     </View>
   );
@@ -46,6 +48,19 @@ function NumberInput({ label, value, onChangeText, placeholder = "0" }: NumberIn
 
 function RestTimer({ seconds, onDone }: { seconds: number; onDone: () => void }): React.JSX.Element {
   const [remaining, setRemaining] = useState(seconds);
+  const glowAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    // Pulse glow animation while resting
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(glowAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
+        Animated.timing(glowAnim, { toValue: 0.4, duration: 800, useNativeDriver: true }),
+      ])
+    );
+    pulse.start();
+    return () => pulse.stop();
+  }, [glowAnim]);
 
   useEffect(() => {
     if (remaining <= 0) {
@@ -56,14 +71,50 @@ function RestTimer({ seconds, onDone }: { seconds: number; onDone: () => void })
     return () => clearTimeout(timer);
   }, [remaining, onDone]);
 
+  const glowOpacity = glowAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.08, 0.25],
+  });
+
   return (
-    <Card style={styles.restTimerCard}>
-      <Text style={styles.restTimerTitle}>Descansando</Text>
-      <Text style={styles.restTimerCount}>{remaining}s</Text>
-      <TouchableOpacity style={styles.restSkipBtn} onPress={onDone}>
-        <Text style={styles.restSkipText}>Saltar descanso</Text>
-      </TouchableOpacity>
-    </Card>
+    <View style={styles.restTimerWrapper}>
+      <Animated.View style={[styles.restGlowBg, { opacity: glowOpacity }]} />
+      <Card style={styles.restTimerCard}>
+        <Text style={styles.restTimerTitle}>Descansando</Text>
+        <Text style={styles.restTimerCount}>{remaining}s</Text>
+        <Pressable
+          style={styles.restSkipBtn}
+          onPress={onDone}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Text style={styles.restSkipText}>Saltar descanso</Text>
+        </Pressable>
+      </Card>
+    </View>
+  );
+}
+
+function LogSetButton({ onPress }: { onPress: () => void }): React.JSX.Element {
+  const scale = useRef(new Animated.Value(1)).current;
+
+  const onPressIn = () =>
+    Animated.spring(scale, { toValue: 0.97, useNativeDriver: true, speed: 50, bounciness: 0 }).start();
+
+  const onPressOut = () =>
+    Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 50, bounciness: 2 }).start();
+
+  return (
+    <Pressable
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
+      onPress={onPress}
+      style={{ width: "100%" }}
+      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+    >
+      <Animated.View style={[styles.logSetBtn, { transform: [{ scale }] }]}>
+        <Text style={styles.logSetBtnText}>Registrar serie</Text>
+      </Animated.View>
+    </Pressable>
   );
 }
 
@@ -148,6 +199,8 @@ export default function SessionScreen(): React.JSX.Element | null {
   const exerciseIds = activeSession.exercises.map((e) => e.exercise_id);
   const currentExerciseLog = activeSession.exercises[currentExerciseIndex];
   const currentSetsLogged = currentExerciseLog?.sets.length ?? 0;
+  const totalExercises = Math.max(exerciseIds.length, currentExerciseIndex + 1);
+  const progressPercent = totalExercises > 0 ? currentExerciseIndex / totalExercises : 0;
 
   const handleLogSet = (): void => {
     const parsedReps = reps !== "" ? parseInt(reps, 10) : null;
@@ -216,22 +269,31 @@ export default function SessionScreen(): React.JSX.Element | null {
         secondsLeft={autopromoSeconds}
       />
 
+      {/* Progress bar */}
+      <View style={styles.progressBarTrack}>
+        <View style={[styles.progressBarFill, { width: `${Math.round(progressPercent * 100)}%` }]} />
+      </View>
+
       {/* Header */}
       <View style={styles.header}>
-        <View>
+        <View style={styles.headerContent}>
           <Text style={styles.sessionTitle}>{activeSession.routine_name}</Text>
           <Text style={styles.sessionStatus}>
             {isPaused ? "En pausa" : "Activo"}
             {" · "}
-            {activeSession.exercises.reduce((acc, ex) => acc + ex.sets.length, 0)} series totales
+            <Text style={styles.sessionStatusMono}>
+              {activeSession.exercises.reduce((acc, ex) => acc + ex.sets.length, 0)}
+            </Text>
+            {" series totales"}
           </Text>
         </View>
-        <TouchableOpacity
+        <Pressable
           style={styles.pauseBtn}
           onPress={isPaused ? resumeSession : pauseSession}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Text style={styles.pauseBtnText}>{isPaused ? "Continuar" : "Pausar"}</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       <ScrollView
@@ -239,35 +301,41 @@ export default function SessionScreen(): React.JSX.Element | null {
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Exercise navigation */}
-        <Card style={styles.exerciseCard}>
-          <Text style={styles.exerciseIndexLabel}>
-            Ejercicio {currentExerciseIndex + 1}
-          </Text>
-          <Text style={styles.exerciseName}>
-            {currentExerciseLog?.exercise_id ?? `Ejercicio ${currentExerciseIndex + 1}`}
-          </Text>
-          <Text style={styles.setsLogged}>
-            {currentSetsLogged} {currentSetsLogged === 1 ? "serie registrada" : "series registradas"}
-          </Text>
+        {/* Exercise card */}
+        <Card style={styles.exerciseCard} featured>
+          <View style={styles.exerciseCardInner}>
+            <Text style={styles.exerciseIndexLabel}>
+              EJERCICIO{" "}
+              <Text style={styles.exerciseIndexMono}>{currentExerciseIndex + 1}</Text>
+              {" / "}
+              <Text style={styles.exerciseIndexMono}>{totalExercises}</Text>
+            </Text>
+            <Text style={styles.exerciseName}>
+              {currentExerciseLog?.exercise_id ?? `Ejercicio ${currentExerciseIndex + 1}`}
+            </Text>
+            <Text style={styles.setsLogged}>
+              <Text style={styles.setsLoggedMono}>{currentSetsLogged}</Text>
+              {" "}{currentSetsLogged === 1 ? "serie registrada" : "series registradas"}
+            </Text>
 
-          {/* Sets logged */}
-          {currentExerciseLog && currentExerciseLog.sets.length > 0 && (
-            <View style={styles.setsTable}>
-              <View style={styles.setsTableHeader}>
-                <Text style={styles.setsTableHeaderText}>Serie</Text>
-                <Text style={styles.setsTableHeaderText}>Reps</Text>
-                <Text style={styles.setsTableHeaderText}>Peso (kg)</Text>
-              </View>
-              {currentExerciseLog.sets.map((s) => (
-                <View key={s.set_number} style={styles.setsTableRow}>
-                  <Text style={styles.setsTableCell}>{s.set_number}</Text>
-                  <Text style={styles.setsTableCell}>{s.reps ?? "—"}</Text>
-                  <Text style={styles.setsTableCell}>{s.weight_kg ?? "—"}</Text>
+            {/* Sets logged */}
+            {currentExerciseLog && currentExerciseLog.sets.length > 0 && (
+              <View style={styles.setsTable}>
+                <View style={styles.setsTableHeader}>
+                  <Text style={styles.setsTableHeaderText}>SERIE</Text>
+                  <Text style={styles.setsTableHeaderText}>REPS</Text>
+                  <Text style={styles.setsTableHeaderText}>PESO (kg)</Text>
                 </View>
-              ))}
-            </View>
-          )}
+                {currentExerciseLog.sets.map((s) => (
+                  <View key={s.set_number} style={styles.setsTableRow}>
+                    <Text style={styles.setsTableCell}>{s.set_number}</Text>
+                    <Text style={styles.setsTableCell}>{s.reps ?? "—"}</Text>
+                    <Text style={styles.setsTableCell}>{s.weight_kg ?? "—"}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
         </Card>
 
         {/* Rest timer */}
@@ -279,7 +347,8 @@ export default function SessionScreen(): React.JSX.Element | null {
         {!showRestTimer && !isPaused && (
           <Card style={styles.inputCard}>
             <Text style={styles.inputCardTitle}>
-              Serie {currentSetsLogged + 1}
+              SERIE{" "}
+              <Text style={styles.inputCardTitleMono}>{currentSetsLogged + 1}</Text>
             </Text>
             <View style={styles.inputRow}>
               <View style={styles.inputCell}>
@@ -300,12 +369,7 @@ export default function SessionScreen(): React.JSX.Element | null {
               onChangeText={setDurationSeconds}
             />
             <View style={styles.logBtnWrapper}>
-              <Button
-                label="Registrar serie"
-                onPress={handleLogSet}
-                fullWidth
-                size="lg"
-              />
+              <LogSetButton onPress={handleLogSet} />
             </View>
           </Card>
         )}
@@ -358,40 +422,68 @@ export default function SessionScreen(): React.JSX.Element | null {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.black,
+    backgroundColor: colors.bg,
   },
+  // Progress bar
+  progressBarTrack: {
+    height: 3,
+    backgroundColor: colors.surface2,
+    width: "100%",
+  },
+  progressBarFill: {
+    height: 3,
+    backgroundColor: colors.lime,
+    shadowColor: colors.lime,
+    shadowOpacity: 0.6,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 0 },
+  },
+  // Header
   header: {
     paddingTop: spacing[12],
     paddingHorizontal: spacing[4],
     paddingBottom: spacing[4],
     borderBottomWidth: 1,
-    borderBottomColor: colors.gray800,
+    borderBottomColor: colors.border,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
   },
+  headerContent: {
+    flex: 1,
+  },
   sessionTitle: {
     fontFamily: typography.heading,
-    color: colors.white,
+    color: colors.text,
     fontSize: 24,
-    letterSpacing: 0.5,
+    fontWeight: "900",
+    letterSpacing: -0.5,
     textTransform: "uppercase",
   },
   sessionStatus: {
     fontFamily: typography.body,
-    color: colors.gray500,
+    color: colors.muted,
     fontSize: 13,
     marginTop: spacing[1],
   },
+  sessionStatusMono: {
+    fontFamily: typography.mono,
+    color: colors.lime,
+    fontSize: 13,
+  },
   pauseBtn: {
-    backgroundColor: colors.gray800,
+    backgroundColor: colors.surface2,
     borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
     paddingHorizontal: spacing[3],
     paddingVertical: spacing[2],
+    minHeight: 44,
+    justifyContent: "center",
   },
   pauseBtnText: {
     fontFamily: typography.body,
-    color: colors.white,
+    color: colors.text,
     fontSize: 14,
     fontWeight: "600",
   },
@@ -403,21 +495,32 @@ const styles = StyleSheet.create({
     gap: spacing[4],
     paddingBottom: spacing[8],
   },
+  // Exercise card
   exerciseCard: {
+    paddingTop: spacing[5],
+  },
+  exerciseCardInner: {
     gap: spacing[2],
   },
   exerciseIndexLabel: {
     fontFamily: typography.body,
-    color: colors.gray500,
-    fontSize: 12,
+    color: colors.muted,
+    fontSize: 11,
     textTransform: "uppercase",
-    letterSpacing: 1,
+    letterSpacing: 2,
+    fontWeight: "700",
+  },
+  exerciseIndexMono: {
+    fontFamily: typography.mono,
+    color: colors.lime,
+    fontSize: 11,
   },
   exerciseName: {
     fontFamily: typography.heading,
-    color: colors.white,
-    fontSize: 26,
-    letterSpacing: 0.5,
+    color: colors.text,
+    fontSize: 30,
+    fontWeight: "900",
+    letterSpacing: -0.5,
     textTransform: "uppercase",
   },
   setsLogged: {
@@ -426,76 +529,112 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "600",
   },
+  setsLoggedMono: {
+    fontFamily: typography.mono,
+    color: colors.lime,
+    fontSize: 13,
+  },
   setsTable: {
     marginTop: spacing[3],
     borderRadius: radius.sm,
     overflow: "hidden",
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   setsTableHeader: {
     flexDirection: "row",
-    backgroundColor: colors.gray800,
+    backgroundColor: colors.surface2,
     paddingVertical: spacing[2],
     paddingHorizontal: spacing[3],
   },
   setsTableHeaderText: {
     flex: 1,
     fontFamily: typography.mono,
-    color: colors.gray400,
-    fontSize: 11,
+    color: colors.muted,
+    fontSize: 10,
     textTransform: "uppercase",
-    letterSpacing: 0.5,
+    letterSpacing: 1,
   },
   setsTableRow: {
     flexDirection: "row",
-    backgroundColor: colors.gray900,
+    backgroundColor: colors.surface,
     paddingVertical: spacing[2],
     paddingHorizontal: spacing[3],
     borderTopWidth: 1,
-    borderTopColor: colors.gray800,
+    borderTopColor: colors.border,
   },
   setsTableCell: {
     flex: 1,
     fontFamily: typography.mono,
-    color: colors.white,
+    color: colors.text,
     fontSize: 14,
+  },
+  // Rest timer
+  restTimerWrapper: {
+    position: "relative",
+    borderRadius: radius.lg,
+    overflow: "hidden",
+  },
+  restGlowBg: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: colors.limeGlow,
   },
   restTimerCard: {
     alignItems: "center",
-    paddingVertical: spacing[6],
+    paddingVertical: spacing[8],
     borderColor: colors.lime,
     borderWidth: 1,
+    backgroundColor: "transparent",
   },
   restTimerTitle: {
     fontFamily: typography.body,
-    color: colors.gray400,
-    fontSize: 13,
+    color: colors.muted,
+    fontSize: 12,
     textTransform: "uppercase",
-    letterSpacing: 1,
+    letterSpacing: 2,
+    fontWeight: "700",
     marginBottom: spacing[2],
   },
   restTimerCount: {
     fontFamily: typography.mono,
     color: colors.lime,
-    fontSize: 64,
-    fontWeight: "700",
+    fontSize: 80,
+    fontWeight: "900",
+    letterSpacing: -2,
+    shadowColor: colors.lime,
+    shadowOpacity: 0.5,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 0 },
   },
   restSkipBtn: {
-    marginTop: spacing[3],
+    marginTop: spacing[4],
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2],
+    minHeight: 44,
+    justifyContent: "center",
   },
   restSkipText: {
     fontFamily: typography.body,
-    color: colors.gray500,
+    color: colors.muted,
     fontSize: 14,
+    textDecorationLine: "underline",
   },
+  // Input card
   inputCard: {
     gap: spacing[4],
   },
   inputCardTitle: {
     fontFamily: typography.heading,
-    color: colors.white,
+    color: colors.text,
     fontSize: 20,
-    letterSpacing: 0.5,
+    fontWeight: "900",
+    letterSpacing: 1,
     textTransform: "uppercase",
+  },
+  inputCardTitleMono: {
+    fontFamily: typography.mono,
+    color: colors.lime,
+    fontSize: 20,
   },
   inputRow: {
     flexDirection: "row",
@@ -509,25 +648,53 @@ const styles = StyleSheet.create({
   },
   inputLabel: {
     fontFamily: typography.body,
-    color: colors.gray400,
-    fontSize: 12,
+    color: colors.muted,
+    fontSize: 11,
     textTransform: "uppercase",
-    letterSpacing: 0.5,
+    letterSpacing: 1,
+    fontWeight: "700",
+    textAlign: "center",
   },
   input: {
-    backgroundColor: colors.gray900,
+    backgroundColor: colors.surface2,
     borderWidth: 1,
-    borderColor: colors.gray700,
-    borderRadius: radius.md,
+    borderColor: colors.border,
+    borderRadius: radius.lg,
     paddingHorizontal: spacing[3],
-    paddingVertical: spacing[3],
-    color: colors.white,
+    paddingVertical: spacing[4],
+    color: colors.text,
     fontFamily: typography.mono,
-    fontSize: 18,
+    fontSize: 28,
     fontWeight: "700",
+    minHeight: 72,
+  },
+  // Log set button
+  logSetBtn: {
+    backgroundColor: colors.lime,
+    borderRadius: radius.lg,
+    paddingVertical: spacing[4],
+    alignItems: "center",
+    width: "100%",
+    shadowColor: colors.lime,
+    shadowOpacity: 0.5,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 10,
+    minHeight: 56,
+    justifyContent: "center",
+  },
+  logSetBtnText: {
+    fontFamily: typography.heading,
+    color: colors.black,
+    fontSize: 20,
+    fontWeight: "900",
+    letterSpacing: 1,
+    textTransform: "uppercase",
   },
   logBtnWrapper: {
     marginTop: spacing[2],
+    alignItems: "center",
+    width: "100%",
   },
   pausedCard: {
     alignItems: "center",
@@ -535,7 +702,7 @@ const styles = StyleSheet.create({
   },
   pausedText: {
     fontFamily: typography.body,
-    color: colors.gray400,
+    color: colors.muted,
     fontSize: 14,
     textAlign: "center",
   },
@@ -547,7 +714,7 @@ const styles = StyleSheet.create({
     padding: spacing[4],
     paddingBottom: spacing[8],
     borderTopWidth: 1,
-    borderTopColor: colors.gray800,
-    backgroundColor: colors.black,
+    borderTopColor: colors.border,
+    backgroundColor: colors.bg,
   },
 });
