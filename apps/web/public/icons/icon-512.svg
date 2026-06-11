@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Forzza logo">
+  <!-- Background -->
+  <rect width="512" height="512" rx="106" fill="#080810"/>
+  <!-- "F" lettermark in brand lime (#C8FF00) — proportionally scaled to 512 grid -->
+  <!-- Vertical stem -->
+  <rect x="149" y="117" width="48" height="278" fill="#C8FF00"/>
+  <!-- Top horizontal bar -->
+  <rect x="149" y="117" width="214" height="48" fill="#C8FF00"/>
+  <!-- Middle horizontal bar -->
+  <rect x="149" y="232" width="161" height="48" fill="#C8FF00"/>
+</svg>

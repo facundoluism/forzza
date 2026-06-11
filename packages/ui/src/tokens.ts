@@ -4,23 +4,26 @@
 export const colors = {
   // Primario
   lime: "#C8FF00",
-  limeDark: "#A3D900",
+  limeDark: "#8FB800",
   limeDim: "#A3D900",
   limeGlow: "rgba(200,255,0,0.15)",
 
   // Superficies (OLED-safe, premium dark)
-  bg: "#0A0A0A",
-  surface: "#111827",
-  surface2: "#1F2937",
+  bg: "#080810",
+  surface: "#0E0E18",
+  surface2: "#141420",
+  surface3: "#1C1C2C",
+  surface4: "#242436",
 
   // Bordes
   border: "rgba(255,255,255,0.08)",
 
   // Texto
-  text: "#F8FAFC",
-  muted: "#94A3B8",
+  text: "#F0F0FF",
+  muted: "#9898C0",
 
-  // Neutros (mantenidos para compatibilidad)
+  // Neutros
+  gray: "#6868A0",
   black: "#0A0A0A",
   white: "#FAFAFA",
   gray900: "#111827",
@@ -34,10 +37,23 @@ export const colors = {
   gray100: "#F1F5F9",
 
   // Semánticos
-  error: "#EF4444",
+  error: "#FF4466",
   success: "#22C55E",
-  warning: "#F59E0B",
-  info: "#0088FF",
+  warning: "#FF8840",
+  info: "#4488FF",
+
+  // Acentos
+  orange: "#FF8840",
+  purple: "#A78BFA",
+} as const;
+
+export const tipoColors = {
+  fuerza: "#C8FF00",
+  espalda: "#4488FF",
+  piernas: "#FF8840",
+  cardio: "#FF4466",
+  descanso: "#6868A0",
+  fullbody: "#A78BFA",
 } as const;
 
 export const spacing = {
@@ -70,4 +86,17 @@ export const radius = {
   lg: 16,
   xl: 24,
   full: 9999,
+} as const;
+
+export const fontSize = {
+  xs: 10,
+  sm: 12,
+  md: 14,
+  base: 16,
+  lg: 18,
+  xl: 20,
+  "2xl": 24,
+  "3xl": 30,
+  "4xl": 36,
+  "5xl": 48,
 } as const;

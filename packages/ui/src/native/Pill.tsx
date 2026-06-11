@@ -5,9 +5,18 @@ import type { PillVariant } from "../types";
 export interface PillProps {
   label: string;
   variant?: PillVariant;
+  /** Arbitrary background color — overrides variant when provided */
+  color?: string;
 }
 
-export function Pill({ label, variant = "default" }: PillProps) {
+export function Pill({ label, variant = "default", color }: PillProps) {
+  if (color) {
+    return (
+      <View style={[styles.pill, { backgroundColor: color + "33" }]}>
+        <Text style={[styles.label, { color }]}>{label}</Text>
+      </View>
+    );
+  }
   return (
     <View style={[styles.pill, styles[`variant_${variant}`]]}>
       <Text style={[styles.label, styles[`label_${variant}`]]}>{label}</Text>

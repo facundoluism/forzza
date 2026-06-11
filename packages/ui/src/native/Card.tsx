@@ -2,13 +2,22 @@ import { useRef } from "react";
 import { Animated, Pressable, View, StyleSheet, type ViewProps, type PressableProps } from "react-native";
 import { colors, spacing, radius } from "../tokens";
 
+export type CardVariant = "surface" | "surface2" | "surface3";
+
 export interface CardProps extends ViewProps {
   padding?: "sm" | "md" | "lg";
+  variant?: CardVariant;
   featured?: boolean;
   onPress?: PressableProps["onPress"];
 }
 
-export function Card({ padding = "md", style, children, featured = false, onPress, ...rest }: CardProps) {
+const variantBg: Record<CardVariant, string> = {
+  surface: colors.surface,
+  surface2: colors.surface2,
+  surface3: colors.surface3,
+};
+
+export function Card({ padding = "md", variant = "surface", style, children, featured = false, onPress, ...rest }: CardProps) {
   const scale = useRef(new Animated.Value(1)).current;
 
   const onPressIn = () =>
@@ -31,6 +40,7 @@ export function Card({ padding = "md", style, children, featured = false, onPres
     <Animated.View
       style={[
         styles.card,
+        { backgroundColor: variantBg[variant] },
         styles[`padding_${padding}`],
         featured && styles.featured,
         { transform: [{ scale: onPress ? scale : 1 }] },

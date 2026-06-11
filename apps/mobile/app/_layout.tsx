@@ -97,6 +97,16 @@ function RootLayoutNav() {
             headerTitleStyle: { fontFamily: "BebasNeue", fontSize: 20 },
           }}
         />
+        <Stack.Screen
+          name="styleguide"
+          options={{
+            headerShown: true,
+            title: "Styleguide",
+            headerStyle: { backgroundColor: "#0A0A0A" },
+            headerTintColor: "#C8FF00",
+            headerTitleStyle: { fontFamily: "BebasNeue", fontSize: 20 },
+          }}
+        />
       </Stack>
     </>
   );

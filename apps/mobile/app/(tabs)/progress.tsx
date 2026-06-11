@@ -111,7 +111,7 @@ function ProGatedCard({ title }: { title: string }): React.JSX.Element {
 }
 
 export default function ProgressTab(): React.JSX.Element {
-  const { user: _user } = useAuth();
+  useAuth(); // ensure auth context is available
   const syncQueue = useWorkoutStore((s) => s.syncQueue);
   const { isPro } = useEntitlements();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);

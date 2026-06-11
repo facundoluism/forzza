@@ -1,0 +1,16 @@
+{
+  "root": true,
+  "extends": ["@forzza/eslint-config"],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "ignorePatterns": ["node_modules/", "dist/"],
+  "overrides": [
+    {
+      "files": ["src/tokens.ts"],
+      "rules": {
+        "no-restricted-syntax": "off"
+      }
+    }
+  ]
+}

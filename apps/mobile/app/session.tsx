@@ -176,7 +176,6 @@ export default function SessionScreen(): React.JSX.Element | null {
         track(TRACKED_EVENTS.WORKOUT_ABANDONED);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Redirect if no active session

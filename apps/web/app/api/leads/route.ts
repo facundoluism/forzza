@@ -21,6 +21,7 @@ export async function POST(request: Request) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabase as any).from("leads").insert([
       { email: result.data.email, source: result.data.source ?? "landing" },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ] as any[]);
 
     if (error) {

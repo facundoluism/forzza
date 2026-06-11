@@ -118,7 +118,7 @@ export default function HomePage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
           {/* Free */}
           <div style={{ padding: '36px', background: 'var(--color-surface)', borderRadius: '20px', border: '1px solid var(--color-border)' }}>
-            <div style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', letterSpacing: '3px', color: '#6A6A6A', marginBottom: '16px' }}>// FREE</div>
+            <div style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', letterSpacing: '3px', color: '#6A6A6A', marginBottom: '16px' }}>{"// FREE"}</div>
             <div style={{ fontSize: '64px', fontWeight: 900, color: 'var(--color-text)', fontFamily: 'var(--font-display)', lineHeight: 1, marginBottom: '4px' }}>$0</div>
             <div style={{ color: '#6A6A6A', fontSize: '14px', marginBottom: '28px', fontFamily: 'var(--font-mono)' }}>Para siempre</div>
             <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -137,7 +137,7 @@ export default function HomePage() {
             {/* Top highlight strip */}
             <div style={{ position: 'absolute', top: 0, left: '20px', right: '20px', height: '2px', background: 'linear-gradient(90deg, transparent, var(--color-lime), transparent)', borderRadius: '2px' }} />
             <div style={{ position: 'absolute', top: '-14px', left: '50%', transform: 'translateX(-50%)', background: 'var(--color-lime)', color: '#000', padding: '4px 14px', borderRadius: '999px', fontSize: '11px', fontWeight: 700, letterSpacing: '1px', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>⚡ RECOMENDADO</div>
-            <div style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', letterSpacing: '3px', color: 'var(--color-lime)', marginBottom: '16px' }}>// PRO</div>
+            <div style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', letterSpacing: '3px', color: 'var(--color-lime)', marginBottom: '16px' }}>{"// PRO"}</div>
             <div style={{ fontSize: '64px', fontWeight: 900, color: 'var(--color-text)', fontFamily: 'var(--font-display)', lineHeight: 1, marginBottom: '4px' }}>$9.999</div>
             <div style={{ color: '#6A6A6A', fontSize: '14px', marginBottom: '28px', fontFamily: 'var(--font-mono)' }}>por mes · cancelás cuando querés</div>
             <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px', display: 'flex', flexDirection: 'column', gap: '12px' }}>

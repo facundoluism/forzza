@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { loginSchema, signupSchema, isMinor, onboardingStudentSchema } from "./auth";
+import { loginSchema, signupSchema, isMinor } from "./auth";
 
 describe("loginSchema", () => {
   it("valida email y contraseña correctos", () => {

@@ -48,7 +48,7 @@ export function AutopromoOverlay({
         <View style={styles.bottom}>
           {/* Progress bar */}
           <View style={styles.progressTrack}>
-            <View style={[styles.progressFill, { width: `${progress * 100}%` as `${number}%` }]} />
+            <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
           </View>
 
           {/* Skip button — appears after 5s (when secondsLeft <= 5) */}

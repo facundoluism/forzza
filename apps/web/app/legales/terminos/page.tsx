@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const metadata = {
   title: "Términos y condiciones — Forzza",
 };
@@ -5,9 +7,9 @@ export const metadata = {
 export default function TerminosPage() {
   return (
     <main className="bg-[#0A0A0A] min-h-screen px-6 py-16 max-w-[800px] mx-auto text-[#FAFAFA]">
-      <a href="/" className="text-[#C8FF00] text-sm hover:text-[#b8ef00] transition-colors">
+      <Link href="/" className="text-[#C8FF00] text-sm hover:text-[#b8ef00] transition-colors">
         ← Volver al inicio
-      </a>
+      </Link>
       <h1 className="text-4xl font-black text-[#FAFAFA] mt-6 mb-6 tracking-tight">
         Términos y condiciones
       </h1>

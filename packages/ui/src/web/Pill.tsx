@@ -4,6 +4,8 @@ import type { PillVariant } from "../types";
 export interface PillProps {
   label: string;
   variant?: PillVariant;
+  /** Arbitrary background color — overrides variant when provided */
+  color?: string;
 }
 
 const variantStyles: Record<PillVariant, { bg: string; text: string }> = {
@@ -14,18 +16,22 @@ const variantStyles: Record<PillVariant, { bg: string; text: string }> = {
   error: { bg: colors.error + "33", text: colors.error },
 };
 
-export function Pill({ label, variant = "default" }: PillProps) {
-  const { bg, text } = variantStyles[variant];
+export function Pill({ label, variant = "default", color }: PillProps) {
+  const { bg, text } = color
+    ? { bg: color + "33", text: color }
+    : variantStyles[variant];
   return (
-    <span style={{
-      display: "inline-flex",
-      padding: `${spacing[1]}px ${spacing[3]}px`,
-      borderRadius: `${radius.full}px`,
-      backgroundColor: bg,
-      color: text,
-      fontSize: "12px",
-      fontWeight: 600,
-    }}>
+    <span
+      style={{
+        display: "inline-flex",
+        padding: `${spacing[1]}px ${spacing[3]}px`,
+        borderRadius: `${radius.full}px`,
+        backgroundColor: bg,
+        color: text,
+        fontSize: "12px",
+        fontWeight: 600,
+      }}
+    >
       {label}
     </span>
   );

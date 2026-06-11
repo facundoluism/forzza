@@ -19,8 +19,99 @@ interface MpWebhookBody {
   };
 }
 
+/**
+ * Validates the Mercado Pago webhook HMAC-SHA256 signature.
+ *
+ * MP sends:
+ *   x-signature:   ts=TIMESTAMP,v1=HASH
+ *   x-request-id:  REQUEST_ID
+ *
+ * The signed message is exactly: `id:REQUEST_ID;ts:TIMESTAMP;`
+ * The key is the raw MP_WEBHOOK_SECRET string.
+ *
+ * Returns true if the signature is valid, false otherwise.
+ * Throws if the secret is missing (caller must return 500).
+ */
+async function validateMpSignature(req: Request): Promise<boolean> {
+  const secret = Deno.env.get("MP_WEBHOOK_SECRET");
+  if (!secret) {
+    // Fail loudly — missing secret is a configuration error, not a caller error.
+    throw new Error("MP_WEBHOOK_SECRET is not configured");
+  }
+
+  const xSignature = req.headers.get("x-signature");
+  const xRequestId = req.headers.get("x-request-id");
+
+  if (!xSignature || !xRequestId) {
+    return false;
+  }
+
+  // Parse ts and v1 from the header value `ts=...,v1=...`
+  let ts: string | null = null;
+  let v1: string | null = null;
+  for (const part of xSignature.split(",")) {
+    const [key, value] = part.split("=");
+    if (key === "ts") ts = value ?? null;
+    if (key === "v1") v1 = value ?? null;
+  }
+
+  if (!ts || !v1) {
+    return false;
+  }
+
+  // Build the signed message exactly as MP specifies it
+  const signedMessage = `id:${xRequestId};ts:${ts};`;
+
+  // Import the secret as a CryptoKey for HMAC-SHA256
+  const encoder = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+
+  // Compute the expected HMAC
+  const signatureBytes = await crypto.subtle.sign(
+    "HMAC",
+    keyMaterial,
+    encoder.encode(signedMessage),
+  );
+
+  // Encode as lowercase hex
+  const expectedHash = Array.from(new Uint8Array(signatureBytes))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+
+  // Constant-time comparison to prevent timing attacks
+  if (expectedHash.length !== v1.length) {
+    return false;
+  }
+  let diff = 0;
+  for (let i = 0; i < expectedHash.length; i++) {
+    diff |= expectedHash.charCodeAt(i) ^ v1.charCodeAt(i);
+  }
+  return diff === 0;
+}
+
 serve(async (req) => {
   if (req.method !== "POST") return new Response("ok", { status: 200 });
+
+  // --- Signature validation (must happen before body is consumed) ---
+  let signatureValid: boolean;
+  try {
+    signatureValid = await validateMpSignature(req.clone());
+  } catch (err) {
+    // Missing secret — configuration error, fail loudly
+    console.error("[mp-webhook] FATAL: signature validation setup failed:", (err as Error).message);
+    return new Response("Internal configuration error", { status: 500 });
+  }
+
+  if (!signatureValid) {
+    console.warn("[mp-webhook] Rejected request: invalid or missing x-signature");
+    return new Response("Unauthorized", { status: 401 });
+  }
 
   const body = (await req.json()) as MpWebhookBody;
   const eventId =
