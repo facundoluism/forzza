@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 type Step = 1 | 2 | 3 | 4;
@@ -114,9 +115,9 @@ export default function OnboardingCoachPage() {
       <div style={{ maxWidth: "600px", margin: "0 auto" }}>
         {/* Logo */}
         <div style={{ marginBottom: "32px" }}>
-          <a href="/" style={{ textDecoration: "none", display: "inline-block" }}>
+          <Link href="/" style={{ textDecoration: "none", display: "inline-block" }}>
             <span style={{ color: "var(--color-lime)", fontSize: "24px", fontWeight: 800, letterSpacing: "6px", fontFamily: "var(--font-display)" }}>FORZZA</span>
-          </a>
+          </Link>
         </div>
         {/* Header */}
         <h1 style={{ color: "var(--color-lime)", fontSize: "28px", fontWeight: "bold", marginBottom: "8px", fontFamily: "var(--font-display)", letterSpacing: "1px" }}>
