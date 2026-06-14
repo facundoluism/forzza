@@ -60,4 +60,21 @@ describe("isMinor", () => {
     const isoDate = exactly18.toISOString().slice(0, 10);
     expect(isMinor(isoDate)).toBe(false);
   });
+
+  it("nacido el mes siguiente hace 18 años → todavía es menor (rama monthDiff < 0)", () => {
+    // Usamos enero del año que cumple 18 pero aún no llegó el mes de cumpleaños
+    // Para que sea determinista: nacido en diciembre del año -18, hoy es cualquier mes anterior
+    // Forma simple: fijar un cumpleaños futuro en el año correcto
+    const today = new Date();
+    // Nació hace exactamente (18 years - 1 month) → tiene 17 años y 11 meses
+    let birthMonth = today.getMonth() + 1; // mes siguiente
+    let birthYear = today.getFullYear() - 18;
+    if (birthMonth > 11) {
+      birthMonth = 0;
+      birthYear += 1;
+    }
+    const birth = new Date(birthYear, birthMonth, 1);
+    const isoDate = birth.toISOString().slice(0, 10);
+    expect(isMinor(isoDate)).toBe(true);
+  });
 });

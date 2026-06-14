@@ -57,7 +57,7 @@ serve(async (req) => {
     );
   }
 
-  // Fetch user info (email + country)
+  // Fetch user country — users table no tiene email (está en auth.users)
   const { data: userRecord } = await supabase
     .from("users")
     .select("country")
@@ -82,13 +82,13 @@ serve(async (req) => {
     }
   }
 
-  // Validate coach + package
+  // Validate coach + package — usar columnas reales: title, price, active (no name/price_cents/is_active)
   const { data: coachPackage } = await supabase
     .from("coach_packages")
-    .select("id, name, price_cents, billing_type, coach:coach_profiles(user_id, status, display_name)")
+    .select("id, title, price, active, country, coach:coach_profiles(user_id, status, display_name)")
     .eq("id", package_id)
     .eq("coach_id", coach_id)
-    .eq("is_active", true)
+    .eq("active", true)
     .single();
 
   if (
@@ -101,24 +101,28 @@ serve(async (req) => {
     );
   }
 
-  const priceInCurrency = coachPackage.price_cents / 100;
+  // price ya está en centavos/enteros según la migración — NO dividir por 100
+  const priceInCents = coachPackage.price;
 
-  // Get currency config from country
+  // Get currency config from country — PK de country_config es 'country', no 'country_code'
   const countryCode = userRecord?.country ?? "AR";
   const { data: config } = await supabase
     .from("country_config")
     .select("currency_code, currency_symbol")
-    .eq("country_code", countryCode)
+    .eq("country", countryCode)
     .single();
 
   const currencyCode = config?.currency_code ?? "ARS";
+  // MP espera el amount en la unidad monetaria (pesos), no en centavos
+  const priceInCurrency = priceInCents / 100;
 
-  // Get user email from auth
+  // Get user email from auth (no está en users pública)
   const userEmail = user.email ?? "";
 
   // Create MP preapproval_plan (subscription)
+  // reason usa title (no name — no existe esa columna)
   const mpBody = {
-    reason: `Forzza Coach: ${coachPackage.name}`,
+    reason: `Forzza Coach: ${coachPackage.title}`,
     auto_recurring: {
       frequency: 1,
       frequency_type: "months",
@@ -148,25 +152,31 @@ serve(async (req) => {
 
   const mpData = await mpResponse.json() as { id: string; init_point: string };
 
-  // Insert payment record
+  // Insert payment record — columnas reales de la migración
+  // user_id = payer, coach_id = coach, amount, currency, gateway, gateway_payment_id
   await supabase.from("payments").insert({
-    payer_id: user.id,
-    payee_id: (coachPackage.coach as { user_id: string } | null)?.user_id ?? coach_id,
-    amount_cents: coachPackage.price_cents,
-    currency_code: currencyCode,
+    user_id: user.id,
+    coach_id: (coachPackage.coach as { user_id: string } | null)?.user_id ?? coach_id,
+    amount: priceInCents,
+    currency: currencyCode,
     status: "pending",
-    provider: "mercadopago",
-    provider_payment_id: mpData.id,
+    gateway: "mercadopago",
+    gateway_payment_id: mpData.id,
     metadata: { package_id, coach_id, mp_preapproval_id: mpData.id },
   });
 
-  // Audit log
+  // Audit log — columna 'payload' (no metadata)
   await supabase.from("audit_log").insert({
     actor_id: user.id,
     action: "coach_checkout_initiated",
     entity_type: "payment",
-    entity_id: mpData.id,
-    metadata: { coach_id, package_id, amount_cents: coachPackage.price_cents },
+    entity_id: null,
+    payload: {
+      coach_id,
+      package_id,
+      amount: priceInCents,
+      mp_preapproval_id: mpData.id,
+    },
   });
 
   return new Response(

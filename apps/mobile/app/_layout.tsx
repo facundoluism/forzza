@@ -1,8 +1,21 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import * as SplashScreen from "expo-splash-screen";
+import { useFonts } from "expo-font";
+import { BebasNeue_400Regular } from "@expo-google-fonts/bebas-neue";
+import {
+  DMSans_400Regular,
+  DMSans_500Medium,
+  DMSans_700Bold,
+} from "@expo-google-fonts/dm-sans";
+import { SpaceMono_400Regular } from "@expo-google-fonts/space-mono";
 import { AuthProvider, useAuth } from "@/providers/AuthProvider";
+import { initSentry } from "@/lib/sentry";
+
+// Evitar que el splash se oculte antes de que las fuentes carguen
+SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,7 +58,10 @@ function RootLayoutNav() {
         <Stack.Screen name="index" />
         <Stack.Screen name="session" options={{ presentation: "modal" }} />
         <Stack.Screen name="routine/[id]" />
-        <Stack.Screen name="upgrade" options={{ title: "Planes", presentation: "modal" }} />
+        <Stack.Screen
+          name="upgrade"
+          options={{ title: "Planes", presentation: "modal" }}
+        />
         <Stack.Screen
           name="marketplace/index"
           options={{
@@ -53,7 +69,10 @@ function RootLayoutNav() {
             title: "Coaches",
             headerStyle: { backgroundColor: "#0A0A0A" },
             headerTintColor: "#FAFAFA",
-            headerTitleStyle: { fontFamily: "BebasNeue", fontSize: 20 },
+            headerTitleStyle: {
+              fontFamily: "BebasNeue_400Regular",
+              fontSize: 20,
+            },
           }}
         />
         <Stack.Screen
@@ -63,7 +82,10 @@ function RootLayoutNav() {
             title: "Perfil del coach",
             headerStyle: { backgroundColor: "#0A0A0A" },
             headerTintColor: "#FAFAFA",
-            headerTitleStyle: { fontFamily: "BebasNeue", fontSize: 20 },
+            headerTitleStyle: {
+              fontFamily: "BebasNeue_400Regular",
+              fontSize: 20,
+            },
           }}
         />
         <Stack.Screen
@@ -74,7 +96,10 @@ function RootLayoutNav() {
             presentation: "modal",
             headerStyle: { backgroundColor: "#0A0A0A" },
             headerTintColor: "#FAFAFA",
-            headerTitleStyle: { fontFamily: "BebasNeue", fontSize: 20 },
+            headerTitleStyle: {
+              fontFamily: "BebasNeue_400Regular",
+              fontSize: 20,
+            },
           }}
         />
         <Stack.Screen
@@ -84,7 +109,10 @@ function RootLayoutNav() {
             title: "Notificaciones",
             headerStyle: { backgroundColor: "#0A0A0A" },
             headerTintColor: "#FAFAFA",
-            headerTitleStyle: { fontFamily: "BebasNeue", fontSize: 20 },
+            headerTitleStyle: {
+              fontFamily: "BebasNeue_400Regular",
+              fontSize: 20,
+            },
           }}
         />
         <Stack.Screen
@@ -94,7 +122,10 @@ function RootLayoutNav() {
             title: "Chat",
             headerStyle: { backgroundColor: "#0A0A0A" },
             headerTintColor: "#FAFAFA",
-            headerTitleStyle: { fontFamily: "BebasNeue", fontSize: 20 },
+            headerTitleStyle: {
+              fontFamily: "BebasNeue_400Regular",
+              fontSize: 20,
+            },
           }}
         />
         <Stack.Screen
@@ -104,7 +135,10 @@ function RootLayoutNav() {
             title: "Styleguide",
             headerStyle: { backgroundColor: "#0A0A0A" },
             headerTintColor: "#C8FF00",
-            headerTitleStyle: { fontFamily: "BebasNeue", fontSize: 20 },
+            headerTitleStyle: {
+              fontFamily: "BebasNeue_400Regular",
+              fontSize: 20,
+            },
           }}
         />
       </Stack>
@@ -113,6 +147,28 @@ function RootLayoutNav() {
 }
 
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    BebasNeue_400Regular,
+    DMSans_400Regular,
+    DMSans_500Medium,
+    DMSans_700Bold,
+    SpaceMono_400Regular,
+  });
+  const [sentryReady, setSentryReady] = useState(false);
+
+  useEffect(() => {
+    initSentry().then(() => setSentryReady(true));
+  }, []);
+
+  useEffect(() => {
+    if (fontsLoaded && sentryReady) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, sentryReady]);
+
+  // No renderizar hasta que las fuentes estén listas
+  if (!fontsLoaded) return null;
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>

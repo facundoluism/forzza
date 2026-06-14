@@ -14,9 +14,13 @@ interface CoachRow {
   display_name: string;
   status: CoachStatus;
   country: string;
-  constancia_url: string | null;
+  constancia_path: string | null;
   created_at: string;
   billing_model: string;
+}
+
+interface CoachRowWithSignedUrl extends CoachRow {
+  constanciaSignedUrl: string | null;
 }
 
 function formatDate(dateStr: string): string {
@@ -53,7 +57,7 @@ export default async function AdminCoachesPage({ searchParams }: PageProps) {
   const { data: coaches, error } = await adminClient
     .from("coach_profiles")
     .select(
-      "id, user_id, display_name, status, country, constancia_url, created_at, billing_model"
+      "id, user_id, display_name, status, country, constancia_path, created_at, billing_model"
     )
     .eq("status", tab)
     .order("created_at", { ascending: false });
@@ -62,7 +66,19 @@ export default async function AdminCoachesPage({ searchParams }: PageProps) {
     console.error("Error fetching coaches:", error);
   }
 
-  const rows = (coaches ?? []) as CoachRow[];
+  const rawRows = (coaches ?? []) as CoachRow[];
+
+  // Generate signed URLs (TTL 1h) for coaches with constancia_path.
+  // Running in parallel is acceptable for admin backoffice (few pending coaches).
+  const rows: CoachRowWithSignedUrl[] = await Promise.all(
+    rawRows.map(async (coach) => {
+      if (!coach.constancia_path) return { ...coach, constanciaSignedUrl: null };
+      const { data: signedData } = await adminClient.storage
+        .from("fiscal-docs")
+        .createSignedUrl(coach.constancia_path, 3600);
+      return { ...coach, constanciaSignedUrl: signedData?.signedUrl ?? null };
+    })
+  );
 
   const tabs: { key: CoachStatus; label: string }[] = [
     { key: "pending", label: "Pendientes" },
@@ -99,8 +115,12 @@ export default async function AdminCoachesPage({ searchParams }: PageProps) {
 
       {rows.length === 0 ? (
         <div className="rounded-xl border border-[#1E1E1E] bg-[#111111] p-12 text-center">
-          <p className="text-[#555555] text-lg">
+          <p className="text-4xl mb-4">🏋️</p>
+          <p className="text-[#FAFAFA] text-lg font-semibold">
             No hay coaches {statusLabel[tab].toLowerCase()} por ahora.
+          </p>
+          <p className="text-[#555555] text-sm mt-2">
+            Los coaches aparecerán acá según su estado.
           </p>
         </div>
       ) : (
@@ -124,8 +144,8 @@ export default async function AdminCoachesPage({ searchParams }: PageProps) {
                 <span>{formatDate(coach.created_at)}</span>
               </div>
               <div className="flex items-center justify-between pt-1 border-t border-[#1A1A1A]">
-                {coach.constancia_url ? (
-                  <a href={coach.constancia_url} target="_blank" rel="noopener noreferrer" className="text-[#C8FF00] hover:text-[#AADD00] text-xs transition-colors">
+                {coach.constanciaSignedUrl ? (
+                  <a href={coach.constanciaSignedUrl} target="_blank" rel="noopener noreferrer" className="text-[#C8FF00] hover:text-[#AADD00] text-xs transition-colors">
                     Ver doc →
                   </a>
                 ) : (
@@ -167,8 +187,8 @@ export default async function AdminCoachesPage({ searchParams }: PageProps) {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    {coach.constancia_url ? (
-                      <a href={coach.constancia_url} target="_blank" rel="noopener noreferrer" className="text-[#C8FF00] hover:text-[#AADD00] text-xs transition-colors">
+                    {coach.constanciaSignedUrl ? (
+                      <a href={coach.constanciaSignedUrl} target="_blank" rel="noopener noreferrer" className="text-[#C8FF00] hover:text-[#AADD00] text-xs transition-colors">
                         Ver doc →
                       </a>
                     ) : (

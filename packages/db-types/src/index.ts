@@ -1,6 +1,7 @@
 // Tipos del schema de Forzza
+// FUENTE DE VERDAD: supabase/migrations/ — este archivo debe ser consistente con ellas.
 // Se regenera con: pnpm db:types (requiere Supabase local corriendo)
-// Este archivo es una aproximación manual hasta que la DB esté activa.
+// Última sincronización: migración 20260615000001_add_missing_columns.sql
 
 export type Json =
   | string
@@ -10,24 +11,32 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
+// =============================================================================
+// ENUMS (deben coincidir EXACTAMENTE con los CREATE TYPE de las migraciones)
+// =============================================================================
+
 export type UserRole = "student" | "coach" | "owner" | "promoter";
 export type CountryCode = "AR" | "CL";
-export type SubscriptionStatus = "active" | "past_due" | "canceled" | "trialing" | "pending" | "suspended" | "expired" | "cancelled";
+export type SubscriptionStatus = "active" | "past_due" | "canceled" | "trialing";
 export type BillingModel = "fixed" | "comision";
 export type CoachStatus = "pending" | "approved" | "rejected" | "suspended";
-export type BillingType = "mensual" | "paquete";
-export type PaymentProvider = "mercadopago";
 export type PackageTier = "starter" | "pro" | "elite";
 export type AssignmentStatus = "pending" | "active" | "completed" | "refunded" | "canceled";
-export type PaymentStatus = "pending" | "approved" | "rejected" | "refunded" | "in_process" | "completed";
+export type PaymentStatus = "pending" | "approved" | "rejected" | "refunded" | "in_process";
 export type SettlementStatus = "pending" | "pending_invoice" | "invoiced" | "transferred";
 export type WorkoutStatus = "in_progress" | "completed" | "abandoned";
-export type QuestionType = "text" | "number" | "boolean" | "photo";
-export type TicketStatus = "open" | "in_progress" | "resolved" | "closed";
+export type LegalEntityType = "monotributo" | "responsable_inscripto" | "empresa" | "otro";
+export type NotificationChannel = "push" | "email" | "in_app";
+
+// Tipos derivados (no son enums de DB pero se usan en código)
+export type SubscriptionPlan = "free" | "pro" | "elite";
 
 export type Database = {
   public: {
     Tables: {
+      // =========================================================================
+      // users — extiende auth.users, sin email ni full_name (están en auth.users)
+      // =========================================================================
       users: {
         Row: {
           id: string;
@@ -40,17 +49,21 @@ export type Database = {
         Insert: {
           id: string;
           role?: UserRole;
-          country: CountryCode;
-          deleted_at?: string | null;
-        };
-        Update: {
-          id?: string;
-          role?: UserRole;
           country?: CountryCode;
           deleted_at?: string | null;
         };
+        Update: {
+          role?: UserRole;
+          country?: CountryCode;
+          deleted_at?: string | null;
+          updated_at?: string;
+        };
         Relationships: [];
       };
+
+      // =========================================================================
+      // student_profiles
+      // =========================================================================
       student_profiles: {
         Row: {
           id: string;
@@ -66,6 +79,7 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
+          id?: string;
           user_id: string;
           display_name?: string | null;
           birth_date?: string | null;
@@ -76,7 +90,6 @@ export type Database = {
           avatar_url?: string | null;
         };
         Update: {
-          user_id?: string;
           display_name?: string | null;
           birth_date?: string | null;
           parental_consent_at?: string | null;
@@ -84,9 +97,16 @@ export type Database = {
           goals?: string[];
           level?: string | null;
           avatar_url?: string | null;
+          updated_at?: string;
         };
         Relationships: [];
       };
+
+      // =========================================================================
+      // coach_profiles
+      // Columnas originales + cbu, alias_cbu, years_experience (migración 20260615)
+      // constancia_url NO existe en DB — es una URL firmada calculada en runtime
+      // =========================================================================
       coach_profiles: {
         Row: {
           id: string;
@@ -97,11 +117,10 @@ export type Database = {
           avatar_url: string | null;
           status: CoachStatus;
           country: CountryCode;
-          legal_entity_type: string | null;
+          legal_entity_type: LegalEntityType | null;
           fiscal_id: string | null;
           bank_account: string | null;
           constancia_path: string | null;
-          constancia_url: string | null;
           cbu: string | null;
           alias_cbu: string | null;
           billing_model: BillingModel;
@@ -111,18 +130,18 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
+          id?: string;
           user_id: string;
           display_name: string;
           bio?: string | null;
           specialties?: string[];
           avatar_url?: string | null;
           status?: CoachStatus;
-          country: CountryCode;
-          legal_entity_type?: string | null;
+          country?: CountryCode;
+          legal_entity_type?: LegalEntityType | null;
           fiscal_id?: string | null;
           bank_account?: string | null;
           constancia_path?: string | null;
-          constancia_url?: string | null;
           cbu?: string | null;
           alias_cbu?: string | null;
           billing_model?: BillingModel;
@@ -130,108 +149,76 @@ export type Database = {
           active_student_count?: number;
         };
         Update: {
-          user_id?: string;
           display_name?: string;
           bio?: string | null;
           specialties?: string[];
           avatar_url?: string | null;
           status?: CoachStatus;
           country?: CountryCode;
-          legal_entity_type?: string | null;
+          legal_entity_type?: LegalEntityType | null;
           fiscal_id?: string | null;
           bank_account?: string | null;
           constancia_path?: string | null;
-          constancia_url?: string | null;
           cbu?: string | null;
           alias_cbu?: string | null;
           billing_model?: BillingModel;
           years_experience?: number | null;
           active_student_count?: number;
+          updated_at?: string;
         };
         Relationships: [];
       };
+
+      // =========================================================================
+      // coach_packages — columnas exactas de la migración: tier, title, price, active, country
+      // NO tiene: name, price_cents, billing_type, features, is_active
+      // =========================================================================
       coach_packages: {
         Row: {
           id: string;
           coach_id: string;
-          name: string;
+          tier: PackageTier;
+          title: string;
           description: string | null;
-          price_cents: number;
-          billing_type: BillingType;
-          features: string[];
-          is_active: boolean;
+          price: number;
+          country: CountryCode;
+          active: boolean;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
           coach_id: string;
-          name: string;
+          tier: PackageTier;
+          title: string;
           description?: string | null;
-          price_cents: number;
-          billing_type: BillingType;
-          features?: string[];
-          is_active?: boolean;
+          price: number;
+          country?: CountryCode;
+          active?: boolean;
         };
         Update: {
-          id?: string;
-          coach_id?: string;
-          name?: string;
+          tier?: PackageTier;
+          title?: string;
           description?: string | null;
-          price_cents?: number;
-          billing_type?: BillingType;
-          features?: string[];
-          is_active?: boolean;
+          price?: number;
+          country?: CountryCode;
+          active?: boolean;
           updated_at?: string;
         };
         Relationships: [];
       };
-      payments: {
-        Row: {
-          id: string;
-          payer_id: string;
-          payee_id: string;
-          amount_cents: number;
-          currency_code: string;
-          status: PaymentStatus;
-          provider: PaymentProvider;
-          provider_payment_id: string | null;
-          metadata: Json | null;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          payer_id: string;
-          payee_id: string;
-          amount_cents: number;
-          currency_code: string;
-          status?: PaymentStatus;
-          provider: PaymentProvider;
-          provider_payment_id?: string | null;
-          metadata?: Json | null;
-        };
-        Update: {
-          id?: string;
-          payer_id?: string;
-          payee_id?: string;
-          amount_cents?: number;
-          currency_code?: string;
-          status?: PaymentStatus;
-          provider?: PaymentProvider;
-          provider_payment_id?: string | null;
-          metadata?: Json | null;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
+
+      // =========================================================================
+      // country_config — PK es 'country' (no country_code)
+      // + pro_monthly_price_cents y currency_code (migración 20260615)
+      // =========================================================================
       country_config: {
         Row: {
-          country_code: CountryCode;
+          country: CountryCode;
           commission_rate: number;
           currency: string;
-          currency_code: string;
           currency_symbol: string;
+          currency_code: string;
           min_coach_price: number;
           pro_monthly_price_cents: number;
           active: boolean;
@@ -239,125 +226,209 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
-          country_code: CountryCode;
-          commission_rate: number;
+          country: CountryCode;
+          commission_rate?: number;
           currency: string;
-          currency_code: string;
           currency_symbol: string;
+          currency_code?: string;
           min_coach_price: number;
           pro_monthly_price_cents?: number;
           active?: boolean;
         };
         Update: {
-          country_code?: CountryCode;
           commission_rate?: number;
           currency?: string;
-          currency_code?: string;
           currency_symbol?: string;
+          currency_code?: string;
           min_coach_price?: number;
           pro_monthly_price_cents?: number;
           active?: boolean;
+          updated_at?: string;
         };
         Relationships: [];
       };
+
+      // =========================================================================
+      // subscriptions — columnas exactas de la migración
+      // + plan (migración 20260615) — gateway y platform existían en original
+      // NO tiene: provider, provider_subscription_id, started_at, expires_at
+      // =========================================================================
       subscriptions: {
         Row: {
           id: string;
           user_id: string;
-          plan: "free" | "pro" | "elite";
+          plan: SubscriptionPlan;
           status: SubscriptionStatus;
-          provider: "mercadopago" | "revenuecat" | "manual";
-          provider_subscription_id: string | null;
-          started_at: string | null;
-          expires_at: string | null;
+          platform: string;
+          gateway: string;
+          gateway_subscription_id: string | null;
+          current_period_start: string | null;
+          current_period_end: string | null;
+          canceled_at: string | null;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
           user_id: string;
-          plan: "free" | "pro" | "elite";
+          plan?: SubscriptionPlan;
           status?: SubscriptionStatus;
-          provider: "mercadopago" | "revenuecat" | "manual";
-          provider_subscription_id?: string | null;
-          started_at?: string | null;
-          expires_at?: string | null;
+          platform: string;
+          gateway: string;
+          gateway_subscription_id?: string | null;
+          current_period_start?: string | null;
+          current_period_end?: string | null;
+          canceled_at?: string | null;
         };
         Update: {
-          id?: string;
-          user_id?: string;
-          plan?: "free" | "pro" | "elite";
+          plan?: SubscriptionPlan;
           status?: SubscriptionStatus;
-          provider?: "mercadopago" | "revenuecat" | "manual";
-          provider_subscription_id?: string | null;
-          started_at?: string | null;
-          expires_at?: string | null;
+          platform?: string;
+          gateway?: string;
+          gateway_subscription_id?: string | null;
+          current_period_start?: string | null;
+          current_period_end?: string | null;
+          canceled_at?: string | null;
           updated_at?: string;
         };
         Relationships: [];
       };
-      processed_events: {
+
+      // =========================================================================
+      // payments — columnas exactas de la migración
+      // NO tiene: payer_id, payee_id, amount_cents, currency_code, provider, provider_payment_id
+      // USA: user_id, coach_id, amount, currency, gateway, gateway_payment_id, metadata
+      // =========================================================================
+      payments: {
         Row: {
           id: string;
-          event_id: string;
-          provider: "mercadopago" | "revenuecat" | "mercadopago_assignment";
-          event_type: string | null;
-          payload: Json;
+          user_id: string;
+          coach_id: string | null;
+          assignment_id: string | null;
+          amount: number;
+          currency: string;
+          status: PaymentStatus;
+          gateway: string;
+          gateway_payment_id: string | null;
+          metadata: Json;
           created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
-          event_id: string;
-          provider: "mercadopago" | "revenuecat" | "mercadopago_assignment";
-          event_type?: string | null;
-          payload?: Json;
+          user_id: string;
+          coach_id?: string | null;
+          assignment_id?: string | null;
+          amount: number;
+          currency: string;
+          status?: PaymentStatus;
+          gateway: string;
+          gateway_payment_id?: string | null;
+          metadata?: Json;
         };
-        Update: Record<string, never>;
+        Update: {
+          status?: PaymentStatus;
+          gateway_payment_id?: string | null;
+          metadata?: Json;
+          updated_at?: string;
+        };
         Relationships: [];
       };
+
+      // =========================================================================
+      // coach_assignments
+      // NO tiene routine_id (no está en la migración)
+      // =========================================================================
       coach_assignments: {
         Row: {
           id: string;
-          coach_id: string;
           student_id: string;
-          package_id: string | null;
-          routine_id: string | null;
+          coach_id: string;
+          package_id: string;
+          payment_id: string | null;
           status: AssignmentStatus;
           started_at: string | null;
           ended_at: string | null;
+          refunded_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          student_id: string;
+          coach_id: string;
+          package_id: string;
+          payment_id?: string | null;
+          status?: AssignmentStatus;
+          started_at?: string | null;
+          ended_at?: string | null;
+          refunded_at?: string | null;
+        };
+        Update: {
+          status?: AssignmentStatus;
+          started_at?: string | null;
+          ended_at?: string | null;
+          refunded_at?: string | null;
+          payment_id?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+
+      // =========================================================================
+      // settlements — columnas exactas de la migración (sin _cents en los nombres)
+      // =========================================================================
+      settlements: {
+        Row: {
+          id: string;
+          coach_id: string;
+          period_start: string;
+          period_end: string;
+          gross_amount: number;
+          commission: number;
+          net_amount: number;
+          currency: string;
+          status: SettlementStatus;
+          invoice_number: string | null;
+          invoice_path: string | null;
+          transferred_at: string | null;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
           coach_id: string;
-          student_id: string;
-          package_id?: string | null;
-          routine_id?: string | null;
-          status?: AssignmentStatus;
-          started_at?: string | null;
-          ended_at?: string | null;
+          period_start: string;
+          period_end: string;
+          gross_amount: number;
+          commission: number;
+          net_amount: number;
+          currency: string;
+          status?: SettlementStatus;
+          invoice_number?: string | null;
+          invoice_path?: string | null;
+          transferred_at?: string | null;
         };
         Update: {
-          id?: string;
-          coach_id?: string;
-          student_id?: string;
-          package_id?: string | null;
-          routine_id?: string | null;
-          status?: AssignmentStatus;
-          started_at?: string | null;
-          ended_at?: string | null;
+          status?: SettlementStatus;
+          invoice_number?: string | null;
+          invoice_path?: string | null;
+          transferred_at?: string | null;
           updated_at?: string;
         };
         Relationships: [];
       };
+
+      // =========================================================================
+      // exercise_library — columnas exactas: muscle_groups TEXT[], equipment TEXT[]
+      // =========================================================================
       exercise_library: {
         Row: {
           id: string;
           name: string;
           description: string | null;
-          muscle_group: string | null;
-          equipment: string | null;
+          muscle_groups: string[];
+          equipment: string[];
           video_url: string | null;
           created_at: string;
         };
@@ -365,292 +436,233 @@ export type Database = {
           id?: string;
           name: string;
           description?: string | null;
-          muscle_group?: string | null;
-          equipment?: string | null;
+          muscle_groups?: string[];
+          equipment?: string[];
           video_url?: string | null;
         };
         Update: {
-          id?: string;
           name?: string;
           description?: string | null;
-          muscle_group?: string | null;
-          equipment?: string | null;
+          muscle_groups?: string[];
+          equipment?: string[];
           video_url?: string | null;
         };
         Relationships: [];
       };
+
+      // =========================================================================
+      // routines — title (no name), exercises JSONB, active BOOLEAN
+      // student_id es NOT NULL; coach_id es nullable
+      // =========================================================================
       routines: {
         Row: {
           id: string;
-          coach_id: string;
-          student_id: string | null;
-          name: string;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          coach_id: string;
-          student_id?: string | null;
-          name: string;
-        };
-        Update: {
-          id?: string;
-          coach_id?: string;
-          student_id?: string | null;
-          name?: string;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
-      routine_exercises: {
-        Row: {
-          id: string;
-          routine_id: string;
-          exercise_id: string;
-          order: number;
-          sets: number | null;
-          reps: number | null;
-          duration_seconds: number | null;
-          rest_seconds: number | null;
-        };
-        Insert: {
-          id?: string;
-          routine_id: string;
-          exercise_id: string;
-          order: number;
-          sets?: number | null;
-          reps?: number | null;
-          duration_seconds?: number | null;
-          rest_seconds?: number | null;
-        };
-        Update: {
-          id?: string;
-          routine_id?: string;
-          exercise_id?: string;
-          order?: number;
-          sets?: number | null;
-          reps?: number | null;
-          duration_seconds?: number | null;
-          rest_seconds?: number | null;
-        };
-        Relationships: [];
-      };
-      checkin_templates: {
-        Row: {
-          id: string;
-          coach_id: string;
-          name: string;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          coach_id: string;
-          name: string;
-        };
-        Update: {
-          id?: string;
-          coach_id?: string;
-          name?: string;
-        };
-        Relationships: [];
-      };
-      checkin_questions: {
-        Row: {
-          id: string;
-          template_id: string;
-          label: string;
-          question_type: QuestionType;
-          required: boolean;
-          order: number;
-        };
-        Insert: {
-          id?: string;
-          template_id: string;
-          label: string;
-          question_type: QuestionType;
-          required?: boolean;
-          order: number;
-        };
-        Update: {
-          id?: string;
-          template_id?: string;
-          label?: string;
-          question_type?: QuestionType;
-          required?: boolean;
-          order?: number;
-        };
-        Relationships: [];
-      };
-      checkin_responses: {
-        Row: {
-          id: string;
-          template_id: string;
           student_id: string;
-          submitted_at: string;
-          answers: Json;
-        };
-        Insert: {
-          id?: string;
-          template_id: string;
-          student_id: string;
-          submitted_at?: string;
-          answers?: Json;
-        };
-        Update: {
-          id?: string;
-          template_id?: string;
-          student_id?: string;
-          submitted_at?: string;
-          answers?: Json;
-        };
-        Relationships: [];
-      };
-      workout_sessions: {
-        Row: {
-          id: string;
-          student_id: string;
-          routine_id: string | null;
-          status: WorkoutStatus;
-          started_at: string;
-          finished_at: string | null;
-          notes: string | null;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          student_id: string;
-          routine_id?: string | null;
-          status?: WorkoutStatus;
-          started_at?: string;
-          finished_at?: string | null;
-          notes?: string | null;
-        };
-        Update: {
-          id?: string;
-          student_id?: string;
-          routine_id?: string | null;
-          status?: WorkoutStatus;
-          started_at?: string;
-          finished_at?: string | null;
-          notes?: string | null;
-        };
-        Relationships: [];
-      };
-      settlements: {
-        Row: {
-          id: string;
-          coach_id: string;
-          period_start: string;
-          period_end: string;
-          gross_amount_cents: number;
-          commission_amount_cents: number;
-          net_amount_cents: number;
-          status: SettlementStatus;
-          invoice_url: string | null;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          coach_id: string;
-          period_start: string;
-          period_end: string;
-          gross_amount_cents: number;
-          commission_amount_cents: number;
-          net_amount_cents: number;
-          status?: SettlementStatus;
-          invoice_url?: string | null;
-        };
-        Update: {
-          id?: string;
-          coach_id?: string;
-          period_start?: string;
-          period_end?: string;
-          gross_amount_cents?: number;
-          commission_amount_cents?: number;
-          net_amount_cents?: number;
-          status?: SettlementStatus;
-          invoice_url?: string | null;
-        };
-        Relationships: [];
-      };
-      tickets: {
-        Row: {
-          id: string;
-          user_id: string;
-          subject: string;
-          body: string | null;
-          status: TicketStatus;
-          assigned_to: string | null;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          subject: string;
-          body?: string | null;
-          status?: TicketStatus;
-          assigned_to?: string | null;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          subject?: string;
-          body?: string | null;
-          status?: TicketStatus;
-          assigned_to?: string | null;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
-      ticket_messages: {
-        Row: {
-          id: string;
-          ticket_id: string;
-          sender_id: string;
-          body: string;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          ticket_id: string;
-          sender_id: string;
-          body: string;
-        };
-        Update: Record<string, never>;
-        Relationships: [];
-      };
-      promoters: {
-        Row: {
-          id: string;
-          user_id: string;
-          code: string;
-          commission_rate: number;
-          total_referrals: number;
+          coach_id: string | null;
+          title: string;
+          description: string | null;
+          exercises: Json;
           active: boolean;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
-          user_id: string;
-          code: string;
-          commission_rate?: number;
-          total_referrals?: number;
+          student_id: string;
+          coach_id?: string | null;
+          title: string;
+          description?: string | null;
+          exercises?: Json;
           active?: boolean;
         };
         Update: {
-          id?: string;
-          user_id?: string;
-          code?: string;
-          commission_rate?: number;
-          total_referrals?: number;
+          coach_id?: string | null;
+          title?: string;
+          description?: string | null;
+          exercises?: Json;
           active?: boolean;
           updated_at?: string;
         };
         Relationships: [];
       };
+
+      // =========================================================================
+      // workout_sessions — client_uuid para idempotencia offline; sets_data JSONB
+      // NO tiene: finished_at, notes (tiene completed_at, sets_data)
+      // =========================================================================
+      workout_sessions: {
+        Row: {
+          id: string;
+          student_id: string;
+          routine_id: string | null;
+          client_uuid: string;
+          status: WorkoutStatus;
+          started_at: string;
+          completed_at: string | null;
+          sets_data: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          student_id: string;
+          routine_id?: string | null;
+          client_uuid: string;
+          status?: WorkoutStatus;
+          started_at?: string;
+          completed_at?: string | null;
+          sets_data?: Json;
+        };
+        Update: {
+          status?: WorkoutStatus;
+          completed_at?: string | null;
+          sets_data?: Json;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+
+      // =========================================================================
+      // body_metrics (existía en migración, faltaba en db-types)
+      // =========================================================================
+      body_metrics: {
+        Row: {
+          id: string;
+          student_id: string;
+          weight_g: number | null;
+          height_mm: number | null;
+          body_fat_pct: number | null;
+          notes: string | null;
+          recorded_at: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          student_id: string;
+          weight_g?: number | null;
+          height_mm?: number | null;
+          body_fat_pct?: number | null;
+          notes?: string | null;
+          recorded_at?: string;
+        };
+        Update: {
+          weight_g?: number | null;
+          height_mm?: number | null;
+          body_fat_pct?: number | null;
+          notes?: string | null;
+        };
+        Relationships: [];
+      };
+
+      // =========================================================================
+      // progress_photos (existía en migración, faltaba en db-types)
+      // =========================================================================
+      progress_photos: {
+        Row: {
+          id: string;
+          student_id: string;
+          assignment_id: string | null;
+          storage_path: string;
+          notes: string | null;
+          recorded_at: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          student_id: string;
+          assignment_id?: string | null;
+          storage_path: string;
+          notes?: string | null;
+          recorded_at?: string;
+        };
+        Update: {
+          storage_path?: string;
+          notes?: string | null;
+        };
+        Relationships: [];
+      };
+
+      // =========================================================================
+      // checkin_templates
+      // =========================================================================
+      checkin_templates: {
+        Row: {
+          id: string;
+          coach_id: string;
+          title: string;
+          questions: Json;
+          active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          coach_id: string;
+          title: string;
+          questions?: Json;
+          active?: boolean;
+        };
+        Update: {
+          title?: string;
+          questions?: Json;
+          active?: boolean;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+
+      // =========================================================================
+      // checkin_responses
+      // =========================================================================
+      checkin_responses: {
+        Row: {
+          id: string;
+          template_id: string;
+          student_id: string;
+          assignment_id: string;
+          answers: Json;
+          submitted_at: string;
+        };
+        Insert: {
+          id?: string;
+          template_id: string;
+          student_id: string;
+          assignment_id: string;
+          answers?: Json;
+          submitted_at?: string;
+        };
+        Update: Record<string, never>;
+        Relationships: [];
+      };
+
+      // =========================================================================
+      // messages — assignment_id (no conversation_id), content (no body)
+      // =========================================================================
+      messages: {
+        Row: {
+          id: string;
+          assignment_id: string;
+          sender_id: string;
+          content: string;
+          read_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          assignment_id: string;
+          sender_id: string;
+          content: string;
+          read_at?: string | null;
+        };
+        Update: {
+          read_at?: string | null;
+        };
+        Relationships: [];
+      };
+
+      // =========================================================================
+      // notifications — columna 'data' (no metadata)
+      // =========================================================================
       notifications: {
         Row: {
           id: string;
@@ -658,8 +670,8 @@ export type Database = {
           type: string;
           title: string;
           body: string;
+          data: Json;
           read_at: string | null;
-          metadata: Json | null;
           created_at: string;
         };
         Insert: {
@@ -668,78 +680,210 @@ export type Database = {
           type: string;
           title: string;
           body: string;
-          read_at?: string | null;
-          metadata?: Json | null;
-          created_at?: string;
-        };
-        Update: {
-          read_at?: string | null;
-        };
-        Relationships: [];
-      };
-      conversations: {
-        Row: {
-          id: string;
-          coach_id: string;
-          student_id: string;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          coach_id: string;
-          student_id: string;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
-      messages: {
-        Row: {
-          id: string;
-          conversation_id: string;
-          sender_id: string;
-          body: string;
-          read_at: string | null;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          conversation_id: string;
-          sender_id: string;
-          body: string;
+          data?: Json;
           read_at?: string | null;
           created_at?: string;
         };
         Update: {
+          data?: Json;
           read_at?: string | null;
         };
         Relationships: [];
       };
+
+      // =========================================================================
+      // notification_preferences
+      // =========================================================================
       notification_preferences: {
         Row: {
           id: string;
           user_id: string;
-          email_enabled: boolean;
           push_enabled: boolean;
-          created_at: string;
+          email_enabled: boolean;
+          push_token: string | null;
+          quiet_start: number;
+          quiet_end: number;
           updated_at: string;
         };
         Insert: {
+          id?: string;
           user_id: string;
-          email_enabled?: boolean;
           push_enabled?: boolean;
+          email_enabled?: boolean;
+          push_token?: string | null;
+          quiet_start?: number;
+          quiet_end?: number;
         };
         Update: {
-          email_enabled?: boolean;
           push_enabled?: boolean;
+          email_enabled?: boolean;
+          push_token?: string | null;
+          quiet_start?: number;
+          quiet_end?: number;
           updated_at?: string;
         };
         Relationships: [];
       };
+
+      // =========================================================================
+      // promoters — referral_code (no code); no total_referrals en migración
+      // =========================================================================
+      promoters: {
+        Row: {
+          id: string;
+          user_id: string;
+          referral_code: string;
+          commission_rate: number;
+          active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          referral_code: string;
+          commission_rate?: number;
+          active?: boolean;
+        };
+        Update: {
+          referral_code?: string;
+          commission_rate?: number;
+          active?: boolean;
+        };
+        Relationships: [];
+      };
+
+      // =========================================================================
+      // referrals
+      // =========================================================================
+      referrals: {
+        Row: {
+          id: string;
+          promoter_id: string;
+          referred_user_id: string;
+          converted_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          promoter_id: string;
+          referred_user_id: string;
+          converted_at?: string | null;
+        };
+        Update: {
+          converted_at?: string | null;
+        };
+        Relationships: [];
+      };
+
+      // =========================================================================
+      // promoter_payouts
+      // =========================================================================
+      promoter_payouts: {
+        Row: {
+          id: string;
+          promoter_id: string;
+          amount: number;
+          currency: string;
+          status: string;
+          paid_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          promoter_id: string;
+          amount: number;
+          currency: string;
+          status?: string;
+          paid_at?: string | null;
+        };
+        Update: {
+          status?: string;
+          paid_at?: string | null;
+        };
+        Relationships: [];
+      };
+
+      // =========================================================================
+      // tickets
+      // =========================================================================
+      tickets: {
+        Row: {
+          id: string;
+          user_id: string;
+          subject: string;
+          body: string;
+          status: string;
+          resolved_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          subject: string;
+          body: string;
+          status?: string;
+          resolved_at?: string | null;
+        };
+        Update: {
+          subject?: string;
+          body?: string;
+          status?: string;
+          resolved_at?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+
+      // =========================================================================
+      // leads (capturados en landing)
+      // =========================================================================
+      leads: {
+        Row: {
+          id: string;
+          email: string;
+          source: string | null;
+          country: CountryCode | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          email: string;
+          source?: string | null;
+          country?: CountryCode | null;
+        };
+        Update: {
+          email?: string;
+          source?: string | null;
+          country?: CountryCode | null;
+        };
+        Relationships: [];
+      };
+
+      // =========================================================================
+      // processed_events — columnas exactas: event_id, gateway, processed_at
+      // NO tiene: provider, event_type, payload
+      // =========================================================================
+      processed_events: {
+        Row: {
+          id: string;
+          event_id: string;
+          gateway: string;
+          processed_at: string;
+        };
+        Insert: {
+          id?: string;
+          event_id: string;
+          gateway: string;
+          processed_at?: string;
+        };
+        Update: Record<string, never>;
+        Relationships: [];
+      };
+
+      // =========================================================================
+      // audit_log — APPEND-ONLY, columna 'payload' (no metadata separada)
+      // =========================================================================
       audit_log: {
         Row: {
           id: string;
@@ -748,17 +892,16 @@ export type Database = {
           entity_type: string;
           entity_id: string | null;
           payload: Json;
-          metadata: Json | null;
           ip_address: string | null;
           created_at: string;
         };
         Insert: {
+          id?: string;
           actor_id?: string | null;
           action: string;
           entity_type: string;
           entity_id?: string | null;
           payload?: Json;
-          metadata?: Json | null;
           ip_address?: string | null;
         };
         Update: Record<string, never>;
@@ -781,16 +924,14 @@ export type Database = {
       country_code: CountryCode;
       subscription_status: SubscriptionStatus;
       billing_model: BillingModel;
-      billing_type: BillingType;
       coach_status: CoachStatus;
       package_tier: PackageTier;
       assignment_status: AssignmentStatus;
       payment_status: PaymentStatus;
-      payment_provider: PaymentProvider;
       settlement_status: SettlementStatus;
       workout_status: WorkoutStatus;
-      question_type: QuestionType;
-      ticket_status: TicketStatus;
+      legal_entity_type: LegalEntityType;
+      notification_channel: NotificationChannel;
     };
   };
 };

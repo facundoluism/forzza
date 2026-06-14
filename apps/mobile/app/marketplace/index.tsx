@@ -58,7 +58,7 @@ export default function MarketplaceScreen() {
       const { data, error } = await supabase
         .from("country_config")
         .select("currency_symbol")
-        .eq("country_code", "AR")
+        .eq("country", "AR")
         .single();
       if (error) throw error;
       return data as CountryConfig;

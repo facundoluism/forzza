@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 interface Exercise {
   id: string;
   name: string;
-  muscle_group: string | null;
+  muscle_groups: string[] | null;
 }
 
 interface Student {
@@ -42,7 +42,7 @@ export default function NuevaRutinaPage() {
 
     void (async () => {
       const [{ data: exData }, { data: { user } }] = await Promise.all([
-        supabase.from("exercise_library").select("id, name, muscle_group").order("name"),
+        supabase.from("exercise_library").select("id, name, muscle_groups").order("name"),
         supabase.auth.getUser(),
       ]);
 
@@ -233,9 +233,9 @@ export default function NuevaRutinaPage() {
                       className="w-full text-left px-3 py-2 rounded-lg hover:bg-[#1A1A1A] transition-colors"
                     >
                       <span className="text-[#FAFAFA] text-sm">{ex.name}</span>
-                      {ex.muscle_group && (
+                      {ex.muscle_groups && ex.muscle_groups.length > 0 && (
                         <span className="text-[#666666] text-xs ml-2">
-                          {ex.muscle_group}
+                          {ex.muscle_groups.join(", ")}
                         </span>
                       )}
                     </button>

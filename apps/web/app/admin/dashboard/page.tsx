@@ -70,7 +70,7 @@ export default async function AdminDashboardPage() {
       .eq("status", "pending"),
     adminClient
       .from("payments")
-      .select("amount_cents")
+      .select("amount")
       .eq("status", "approved")
       .gte(
         "created_at",
@@ -88,7 +88,7 @@ export default async function AdminDashboardPage() {
   const pendingCoaches = pendingCoachesResult.count ?? 0;
   const monthPayments = paymentsMonthResult.data ?? [];
   const revenueMonth = monthPayments.reduce(
-    (sum, p) => sum + (p.amount_cents ?? 0),
+    (sum, p) => sum + (p.amount ?? 0),
     0
   );
   const recentUsers = (recentUsersResult.data ?? []) as RecentUser[];
@@ -144,6 +144,7 @@ export default async function AdminDashboardPage() {
         </div>
         {recentUsers.length === 0 ? (
           <div className="p-12 text-center">
+            <p className="text-3xl mb-3">👥</p>
             <p className="text-[#555555]">No hay usuarios registrados aún.</p>
           </div>
         ) : (

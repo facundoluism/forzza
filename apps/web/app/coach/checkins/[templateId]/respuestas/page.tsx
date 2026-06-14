@@ -7,6 +7,14 @@ export const metadata: Metadata = {
   title: "Respuestas de check-in — Forzza Coach",
 };
 
+interface QuestionJson {
+  label: string;
+  question_type: string;
+  required?: boolean;
+  order?: number;
+  [key: string]: unknown;
+}
+
 interface Answer {
   question_label?: string;
   value?: unknown;
@@ -47,19 +55,20 @@ export default async function RespuestasPage({
   // Verify template belongs to this coach
   const { data: template } = await supabase
     .from("checkin_templates")
-    .select("id, name")
+    .select("id, title, questions")
     .eq("id", templateId)
     .eq("coach_id", coachUserId)
     .single();
 
   if (!template) notFound();
 
-  // Fetch questions for label mapping
-  const { data: questions } = await supabase
-    .from("checkin_questions")
-    .select("id, label, order")
-    .eq("template_id", templateId)
-    .order("order", { ascending: true });
+  // Build question label map from JSONB questions array
+  const questionsArray: QuestionJson[] = Array.isArray(template.questions)
+    ? (template.questions as QuestionJson[])
+    : [];
+  const questionMap = new Map(
+    questionsArray.map((q, i) => [String(i), q.label])
+  );
 
   // Fetch responses
   const { data: responses, error } = await supabase
@@ -80,9 +89,6 @@ export default async function RespuestasPage({
   }
 
   const rows = (responses ?? []) as unknown as CheckinResponse[];
-  const questionMap = new Map(
-    (questions ?? []).map((q) => [q.id, q.label])
-  );
 
   return (
     <div className="max-w-4xl">
@@ -93,7 +99,7 @@ export default async function RespuestasPage({
         >
           ← Volver a check-ins
         </Link>
-        <h1 className="text-2xl font-bold text-[#FAFAFA] mt-2">{template.name}</h1>
+        <h1 className="text-2xl font-bold text-[#FAFAFA] mt-2">{template.title}</h1>
         <p className="text-[#666666] text-sm mt-1">
           {rows.length} respuesta{rows.length !== 1 ? "s" : ""}
         </p>

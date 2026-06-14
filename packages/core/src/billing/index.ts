@@ -1,5 +1,5 @@
-// billing — Phase 13: settlement generation
-export type CommissionRate = number; // 0.20 para AR/CL
+// billing — core financial rules (pure, testeable, no floats)
+export type CommissionRate = number; // 0.20 para AR/CL — siempre leído de country_config
 
 export interface SettlementInput {
   grossAmount: number; // en centavos/enteros
@@ -55,4 +55,35 @@ export function calculateSettlementCents(
     commissionCents,
     netCents,
   };
+}
+
+// ─── Business rule: coach billing model ───────────────────────────────────────
+
+/**
+ * Regla: sub fija → comisión al 4° alumno ACTIVO, NUNCA revierte.
+ * Esta función es la fuente de verdad en core; el trigger SQL la replica en DB.
+ */
+export function isEligibleForCommissionModel(activeStudentCount: number): boolean {
+  return activeStudentCount >= 4;
+}
+
+// ─── Business rule: settlement transfer ───────────────────────────────────────
+
+export interface SettlementTransferCheck {
+  status: string;
+  invoiceNumber: string | null;
+  invoicePath: string | null;
+}
+
+/**
+ * Regla: sin factura aprobada NO existe estado "transferido".
+ * Tanto invoice_number como invoice_path deben estar presentes.
+ */
+export function canTransferSettlement(settlement: SettlementTransferCheck): boolean {
+  return (
+    settlement.invoiceNumber !== null &&
+    settlement.invoiceNumber.trim().length > 0 &&
+    settlement.invoicePath !== null &&
+    settlement.invoicePath.trim().length > 0
+  );
 }

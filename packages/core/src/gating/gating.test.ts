@@ -1,5 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { canAddRoutine, canViewWorkoutHistory, shouldShowAutopromo } from "./index";
+import {
+  canAddRoutine,
+  canViewWorkoutHistory,
+  shouldShowAutopromo,
+  isMinorWithoutConsent,
+  FREE_MAX_ROUTINES,
+  FREE_HISTORY_DAYS,
+} from "./index";
 
 describe("canAddRoutine", () => {
   it("PRO puede agregar rutinas ilimitadas", () => {
@@ -12,6 +19,10 @@ describe("canAddRoutine", () => {
 
   it("FREE: bloqueado al llegar a 3", () => {
     expect(canAddRoutine({ isPro: false, hasActiveCoach: false, routineCount: 3 })).toBe(false);
+  });
+
+  it("FREE_MAX_ROUTINES es 3 (constante exportada)", () => {
+    expect(FREE_MAX_ROUTINES).toBe(3);
   });
 });
 
@@ -49,5 +60,67 @@ describe("shouldShowAutopromo", () => {
 
   it("isPro=true con coach también oculta autopromo", () => {
     expect(shouldShowAutopromo({ isPro: true, hasActiveCoach: true, routineCount: 0 })).toBe(false);
+  });
+});
+
+describe("canViewWorkoutHistory", () => {
+  it("FREE_HISTORY_DAYS es 10 (constante exportada)", () => {
+    expect(FREE_HISTORY_DAYS).toBe(10);
+  });
+});
+
+describe("isMinorWithoutConsent", () => {
+  it("menor de 18 sin consentimiento → debe bloquear (true)", () => {
+    const today = new Date();
+    const birth = new Date(today.getFullYear() - 16, today.getMonth(), today.getDate());
+    expect(isMinorWithoutConsent({
+      birthDate: birth.toISOString().slice(0, 10),
+      parentalConsentAt: null,
+    })).toBe(true);
+  });
+
+  it("menor de 18 CON consentimiento → no bloquear (false)", () => {
+    const today = new Date();
+    const birth = new Date(today.getFullYear() - 16, today.getMonth(), today.getDate());
+    expect(isMinorWithoutConsent({
+      birthDate: birth.toISOString().slice(0, 10),
+      parentalConsentAt: "2025-01-01T00:00:00Z",
+    })).toBe(false);
+  });
+
+  it("mayor de 18 sin consentimiento → no bloquear (false)", () => {
+    const today = new Date();
+    const birth = new Date(today.getFullYear() - 25, today.getMonth(), today.getDate());
+    expect(isMinorWithoutConsent({
+      birthDate: birth.toISOString().slice(0, 10),
+      parentalConsentAt: null,
+    })).toBe(false);
+  });
+
+  it("exactamente 18 años NO es menor → no bloquear", () => {
+    const today = new Date();
+    const birth = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+    expect(isMinorWithoutConsent({
+      birthDate: birth.toISOString().slice(0, 10),
+      parentalConsentAt: null,
+    })).toBe(false);
+  });
+
+  it("sin fecha de nacimiento → no bloquear (no se puede determinar)", () => {
+    expect(isMinorWithoutConsent({ birthDate: null, parentalConsentAt: null })).toBe(false);
+    expect(isMinorWithoutConsent({ birthDate: undefined, parentalConsentAt: null })).toBe(false);
+  });
+
+  it("menor cuyo cumpleaños es el mes siguiente → todavía es menor", () => {
+    const today = new Date();
+    // Nacido el mes que viene hace 18 años → aún 17
+    let birthMonth = today.getMonth() + 1;
+    let birthYear = today.getFullYear() - 18;
+    if (birthMonth > 11) { birthMonth = 0; birthYear += 1; }
+    const birth = new Date(birthYear, birthMonth, 1);
+    expect(isMinorWithoutConsent({
+      birthDate: birth.toISOString().slice(0, 10),
+      parentalConsentAt: null,
+    })).toBe(true);
   });
 });

@@ -45,7 +45,7 @@ serve(async (_req) => {
     const lastDate = (lastResponse as { submitted_at: string } | null)?.submitted_at;
     if (lastDate && new Date(lastDate) > new Date(sevenDaysAgo)) continue;
 
-    // Enviar recordatorio
+    // Enviar recordatorio — el campo es 'data' en la función notify (no 'metadata')
     await fetch(
       `${Deno.env.get("SUPABASE_URL")}/functions/v1/notify`,
       {
@@ -59,7 +59,7 @@ serve(async (_req) => {
           type: "checkin_reminder",
           title: "Recordatorio de check-in",
           body: "Tu coach está esperando tu check-in semanal. ¡No te olvides de completarlo!",
-          metadata: { coach_id: assignment.coach_id },
+          data: { coach_id: assignment.coach_id },
           send_email: false,
         }),
       }

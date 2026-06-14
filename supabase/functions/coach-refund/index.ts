@@ -72,23 +72,24 @@ serve(async (req) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
   );
 
-  // Cancel assignment
+  // Cancel assignment — 'canceled' es el valor del enum (no 'cancelled')
   await adminSupabase
     .from("coach_assignments")
     .update({
-      status: "cancelled",
+      status: "canceled",
       ended_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
     })
     .eq("id", assignment_id);
 
   // Find payment and mark as refunded
+  // Columnas reales: user_id (payer), coach_id (payee), gateway_payment_id (no provider_payment_id)
+  // status 'approved' es el equivalente a "completado" según el enum payment_status
   const { data: payment } = await adminSupabase
     .from("payments")
-    .select("id, provider_payment_id")
-    .eq("payer_id", assignment.student_id)
-    .eq("payee_id", assignment.coach_id)
-    .eq("status", "completed")
+    .select("id, gateway_payment_id")
+    .eq("user_id", assignment.student_id)
+    .eq("coach_id", assignment.coach_id)
+    .eq("status", "approved")
     .order("created_at", { ascending: false })
     .limit(1)
     .single();
@@ -96,38 +97,38 @@ serve(async (req) => {
   if (payment) {
     await adminSupabase
       .from("payments")
-      .update({ status: "refunded", updated_at: new Date().toISOString() })
+      .update({ status: "refunded" })
       .eq("id", payment.id);
 
     // TODO: call MP API to actually issue refund when MP access token is configured
-    // await fetch(`https://api.mercadopago.com/v1/payments/${payment.provider_payment_id}/refunds`, { method: 'POST', ... })
+    // await fetch(`https://api.mercadopago.com/v1/payments/${payment.gateway_payment_id}/refunds`, { method: 'POST', ... })
   }
 
-  // Notify both parties
+  // Notify both parties — columna 'data' (no metadata) en notifications
   await adminSupabase.from("notifications").insert([
     {
       user_id: assignment.student_id,
       type: "refund_processed",
       title: "Reembolso procesado",
       body: "Tu solicitud de reembolso fue aceptada. El dinero volverá en 5-10 días hábiles.",
-      metadata: { assignment_id },
+      data: { assignment_id },
     },
     {
       user_id: assignment.coach_id,
       type: "assignment_cancelled",
       title: "Contratación cancelada",
       body: "Un alumno/a canceló la contratación dentro de las 72 horas. Se procesó el reembolso.",
-      metadata: { assignment_id },
+      data: { assignment_id },
     },
   ]);
 
-  // Audit log
+  // Audit log — columna 'payload' (no metadata) en audit_log
   await adminSupabase.from("audit_log").insert({
     actor_id: user.id,
     action: "refund_issued",
     entity_type: "coach_assignment",
     entity_id: assignment_id,
-    metadata: {
+    payload: {
       payment_id: payment?.id,
       hours_elapsed: Math.round(hoursSinceStart),
     },

@@ -90,7 +90,7 @@ export default function CheckoutScreen() {
       const { data } = await supabase
         .from("country_config")
         .select("currency_symbol")
-        .eq("country_code", "AR")
+        .eq("country", "AR")
         .single();
       return data as CountryConfig | null;
     },

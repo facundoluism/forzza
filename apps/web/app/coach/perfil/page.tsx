@@ -21,7 +21,7 @@ export default async function PerfilPage() {
   // Fetch packages
   const { data: packages } = await supabase
     .from("coach_packages")
-    .select("id, name, description, price_cents, billing_type, features, is_active")
+    .select("id, title, description, price, active")
     .eq("coach_id", coachUserId)
     .order("created_at", { ascending: true });
 
@@ -29,7 +29,7 @@ export default async function PerfilPage() {
   const { data: countryConfig } = await supabase
     .from("country_config")
     .select("min_coach_price, currency_symbol")
-    .eq("country_code", coachProfile?.country ?? "AR")
+    .eq("country", coachProfile?.country ?? "AR")
     .single();
 
   return (
@@ -51,12 +51,12 @@ export default async function PerfilPage() {
         initialPackages={
           (packages ?? []).map((p) => ({
             id: p.id,
-            name: p.name,
+            name: p.title,
             description: p.description ?? "",
-            price_cents: p.price_cents,
-            billing_type: p.billing_type as "mensual" | "paquete",
-            features: p.features ?? [],
-            is_active: p.is_active,
+            price_cents: p.price,
+            billing_type: "mensual" as const,
+            features: [],
+            is_active: p.active ?? true,
           }))
         }
         minCoachPrice={countryConfig?.min_coach_price ?? 0}

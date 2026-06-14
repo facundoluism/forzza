@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
   title: 'Forzza — Entrenamiento con coach que funciona',
@@ -24,7 +25,28 @@ const steps = [
 const freeFeatures = ['3 rutinas activas', 'Historial 10 días', 'Registro de sesiones', 'Marketplace de coaches']
 const proFeatures = ['Rutinas ilimitadas', 'Historial completo', 'Fotos de progreso (privadas)', 'Análisis avanzado', 'Sin publicidad', 'Prioridad de soporte']
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Fetch PRO price from country_config. Falls back to 999900 cents (AR default) if DB not available.
+  let proPrice = 999900;
+  let currencySymbol = '$';
+  if (isSupabaseConfigured()) {
+    try {
+      const supabase = await createClient();
+      const { data: config } = await supabase
+        .from('country_config')
+        .select('pro_monthly_price_cents, currency_symbol')
+        .eq('country', 'AR')
+        .single();
+      if (config) {
+        proPrice = config.pro_monthly_price_cents ?? 999900;
+        currencySymbol = config.currency_symbol ?? '$';
+      }
+    } catch {
+      // Fallback values already set above
+    }
+  }
+  const proPriceFormatted = `${currencySymbol}${(proPrice / 100).toLocaleString('es-AR')}`;
+
   return (
     <main style={{ background: 'var(--color-bg)', minHeight: '100vh', color: 'var(--color-text)', fontFamily: 'var(--font-body)' }}>
 
@@ -138,7 +160,7 @@ export default function HomePage() {
             <div style={{ position: 'absolute', top: 0, left: '20px', right: '20px', height: '2px', background: 'linear-gradient(90deg, transparent, var(--color-lime), transparent)', borderRadius: '2px' }} />
             <div style={{ position: 'absolute', top: '-14px', left: '50%', transform: 'translateX(-50%)', background: 'var(--color-lime)', color: '#000', padding: '4px 14px', borderRadius: '999px', fontSize: '11px', fontWeight: 700, letterSpacing: '1px', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>⚡ RECOMENDADO</div>
             <div style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', letterSpacing: '3px', color: 'var(--color-lime)', marginBottom: '16px' }}>{"// PRO"}</div>
-            <div style={{ fontSize: '64px', fontWeight: 800, color: 'var(--color-text)', fontFamily: 'var(--font-display)', lineHeight: 1, letterSpacing: '1px', marginBottom: '4px' }}>$9.999</div>
+            <div style={{ fontSize: '64px', fontWeight: 800, color: 'var(--color-text)', fontFamily: 'var(--font-display)', lineHeight: 1, letterSpacing: '1px', marginBottom: '4px' }}>{proPriceFormatted}</div>
             <div style={{ color: '#6A6A6A', fontSize: '14px', marginBottom: '28px', fontFamily: 'var(--font-mono)' }}>por mes · cancelás cuando querés</div>
             <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px', display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
               {proFeatures.map(f => (
@@ -180,7 +202,7 @@ export default function HomePage() {
               <Link key={l} href={h} style={{ color: '#4A4A4A', fontSize: '14px', textDecoration: 'none' }}>{l}</Link>
             ))}
           </div>
-          <p style={{ color: '#2A2A2A', fontSize: '13px', fontFamily: 'var(--font-mono)', margin: 0 }}>© 2026 Forzza · Argentina</p>
+          <p style={{ color: '#555555', fontSize: '13px', fontFamily: 'var(--font-mono)', margin: 0 }}>© 2026 Forzza · Argentina</p>
         </div>
       </footer>
     </main>

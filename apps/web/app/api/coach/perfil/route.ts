@@ -62,7 +62,7 @@ export async function PATCH(request: Request) {
     const { data: countryConfig } = await supabase
       .from("country_config")
       .select("min_coach_price")
-      .eq("country_code", coachProfile.country)
+      .eq("country", coachProfile.country)
       .single();
 
     const minCoachPrice = countryConfig?.min_coach_price ?? 0;
@@ -117,7 +117,7 @@ export async function PATCH(request: Request) {
         // Soft delete: mark as inactive
         await supabase
           .from("coach_packages")
-          .update({ is_active: false })
+          .update({ active: false })
           .eq("id", pkg.id)
           .eq("coach_id", user.id);
         continue;
@@ -128,12 +128,10 @@ export async function PATCH(request: Request) {
         await supabase
           .from("coach_packages")
           .update({
-            name: pkg.name,
+            title: pkg.name,
             description: pkg.description ?? null,
-            price_cents: pkg.price_cents,
-            billing_type: pkg.billing_type,
-            features: pkg.features,
-            is_active: pkg.is_active,
+            price: pkg.price_cents,
+            active: pkg.is_active,
           })
           .eq("id", pkg.id)
           .eq("coach_id", user.id);
@@ -141,12 +139,11 @@ export async function PATCH(request: Request) {
         // Insert new
         await supabase.from("coach_packages").insert({
           coach_id: user.id,
-          name: pkg.name,
+          title: pkg.name,
           description: pkg.description ?? null,
-          price_cents: pkg.price_cents,
-          billing_type: pkg.billing_type,
-          features: pkg.features,
-          is_active: pkg.is_active,
+          price: pkg.price_cents,
+          tier: "starter" as const,
+          active: pkg.is_active,
         });
       }
     }

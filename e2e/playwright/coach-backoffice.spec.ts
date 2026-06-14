@@ -60,10 +60,11 @@ test.describe('Coach backoffice — sidebar navigation', () => {
       test.skip();
       return;
     }
-    // The aside contains the brand text
+    // The aside contains the FORZZA brand text (all-caps) and a "Coach" label
+    // There is no "Coach Backoffice" subtitle — only "FORZZA" + "Coach"
     const sidebar = page.locator('aside');
-    await expect(sidebar.getByText('Forzza')).toBeVisible();
-    await expect(sidebar.getByText(/coach backoffice/i)).toBeVisible();
+    await expect(sidebar.getByText('FORZZA')).toBeVisible();
+    await expect(sidebar.getByText(/^coach$/i)).toBeVisible();
   });
 
   test('sidebar has Alumnos nav link', async ({ page }) => {

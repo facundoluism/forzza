@@ -1,6 +1,7 @@
 import { requireCoach } from "@/lib/auth/coach";
 import type { Metadata } from "next";
 import { InvoiceUploadButton } from "./InvoiceUploadButton";
+import { InvoiceViewButton } from "./InvoiceViewButton";
 
 export const metadata: Metadata = {
   title: "Cobros — Forzza Coach",
@@ -12,11 +13,13 @@ interface Settlement {
   id: string;
   period_start: string;
   period_end: string;
-  gross_amount_cents: number;
-  commission_amount_cents: number;
-  net_amount_cents: number;
+  gross_amount: number;
+  commission: number;
+  net_amount: number;
   status: SettlementStatus;
-  invoice_url: string | null;
+  invoice_path: string | null;
+  transferred_at: string | null;
+  invoice_signed_url?: string | null;
 }
 
 const statusLabel: Record<SettlementStatus, string> = {
@@ -68,7 +71,7 @@ export default async function CobrosPage() {
   const { data: settlements, error } = await supabase
     .from("settlements")
     .select(
-      "id, period_start, period_end, gross_amount_cents, commission_amount_cents, net_amount_cents, status, invoice_url"
+      "id, period_start, period_end, gross_amount, commission, net_amount, status, invoice_path, transferred_at"
     )
     .eq("coach_id", coachUserId)
     .order("period_start", { ascending: false });
@@ -77,7 +80,22 @@ export default async function CobrosPage() {
     console.error("Error fetching settlements:", error);
   }
 
-  const rows = (settlements ?? []) as Settlement[];
+  const rawRows = (settlements ?? []) as Settlement[];
+
+  // Generar signed URLs para facturas existentes (TTL 1 hora) — bucket privado "invoices"
+  const rows: Settlement[] = await Promise.all(
+    rawRows.map(async (s) => {
+      if (!s.invoice_path) return s;
+      try {
+        const { data: signedData } = await supabase.storage
+          .from("invoices")
+          .createSignedUrl(s.invoice_path, 3600);
+        return { ...s, invoice_signed_url: signedData?.signedUrl ?? null };
+      } catch {
+        return { ...s, invoice_signed_url: null };
+      }
+    })
+  );
 
   const thisMonth = getThisMonthRange();
   const lastMonth = getLastMonthRange();
@@ -87,14 +105,14 @@ export default async function CobrosPage() {
       (s) =>
         s.period_start >= thisMonth.start && s.period_start <= thisMonth.end
     )
-    .reduce((sum, s) => sum + s.net_amount_cents, 0);
+    .reduce((sum, s) => sum + s.net_amount, 0);
 
   const lastMonthTotal = rows
     .filter(
       (s) =>
         s.period_start >= lastMonth.start && s.period_start <= lastMonth.end
     )
-    .reduce((sum, s) => sum + s.net_amount_cents, 0);
+    .reduce((sum, s) => sum + s.net_amount, 0);
 
   return (
     <div>
@@ -128,8 +146,9 @@ export default async function CobrosPage() {
       {/* Settlements table */}
       {rows.length === 0 ? (
         <div className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-12 text-center">
-          <p className="text-[#666666] text-lg">Todavía no hay liquidaciones.</p>
-          <p className="text-[#444444] text-sm mt-2">
+          <p className="text-4xl mb-4">💰</p>
+          <p className="text-[#FAFAFA] text-lg font-semibold">Todavía no hay liquidaciones.</p>
+          <p className="text-[#666666] text-sm mt-2">
             Tus cobros aparecerán acá una vez que se procesen.
           </p>
         </div>
@@ -158,13 +177,13 @@ export default async function CobrosPage() {
                     </p>
                   </td>
                   <td className="px-6 py-4 text-right text-[#AAAAAA] hidden md:table-cell">
-                    {formatCents(s.gross_amount_cents)}
+                    {formatCents(s.gross_amount)}
                   </td>
                   <td className="px-6 py-4 text-right text-red-400 hidden md:table-cell">
-                    -{formatCents(s.commission_amount_cents)}
+                    -{formatCents(s.commission)}
                   </td>
                   <td className="px-6 py-4 text-right text-[#C8FF00] font-semibold">
-                    {formatCents(s.net_amount_cents)}
+                    {formatCents(s.net_amount)}
                   </td>
                   <td className="px-6 py-4">
                     <span
@@ -177,15 +196,16 @@ export default async function CobrosPage() {
                     {(s.status === "pending" || s.status === "pending_invoice") && (
                       <InvoiceUploadButton settlementId={s.id} />
                     )}
-                    {s.status === "invoiced" && s.invoice_url && (
-                      <a
-                        href={s.invoice_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[#AAAAAA] hover:text-[#FAFAFA] text-xs transition-colors"
-                      >
-                        Ver factura →
-                      </a>
+                    {(s.status === "invoiced" || s.status === "transferred") && s.invoice_signed_url && (
+                      <InvoiceViewButton signedUrl={s.invoice_signed_url} />
+                    )}
+                    {(s.status === "invoiced" || s.status === "transferred") && !s.invoice_signed_url && (
+                      <span className="text-[#444444] text-xs">Factura pendiente</span>
+                    )}
+                    {s.status === "transferred" && s.transferred_at && (
+                      <p className="text-[#444444] text-xs mt-1">
+                        Transferido el {formatDate(s.transferred_at)}
+                      </p>
                     )}
                   </td>
                 </tr>

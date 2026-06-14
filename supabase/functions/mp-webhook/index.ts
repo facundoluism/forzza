@@ -120,27 +120,26 @@ serve(async (req) => {
   if (!eventId) return new Response("ok", { status: 200 });
 
   // Idempotency: check if already processed
+  // Columnas reales de processed_events: event_id, gateway (no provider/event_type/payload)
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL")!,
     SUPABASE_SERVICE_KEY
   );
 
-  const { data: existing } = await supabase
+  // Idempotency — INSERT with ON CONFLICT to atomically guard against duplicate events.
+  // The unique constraint on processed_events.event_id makes this race-free.
+  const { error: insertError } = await supabase
     .from("processed_events")
-    .select("id")
-    .eq("event_id", eventId)
-    .eq("provider", "mercadopago")
-    .single();
+    .insert({ event_id: eventId, gateway: "mercadopago" });
 
-  if (existing) return new Response("ok", { status: 200 }); // already processed
-
-  // Mark as processing (idempotency record first)
-  await supabase.from("processed_events").insert({
-    event_id: eventId,
-    provider: "mercadopago",
-    event_type: body.type ?? body.action ?? null,
-    payload: body as Record<string, unknown>,
-  });
+  if (insertError) {
+    // Unique constraint violation means already processed — idempotent skip
+    if (insertError.code === "23505") {
+      return new Response("ok", { status: 200 });
+    }
+    console.error("[mp-webhook] processed_events insert error:", insertError);
+    return new Response("Internal error", { status: 500 });
+  }
 
   // Handle preapproval events
   if (
@@ -161,35 +160,38 @@ serve(async (req) => {
     );
     const preapproval = (await mpRes.json()) as MpPreapproval;
 
-    // Map MP status to our status
+    // Map MP status to our enum values
+    // subscription_status enum: 'active' | 'past_due' | 'canceled' | 'trialing'
     const statusMap: Record<string, string> = {
       authorized: "active",
-      paused: "suspended",
-      cancelled: "cancelled",
-      pending: "pending",
+      paused: "past_due",
+      cancelled: "canceled",
+      pending: "trialing",
     };
-    const newStatus = statusMap[preapproval.status] ?? "pending";
+    const newStatus = statusMap[preapproval.status] ?? "trialing";
 
-    // Update subscription
+    const periodEnd =
+      preapproval.next_payment_date ??
+      new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+
+    // Update subscription — columnas reales: gateway_subscription_id, current_period_start, current_period_end
+    // NO tiene provider_subscription_id, started_at, expires_at
     await supabase
       .from("subscriptions")
       .update({
         status: newStatus,
-        started_at: preapproval.date_created,
-        expires_at:
-          preapproval.next_payment_date ??
-          new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date().toISOString(),
+        current_period_start: preapproval.date_created,
+        current_period_end: periodEnd,
       })
-      .eq("provider_subscription_id", preapprovalId);
+      .eq("gateway_subscription_id", preapprovalId);
 
-    // Audit log
+    // Audit log — columna 'payload' (no metadata)
     await supabase.from("audit_log").insert({
       actor_id: null,
       action: `mp_preapproval_${preapproval.status}`,
       entity_type: "subscription",
-      entity_id: preapprovalId,
-      metadata: { event_id: eventId, mp_status: preapproval.status },
+      entity_id: null,
+      payload: { event_id: eventId, mp_status: preapproval.status, preapproval_id: preapprovalId },
     });
   }
 

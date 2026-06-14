@@ -2,6 +2,7 @@ import { requireCoach } from "@/lib/auth/coach";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { LineChart } from "@forzza/ui/web";
 
 export const metadata: Metadata = {
   title: "Detalle de alumno — Forzza Coach",
@@ -94,6 +95,31 @@ export default async function StudentDetailPage({
     .eq("student_id", studentId)
     .order("started_at", { ascending: false })
     .limit(5);
+
+  // Last 28 days of workout sessions for chart (sessions per day)
+  const fourWeeksAgo = new Date();
+  fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28);
+
+  const { data: chartSessions } = await supabase
+    .from("workout_sessions")
+    .select("started_at")
+    .eq("student_id", studentId)
+    .gte("started_at", fourWeeksAgo.toISOString())
+    .order("started_at", { ascending: true });
+
+  // Build array of 28 daily counts (index 0 = oldest day)
+  const sessionCountsByDay: number[] = Array(28).fill(0);
+  for (const s of chartSessions ?? []) {
+    const sessionDate = new Date((s as { started_at: string }).started_at);
+    const diffMs = Date.now() - sessionDate.getTime();
+    const diffDays = Math.floor(diffMs / (24 * 60 * 60 * 1000));
+    if (diffDays >= 0 && diffDays < 28) {
+      // diffDays 0 = today, 27 = oldest; invert for chart (left=oldest)
+      const idx = 27 - diffDays;
+      sessionCountsByDay[idx] = (sessionCountsByDay[idx] ?? 0) + 1;
+    }
+  }
+  const hasChartData = sessionCountsByDay.some((v) => v > 0);
 
   // Last check-in response
   const { data: lastCheckin } = await supabase
@@ -258,19 +284,34 @@ export default async function StudentDetailPage({
         )}
       </div>
 
-      {/* Body metrics placeholder */}
+      {/* Sesiones por día — últimas 4 semanas */}
       <div className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-5">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xs uppercase tracking-wider text-[#666666]">
-            Métricas corporales
+            Sesiones por día (últimas 4 semanas)
           </h2>
-          <span className="text-[#444444] text-xs">TODO_CHART</span>
         </div>
-        <div className="h-32 rounded-lg bg-[#1A1A1A] border border-[#2A2A2A] flex items-center justify-center">
-          <p className="text-[#444444] text-sm">
-            Gráfico de progreso — próximamente
-          </p>
-        </div>
+        {hasChartData ? (
+          <div className="w-full overflow-hidden">
+            <LineChart
+              data={sessionCountsByDay}
+              width={600}
+              height={80}
+              showDots
+              style={{ width: "100%", height: "80px" }}
+            />
+            <div className="flex justify-between mt-2 text-[#444444] text-xs">
+              <span>Hace 4 semanas</span>
+              <span>Hoy</span>
+            </div>
+          </div>
+        ) : (
+          <div className="h-20 rounded-lg bg-[#1A1A1A] border border-[#2A2A2A] flex items-center justify-center">
+            <p className="text-[#444444] text-sm">
+              Sin sesiones registradas en los últimos 28 días
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Progress placeholder */}

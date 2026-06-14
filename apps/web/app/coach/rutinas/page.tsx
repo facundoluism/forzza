@@ -64,8 +64,9 @@ export default async function RutinasPage() {
 
       {rows.length === 0 ? (
         <div className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-12 text-center">
-          <p className="text-[#666666] text-lg">Todavía no creaste ninguna rutina.</p>
-          <p className="text-[#444444] text-sm mt-2 mb-6">
+          <p className="text-4xl mb-4">📋</p>
+          <p className="text-[#FAFAFA] text-lg font-semibold">Todavía no creaste ninguna rutina.</p>
+          <p className="text-[#666666] text-sm mt-2 mb-6">
             Creá rutinas y asignálas a tus alumnos.
           </p>
           <Link
@@ -80,7 +81,7 @@ export default async function RutinasPage() {
           {rows.map((routine) => (
             <div
               key={routine.id}
-              className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-5 hover:border-[#3A3A3A] transition-colors"
+              className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-5 hover:border-[#C8FF00]/30 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
             >
               <h3 className="font-semibold text-[#FAFAFA] text-base mb-1">
                 {routine.name}
@@ -98,6 +99,14 @@ export default async function RutinasPage() {
                   Sin alumno asignado
                 </p>
               )}
+              <div className="mt-auto pt-3 border-t border-[#1A1A1A]">
+                <Link
+                  href={`/coach/rutinas/${routine.id}`}
+                  className="text-[#C8FF00] hover:text-[#AADD00] text-xs font-medium transition-colors"
+                >
+                  Ver rutina →
+                </Link>
+              </div>
             </div>
           ))}
         </div>

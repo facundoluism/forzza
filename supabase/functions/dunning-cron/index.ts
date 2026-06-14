@@ -13,41 +13,45 @@ serve(async (_req) => {
   );
 
   const now = new Date().toISOString();
-  const sevenDaysAgo = new Date(
-    Date.now() - 7 * 24 * 60 * 60 * 1000
+  // Regla: past_due tiene gracia de 5 días antes de cancelar (CLAUDE.md)
+  const fiveDaysAgo = new Date(
+    Date.now() - 5 * 24 * 60 * 60 * 1000
   ).toISOString();
 
-  // 1. Expire active subscriptions past expires_at
+  // 1. Cancelar suscripciones activas cuyo período ya venció
+  // Columna real: current_period_end (no expires_at)
+  // Estado válido en enum: 'canceled' (no 'expired' ni 'cancelled')
   const { data: expired } = await supabase
     .from("subscriptions")
-    .update({ status: "expired", updated_at: now })
+    .update({ status: "canceled", updated_at: now })
     .eq("status", "active")
-    .lt("expires_at", now)
+    .lt("current_period_end", now)
     .select("id, user_id");
 
-  // 2. Cancel suspended subscriptions past grace period (>7 days since updated_at)
+  // 2. Cancelar suscripciones past_due pasado el período de gracia (>5 días, no 7)
+  // Estado válido en enum: 'canceled' (no 'suspended' ni 'cancelled')
   const { data: cancelled } = await supabase
     .from("subscriptions")
-    .update({ status: "cancelled", updated_at: now })
-    .eq("status", "suspended")
-    .lt("updated_at", sevenDaysAgo)
+    .update({ status: "canceled", updated_at: now })
+    .eq("status", "past_due")
+    .lt("updated_at", fiveDaysAgo)
     .select("id, user_id");
 
-  // Audit log all changes
+  // Audit log — columna 'payload' (no metadata)
   const auditEntries = [
     ...((expired ?? []) as SubscriptionRow[]).map((s) => ({
       actor_id: null as string | null,
       action: "subscription_expired",
       entity_type: "subscription",
       entity_id: s.id,
-      metadata: { user_id: s.user_id },
+      payload: { user_id: s.user_id },
     })),
     ...((cancelled ?? []) as SubscriptionRow[]).map((s) => ({
       actor_id: null as string | null,
       action: "subscription_cancelled_grace_expired",
       entity_type: "subscription",
       entity_id: s.id,
-      metadata: { user_id: s.user_id },
+      payload: { user_id: s.user_id },
     })),
   ];
 

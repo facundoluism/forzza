@@ -111,7 +111,9 @@ export default async function AdminTicketsPage({ searchParams }: PageProps) {
 
       {rows.length === 0 ? (
         <div className="rounded-xl border border-[#1E1E1E] bg-[#111111] p-12 text-center">
-          <p className="text-[#555555] text-lg">No hay tickets para mostrar.</p>
+          <p className="text-4xl mb-4">🎫</p>
+          <p className="text-[#FAFAFA] text-lg font-semibold">No hay tickets para mostrar.</p>
+          <p className="text-[#555555] text-sm mt-2">Los tickets de soporte aparecerán acá.</p>
         </div>
       ) : (
         <div className="space-y-3">

@@ -9,28 +9,21 @@ serve(async (_req) => {
 
   // Period: last calendar month
   const now = new Date();
-  const periodStart = new Date(
-    now.getFullYear(),
-    now.getMonth() - 1,
-    1
-  ).toISOString();
-  const periodEnd = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    0,
-    23,
-    59,
-    59
-  ).toISOString();
+  const periodStartDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const periodEndDate = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+  const periodStart = periodStartDate.toISOString().slice(0, 10); // DATE format
+  const periodEnd = periodEndDate.toISOString().slice(0, 10);
 
-  // Get all completed payments in the period grouped by payee (coach)
+  // Get all approved payments in the period grouped by coach
+  // Columnas reales de payments: coach_id (no payee_id), amount (no amount_cents)
+  // Status 'approved' es el equivalente a pagos completados en el enum
   const { data: payments } = await supabase
     .from("payments")
-    .select("payee_id, amount_cents, metadata")
-    .eq("status", "completed")
-    .gte("created_at", periodStart)
-    .lte("created_at", periodEnd)
-    .not("payee_id", "is", null);
+    .select("coach_id, amount, metadata")
+    .eq("status", "approved")
+    .gte("created_at", periodStartDate.toISOString())
+    .lte("created_at", periodEndDate.toISOString())
+    .not("coach_id", "is", null);
 
   if (!payments || payments.length === 0) {
     return new Response(JSON.stringify({ settlements_created: 0 }), {
@@ -38,13 +31,20 @@ serve(async (_req) => {
     });
   }
 
+  // Necesitamos el currency del coach — lo sacamos del primer pago del grupo
+  interface PaymentRow {
+    coach_id: string | null;
+    amount: number;
+    metadata: Record<string, unknown>;
+  }
+
   // Group by coach
-  const byCoach = payments.reduce<
+  const byCoach = (payments as PaymentRow[]).reduce<
     Record<string, { total: number; coach_id: string }>
   >((acc, p) => {
-    const key = p.payee_id!;
+    const key = p.coach_id!;
     if (!acc[key]) acc[key] = { total: 0, coach_id: key };
-    acc[key].total += p.amount_cents;
+    acc[key].total += p.amount;
     return acc;
   }, {});
 
@@ -61,46 +61,51 @@ serve(async (_req) => {
     if (existing) continue;
 
     // Get coach country for commission rate
-    // users table uses 'country' column (not 'country_code')
+    // users.country (no country_code)
     const { data: coachUser } = await supabase
       .from("users")
       .select("country")
       .eq("id", coachId)
       .single();
 
+    // country_config PK es 'country' (no 'country_code')
     const { data: config } = await supabase
       .from("country_config")
-      .select("commission_rate")
-      .eq("country_code", coachUser?.country ?? "AR")
+      .select("commission_rate, currency")
+      .eq("country", coachUser?.country ?? "AR")
       .single();
 
     const commissionRate = config?.commission_rate ?? 0.20;
-    const grossCents = data.total;
-    const commissionCents = Math.round(grossCents * commissionRate);
-    const netCents = grossCents - commissionCents;
+    const currency = config?.currency ?? "ARS";
+    const grossAmount = data.total;
+    const commission = Math.round(grossAmount * commissionRate);
+    const netAmount = grossAmount - commission;
 
+    // Columnas reales de settlements: gross_amount, commission, net_amount, currency
+    // NO tiene gross_amount_cents, commission_amount_cents, net_amount_cents
     await supabase.from("settlements").insert({
       coach_id: coachId,
       period_start: periodStart,
       period_end: periodEnd,
-      gross_amount_cents: grossCents,
-      commission_amount_cents: commissionCents,
-      net_amount_cents: netCents,
+      gross_amount: grossAmount,
+      commission: commission,
+      net_amount: netAmount,
+      currency: currency,
       status: "pending",
     });
 
-    // Audit log
+    // Audit log — columna 'payload' (no metadata)
     await supabase.from("audit_log").insert({
       actor_id: null,
       action: "settlement_generated",
       entity_type: "settlement",
       entity_id: coachId,
-      metadata: {
+      payload: {
         period_start: periodStart,
         period_end: periodEnd,
-        gross_cents: grossCents,
-        commission_cents: commissionCents,
-        net_cents: netCents,
+        gross_amount: grossAmount,
+        commission: commission,
+        net_amount: netAmount,
       },
     });
 

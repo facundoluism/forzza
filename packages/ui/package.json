@@ -24,6 +24,7 @@
     }
   },
   "devDependencies": {
+    "@forzza/eslint-config": "workspace:*",
     "@forzza/tsconfig": "workspace:*",
     "@types/react": "^18.3.0",
     "eslint": "^9.39.4",

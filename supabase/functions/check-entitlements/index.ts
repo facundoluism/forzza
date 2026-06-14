@@ -15,13 +15,14 @@ serve(async (req) => {
   if (!user) return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401 })
 
   // Check active PRO subscription
+  // Columnas reales: plan, status, current_period_end (no expires_at)
   const { data: sub } = await supabase
     .from("subscriptions")
-    .select("plan, status, expires_at")
+    .select("plan, status, current_period_end")
     .eq("user_id", user.id)
     .eq("status", "active")
-    .gte("expires_at", new Date().toISOString())
-    .order("expires_at", { ascending: false })
+    .gte("current_period_end", new Date().toISOString())
+    .order("current_period_end", { ascending: false })
     .limit(1)
     .single()
 

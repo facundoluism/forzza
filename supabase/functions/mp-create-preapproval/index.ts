@@ -25,10 +25,11 @@ serve(async (req) => {
       status: 401,
     });
 
-  // Get user email and country
+  // El email está en auth.users (user.email); solo buscamos country en users pública
+  // La columna es 'country', no 'email' ni 'country_code'
   const { data: profile } = await supabase
     .from("users")
-    .select("email, country_code")
+    .select("country")
     .eq("id", user.id)
     .single();
 
@@ -37,19 +38,27 @@ serve(async (req) => {
       status: 404,
     });
 
-  // Get PRO price from country_config — NEVER hardcode prices
+  const userCountry = (profile as { country: string }).country ?? "AR";
+  const userEmail = user.email ?? "";
+
+  // Get PRO price from country_config — NUNCA hardcodear precios
+  // PK de country_config es 'country' (no 'country_code')
+  // pro_monthly_price_cents y currency_code existen desde migración 20260615
   const { data: config } = await supabase
     .from("country_config")
     .select("pro_monthly_price_cents, currency_code")
-    .eq("country_code", (profile as { email: string; country_code: string }).country_code ?? "AR")
+    .eq("country", userCountry)
     .single();
 
-  const priceInCurrency =
-    ((config as { pro_monthly_price_cents: number; currency_code: string } | null)
-      ?.pro_monthly_price_cents ?? 999900) / 100;
+  const priceInCents =
+    (config as { pro_monthly_price_cents: number; currency_code: string } | null)
+      ?.pro_monthly_price_cents ?? 999900;
   const currencyCode =
     (config as { pro_monthly_price_cents: number; currency_code: string } | null)
       ?.currency_code ?? "ARS";
+
+  // MP espera el amount en unidad monetaria (pesos), no en centavos
+  const priceInCurrency = priceInCents / 100;
 
   // Create MP preapproval plan
   const mpResponse = await fetch("https://api.mercadopago.com/preapproval_plan", {
@@ -66,7 +75,7 @@ serve(async (req) => {
         transaction_amount: priceInCurrency,
         currency_id: currencyCode,
       },
-      payer_email: (profile as { email: string; country_code: string }).email,
+      payer_email: userEmail,
       back_url: `${Deno.env.get("APP_URL")}/upgrade?status=success`,
     }),
   });
@@ -81,21 +90,29 @@ serve(async (req) => {
 
   const mpData = await mpResponse.json() as { id: string; init_point: string };
 
-  // Store pending subscription
-  await supabase.from("subscriptions").upsert(
-    {
-      user_id: user.id,
-      plan: "pro",
-      status: "pending",
-      provider: "mercadopago",
-      provider_subscription_id: mpData.id,
-      started_at: new Date().toISOString(),
-      expires_at: new Date(
-        Date.now() + 30 * 24 * 60 * 60 * 1000
-      ).toISOString(), // +30 days
-    },
-    { onConflict: "user_id,provider" }
-  );
+  // Remove any stale trialing rows before creating a new one.
+  // Each MP preapproval generates a unique plan ID, so onConflict("gateway_subscription_id")
+  // would silently insert duplicates for the same user. Deleting trialing rows first
+  // keeps one pending row per user; the webhook promotes it to "active" on payment.
+  await supabase
+    .from("subscriptions")
+    .delete()
+    .eq("user_id", user.id)
+    .in("status", ["trialing", "pending"]);
+
+  const now = new Date();
+  const periodEnd = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+  await supabase.from("subscriptions").insert({
+    user_id: user.id,
+    plan: "pro",
+    status: "trialing",
+    platform: "web",
+    gateway: "mercadopago",
+    gateway_subscription_id: mpData.id,
+    current_period_start: now.toISOString(),
+    current_period_end: periodEnd.toISOString(),
+  });
 
   return new Response(
     JSON.stringify({

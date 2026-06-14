@@ -70,7 +70,7 @@ export async function PATCH(req: NextRequest) {
       .select(
         "commission_rate, min_coach_price, pro_monthly_price_cents, currency_symbol, active"
       )
-      .eq("country_code", typedCountryCode)
+      .eq("country", typedCountryCode)
       .single();
 
     // Update
@@ -83,7 +83,7 @@ export async function PATCH(req: NextRequest) {
         currency_symbol,
         active,
       })
-      .eq("country_code", typedCountryCode);
+      .eq("country", typedCountryCode);
 
     if (updateError) {
       console.error("Error updating country_config:", updateError);

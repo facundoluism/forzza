@@ -149,7 +149,7 @@ export default function CoachProfileScreen() {
       const { data } = await supabase
         .from("country_config")
         .select("currency_symbol")
-        .eq("country_code", "AR")
+        .eq("country", "AR")
         .single();
       return data;
     },

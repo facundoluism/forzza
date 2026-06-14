@@ -44,3 +44,14 @@ supabase/.temp/
 # OS
 .DS_Store
 Thumbs.db
+
+# Test reports
+playwright-report/
+test-results/
+
+# Agent/Codex tooling (local config, not project source)
+.agents/
+.codex/
+
+# Local build-system docs (duplicated in docs/)
+forzza-kit/

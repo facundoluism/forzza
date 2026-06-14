@@ -18,18 +18,28 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       NSPhotoLibraryUsageDescription: 'Forzza accede a tus fotos para subir fotos de progreso.',
       NSPhotoLibraryAddUsageDescription: 'Forzza guarda fotos de progreso en tu galería.',
     },
+    splash: {
+      image: './assets/splash.png',
+      resizeMode: 'contain',
+      backgroundColor: '#0A0A0A',
+    },
   },
   android: {
     package: 'com.forzza.app',
     versionCode: 1,
     adaptiveIcon: {
-      foregroundImage: './assets/icon.png',
+      foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#0A0A0A',
     },
     permissions: [
       'android.permission.CAMERA',
       'android.permission.READ_MEDIA_IMAGES',
     ],
+    splash: {
+      image: './assets/splash.png',
+      resizeMode: 'contain',
+      backgroundColor: '#0A0A0A',
+    },
   },
   web: {
     favicon: './assets/favicon.png',
@@ -38,6 +48,21 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   plugins: [
     'expo-router',
     'expo-secure-store',
+    [
+      'expo-notifications',
+      {
+        icon: './assets/icon.png',
+        color: '#C8FF00',
+        defaultChannel: 'default',
+      },
+    ],
+    [
+      '@sentry/react-native/expo',
+      {
+        url: 'https://sentry.io/',
+        project: 'forzza-mobile',
+      },
+    ],
     [
       'expo-build-properties',
       {

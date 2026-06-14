@@ -81,8 +81,9 @@ export default async function AlumnosPage() {
 
       {rows.length === 0 ? (
         <div className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-12 text-center">
-          <p className="text-[#666666] text-lg">Todavía no tenés alumnos asignados.</p>
-          <p className="text-[#444444] text-sm mt-2">
+          <p className="text-4xl mb-4">👥</p>
+          <p className="text-[#FAFAFA] text-lg font-semibold">Todavía no tenés alumnos asignados.</p>
+          <p className="text-[#666666] text-sm mt-2">
             Cuando un alumno te seleccione, aparecerá acá.
           </p>
         </div>

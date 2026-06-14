@@ -63,7 +63,7 @@ async function getProPrice(): Promise<{ formatted: string; note: string }> {
     const { data } = await (supabase as any)
       .from("country_config")
       .select("pro_monthly_price_cents, currency_code, currency_symbol")
-      .eq("country_code", "AR")
+      .eq("country", "AR")
       .single();
 
     if (!data) return { formatted: "$ 9.999", note: "por mes en ARS · cancelá cuando quieras" };

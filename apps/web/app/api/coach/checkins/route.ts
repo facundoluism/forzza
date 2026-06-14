@@ -48,10 +48,10 @@ export async function POST(request: Request) {
 
     const { name, questions } = parsed.data;
 
-    // Create template
+    // Create template with questions embedded as JSONB
     const { data: template, error: tmplError } = await supabase
       .from("checkin_templates")
-      .insert({ coach_id: user.id, name })
+      .insert({ coach_id: user.id, title: name, questions })
       .select("id")
       .single();
 
@@ -59,28 +59,6 @@ export async function POST(request: Request) {
       console.error("Error creating checkin template:", tmplError);
       return NextResponse.json(
         { error: "Error al crear la plantilla" },
-        { status: 500 }
-      );
-    }
-
-    // Insert questions
-    const questionRows = questions.map((q) => ({
-      template_id: template.id,
-      label: q.label,
-      question_type: q.question_type,
-      required: q.required,
-      order: q.order,
-    }));
-
-    const { error: qError } = await supabase
-      .from("checkin_questions")
-      .insert(questionRows);
-
-    if (qError) {
-      console.error("Error inserting checkin questions:", qError);
-      await supabase.from("checkin_templates").delete().eq("id", template.id);
-      return NextResponse.json(
-        { error: "Error al guardar las preguntas" },
         { status: 500 }
       );
     }

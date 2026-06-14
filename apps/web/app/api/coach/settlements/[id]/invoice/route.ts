@@ -100,16 +100,10 @@ export async function POST(
       );
     }
 
-    const { data: urlData } = supabase.storage
-      .from("invoices")
-      .getPublicUrl(fileName);
-
-    const invoiceUrl = urlData.publicUrl;
-
-    // Update settlement: set invoice_url and change status to 'invoiced'
+    // Update settlement: set invoice_path and change status to 'invoiced'
     const { error: updateError } = await supabase
       .from("settlements")
-      .update({ invoice_url: invoiceUrl, status: "invoiced" })
+      .update({ invoice_path: fileName, status: "invoiced" as const })
       .eq("id", settlementId)
       .eq("coach_id", user.id)
       .in("status", ["pending", "pending_invoice"]);
@@ -122,7 +116,7 @@ export async function POST(
       );
     }
 
-    return NextResponse.json({ ok: true, invoice_url: invoiceUrl });
+    return NextResponse.json({ ok: true, invoice_path: fileName });
   } catch {
     return NextResponse.json({ error: "Error interno" }, { status: 500 });
   }

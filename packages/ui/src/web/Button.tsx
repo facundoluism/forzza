@@ -23,6 +23,13 @@ const sizeStyles: Record<ButtonSize, CSSProperties> = {
   lg: { padding: `${spacing[4]}px ${spacing[6]}px`, fontSize: "18px", minHeight: "56px" },
 };
 
+const variantClass: Record<ButtonVariant, string> = {
+  primary: "ui-btn ui-btn--primary",
+  secondary: "ui-btn ui-btn--secondary",
+  ghost: "ui-btn ui-btn--ghost",
+  danger: "ui-btn ui-btn--danger",
+};
+
 export function Button({
   variant = "primary",
   size = "md",
@@ -30,13 +37,15 @@ export function Button({
   label,
   fullWidth = false,
   disabled,
+  className,
   ...rest
-}: ButtonProps) {
+}: ButtonProps & { className?: string }) {
   const isDisabled = disabled ?? loading;
 
   return (
     <button
       disabled={isDisabled}
+      className={[variantClass[variant], className].filter(Boolean).join(" ")}
       style={{
         ...variantStyles[variant],
         ...sizeStyles[size],
@@ -48,7 +57,6 @@ export function Button({
         alignItems: "center",
         justifyContent: "center",
         width: fullWidth ? "100%" : undefined,
-        transition: "opacity 0.2s",
         fontFamily: "inherit",
       }}
       {...rest}

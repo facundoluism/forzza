@@ -110,10 +110,16 @@ export default function OnboardingCoachPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#0A0A0A", padding: "32px 24px" }}>
+    <div style={{ minHeight: "100vh", backgroundColor: "var(--color-bg)", padding: "32px 24px" }}>
       <div style={{ maxWidth: "600px", margin: "0 auto" }}>
+        {/* Logo */}
+        <div style={{ marginBottom: "32px" }}>
+          <a href="/" style={{ textDecoration: "none", display: "inline-block" }}>
+            <span style={{ color: "var(--color-lime)", fontSize: "24px", fontWeight: 800, letterSpacing: "6px", fontFamily: "var(--font-display)" }}>FORZZA</span>
+          </a>
+        </div>
         {/* Header */}
-        <h1 style={{ color: "#C8FF00", fontSize: "28px", fontWeight: "bold", marginBottom: "8px" }}>
+        <h1 style={{ color: "var(--color-lime)", fontSize: "28px", fontWeight: "bold", marginBottom: "8px", fontFamily: "var(--font-display)", letterSpacing: "1px" }}>
           Registrarse como coach
         </h1>
 

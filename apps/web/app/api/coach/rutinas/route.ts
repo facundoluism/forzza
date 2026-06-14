@@ -68,13 +68,25 @@ export async function POST(request: Request) {
       }
     }
 
-    // Create routine
+    // Build exercises JSONB payload
+    const exercisesJson = exercises.map((ex) => ({
+      exercise_id: ex.exercise_id,
+      sets: ex.sets ?? null,
+      reps: ex.reps ?? null,
+      duration_seconds: ex.duration_seconds ?? null,
+      rest_seconds: ex.rest_seconds ?? null,
+      order: ex.order,
+    }));
+
+    // Create routine with exercises as JSONB
     const { data: routine, error: routineError } = await supabase
       .from("routines")
       .insert({
         coach_id: user.id,
-        student_id: student_id ?? null,
-        name,
+        // student_id is required by DB schema; pass empty string if not provided (coach-only routine)
+        student_id: (student_id ?? "") as string,
+        title: name,
+        exercises: exercisesJson,
       })
       .select("id")
       .single();
@@ -85,40 +97,6 @@ export async function POST(request: Request) {
         { error: "Error al crear la rutina" },
         { status: 500 }
       );
-    }
-
-    // Insert routine_exercises
-    const exerciseRows = exercises.map((ex) => ({
-      routine_id: routine.id,
-      exercise_id: ex.exercise_id,
-      order: ex.order,
-      sets: ex.sets ?? null,
-      reps: ex.reps ?? null,
-      duration_seconds: ex.duration_seconds ?? null,
-      rest_seconds: ex.rest_seconds ?? null,
-    }));
-
-    const { error: exError } = await supabase
-      .from("routine_exercises")
-      .insert(exerciseRows);
-
-    if (exError) {
-      console.error("Error inserting routine exercises:", exError);
-      // Clean up orphan routine
-      await supabase.from("routines").delete().eq("id", routine.id);
-      return NextResponse.json(
-        { error: "Error al guardar los ejercicios" },
-        { status: 500 }
-      );
-    }
-
-    // If student_id provided: upsert assignment.routine_id
-    if (student_id) {
-      await supabase
-        .from("coach_assignments")
-        .update({ routine_id: routine.id })
-        .eq("coach_id", user.id)
-        .eq("student_id", student_id);
     }
 
     return NextResponse.json({ id: routine.id }, { status: 201 });

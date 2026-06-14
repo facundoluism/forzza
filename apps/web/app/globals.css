@@ -88,11 +88,38 @@ a {
   box-shadow: 0 0 12px rgba(200, 255, 0, 0.3);
 }
 
+/* Global focus ring — a11y */
+:focus-visible {
+  outline: 2px solid var(--color-lime);
+  outline-offset: 2px;
+}
+
 /* Mobile responsive — hide elements on small screens */
 @media (max-width: 640px) {
   .hide-mobile { display: none !important; }
   .nav-mobile { gap: 8px !important; }
-  .nav-mobile a, .nav-mobile span { font-size: 12px !important; padding: 6px 10px !important; }
+  /* Only shrink non-CTA nav links; leave .btn-lime untouched */
+  .nav-mobile a:not(.btn-lime) { font-size: 12px !important; padding: 6px 10px !important; }
+}
+
+/* UI design system Button component hover states */
+.ui-btn {
+  transition: transform 150ms ease-out, box-shadow 200ms ease-out, filter 200ms ease-out, opacity 0.2s !important;
+}
+.ui-btn:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+.ui-btn:not(:disabled):active {
+  transform: translateY(0);
+}
+.ui-btn--primary:not(:disabled):hover {
+  filter: brightness(1.1);
+  box-shadow: 0 0 28px rgba(200, 255, 0, 0.45);
+  color: #000 !important;
+}
+.ui-btn--secondary:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
 }
 
 /* Scrollbar */

@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { calculateSettlement } from "./index";
+import {
+  calculateSettlement,
+  isEligibleForCommissionModel,
+  canTransferSettlement,
+} from "./index";
 
 describe("calculateSettlement", () => {
   it("calcula comisión 20% en ARS", () => {
@@ -53,5 +57,66 @@ describe("calculateSettlement", () => {
     });
     expect(result.commission).toBe(50000);
     expect(result.net).toBe(0);
+  });
+});
+
+describe("isEligibleForCommissionModel", () => {
+  it("3 alumnos activos → sigue en fixed (no llega al umbral)", () => {
+    expect(isEligibleForCommissionModel(3)).toBe(false);
+  });
+
+  it("4 alumnos activos → pasa a comisión (umbral exacto)", () => {
+    expect(isEligibleForCommissionModel(4)).toBe(true);
+  });
+
+  it("5+ alumnos activos → sigue en comisión (nunca revierte)", () => {
+    expect(isEligibleForCommissionModel(5)).toBe(true);
+    expect(isEligibleForCommissionModel(100)).toBe(true);
+  });
+
+  it("0 alumnos activos → fixed", () => {
+    expect(isEligibleForCommissionModel(0)).toBe(false);
+  });
+});
+
+describe("canTransferSettlement", () => {
+  it("sin invoice_number → no se puede transferir", () => {
+    expect(canTransferSettlement({
+      status: "invoiced",
+      invoiceNumber: null,
+      invoicePath: "/invoices/coach/inv-001.pdf",
+    })).toBe(false);
+  });
+
+  it("sin invoice_path → no se puede transferir", () => {
+    expect(canTransferSettlement({
+      status: "invoiced",
+      invoiceNumber: "INV-001",
+      invoicePath: null,
+    })).toBe(false);
+  });
+
+  it("con invoice_number e invoice_path → puede transferirse", () => {
+    expect(canTransferSettlement({
+      status: "invoiced",
+      invoiceNumber: "INV-001",
+      invoicePath: "/invoices/coach/inv-001.pdf",
+    })).toBe(true);
+  });
+
+  it("invoice_number vacío → no se puede transferir", () => {
+    expect(canTransferSettlement({
+      status: "invoiced",
+      invoiceNumber: "  ",
+      invoicePath: "/invoices/coach/inv-001.pdf",
+    })).toBe(false);
+  });
+
+  it("invoice_path vacío → no se puede transferir", () => {
+    expect(canTransferSettlement({
+      status: "invoiced",
+      invoiceNumber: "INV-001",
+      invoicePath: "",
+    })).toBe(false);
   });
 });

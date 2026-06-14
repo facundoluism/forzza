@@ -12,9 +12,9 @@ export default async function AdminConfiguracionPage() {
   const { data: configs, error } = await adminClient
     .from("country_config")
     .select(
-      "country_code, commission_rate, currency, currency_code, currency_symbol, min_coach_price, pro_monthly_price_cents, active"
+      "country_code:country, commission_rate, currency, currency_code, currency_symbol, min_coach_price, pro_monthly_price_cents, active"
     )
-    .order("country_code");
+    .order("country");
 
   if (error) {
     console.error("Error fetching country_config:", error);

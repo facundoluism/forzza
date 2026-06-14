@@ -20,7 +20,7 @@ interface Notification {
   title: string;
   body: string;
   read_at: string | null;
-  metadata: Record<string, unknown> | null;
+  data: Record<string, unknown> | null;
   created_at: string;
 }
 
@@ -79,7 +79,7 @@ function navigateForType(
   router: ReturnType<typeof useRouter>,
   notification: Notification
 ): void {
-  const meta = notification.metadata ?? {};
+  const meta = notification.data ?? {};
   switch (notification.type) {
     case "checkin_reminder":
       router.push("/(tabs)/routines" as never);
@@ -119,7 +119,7 @@ export default function NotificationsScreen(): React.JSX.Element {
       .limit(100);
 
     if (!error && data) {
-      setNotifications(data as Notification[]);
+      setNotifications(data as unknown as Notification[]);
     }
     setLoading(false);
   }, [user]);

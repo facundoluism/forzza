@@ -73,11 +73,11 @@ export const spacing = {
 
 export const typography = {
   // BebasNeue — headings (condensed feel with fontWeight 900, letterSpacing -1)
-  heading: "BebasNeue",
+  heading: "BebasNeue_400Regular",
   // DM Sans — body text
-  body: "DMSans",
+  body: "DMSans_400Regular",
   // Space Mono — numbers, timers, prices, codes
-  mono: "SpaceMono",
+  mono: "SpaceMono_400Regular",
 } as const;
 
 export const radius = {

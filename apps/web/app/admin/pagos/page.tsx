@@ -9,12 +9,12 @@ type PaymentStatus = "pending" | "approved" | "rejected" | "refunded" | "in_proc
 
 interface PaymentRow {
   id: string;
-  payer_id: string;
-  payee_id: string;
-  amount_cents: number;
-  currency_code: string;
+  user_id: string;
+  coach_id: string;
+  amount: number;
+  currency: string;
   status: PaymentStatus;
-  provider: string;
+  gateway: string;
   created_at: string;
 }
 
@@ -69,7 +69,7 @@ export default async function AdminPagosPage({ searchParams }: PageProps) {
   let query = adminClient
     .from("payments")
     .select(
-      "id, payer_id, payee_id, amount_cents, currency_code, status, provider, created_at"
+      "id, user_id, coach_id, amount, currency, status, gateway, created_at"
     )
     .order("created_at", { ascending: false })
     .limit(200);
@@ -89,7 +89,7 @@ export default async function AdminPagosPage({ searchParams }: PageProps) {
   // Calculate totals
   const approvedRows = rows.filter((p) => p.status === "approved");
   const totalApproved = approvedRows.reduce(
-    (sum, p) => sum + p.amount_cents,
+    (sum, p) => sum + p.amount,
     0
   );
 
@@ -101,7 +101,7 @@ export default async function AdminPagosPage({ searchParams }: PageProps) {
   ).toISOString();
   const monthApproved = approvedRows
     .filter((p) => p.created_at >= monthStart)
-    .reduce((sum, p) => sum + p.amount_cents, 0);
+    .reduce((sum, p) => sum + p.amount, 0);
 
   return (
     <div>
@@ -172,7 +172,9 @@ export default async function AdminPagosPage({ searchParams }: PageProps) {
 
       {rows.length === 0 ? (
         <div className="rounded-xl border border-[#1E1E1E] bg-[#111111] p-12 text-center">
-          <p className="text-[#555555] text-lg">No hay pagos para mostrar.</p>
+          <p className="text-4xl mb-4">💳</p>
+          <p className="text-[#FAFAFA] text-lg font-semibold">No hay pagos para mostrar.</p>
+          <p className="text-[#555555] text-sm mt-2">Las transacciones aparecerán acá una vez que se procesen.</p>
         </div>
       ) : (
         <div className="rounded-xl border border-[#1E1E1E] bg-[#111111] overflow-hidden">
@@ -195,13 +197,13 @@ export default async function AdminPagosPage({ searchParams }: PageProps) {
                     {p.id.slice(0, 8)}…
                   </td>
                   <td className="px-6 py-3 font-mono text-[#888888] text-xs hidden md:table-cell">
-                    {p.payer_id.slice(0, 8)}…
+                    {p.user_id.slice(0, 8)}…
                   </td>
                   <td className="px-6 py-3 font-mono text-[#888888] text-xs hidden md:table-cell">
-                    {p.payee_id.slice(0, 8)}…
+                    {p.coach_id.slice(0, 8)}…
                   </td>
                   <td className="px-6 py-3 text-right font-semibold text-[#FAFAFA]">
-                    {formatCents(p.amount_cents, p.currency_code)}
+                    {formatCents(p.amount, p.currency)}
                   </td>
                   <td className="px-6 py-3">
                     <span
@@ -211,7 +213,7 @@ export default async function AdminPagosPage({ searchParams }: PageProps) {
                     </span>
                   </td>
                   <td className="px-6 py-3 text-[#666666] text-xs capitalize hidden sm:table-cell">
-                    {p.provider}
+                    {p.gateway}
                   </td>
                   <td className="px-6 py-3 text-[#444444] text-xs hidden lg:table-cell">
                     {formatDate(p.created_at)}

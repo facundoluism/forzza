@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { colors, spacing } from "@forzza/ui";
+import { redirect } from "next/navigation";
+import { isSupabaseConfigured, createClient } from "@/lib/supabase/server";
+import { CheckoutClient } from "./CheckoutClient";
 
 export const metadata: Metadata = {
-  title: "Contratar coach — Forzza",
-  description: "Finalizá la contratación de tu coach desde la app Forzza.",
+  title: "Checkout — Forzza",
+  description: "Completá la contratación de tu coach en Forzza.",
 };
 
 interface PageProps {
@@ -12,117 +13,161 @@ interface PageProps {
   searchParams: Promise<{ package_id?: string }>;
 }
 
-export default async function CoachCheckoutWebPage({ params, searchParams }: PageProps) {
-  const { coachId } = await params;
-  const { package_id } = await searchParams;
+interface CoachPackageData {
+  id: string;
+  title: string;
+  price: number;
+  active: boolean;
+  tier: string;
+  description: string | null;
+}
 
-  const appDeepLink = `forzza://marketplace/checkout?coach_id=${coachId}${package_id ? `&package_id=${package_id}` : ""}`;
+interface CoachProfileData {
+  id: string;
+  display_name: string;
+  status: string;
+}
+
+export default async function CoachCheckoutPage({
+  params,
+  searchParams,
+}: PageProps) {
+  const { coachId } = await params;
+  const { package_id: packageId } = await searchParams;
+
+  // Si no hay package_id, redirigir al perfil del coach
+  if (!packageId) {
+    redirect(`/coaches/${coachId}`);
+  }
+
+  // Si Supabase no está configurado, mostrar el checkout igual (el cliente manejará el error)
+  if (!isSupabaseConfigured()) {
+    return (
+      <CheckoutClient
+        coachId={coachId}
+        packageId={packageId}
+        coachName="Coach"
+        packageTitle="Paquete seleccionado"
+        packagePrice={0}
+        currency="ARS"
+        isMinorWithoutConsent={false}
+        errorMessage="Servicio no disponible en modo desarrollo."
+      />
+    );
+  }
+
+  const supabase = await createClient();
+
+  // Verificar autenticación
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    const redirectUrl = `/coaches/${coachId}/checkout?package_id=${packageId}`;
+    redirect(`/login?redirect=${encodeURIComponent(redirectUrl)}`);
+  }
+
+  // Verificar menor de edad sin consentimiento paternal (Regla #7)
+  let isMinorWithoutConsent = false;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: studentProfile } = await (supabase as any)
+    .from("student_profiles")
+    .select("birth_date, parental_consent_at")
+    .eq("user_id", user.id)
+    .single();
+
+  if (studentProfile?.birth_date) {
+    const ageMs = Date.now() - new Date(studentProfile.birth_date as string).getTime();
+    const age = Math.floor(ageMs / (365.25 * 24 * 60 * 60 * 1000));
+    if (age < 18 && !studentProfile.parental_consent_at) {
+      isMinorWithoutConsent = true;
+    }
+  }
+
+  // Obtener datos del coach y el paquete
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: coachData } = await (supabase as any)
+    .from("coach_profiles")
+    .select("id, display_name, status")
+    .eq("id", coachId)
+    .eq("status", "approved")
+    .single();
+
+  if (!coachData) {
+    return (
+      <CheckoutClient
+        coachId={coachId}
+        packageId={packageId}
+        coachName="Coach"
+        packageTitle=""
+        packagePrice={0}
+        currency="ARS"
+        isMinorWithoutConsent={false}
+        errorMessage="El coach no está disponible o no fue aprobado."
+      />
+    );
+  }
+
+  const coach = coachData as CoachProfileData;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: packageData } = await (supabase as any)
+    .from("coach_packages")
+    .select("id, title, price, active, tier, description")
+    .eq("id", packageId)
+    .eq("coach_id", coachId)
+    .eq("active", true)
+    .single();
+
+  if (!packageData) {
+    return (
+      <CheckoutClient
+        coachId={coachId}
+        packageId={packageId}
+        coachName={coach.display_name}
+        packageTitle=""
+        packagePrice={0}
+        currency="ARS"
+        isMinorWithoutConsent={false}
+        errorMessage="El paquete seleccionado no está disponible."
+      />
+    );
+  }
+
+  const pkg = packageData as CoachPackageData;
+
+  // Obtener símbolo de moneda del país del usuario
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: userRecord } = await (supabase as any)
+    .from("users")
+    .select("country")
+    .eq("id", user.id)
+    .single();
+
+  const country = (userRecord?.country as string) ?? "AR";
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: countryConfig } = await (supabase as any)
+    .from("country_config")
+    .select("currency_code, currency_symbol")
+    .eq("country", country)
+    .single();
+
+  const currency = (countryConfig?.currency_code as string) ?? "ARS";
+  const currencySymbol = (countryConfig?.currency_symbol as string) ?? "$";
 
   return (
-    <main
-      style={{
-        backgroundColor: colors.black,
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: `${spacing[6]}px`,
-      }}
-    >
-      <div
-        style={{
-          maxWidth: "480px",
-          width: "100%",
-          backgroundColor: colors.gray900,
-          borderRadius: "24px",
-          border: `1px solid ${colors.gray800}`,
-          padding: `${spacing[10]}px ${spacing[8]}px`,
-          textAlign: "center",
-          display: "flex",
-          flexDirection: "column",
-          gap: `${spacing[6]}px`,
-        }}
-      >
-        {/* Icon */}
-        <div style={{ fontSize: "48px" }}>{"📱"}</div>
-
-        <div>
-          <h1
-            style={{
-              color: colors.white,
-              fontSize: "28px",
-              fontWeight: "900",
-              margin: `0 0 ${spacing[3]}px`,
-              letterSpacing: "-0.5px",
-            }}
-          >
-            Continuar en la app
-          </h1>
-          <p style={{ color: colors.gray400, fontSize: "15px", lineHeight: "1.6", margin: 0 }}>
-            Para completar la contratación de tu coach, necesitás usar la app de Forzza. El proceso de pago es 100% seguro a través de Mercado Pago.
-          </p>
-        </div>
-
-        {/* Deep link CTA */}
-        <a
-          href={appDeepLink}
-          style={{
-            display: "block",
-            backgroundColor: colors.lime,
-            color: colors.black,
-            borderRadius: "10px",
-            padding: `${spacing[4]}px`,
-            fontWeight: "700",
-            fontSize: "16px",
-            textDecoration: "none",
-          }}
-        >
-          Abrir en la app Forzza
-        </a>
-
-        {/* Download links */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: `${spacing[2]}px`,
-          }}
-        >
-          <p style={{ color: colors.gray500, fontSize: "13px", margin: 0 }}>
-            {"¿No tenés la app instalada?"}
-          </p>
-          <div style={{ display: "flex", gap: `${spacing[3]}px`, justifyContent: "center", flexWrap: "wrap" }}>
-            <a
-              href="https://apps.apple.com/app/forzza"
-              style={{
-                color: colors.gray300,
-                fontSize: "13px",
-                textDecoration: "underline",
-              }}
-            >
-              App Store (iOS)
-            </a>
-            <a
-              href="https://play.google.com/store/apps/forzza"
-              style={{
-                color: colors.gray300,
-                fontSize: "13px",
-                textDecoration: "underline",
-              }}
-            >
-              Google Play (Android)
-            </a>
-          </div>
-        </div>
-
-        {/* Back */}
-        <Link
-          href={`/coaches/${coachId}`}
-          style={{ color: colors.gray500, fontSize: "13px", textDecoration: "none" }}
-        >
-          {"← Volver al perfil del coach"}
-        </Link>
-      </div>
-    </main>
+    <CheckoutClient
+      coachId={coachId}
+      packageId={packageId}
+      coachName={coach.display_name}
+      packageTitle={pkg.title}
+      packagePrice={pkg.price}
+      currency={currency}
+      currencySymbol={currencySymbol}
+      isMinorWithoutConsent={isMinorWithoutConsent}
+      errorMessage={null}
+    />
   );
 }

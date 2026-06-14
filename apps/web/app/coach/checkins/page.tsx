@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 interface CheckinTemplate {
   id: string;
-  name: string;
+  title: string;
   created_at: string;
   question_count: number;
   last_response_at: string | null;
@@ -28,7 +28,7 @@ export default async function CheckinsPage() {
 
   const { data: templates, error } = await supabase
     .from("checkin_templates")
-    .select("id, name, created_at")
+    .select("id, title, questions, created_at")
     .eq("coach_id", coachUserId)
     .order("created_at", { ascending: false });
 
@@ -36,28 +36,24 @@ export default async function CheckinsPage() {
     console.error("Error fetching templates:", error);
   }
 
-  // For each template, get question count and last response
+  // For each template, get last response
   const enriched: CheckinTemplate[] = [];
   for (const tmpl of templates ?? []) {
-    const [{ count }, { data: lastResp }] = await Promise.all([
-      supabase
-        .from("checkin_questions")
-        .select("id", { count: "exact", head: true })
-        .eq("template_id", tmpl.id),
-      supabase
-        .from("checkin_responses")
-        .select("submitted_at")
-        .eq("template_id", tmpl.id)
-        .order("submitted_at", { ascending: false })
-        .limit(1)
-        .single(),
-    ]);
+    const { data: lastResp } = await supabase
+      .from("checkin_responses")
+      .select("submitted_at")
+      .eq("template_id", tmpl.id)
+      .order("submitted_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    const questions = Array.isArray(tmpl.questions) ? tmpl.questions : [];
 
     enriched.push({
       id: tmpl.id,
-      name: tmpl.name,
+      title: tmpl.title,
       created_at: tmpl.created_at,
-      question_count: count ?? 0,
+      question_count: questions.length,
       last_response_at: lastResp?.submitted_at ?? null,
     });
   }
@@ -81,8 +77,9 @@ export default async function CheckinsPage() {
 
       {enriched.length === 0 ? (
         <div className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-12 text-center">
-          <p className="text-[#666666] text-lg">Todavía no creaste plantillas de check-in.</p>
-          <p className="text-[#444444] text-sm mt-2 mb-6">
+          <p className="text-4xl mb-4">✅</p>
+          <p className="text-[#FAFAFA] text-lg font-semibold">Todavía no creaste plantillas de check-in.</p>
+          <p className="text-[#666666] text-sm mt-2 mb-6">
             Creá plantillas para hacer seguimiento de tus alumnos.
           </p>
           <Link
@@ -107,7 +104,7 @@ export default async function CheckinsPage() {
               {enriched.map((tmpl) => (
                 <tr key={tmpl.id} className="hover:bg-[#161616] transition-colors">
                   <td className="px-6 py-4">
-                    <span className="font-medium text-[#FAFAFA]">{tmpl.name}</span>
+                    <span className="font-medium text-[#FAFAFA]">{tmpl.title}</span>
                     <p className="text-[#444444] text-xs mt-0.5">
                       Creada el {formatDate(tmpl.created_at)}
                     </p>
