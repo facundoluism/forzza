@@ -55,3 +55,7 @@ test-results/
 
 # Local build-system docs (duplicated in docs/)
 forzza-kit/
+
+# Audit artifacts (UI/UX screenshots & logs)
+.audit/
+.audit-web-dev.log
