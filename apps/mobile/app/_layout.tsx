@@ -15,7 +15,7 @@ import { AuthProvider, useAuth } from "@/providers/AuthProvider";
 import { initSentry } from "@/lib/sentry";
 
 // Evitar que el splash se oculte antes de que las fuentes carguen
-SplashScreen.preventAutoHideAsync();
+void SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -157,12 +157,12 @@ export default function RootLayout() {
   const [sentryReady, setSentryReady] = useState(false);
 
   useEffect(() => {
-    initSentry().then(() => setSentryReady(true));
+    void initSentry().then(() => setSentryReady(true));
   }, []);
 
   useEffect(() => {
     if (fontsLoaded && sentryReady) {
-      SplashScreen.hideAsync();
+      void SplashScreen.hideAsync();
     }
   }, [fontsLoaded, sentryReady]);
 
