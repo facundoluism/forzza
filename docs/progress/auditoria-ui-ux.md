@@ -67,7 +67,15 @@ Auditoría exhaustiva de UI/UX sobre **landing, backoffice coach (/coach), backo
 
 ---
 
-## 🏁 Estado final auditoría UI/UX
+## 🏁 Estado final auditoría UI/UX — CERRADA (2026-06-15)
 - **Críticos:** 100% resueltos (rutas rotas, crash rutinas/nueva, reset-password, safe areas mobile).
 - **Backlog (items 4-12):** 100% resuelto.
 - **Único pendiente:** HUMAN_REQUIRED — captura visual mobile con emulador Android (validación de los fixes de tap-targets/padding/screenTitle/estados sobre pantalla real). Todo lo demás está verificado por código + typecheck + lint.
+
+### Trazabilidad de commits (pusheados a `origin/main`)
+- `4684987` — críticos web (rutas, crash rutinas/nueva, reset-password).
+- `4996862` — safe areas mobile reales.
+- `0b6727e` — migración a design system (items 4-8, 10).
+- `84ad9b6` — cierre backlog (items 9, 11, 12).
+
+La auditoría UI/UX queda **cerrada**. La próxima acción es exclusivamente la validación visual mobile sobre emulador/dispositivo (HUMAN_REQUIRED), no implica más cambios de código pendientes.
