@@ -13,6 +13,7 @@ import {
 import { SpaceMono_400Regular } from "@expo-google-fonts/space-mono";
 import { AuthProvider, useAuth } from "@/providers/AuthProvider";
 import { initSentry } from "@/lib/sentry";
+import { colors } from "@forzza/ui/tokens";
 
 // Evitar que el splash se oculte antes de que las fuentes carguen
 void SplashScreen.preventAutoHideAsync();
@@ -59,6 +60,15 @@ function RootLayoutNav() {
         <Stack.Screen name="session" options={{ presentation: "modal" }} />
         <Stack.Screen name="routine/[id]" />
         <Stack.Screen
+          name="routine/new"
+          options={{
+            headerShown: false,
+            // Card push (no modal): evita que la pantalla anterior asome detrás
+            // y que el picker de biblioteca quede como modal-sobre-modal en iOS.
+            presentation: "card",
+          }}
+        />
+        <Stack.Screen
           name="upgrade"
           options={{ title: "Planes", presentation: "modal" }}
         />
@@ -67,8 +77,8 @@ function RootLayoutNav() {
           options={{
             headerShown: true,
             title: "Coaches",
-            headerStyle: { backgroundColor: "#0A0A0A" },
-            headerTintColor: "#FAFAFA",
+            headerStyle: { backgroundColor: colors.black },
+            headerTintColor: colors.white,
             headerTitleStyle: {
               fontFamily: "BebasNeue_400Regular",
               fontSize: 20,
@@ -80,8 +90,8 @@ function RootLayoutNav() {
           options={{
             headerShown: true,
             title: "Perfil del coach",
-            headerStyle: { backgroundColor: "#0A0A0A" },
-            headerTintColor: "#FAFAFA",
+            headerStyle: { backgroundColor: colors.black },
+            headerTintColor: colors.white,
             headerTitleStyle: {
               fontFamily: "BebasNeue_400Regular",
               fontSize: 20,
@@ -94,8 +104,8 @@ function RootLayoutNav() {
             headerShown: true,
             title: "Contratar",
             presentation: "modal",
-            headerStyle: { backgroundColor: "#0A0A0A" },
-            headerTintColor: "#FAFAFA",
+            headerStyle: { backgroundColor: colors.black },
+            headerTintColor: colors.white,
             headerTitleStyle: {
               fontFamily: "BebasNeue_400Regular",
               fontSize: 20,
@@ -107,8 +117,8 @@ function RootLayoutNav() {
           options={{
             headerShown: true,
             title: "Notificaciones",
-            headerStyle: { backgroundColor: "#0A0A0A" },
-            headerTintColor: "#FAFAFA",
+            headerStyle: { backgroundColor: colors.black },
+            headerTintColor: colors.white,
             headerTitleStyle: {
               fontFamily: "BebasNeue_400Regular",
               fontSize: 20,
@@ -120,8 +130,8 @@ function RootLayoutNav() {
           options={{
             headerShown: true,
             title: "Chat",
-            headerStyle: { backgroundColor: "#0A0A0A" },
-            headerTintColor: "#FAFAFA",
+            headerStyle: { backgroundColor: colors.black },
+            headerTintColor: colors.white,
             headerTitleStyle: {
               fontFamily: "BebasNeue_400Regular",
               fontSize: 20,
@@ -133,8 +143,8 @@ function RootLayoutNav() {
           options={{
             headerShown: true,
             title: "Styleguide",
-            headerStyle: { backgroundColor: "#0A0A0A" },
-            headerTintColor: "#C8FF00",
+            headerStyle: { backgroundColor: colors.black },
+            headerTintColor: colors.lime,
             headerTitleStyle: {
               fontFamily: "BebasNeue_400Regular",
               fontSize: 20,

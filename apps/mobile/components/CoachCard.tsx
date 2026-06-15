@@ -3,11 +3,13 @@ import { useRouter } from "expo-router";
 import { Card, Pill } from "@forzza/ui/native";
 import { colors, spacing, typography, radius } from "@forzza/ui/tokens";
 
+// Columnas reales de coach_packages: id, coach_id, tier, title, description, price, active
 export interface CoachCardPackage {
   id: string;
-  name: string;
-  price_cents: number;
-  billing_type: "mensual" | "paquete";
+  title: string;
+  price: number; // entero en centavos
+  tier: "starter" | "pro" | "elite";
+  active: boolean;
 }
 
 export interface CoachCardData {
@@ -31,18 +33,20 @@ function getInitials(name: string): string {
     .join("");
 }
 
-function cheapestPrice(packages: CoachCardPackage[]): number | null {
+function cheapestActivePrice(packages: CoachCardPackage[]): number | null {
   if (!packages || packages.length === 0) return null;
-  return packages.reduce(
-    (min, p) => (p.price_cents < min ? p.price_cents : min),
-    packages[0]!.price_cents
+  const active = packages.filter((p) => p.active);
+  if (active.length === 0) return null;
+  return active.reduce(
+    (min, p) => (p.price < min ? p.price : min),
+    active[0]!.price
   );
 }
 
 export function CoachCard({ coach, currencySymbol = "$" }: CoachCardProps) {
   const router = useRouter();
   const initials = getInitials(coach.display_name);
-  const minPrice = cheapestPrice(coach.packages);
+  const minPrice = cheapestActivePrice(coach.packages);
   const visibleSpecialties = coach.specialties.slice(0, 3);
 
   return (

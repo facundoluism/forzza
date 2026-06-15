@@ -22,14 +22,32 @@ interface StudentProfile {
   id: string;
   user_id: string;
   display_name: string | null;
-  coach_id?: string | null;
-  active_routine_id?: string | null;
+}
+
+// Shape canónico del JSONB routines.exercises
+interface RoutineExercise {
+  name: string;
+  sets: number;
+  reps: string;
+  rest_seconds: number;
+  notes?: string;
 }
 
 interface Routine {
   id: string;
-  name: string;
+  title: string;
   student_id: string;
+  exercises: RoutineExercise[];
+}
+
+// coach_assignments con coach_profiles embebido
+interface CoachAssignment {
+  id: string;
+  student_id: string;
+  coach_id: string;
+  status: string;
+  // TODO: regenerar db-types
+  coach_profiles: { display_name: string } | null;
 }
 
 function SkeletonCard(): React.JSX.Element {
@@ -48,7 +66,7 @@ function RecentSessionCard({
   session: {
     routine_name: string;
     started_at: string;
-    exercises: Array<{ sets: unknown[] }>;
+    sets_data: Array<{ sets: unknown[] }>;
   };
 }): React.JSX.Element {
   const date = new Date(session.started_at);
@@ -57,7 +75,7 @@ function RecentSessionCard({
     day: "numeric",
     month: "short",
   });
-  const totalSets = session.exercises.reduce(
+  const totalSets = session.sets_data.reduce(
     (acc, ex) => acc + ex.sets.length,
     0
   );
@@ -107,13 +125,14 @@ export default function HomeTab(): React.JSX.Element {
 
   const tenDaysAgo = new Date(Date.now() - TEN_DAYS_MS).toISOString();
 
+  // Perfil del alumno (solo columnas que existen en student_profiles)
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["student_profile", user?.id],
     queryFn: async (): Promise<StudentProfile | null> => {
       if (!user) return null;
       const { data, error } = await supabase
         .from("student_profiles")
-        .select("*")
+        .select("id, user_id, display_name")
         .eq("user_id", user.id)
         .single();
       if (error) throw error;
@@ -122,20 +141,47 @@ export default function HomeTab(): React.JSX.Element {
     enabled: !!user,
   });
 
+  // Rutina activa: la más reciente donde active=true y student_id=user.id
   const { data: routine, isLoading: routineLoading } = useQuery({
-    queryKey: ["active_routine", profile?.active_routine_id],
+    queryKey: ["active_routine", user?.id],
     queryFn: async (): Promise<Routine | null> => {
-      if (!profile?.active_routine_id) return null;
-      const { data, error } = await supabase
-        .from("routines" as never)
-        .select("*")
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .eq("id", profile.active_routine_id as any)
-        .single();
+      if (!user) return null;
+      // TODO: regenerar db-types — cast mínimo hasta que se actualice el esquema generado
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
+        .from("routines")
+        .select("id, title, student_id, exercises")
+        .eq("student_id", user.id)
+        .eq("active", true)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
       if (error) return null;
       return data as Routine | null;
     },
-    enabled: !!profile?.active_routine_id,
+    enabled: !!user,
+  });
+
+  // Assignment activo (para saber si tiene coach y mostrar el nombre)
+  const { data: activeAssignment, isLoading: assignmentLoading } = useQuery({
+    queryKey: ["active_assignment", user?.id],
+    queryFn: async (): Promise<CoachAssignment | null> => {
+      if (!user) return null;
+      // TODO: regenerar db-types — cast mínimo
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
+        .from("coach_assignments")
+        .select(
+          "id, student_id, coach_id, status, coach_profiles!coach_assignments_coach_id_fkey(display_name)"
+        )
+        .eq("student_id", user.id)
+        .eq("status", "active")
+        .limit(1)
+        .maybeSingle();
+      if (error) return null;
+      return data as CoachAssignment | null;
+    },
+    enabled: !!user,
   });
 
   const displayName =
@@ -145,6 +191,7 @@ export default function HomeTab(): React.JSX.Element {
     hour < 12 ? "Buenos días" : hour < 19 ? "Buenas tardes" : "Buenas noches";
 
   // Last 3 completed sessions — free users: only from last 10 days
+  // sets_data es el campo correcto en la store para sesiones completadas
   const allRecentSessions = syncQueue
     .filter((item) => item.payload?.status === "completed")
     .slice(-3)
@@ -152,14 +199,15 @@ export default function HomeTab(): React.JSX.Element {
     .map((item) => ({
       routine_name: item.payload?.routine_name ?? "Entreno",
       started_at: item.payload?.started_at ?? new Date().toISOString(),
-      exercises: item.payload?.exercises ?? [],
+      sets_data: item.payload?.sets_data ?? [],
     }));
 
   const recentSessions = isPro
     ? allRecentSessions
     : allRecentSessions.filter((s) => s.started_at >= tenDaysAgo);
 
-  const isLoading = profileLoading || routineLoading;
+  const isLoading = profileLoading || routineLoading || assignmentLoading;
+  const hasCoach = activeAssignment !== null;
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
@@ -180,10 +228,10 @@ export default function HomeTab(): React.JSX.Element {
             style={styles.routineCard}
             onPress={() => router.push(`/routine/${routine.id}`)}
           >
-            <Text style={styles.routineName}>{routine.name}</Text>
+            <Text style={styles.routineName}>{routine.title}</Text>
             <Text style={styles.routineHint}>Tocá para ver los ejercicios</Text>
           </Card>
-        ) : profile?.coach_id ? (
+        ) : hasCoach ? (
           <EmptyState
             title="Tu coach todavía no asignó una rutina"
             description="Esperá a que tu coach te configure una rutina personalizada."
@@ -232,6 +280,7 @@ const styles = StyleSheet.create({
   content: {
     padding: spacing[4],
     paddingTop: spacing[12],
+    paddingBottom: spacing[20],
   },
   header: {
     marginBottom: spacing[6],
@@ -245,7 +294,6 @@ const styles = StyleSheet.create({
     fontFamily: typography.heading,
     color: colors.text,
     fontSize: 36,
-    fontWeight: "900",
     letterSpacing: -1,
     textTransform: "uppercase",
   },
@@ -269,7 +317,6 @@ const styles = StyleSheet.create({
     fontFamily: typography.heading,
     color: colors.text,
     fontSize: 22,
-    fontWeight: "900",
     letterSpacing: -0.5,
     textTransform: "uppercase",
   },
@@ -300,7 +347,6 @@ const styles = StyleSheet.create({
     fontFamily: typography.heading,
     color: colors.black,
     fontSize: 20,
-    fontWeight: "900",
     letterSpacing: 1,
     textTransform: "uppercase",
   },

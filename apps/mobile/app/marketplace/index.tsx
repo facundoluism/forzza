@@ -38,11 +38,13 @@ export default function MarketplaceScreen() {
   const { data: coaches, isLoading, isError, refetch } = useQuery({
     queryKey: ["marketplace_coaches"],
     queryFn: async (): Promise<CoachCardData[]> => {
+      // Columnas reales de coach_packages: id, title, price, tier, active
+      // TODO: regenerar db-types — cast mínimo hasta que se actualice el esquema generado
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data, error } = await (supabase as any)
         .from("coach_profiles")
         .select(
-          "id, display_name, avatar_url, specialties, packages:coach_packages(id, name, price_cents, billing_type)"
+          "id, display_name, avatar_url, specialties, packages:coach_packages(id, title, price, tier, active)"
         )
         .eq("status", "approved")
         .order("created_at", { ascending: false });

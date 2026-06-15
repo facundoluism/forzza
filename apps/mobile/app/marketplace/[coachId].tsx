@@ -14,14 +14,14 @@ import { useAuth } from "@/providers/AuthProvider";
 import { Card, Pill, Skeleton, ErrorState } from "@forzza/ui/native";
 import { colors, spacing, typography, radius } from "@forzza/ui/tokens";
 
+// Columnas reales de coach_packages: id, coach_id, tier, title, description, price, active
 interface CoachPackage {
   id: string;
-  name: string;
+  title: string;
   description: string | null;
-  price_cents: number;
-  billing_type: "mensual" | "paquete";
-  features: string[];
-  is_active: boolean;
+  price: number; // entero en centavos
+  tier: "starter" | "pro" | "elite";
+  active: boolean;
 }
 
 interface CoachProfile {
@@ -65,26 +65,15 @@ function PackageCard({
   currencySymbol: string;
   onContratar: (packageId: string) => void;
 }) {
-  const billingLabel = pkg.billing_type === "mensual" ? "/mes" : " (paquete)";
-  const price = (pkg.price_cents / 100).toLocaleString("es-AR");
+  // Precio en centavos → mostrar formateado
+  const price = (pkg.price / 100).toLocaleString("es-AR");
 
   return (
     <Card style={styles.packageCard} padding="lg">
-      <Text style={styles.packageName}>{pkg.name}</Text>
+      <Text style={styles.packageName}>{pkg.title}</Text>
       {pkg.description ? (
         <Text style={styles.packageDesc}>{pkg.description}</Text>
       ) : null}
-
-      {pkg.features.length > 0 && (
-        <View style={styles.features}>
-          {pkg.features.map((feat, idx) => (
-            <View key={idx} style={styles.featureRow}>
-              <Text style={styles.featureBullet}>{"•"}</Text>
-              <Text style={styles.featureText}>{feat}</Text>
-            </View>
-          ))}
-        </View>
-      )}
 
       <View style={styles.packageFooter}>
         <Text style={styles.packagePrice}>
@@ -92,7 +81,6 @@ function PackageCard({
             {currencySymbol}
             {price}
           </Text>
-          {billingLabel}
         </Text>
         <TouchableOpacity
           style={styles.contratarBtn}
@@ -114,11 +102,13 @@ export default function CoachProfileScreen() {
   const { data: coach, isLoading, isError, refetch } = useQuery({
     queryKey: ["coach_profile", coachId],
     queryFn: async (): Promise<CoachProfile | null> => {
+      // Columnas reales de coach_packages: id, title, description, price, tier, active
+      // TODO: regenerar db-types — cast mínimo hasta que se actualice el esquema generado
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data, error } = await (supabase as any)
         .from("coach_profiles")
         .select(
-          "id, user_id, display_name, bio, specialties, avatar_url, years_experience, status, packages:coach_packages(id, name, description, price_cents, billing_type, features, is_active)"
+          "id, user_id, display_name, bio, specialties, avatar_url, years_experience, status, packages:coach_packages(id, title, description, price, tier, active)"
         )
         .eq("id", coachId!)
         .eq("status", "approved")
@@ -149,7 +139,7 @@ export default function CoachProfileScreen() {
       const { data } = await supabase
         .from("country_config")
         .select("currency_symbol")
-        .eq("country", "AR")
+        .eq("country", "AR") // PK es "country", no "country_code"
         .single();
       return data;
     },
@@ -205,7 +195,8 @@ export default function CoachProfileScreen() {
   }
 
   const initials = getInitials(coach.display_name);
-  const activePackages = coach.packages.filter((p) => p.is_active);
+  // Filtrar solo paquetes activos
+  const activePackages = coach.packages.filter((p) => p.active);
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
@@ -359,26 +350,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
-  features: {
-    gap: spacing[1],
-  },
-  featureRow: {
-    flexDirection: "row",
-    gap: spacing[2],
-  },
-  featureBullet: {
-    color: colors.lime,
-    fontFamily: typography.body,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  featureText: {
-    fontFamily: typography.body,
-    color: colors.gray300,
-    fontSize: 14,
-    lineHeight: 20,
-    flex: 1,
-  },
   packageFooter: {
     flexDirection: "row",
     alignItems: "center",
@@ -401,6 +372,8 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[3],
+    minHeight: 44,
+    justifyContent: "center",
   },
   contratarText: {
     fontFamily: typography.heading,

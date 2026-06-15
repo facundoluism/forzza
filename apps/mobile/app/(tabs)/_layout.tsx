@@ -35,6 +35,14 @@ function NotificationBadge({ count }: { count: number }): React.JSX.Element | nu
   );
 }
 
+// Secuencia a nivel de módulo para generar topics de canal únicos por suscripción.
+// realtime-js reutiliza el canal si el topic ya existe (RealtimeClient.channel),
+// y removeChannel es async; al re-montarse el tab (reconnectPassiveEffects) el
+// efecto puede re-correr antes de que el canal anterior termine de desmontarse y
+// `.on("postgres_changes", ...)` tiraría "cannot add callbacks after subscribe()".
+// Un topic único por mount garantiza un canal fresco y evita esa carrera.
+let badgeChannelSeq = 0;
+
 function HomeTabIcon({ focused }: { focused: boolean }): React.JSX.Element {
   const { user } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
@@ -43,6 +51,8 @@ function HomeTabIcon({ focused }: { focused: boolean }): React.JSX.Element {
   useEffect(() => {
     if (!user) return;
 
+    let active = true;
+
     // Initial fetch of unread count
     void supabase
       .from("notifications")
@@ -50,12 +60,12 @@ function HomeTabIcon({ focused }: { focused: boolean }): React.JSX.Element {
       .eq("user_id", user.id)
       .is("read_at", null)
       .then(({ count }) => {
-        setUnreadCount(count ?? 0);
+        if (active) setUnreadCount(count ?? 0);
       });
 
-    // Subscribe to realtime changes
+    // Subscribe to realtime changes (topic único para evitar reutilización de canal)
     const channel = supabase
-      .channel(`notif_badge:${user.id}`)
+      .channel(`notif_badge:${user.id}:${++badgeChannelSeq}`)
       .on(
         "postgres_changes",
         {
@@ -90,6 +100,7 @@ function HomeTabIcon({ focused }: { focused: boolean }): React.JSX.Element {
     channelRef.current = channel;
 
     return () => {
+      active = false;
       void supabase.removeChannel(channel);
       channelRef.current = null;
     };
@@ -117,7 +128,7 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarStyle: styles.tabBar,
         tabBarActiveTintColor: colors.lime,
-        tabBarInactiveTintColor: "#4A4A4A",
+        tabBarInactiveTintColor: colors.gray600,
         tabBarLabelStyle: styles.tabLabel,
       }}
     >

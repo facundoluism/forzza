@@ -10,6 +10,7 @@ import {
 import { useRouter } from "expo-router";
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
+import { EmptyState } from "@forzza/ui/native";
 import { colors, spacing, radius, typography } from "@forzza/ui/tokens";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
@@ -85,8 +86,10 @@ function navigateForType(
       router.push("/(tabs)/routines" as never);
       break;
     case "new_message":
-      if (meta.conversation_id) {
-        router.push(`/chat/${String(meta.conversation_id)}` as never);
+      // El chat se modela por assignment_id (no existe tabla conversations)
+      // La metadata de la notificación envía assignment_id
+      if (meta.assignment_id) {
+        router.push(`/chat/${String(meta.assignment_id)}` as never);
       }
       break;
     case "assignment_confirmed":
@@ -231,6 +234,8 @@ export default function NotificationsScreen(): React.JSX.Element {
             onPress={() => void markAllAsRead()}
             disabled={markingAll}
             activeOpacity={0.7}
+            hitSlop={{ top: 12, bottom: 12, left: 10, right: 10 }}
+            style={styles.markAllBtn}
           >
             <Text style={styles.markAllText}>
               {markingAll ? "Marcando..." : "Marcar todas como leídas"}
@@ -240,12 +245,11 @@ export default function NotificationsScreen(): React.JSX.Element {
       </View>
 
       {notifications.length === 0 ? (
-        <View style={styles.centered}>
-          <Text style={styles.emptyTitle}>Sin notificaciones</Text>
-          <Text style={styles.emptyBody}>
-            Tus notificaciones van a aparecer acá.
-          </Text>
-        </View>
+        <EmptyState
+          title="Sin notificaciones"
+          description="Tus notificaciones van a aparecer acá."
+          icon="🔔"
+        />
       ) : (
         <FlatList
           data={notifications}
@@ -292,6 +296,10 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     textTransform: "uppercase",
   },
+  markAllBtn: {
+    minHeight: 44,
+    justifyContent: "center",
+  },
   markAllText: {
     fontFamily: typography.body,
     color: colors.lime,
@@ -300,7 +308,8 @@ const styles = StyleSheet.create({
     paddingBottom: spacing[1],
   },
   list: {
-    paddingVertical: spacing[1],
+    paddingTop: spacing[1],
+    paddingBottom: spacing[8],
   },
   item: {
     flexDirection: "row",

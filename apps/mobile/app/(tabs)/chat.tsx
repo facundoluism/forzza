@@ -10,30 +10,33 @@ import {
 import { useRouter } from "expo-router";
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
+import { EmptyState } from "@forzza/ui/native";
 import { colors, spacing, radius, typography } from "@forzza/ui/tokens";
 
-interface Conversation {
-  id: string;
-  coach_id: string;
-  student_id: string;
-  created_at: string;
-  updated_at: string;
-  other_name: string;
-  last_message: string | null;
-  last_message_at: string | null;
-  unread_count: number;
+// El chat se modela 1:1 por assignment (no existe tabla conversations)
+interface AssignmentChat {
+  assignmentId: string;
+  coachDisplayName: string;
+  lastMessage: string | null;
+  lastMessageAt: string | null;
+  unreadCount: number;
 }
 
-interface RawConversation {
+// Tipos internos para el select
+interface RawCoachProfile {
+  display_name: string;
+}
+
+interface RawAssignment {
   id: string;
-  coach_id: string;
   student_id: string;
-  created_at: string;
-  updated_at: string;
+  coach_id: string;
+  status: string;
+  coach_profiles: RawCoachProfile | null;
 }
 
 interface RawMessage {
-  body: string;
+  content: string;
   created_at: string;
 }
 
@@ -49,11 +52,11 @@ function timeAgo(iso: string | null): string {
   return `${days}d`;
 }
 
-function ConversationItem({
+function AssignmentItem({
   item,
   onPress,
 }: {
-  item: Conversation;
+  item: AssignmentChat;
   onPress: () => void;
 }): React.JSX.Element {
   return (
@@ -64,24 +67,24 @@ function ConversationItem({
     >
       <View style={styles.avatar}>
         <Text style={styles.avatarText}>
-          {item.other_name.charAt(0).toUpperCase()}
+          {item.coachDisplayName.charAt(0).toUpperCase()}
         </Text>
       </View>
       <View style={styles.itemContent}>
         <View style={styles.itemHeader}>
           <Text style={styles.itemName} numberOfLines={1}>
-            {item.other_name}
+            {item.coachDisplayName}
           </Text>
-          <Text style={styles.itemTime}>{timeAgo(item.last_message_at)}</Text>
+          <Text style={styles.itemTime}>{timeAgo(item.lastMessageAt)}</Text>
         </View>
         <View style={styles.itemFooter}>
           <Text style={styles.itemPreview} numberOfLines={1}>
-            {item.last_message ?? "Sin mensajes aún"}
+            {item.lastMessage ?? "Sin mensajes aún"}
           </Text>
-          {item.unread_count > 0 && (
+          {item.unreadCount > 0 && (
             <View style={styles.badge}>
               <Text style={styles.badgeText}>
-                {item.unread_count > 99 ? "99+" : String(item.unread_count)}
+                {item.unreadCount > 99 ? "99+" : String(item.unreadCount)}
               </Text>
             </View>
           )}
@@ -94,20 +97,24 @@ function ConversationItem({
 export default function ChatTab(): React.JSX.Element {
   const { user } = useAuth();
   const router = useRouter();
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [chats, setChats] = useState<AssignmentChat[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const loadConversations = useCallback(async () => {
+  const loadChats = useCallback(async () => {
     if (!user) return;
 
-    const { data: assignments, error } = await supabase
+    // Cargar assignments activos del alumno con datos del coach_profiles
+    // coach_id en coach_assignments referencia coach_profiles.id (no users.id)
+    // TODO: regenerar db-types — cast mínimo
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = supabase as any;
+
+    const { data: assignments, error } = await db
       .from("coach_assignments")
       .select(
-        `id, coach_id, student_id,
-        coach_profiles!coach_assignments_coach_id_fkey(display_name),
-        student_profiles!coach_assignments_student_id_fkey(display_name)`
+        "id, student_id, coach_id, status, coach_profiles!coach_assignments_coach_id_fkey(display_name)"
       )
-      .or(`coach_id.eq.${user.id},student_id.eq.${user.id}`)
+      .eq("student_id", user.id)
       .eq("status", "active");
 
     if (error || !assignments) {
@@ -115,92 +122,52 @@ export default function ChatTab(): React.JSX.Element {
       return;
     }
 
-    const convList: Conversation[] = [];
+    const chatList: AssignmentChat[] = [];
 
-    for (const a of assignments) {
-      const isCoach = a.coach_id === user.id;
-      const coachProfiles = a.coach_profiles as unknown as
-        | { display_name: string }
-        | null;
-      const studentProfiles = a.student_profiles as unknown as
-        | { display_name: string | null }
-        | null;
+    for (const a of assignments as RawAssignment[]) {
+      const coachName = a.coach_profiles?.display_name ?? "Coach";
 
-      const otherName = isCoach
-        ? (studentProfiles?.display_name ?? "Alumno")
-        : (coachProfiles?.display_name ?? "Coach");
-
-      // Buscar conversación existente
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: conv } = await (supabase as any)
-        .from("conversations")
-        .select("id, created_at, updated_at")
-        .eq("coach_id", a.coach_id)
-        .eq("student_id", a.student_id)
-        .single();
-
-      let convId: string;
-      if (!conv) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: newConv } = await (supabase as any)
-          .from("conversations")
-          .insert({ coach_id: a.coach_id, student_id: a.student_id })
-          .select("id, created_at, updated_at")
-          .single();
-        if (!newConv) continue;
-        convId = (newConv as RawConversation).id;
-      } else {
-        convId = (conv as RawConversation).id;
-      }
-
-      // Último mensaje
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: lastMsg } = await (supabase as any)
+      // Último mensaje de este assignment
+      const { data: lastMsgData } = await db
         .from("messages")
-        .select("body, created_at")
-        .eq("conversation_id", convId)
+        .select("content, created_at")
+        .eq("assignment_id", a.id)
         .order("created_at", { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
-      // Mensajes no leídos
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { count: unreadCount } = await (supabase as any)
+      const lastMsg = lastMsgData as RawMessage | null;
+
+      // Mensajes no leídos del otro lado
+      const { count: unreadCount } = await db
         .from("messages")
         .select("id", { count: "exact", head: true })
-        .eq("conversation_id", convId)
+        .eq("assignment_id", a.id)
         .neq("sender_id", user.id)
         .is("read_at", null);
 
-      const rawConv = conv as RawConversation | null;
-      const rawMsg = lastMsg as RawMessage | null;
-
-      convList.push({
-        id: convId,
-        coach_id: a.coach_id,
-        student_id: a.student_id,
-        created_at: rawConv?.created_at ?? "",
-        updated_at: rawConv?.updated_at ?? "",
-        other_name: otherName,
-        last_message: rawMsg?.body ?? null,
-        last_message_at: rawMsg?.created_at ?? null,
-        unread_count: (unreadCount as number | null) ?? 0,
+      chatList.push({
+        assignmentId: a.id,
+        coachDisplayName: coachName,
+        lastMessage: lastMsg?.content ?? null,
+        lastMessageAt: lastMsg?.created_at ?? null,
+        unreadCount: (unreadCount as number | null) ?? 0,
       });
     }
 
-    convList.sort((a, b) => {
-      const ta = a.last_message_at ?? a.created_at;
-      const tb = b.last_message_at ?? b.created_at;
+    chatList.sort((a, b) => {
+      const ta = a.lastMessageAt ?? "";
+      const tb = b.lastMessageAt ?? "";
       return new Date(tb).getTime() - new Date(ta).getTime();
     });
 
-    setConversations(convList);
+    setChats(chatList);
     setLoading(false);
   }, [user]);
 
   useEffect(() => {
-    void loadConversations();
-  }, [loadConversations]);
+    void loadChats();
+  }, [loadChats]);
 
   if (loading) {
     return (
@@ -215,21 +182,22 @@ export default function ChatTab(): React.JSX.Element {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Mensajes</Text>
       </View>
-      {conversations.length === 0 ? (
-        <View style={styles.centered}>
-          <Text style={styles.emptyTitle}>Sin conversaciones</Text>
-          <Text style={styles.emptyBody}>
-            Tus chats con coaches o alumnos aparecen acá.
-          </Text>
-        </View>
+      {chats.length === 0 ? (
+        <EmptyState
+          title="Sin conversaciones"
+          description="Los chats con tu coach aparecen acá cuando contratás un paquete."
+          icon="💬"
+        />
       ) : (
         <FlatList
-          data={conversations}
-          keyExtractor={(item) => item.id}
+          data={chats}
+          keyExtractor={(item) => item.assignmentId}
           renderItem={({ item }) => (
-            <ConversationItem
+            <AssignmentItem
               item={item}
-              onPress={() => router.push(`/chat/${item.id}` as never)}
+              onPress={() =>
+                router.push(`/chat/${item.assignmentId}` as never)
+              }
             />
           )}
           contentContainerStyle={styles.list}
@@ -243,7 +211,7 @@ export default function ChatTab(): React.JSX.Element {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.black,
+    backgroundColor: colors.bg,
   },
   centered: {
     flex: 1,
@@ -266,7 +234,8 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   list: {
-    paddingVertical: spacing[2],
+    paddingTop: spacing[2],
+    paddingBottom: spacing[20],
   },
   item: {
     flexDirection: "row",

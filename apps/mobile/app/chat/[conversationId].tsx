@@ -1,3 +1,5 @@
+// Nota: el parámetro de ruta "conversationId" representa el assignment_id
+// (el chat es 1:1 por assignment, no existe tabla conversations)
 import { useEffect, useRef, useState, useCallback } from "react";
 import {
   View,
@@ -18,9 +20,9 @@ import type { RealtimeChannel } from "@supabase/supabase-js";
 
 interface Message {
   id: string;
-  conversation_id: string;
+  assignment_id: string;
   sender_id: string;
-  body: string;
+  content: string;
   read_at: string | null;
   created_at: string;
 }
@@ -50,7 +52,7 @@ function MessageBubble({
         style={[styles.bubble, isOwn ? styles.bubbleOwn : styles.bubbleOther]}
       >
         <Text style={[styles.bubbleText, isOwn && styles.bubbleTextOwn]}>
-          {message.body}
+          {message.content}
         </Text>
       </View>
       <Text style={[styles.bubbleTime, isOwn && styles.bubbleTimeOwn]}>
@@ -62,11 +64,13 @@ function MessageBubble({
 
 const PAGE_SIZE = 50;
 
+// TODO: regenerar db-types — cast mínimo hasta que se actualice el esquema generado
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = supabase as any;
 
 export default function ConversationScreen(): React.JSX.Element {
-  const { conversationId } = useLocalSearchParams<{
+  // El parámetro "conversationId" es en realidad el assignment_id
+  const { conversationId: assignmentId } = useLocalSearchParams<{
     conversationId: string;
   }>();
   const { user } = useAuth();
@@ -95,12 +99,12 @@ export default function ConversationScreen(): React.JSX.Element {
 
   const loadMessages = useCallback(
     async (before?: string) => {
-      if (!conversationId) return;
+      if (!assignmentId) return;
 
       let query = db
         .from("messages")
-        .select("*")
-        .eq("conversation_id", conversationId)
+        .select("id, assignment_id, sender_id, content, read_at, created_at")
+        .eq("assignment_id", assignmentId)
         .order("created_at", { ascending: false })
         .limit(PAGE_SIZE);
 
@@ -125,7 +129,7 @@ export default function ConversationScreen(): React.JSX.Element {
         setHasMore(msgs.length === PAGE_SIZE);
       }
     },
-    [conversationId, user?.id, markRead]
+    [assignmentId, user?.id, markRead]
   );
 
   // Carga inicial
@@ -133,19 +137,19 @@ export default function ConversationScreen(): React.JSX.Element {
     void loadMessages().then(() => setLoading(false));
   }, [loadMessages]);
 
-  // Suscripción Realtime
+  // Suscripción Realtime — filtrar por assignment_id (columna real de messages)
   useEffect(() => {
-    if (!conversationId) return;
+    if (!assignmentId) return;
 
     const channel = supabase
-      .channel(`messages:conversation_id=eq.${conversationId}`)
+      .channel(`messages:assignment_id=eq.${assignmentId}`)
       .on(
         "postgres_changes",
         {
           event: "INSERT",
           schema: "public",
           table: "messages",
-          filter: `conversation_id=eq.${conversationId}`,
+          filter: `assignment_id=eq.${assignmentId}`,
         },
         (payload) => {
           const newMsg = payload.new as Message;
@@ -169,7 +173,7 @@ export default function ConversationScreen(): React.JSX.Element {
       void supabase.removeChannel(channel);
       channelRef.current = null;
     };
-  }, [conversationId, user?.id, markRead]);
+  }, [assignmentId, user?.id, markRead]);
 
   const handleLoadMore = useCallback(async () => {
     if (!hasMore || loadingMore || messages.length === 0) return;
@@ -180,24 +184,24 @@ export default function ConversationScreen(): React.JSX.Element {
   }, [hasMore, loadingMore, messages, loadMessages]);
 
   const handleSend = useCallback(async () => {
-    const body = text.trim();
-    if (!body || !user || !conversationId || sending) return;
+    const content = text.trim();
+    if (!content || !user || !assignmentId || sending) return;
 
     setSending(true);
     setText("");
 
     const { error } = await db.from("messages").insert({
-      conversation_id: conversationId,
+      assignment_id: assignmentId,
       sender_id: user.id,
-      body,
+      content,
     });
 
     if (error) {
-      setText(body);
+      setText(content);
     }
 
     setSending(false);
-  }, [text, user, conversationId, sending]);
+  }, [text, user, assignmentId, sending]);
 
   if (loading) {
     return (

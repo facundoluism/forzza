@@ -16,6 +16,7 @@ import { supabase } from "@/lib/supabase";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { TRACKED_EVENTS } from "@forzza/core";
 import { track } from "@/lib/analytics";
+import { ExercisePreviewSheet } from "@/components/ExercisePreviewSheet";
 import { Button, Card, AutopromoOverlay } from "@forzza/ui/native";
 import { colors, spacing, radius, typography } from "@forzza/ui/tokens";
 
@@ -138,6 +139,7 @@ export default function SessionScreen(): React.JSX.Element | null {
   const [durationSeconds, setDurationSeconds] = useState("");
   const [showRestTimer, setShowRestTimer] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [showExerciseSheet, setShowExerciseSheet] = useState(false);
 
   // Autopromo state
   const [showAutopromo, setShowAutopromo] = useState(false);
@@ -193,13 +195,39 @@ export default function SessionScreen(): React.JSX.Element | null {
     return null;
   }
 
-  // Build exercise list from routine (we only have what's been logged + we traverse by index)
-  // The session doesn't carry the full routine definition, so we work with logged exercises
+  // routineExercises transporta la definición completa de la rutina (nombres, series, descanso).
+  // Guard con ?? [] por si se rehidrata una sesión vieja persistida sin este campo.
+  const routineExercises = activeSession.routineExercises ?? [];
+  const currentRoutineExercise = routineExercises[currentExerciseIndex] ?? null;
+
+  // Para la navegación usamos la longitud de la definición de rutina como referencia
+  // y complementamos con los logs reales registrados durante la sesión
   const exerciseIds = activeSession.exercises.map((e) => e.exercise_id);
   const currentExerciseLog = activeSession.exercises[currentExerciseIndex];
   const currentSetsLogged = currentExerciseLog?.sets.length ?? 0;
-  const totalExercises = Math.max(exerciseIds.length, currentExerciseIndex + 1);
+
+  // Total: el mayor entre los ejercicios definidos en la rutina y los ya navegados
+  const totalExercises = Math.max(
+    routineExercises.length,
+    exerciseIds.length,
+    currentExerciseIndex + 1
+  );
   const progressPercent = totalExercises > 0 ? currentExerciseIndex / totalExercises : 0;
+
+  // Nombre del ejercicio actual: primero el nombre de la rutina, fallback a ID o genérico
+  const currentExerciseName =
+    currentRoutineExercise?.name ??
+    currentExerciseLog?.exercise_id ??
+    `Ejercicio ${currentExerciseIndex + 1}`;
+
+  // Segundos de descanso: del ejercicio de la rutina o 90s por defecto
+  const currentRestSeconds =
+    (currentRoutineExercise?.rest_seconds ?? 0) > 0
+      ? (currentRoutineExercise?.rest_seconds ?? 90)
+      : 90;
+
+  // El botón "Ver ficha" solo aparece si el ejercicio actual tiene exercise_id en la biblioteca
+  const currentExerciseLibraryId = currentRoutineExercise?.exercise_id ?? null;
 
   const handleLogSet = (): void => {
     const parsedReps = reps !== "" ? parseInt(reps, 10) : null;
@@ -304,14 +332,26 @@ export default function SessionScreen(): React.JSX.Element | null {
         <Card style={styles.exerciseCard} featured>
           <View style={styles.exerciseCardInner}>
             <Text style={styles.exerciseIndexLabel}>
-              EJERCICIO{" "}
+              EJERCICIO ACTUAL{" "}
               <Text style={styles.exerciseIndexMono}>{currentExerciseIndex + 1}</Text>
               {" / "}
               <Text style={styles.exerciseIndexMono}>{totalExercises}</Text>
             </Text>
-            <Text style={styles.exerciseName}>
-              {currentExerciseLog?.exercise_id ?? `Ejercicio ${currentExerciseIndex + 1}`}
-            </Text>
+
+            {/* Nombre del ejercicio + botón Ver ficha */}
+            <View style={styles.exerciseNameRow}>
+              <Text style={styles.exerciseName}>{currentExerciseName}</Text>
+              {currentExerciseLibraryId && (
+                <Pressable
+                  style={styles.fichaBtn}
+                  onPress={() => setShowExerciseSheet(true)}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <Text style={styles.fichaBtnText}>Ver ficha</Text>
+                </Pressable>
+              )}
+            </View>
+
             <Text style={styles.setsLogged}>
               <Text style={styles.setsLoggedMono}>{currentSetsLogged}</Text>
               {" "}{currentSetsLogged === 1 ? "serie registrada" : "series registradas"}
@@ -337,9 +377,9 @@ export default function SessionScreen(): React.JSX.Element | null {
           </View>
         </Card>
 
-        {/* Rest timer */}
+        {/* Rest timer — usa segundos definidos en la rutina, o 90s por defecto */}
         {showRestTimer && (
-          <RestTimer seconds={90} onDone={handleRestDone} />
+          <RestTimer seconds={currentRestSeconds} onDone={handleRestDone} />
         )}
 
         {/* Input section */}
@@ -414,6 +454,12 @@ export default function SessionScreen(): React.JSX.Element | null {
           loading={isSyncing}
         />
       </View>
+
+      {/* Sheet de ficha del ejercicio actual */}
+      <ExercisePreviewSheet
+        exerciseId={showExerciseSheet ? currentExerciseLibraryId : null}
+        onClose={() => setShowExerciseSheet(false)}
+      />
     </View>
   );
 }
@@ -501,6 +547,27 @@ const styles = StyleSheet.create({
   exerciseCardInner: {
     gap: spacing[2],
   },
+  exerciseNameRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: spacing[3],
+  },
+  fichaBtn: {
+    backgroundColor: colors.surface3,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[1],
+    alignSelf: "flex-start",
+    marginTop: spacing[1],
+  },
+  fichaBtnText: {
+    fontFamily: typography.body,
+    color: colors.lime,
+    fontSize: 12,
+    fontWeight: "600",
+  },
   exerciseIndexLabel: {
     fontFamily: typography.body,
     color: colors.muted,
@@ -521,6 +588,7 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     letterSpacing: -0.5,
     textTransform: "uppercase",
+    flex: 1,
   },
   setsLogged: {
     fontFamily: typography.body,

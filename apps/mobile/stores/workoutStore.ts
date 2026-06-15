@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { randomUUID } from "expo-crypto";
 
 export interface SetLog {
   set_number: number;
@@ -15,13 +16,26 @@ export interface ExerciseLog {
   sets: SetLog[];
 }
 
+/** Definición de un ejercicio de la rutina — transportada en la sesión activa */
+export interface RoutineExerciseDefinition {
+  exercise_id?: string;
+  name: string;
+  sets: number;
+  reps: string;
+  rest_seconds: number;
+  notes?: string;
+}
+
 export interface ActiveSession {
   id: string;
   client_uuid: string;
   routine_id: string;
   routine_name: string;
+  student_id: string; // requerido (NOT NULL) para el upsert a workout_sessions
   started_at: string;
   exercises: ExerciseLog[];
+  /** Definición completa de ejercicios de la rutina — para mostrar nombres y descanso real */
+  routineExercises: RoutineExerciseDefinition[];
   status: "active" | "paused" | "completed";
 }
 
@@ -39,7 +53,12 @@ interface WorkoutState {
 }
 
 interface WorkoutActions {
-  startSession: (routine_id: string, routine_name: string) => void;
+  startSession: (
+    routine_id: string,
+    routine_name: string,
+    student_id: string,
+    routineExercises?: RoutineExerciseDefinition[]
+  ) => void;
   logSet: (exercise_id: string, set_data: Omit<SetLog, "set_number" | "completed_at">) => void;
   pauseSession: () => void;
   resumeSession: () => void;
@@ -58,14 +77,16 @@ export const useWorkoutStore = create<WorkoutStore>()(
       syncQueue: [],
       isOnline: true,
 
-      startSession: (routine_id, routine_name) => {
+      startSession: (routine_id, routine_name, student_id, routineExercises) => {
         const session: ActiveSession = {
-          id: crypto.randomUUID(),
-          client_uuid: crypto.randomUUID(),
+          id: randomUUID(),
+          client_uuid: randomUUID(),
           routine_id,
           routine_name,
+          student_id,
           started_at: new Date().toISOString(),
           exercises: [],
+          routineExercises: routineExercises ?? [],
           status: "active",
         };
         set({ activeSession: session });
@@ -122,11 +143,13 @@ export const useWorkoutStore = create<WorkoutStore>()(
           client_uuid: activeSession.client_uuid,
           payload: {
             client_uuid: activeSession.client_uuid,
+            student_id: activeSession.student_id,    // requerido NOT NULL en workout_sessions
             routine_id: activeSession.routine_id,
             started_at: activeSession.started_at,
-            finished_at: new Date().toISOString(),
-            exercises: activeSession.exercises,
+            completed_at: new Date().toISOString(),  // columna real: completed_at (no finished_at)
+            sets_data: activeSession.exercises,       // columna real: sets_data (no exercises)
             status: "completed",
+            routine_name: activeSession.routine_name, // solo para mostrar en UI local
           },
           retries: 0,
         };

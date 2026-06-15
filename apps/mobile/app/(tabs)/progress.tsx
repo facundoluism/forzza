@@ -12,7 +12,7 @@ interface CompletedSessionEntry {
   client_uuid: string;
   routine_name: string;
   started_at: string;
-  finished_at: string;
+  completed_at: string; // columna real: completed_at (no finished_at)
   total_sets: number;
 }
 
@@ -53,8 +53,8 @@ function sessionsThisWeek(sessions: CompletedSessionEntry[]): number {
   return sessions.filter((s) => new Date(s.started_at) >= startOfWeek).length;
 }
 
-function formatDuration(startedAt: string, finishedAt: string): string {
-  const diff = new Date(finishedAt).getTime() - new Date(startedAt).getTime();
+function formatDuration(startedAt: string, completedAt: string): string {
+  const diff = new Date(completedAt).getTime() - new Date(startedAt).getTime();
   const minutes = Math.floor(diff / 60000);
   if (minutes < 60) return `${minutes} min`;
   const hours = Math.floor(minutes / 60);
@@ -69,7 +69,7 @@ function SessionItem({ session }: { session: CompletedSessionEntry }): React.JSX
     month: "short",
   });
 
-  const duration = formatDuration(session.started_at, session.finished_at);
+  const duration = formatDuration(session.started_at, session.completed_at);
 
   return (
     <Card style={styles.sessionCard}>
@@ -125,8 +125,8 @@ export default function ProgressTab(): React.JSX.Element {
       client_uuid: item.client_uuid,
       routine_name: item.payload?.routine_name ?? "Entreno",
       started_at: item.payload?.started_at ?? new Date().toISOString(),
-      finished_at: item.payload?.finished_at ?? new Date().toISOString(),
-      total_sets: (item.payload?.exercises ?? []).reduce(
+      completed_at: item.payload?.completed_at ?? new Date().toISOString(), // columna real
+      total_sets: (item.payload?.sets_data ?? []).reduce( // columna real: sets_data
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (acc: number, ex: any) => acc + (ex.sets?.length ?? 0),
         0

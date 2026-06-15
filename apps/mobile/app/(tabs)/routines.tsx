@@ -16,12 +16,21 @@ import { colors, spacing, radius, typography } from "@forzza/ui/tokens";
 
 const FREE_ROUTINE_LIMIT = 3;
 
+// Shape canónico del JSONB routines.exercises
+interface RoutineExercise {
+  name: string;
+  sets: number;
+  reps: string;
+  rest_seconds: number;
+  notes?: string;
+}
+
 interface Routine {
   id: string;
-  name: string;
+  title: string;
   created_at: string;
   student_id: string;
-  exercise_count: Array<{ count: number }>;
+  exercises: RoutineExercise[];
 }
 
 function SkeletonRoutineCard(): React.JSX.Element {
@@ -38,7 +47,7 @@ function SkeletonRoutineCard(): React.JSX.Element {
 
 const RoutineCard = memo(function RoutineCard({ routine }: { routine: Routine }): React.JSX.Element {
   const router = useRouter();
-  const exerciseCount = routine.exercise_count[0]?.count ?? 0;
+  const exerciseCount = routine.exercises?.length ?? 0;
   const createdDate = new Date(routine.created_at).toLocaleDateString("es-AR", {
     day: "numeric",
     month: "short",
@@ -50,7 +59,7 @@ const RoutineCard = memo(function RoutineCard({ routine }: { routine: Routine })
       style={styles.card}
       onPress={() => router.push(`/routine/${routine.id}`)}
     >
-      <Text style={styles.routineName}>{routine.name}</Text>
+      <Text style={styles.routineName}>{routine.title}</Text>
       <View style={styles.meta}>
         <Text style={styles.metaText}>
           <Text style={styles.metaMono}>{exerciseCount}</Text>
@@ -69,21 +78,22 @@ const RoutineCard = memo(function RoutineCard({ routine }: { routine: Routine })
 export default function RoutinesTab(): React.JSX.Element {
   const { user } = useAuth();
   const { isPro } = useEntitlements();
+  const router = useRouter();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const { data: routines, isLoading, isError } = useQuery({
     queryKey: ["routines", user?.id],
     queryFn: async (): Promise<Routine[]> => {
       if (!user) return [];
-      const { data, error } = await supabase
-        .from("routines" as never)
-        .select("*, exercise_count:routine_exercises(count)")
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .eq("student_id" as any, user.id)
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .order("created_at" as any, { ascending: false });
+      // TODO: regenerar db-types — cast mínimo hasta que se actualice el esquema generado
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
+        .from("routines")
+        .select("id, title, exercises, created_at, student_id")
+        .eq("student_id", user.id)
+        .order("created_at", { ascending: false });
       if (error) throw error;
-      return (data ?? []) as Routine[];
+      return (data ?? []) as unknown as Routine[];
     },
     enabled: !!user,
   });
@@ -94,8 +104,7 @@ export default function RoutinesTab(): React.JSX.Element {
       setShowUpgradeModal(true);
       return;
     }
-    // In V1 routine creation is coach-driven; show UpgradeModal as stub
-    setShowUpgradeModal(true);
+    router.push("/routine/new");
   };
 
   if (isLoading) {
@@ -157,10 +166,11 @@ export default function RoutinesTab(): React.JSX.Element {
         renderItem={({ item }) => <RoutineCard routine={item} />}
         ItemSeparatorComponent={() => <View style={{ height: spacing[3] }} />}
         contentContainerStyle={styles.listContent}
+        keyboardShouldPersistTaps="handled"
         ListEmptyComponent={
           <EmptyState
             title="No tenés rutinas todavía"
-            description="Tu coach todavía no te asignó ninguna rutina. ¡Ya va a llegar!"
+            description="Creá tu primera rutina tocando el botón «+» o esperá a que tu coach te asigne una."
             icon="📋"
           />
         }
@@ -196,7 +206,6 @@ const styles = StyleSheet.create({
     fontFamily: typography.heading,
     color: colors.text,
     fontSize: 32,
-    fontWeight: "900",
     letterSpacing: -1,
     textTransform: "uppercase",
   },

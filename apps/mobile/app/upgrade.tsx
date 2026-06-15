@@ -80,11 +80,12 @@ export default function UpgradeScreen() {
   const { data: config, isLoading: configLoading } = useQuery<CountryConfig>({
     queryKey: ["country-config"],
     queryFn: async (): Promise<CountryConfig> => {
+      // TODO: regenerar db-types — cast mínimo hasta que se actualice el esquema generado
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data, error } = await (supabase as any)
         .from("country_config")
         .select("pro_monthly_price_cents, currency_code, currency_symbol")
-        .eq("country_code", "AR")
+        .eq("country", "AR") // PK es "country", no "country_code"
         .single();
       if (error) throw error;
       return data as CountryConfig;

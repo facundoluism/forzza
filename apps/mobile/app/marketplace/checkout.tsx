@@ -13,16 +13,18 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/providers/AuthProvider";
-import { Card } from "@forzza/ui/native";
+import { Card, ErrorState } from "@forzza/ui/native";
 import { colors, spacing, typography, radius } from "@forzza/ui/tokens";
 
+// Columnas reales de coach_packages: id, coach_id, tier, title, description, price, active
 interface CheckoutPackage {
   id: string;
-  name: string;
+  title: string;
   description: string | null;
-  price_cents: number;
-  billing_type: "mensual" | "paquete";
-  features: string[];
+  price: number; // entero en centavos
+  tier: "starter" | "pro" | "elite";
+  active: boolean;
+  // join embed a coach_profiles (solo display_name)
   coach: {
     display_name: string;
   } | null;
@@ -55,11 +57,12 @@ export default function CheckoutScreen() {
   const { data: pkg, isLoading: pkgLoading } = useQuery({
     queryKey: ["checkout_package", package_id, coach_id],
     queryFn: async (): Promise<CheckoutPackage | null> => {
+      // TODO: regenerar db-types — cast mínimo hasta que se actualice el esquema generado
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data, error } = await (supabase as any)
         .from("coach_packages")
         .select(
-          "id, name, description, price_cents, billing_type, features, coach:coach_profiles(display_name)"
+          "id, title, description, price, tier, active, coach:coach_profiles(display_name)"
         )
         .eq("id", package_id!)
         .eq("coach_id", coach_id!)
@@ -90,7 +93,7 @@ export default function CheckoutScreen() {
       const { data } = await supabase
         .from("country_config")
         .select("currency_symbol")
-        .eq("country", "AR")
+        .eq("country", "AR") // PK es "country", no "country_code"
         .single();
       return data as CountryConfig | null;
     },
@@ -138,17 +141,16 @@ export default function CheckoutScreen() {
 
   if (!pkg) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.errorText}>
-          No pudimos cargar los detalles de este paquete.
-        </Text>
-      </View>
+      <ErrorState
+        title="Paquete no disponible"
+        description="No pudimos cargar los detalles de este paquete."
+      />
     );
   }
 
   const coachName = pkg.coach?.display_name ?? "Coach";
-  const price = (pkg.price_cents / 100).toLocaleString("es-AR");
-  const billingLabel = pkg.billing_type === "mensual" ? "por mes" : "paquete único";
+  // Precio en centavos → formateado
+  const price = (pkg.price / 100).toLocaleString("es-AR");
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
@@ -163,7 +165,7 @@ export default function CheckoutScreen() {
         <View style={styles.divider} />
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Paquete</Text>
-          <Text style={styles.summaryValue}>{pkg.name}</Text>
+          <Text style={styles.summaryValue}>{pkg.title}</Text>
         </View>
         {pkg.description ? (
           <Text style={styles.summaryDesc}>{pkg.description}</Text>
@@ -176,23 +178,9 @@ export default function CheckoutScreen() {
               {currencySymbol}
               {price}
             </Text>
-            <Text style={styles.pricePer}>{billingLabel}</Text>
           </View>
         </View>
       </Card>
-
-      {/* Features */}
-      {pkg.features.length > 0 && (
-        <View style={styles.featuresSection}>
-          <Text style={styles.featureTitle}>Incluye</Text>
-          {pkg.features.map((feat, idx) => (
-            <View key={idx} style={styles.featureRow}>
-              <Text style={styles.featureBullet}>{"•"}</Text>
-              <Text style={styles.featureText}>{feat}</Text>
-            </View>
-          ))}
-        </View>
-      )}
 
       {/* Minor blocked warning */}
       {minorBlocked && (
@@ -290,41 +278,6 @@ const styles = StyleSheet.create({
     color: colors.lime,
     fontSize: 22,
     fontWeight: "700",
-  },
-  pricePer: {
-    fontFamily: typography.body,
-    color: colors.gray500,
-    fontSize: 12,
-  },
-  featuresSection: {
-    marginBottom: spacing[4],
-    gap: spacing[2],
-  },
-  featureTitle: {
-    fontFamily: typography.body,
-    color: colors.gray300,
-    fontSize: 12,
-    fontWeight: "700",
-    textTransform: "uppercase",
-    letterSpacing: 1,
-    marginBottom: spacing[1],
-  },
-  featureRow: {
-    flexDirection: "row",
-    gap: spacing[2],
-  },
-  featureBullet: {
-    color: colors.lime,
-    fontFamily: typography.body,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  featureText: {
-    fontFamily: typography.body,
-    color: colors.gray300,
-    fontSize: 14,
-    lineHeight: 20,
-    flex: 1,
   },
   warningCard: {
     borderColor: colors.warning,
