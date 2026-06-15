@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     padding: spacing[6],
   },
   header: {
-    paddingTop: spacing[12],
+    paddingTop: spacing[4],
     paddingHorizontal: spacing[4],
     paddingBottom: spacing[4],
     borderBottomWidth: 1,

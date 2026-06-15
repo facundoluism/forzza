@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "@/providers/AuthProvider";
 import { useWorkoutStore } from "@/stores/workoutStore";
 import { useEntitlements } from "@/hooks/useEntitlements";
@@ -115,6 +116,7 @@ export default function ProgressTab(): React.JSX.Element {
   const syncQueue = useWorkoutStore((s) => s.syncQueue);
   const { isPro } = useEntitlements();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const tenDaysAgo = new Date(Date.now() - TEN_DAYS_MS);
 
@@ -148,7 +150,7 @@ export default function ProgressTab(): React.JSX.Element {
   const lastFive = completedSessions.slice(0, 5);
 
   return (
-    <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.scroll} contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing[2] }]}>
       <Text style={styles.screenTitle}>Tu Progreso</Text>
 
       {/* Stats row */}
@@ -224,7 +226,6 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: spacing[4],
-    paddingTop: spacing[12],
     paddingBottom: spacing[8],
   },
   screenTitle: {

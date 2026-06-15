@@ -10,6 +10,7 @@ import {
   Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useWorkoutStore } from "@/stores/workoutStore";
 import { syncPendingItems } from "@/services/sync";
 import { supabase } from "@/lib/supabase";
@@ -128,6 +129,7 @@ export default function SessionScreen(): React.JSX.Element | null {
     resumeSession,
     finishSession,
   } = useWorkoutStore();
+  const insets = useSafeAreaInsets();
 
   const { isPro, hasCoach, isLoading: entitlementsLoading } = useEntitlements();
 
@@ -302,7 +304,7 @@ export default function SessionScreen(): React.JSX.Element | null {
       </View>
 
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + spacing[2] }]}>
         <View style={styles.headerContent}>
           <Text style={styles.sessionTitle}>{activeSession.routine_name}</Text>
           <Text style={styles.sessionStatus}>
@@ -485,7 +487,6 @@ const styles = StyleSheet.create({
   },
   // Header
   header: {
-    paddingTop: spacing[12],
     paddingHorizontal: spacing[4],
     paddingBottom: spacing[4],
     borderBottomWidth: 1,

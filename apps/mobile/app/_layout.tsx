@@ -11,6 +11,7 @@ import {
   DMSans_700Bold,
 } from "@expo-google-fonts/dm-sans";
 import { SpaceMono_400Regular } from "@expo-google-fonts/space-mono";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AuthProvider, useAuth } from "@/providers/AuthProvider";
 import { initSentry } from "@/lib/sentry";
 import { colors } from "@forzza/ui/tokens";
@@ -180,10 +181,12 @@ export default function RootLayout() {
   if (!fontsLoaded) return null;
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <RootLayoutNav />
-      </AuthProvider>
-    </QueryClientProvider>
+    <SafeAreaProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <RootLayoutNav />
+        </AuthProvider>
+      </QueryClientProvider>
+    </SafeAreaProvider>
   );
 }

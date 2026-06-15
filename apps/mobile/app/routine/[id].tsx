@@ -9,6 +9,7 @@ import {
   Pressable,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/providers/AuthProvider";
@@ -108,6 +109,7 @@ export default function RoutineDetailScreen() {
   const { user } = useAuth();
   const startSession = useWorkoutStore((s) => s.startSession);
   const activeSession = useWorkoutStore((s) => s.activeSession);
+  const insets = useSafeAreaInsets();
 
   const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(null);
 
@@ -189,7 +191,7 @@ export default function RoutineDetailScreen() {
   if (isError || !routine) {
     return (
       <View style={styles.container}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 20, right: 20 }}>
+        <TouchableOpacity style={[styles.backBtn, { paddingTop: insets.top + spacing[2] }]} onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 20, right: 20 }}>
           <Text style={styles.backBtnText}>‹ Volver</Text>
         </TouchableOpacity>
         <EmptyState
@@ -205,7 +207,7 @@ export default function RoutineDetailScreen() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
+      <TouchableOpacity style={[styles.backBtn, { paddingTop: insets.top + spacing[2] }]} onPress={() => router.back()}>
         <Text style={styles.backBtnText}>‹ Volver</Text>
       </TouchableOpacity>
 
@@ -292,7 +294,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   backBtn: {
-    paddingTop: spacing[12],
     paddingHorizontal: spacing[4],
     paddingBottom: spacing[2],
   },

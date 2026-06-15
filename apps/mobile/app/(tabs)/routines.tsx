@@ -7,6 +7,7 @@ import {
   Pressable,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
@@ -80,6 +81,7 @@ export default function RoutinesTab(): React.JSX.Element {
   const { isPro } = useEntitlements();
   const router = useRouter();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const { data: routines, isLoading, isError } = useQuery({
     queryKey: ["routines", user?.id],
@@ -107,9 +109,11 @@ export default function RoutinesTab(): React.JSX.Element {
     router.push("/routine/new");
   };
 
+  const containerStyle = [styles.container, { paddingTop: insets.top + spacing[2] }];
+
   if (isLoading) {
     return (
-      <View style={styles.container}>
+      <View style={containerStyle}>
         <View style={styles.titleRow}>
           <Text style={styles.screenTitle}>Mis Rutinas</Text>
         </View>
@@ -124,7 +128,7 @@ export default function RoutinesTab(): React.JSX.Element {
 
   if (isError) {
     return (
-      <View style={styles.container}>
+      <View style={containerStyle}>
         <View style={styles.titleRow}>
           <Text style={styles.screenTitle}>Mis Rutinas</Text>
         </View>
@@ -140,7 +144,7 @@ export default function RoutinesTab(): React.JSX.Element {
   const atLimit = !isPro && (routines?.length ?? 0) >= FREE_ROUTINE_LIMIT;
 
   return (
-    <View style={styles.container}>
+    <View style={containerStyle}>
       <View style={styles.titleRow}>
         <Text style={styles.screenTitle}>Mis Rutinas</Text>
         <Pressable
@@ -193,7 +197,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.bg,
-    paddingTop: spacing[12],
     paddingHorizontal: spacing[4],
   },
   titleRow: {

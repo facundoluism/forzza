@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
 import { EmptyState } from "@forzza/ui/native";
@@ -99,6 +100,7 @@ export default function ChatTab(): React.JSX.Element {
   const router = useRouter();
   const [chats, setChats] = useState<AssignmentChat[]>([]);
   const [loading, setLoading] = useState(true);
+  const insets = useSafeAreaInsets();
 
   const loadChats = useCallback(async () => {
     if (!user) return;
@@ -179,7 +181,7 @@ export default function ChatTab(): React.JSX.Element {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + spacing[2] }]}>
         <Text style={styles.headerTitle}>Mensajes</Text>
       </View>
       {chats.length === 0 ? (
@@ -220,7 +222,6 @@ const styles = StyleSheet.create({
     padding: spacing[6],
   },
   header: {
-    paddingTop: spacing[12],
     paddingHorizontal: spacing[4],
     paddingBottom: spacing[4],
     borderBottomWidth: 1,

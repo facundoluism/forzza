@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { useRef } from "react";
 import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
@@ -122,6 +123,7 @@ export default function HomeTab(): React.JSX.Element {
   const router = useRouter();
   const syncQueue = useWorkoutStore((s) => s.syncQueue);
   const { isPro } = useEntitlements();
+  const insets = useSafeAreaInsets();
 
   const tenDaysAgo = new Date(Date.now() - TEN_DAYS_MS).toISOString();
 
@@ -210,7 +212,7 @@ export default function HomeTab(): React.JSX.Element {
   const hasCoach = activeAssignment !== null;
 
   return (
-    <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.scroll} contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing[2] }]}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.greeting}>{greeting},</Text>
@@ -279,7 +281,6 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: spacing[4],
-    paddingTop: spacing[12],
     paddingBottom: spacing[20],
   },
   header: {
