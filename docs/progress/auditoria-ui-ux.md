@@ -41,12 +41,12 @@ Auditoría exhaustiva de UI/UX sobre **landing, backoffice coach (/coach), backo
 
 ---
 
-## ⏳ Backlog (NECESITA-DECISIÓN) — pendiente de tu criterio
+## ✅ Críticos resueltos (2026-06-15, segunda tanda)
+1. **`coach/rutinas/nueva` crasheaba client-side** en dev-mock → `lib/supabase/client.ts` ahora devuelve un mock cuando falta env (mismo criterio que el server). Verificado visual: la página rinde el form completo sin overlay de error.
+2. **Flujo reset-password:** creada `app/(auth)/reset-password/page.tsx` (PKCE: `exchangeCodeForSession` + `updateUser`), `resetPasswordSchema` agregado a `@forzza/core`, y corregido el `redirectTo` de forgot-password (`/auth/reset-password` → `/reset-password`). Verificado visual.
+3. **Safe areas mobile:** instalado `react-native-safe-area-context ~5.6.2` + `SafeAreaProvider` en el root. Pantallas con header propio (4 tabs + routine/[id] + session) usan `insets.top`; las de header nativo (notifications, marketplace) bajaron el padding redundante. Pendiente de validación visual (sin emulador).
 
-### Críticos / alto impacto
-1. **`coach/rutinas/nueva` crashea client-side** en dev-mock: `lib/supabase/client.ts` usa `process.env[...]!` sin fallback → `createBrowserClient` tira "URL and API key required". En prod (con env vars) funciona, pero rompe la única página coach en dev. Fix: guardar `createClient()` como el server (`isDevMode`) o devolver mock.
-2. **Flujo reset-password roto:** `forgot-password` apunta a `/auth/reset-password` (prefijo mal **y la página no existe**). Falta crear `/reset-password`.
-3. **Safe areas mobile:** 8 pantallas usan `paddingTop: spacing[12]` (48px) como sustituto de safe-area → el título queda bajo el Dynamic Island (~59px). Requiere instalar `react-native-safe-area-context` + `useSafeAreaInsets` (decisión: agregar dep tras el fix reciente de Expo SDK 54).
+## ⏳ Backlog (NECESITA-DECISIÓN) — pendiente de tu criterio
 
 ### Consistencia / design system
 4. **Migración a tokens:** /coach y /admin usan hex hardcodeados (#0A0A0A, #111111, #C8FF00…) que no coinciden con `packages/ui/tokens` (bg real #080810). CLAUDE.md exige tokens.

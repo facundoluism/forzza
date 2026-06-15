@@ -18,6 +18,14 @@ export const forgotPasswordSchema = z.object({
   email: z.string().email("Email inválido"),
 });
 
+export const resetPasswordSchema = z.object({
+  password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Las contraseñas no coinciden",
+  path: ["confirmPassword"],
+});
+
 export const onboardingStudentSchema = z.object({
   display_name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
   birth_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida"),
@@ -35,6 +43,7 @@ export const parentalConsentSchema = z.object({
 export type LoginInput = z.infer<typeof loginSchema>;
 export type SignupInput = z.infer<typeof signupSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 export type OnboardingStudentInput = z.infer<typeof onboardingStudentSchema>;
 export type ParentalConsentInput = z.infer<typeof parentalConsentSchema>;
 
