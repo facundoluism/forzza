@@ -29,10 +29,10 @@ interface MetricCardProps {
 
 function MetricCard({ label, value, sub, accent }: MetricCardProps) {
   return (
-    <div className="rounded-xl border border-border bg-surface p-5">
-      <p className="text-muted text-xs uppercase tracking-wider mb-3 min-h-[2.5rem] flex items-start">{label}</p>
+    <div className="rounded-xl border border-border bg-surface p-4 sm:p-5 flex flex-col">
+      <p className="text-muted text-xs uppercase tracking-wider mb-3 min-h-[2.5rem] flex items-start leading-tight">{label}</p>
       <p
-        className={`text-2xl font-bold ${accent ? "text-[#C8FF00]" : "text-text"}`}
+        className={`text-xl sm:text-2xl font-bold font-mono mt-auto ${accent ? "text-lime" : "text-text"}`}
       >
         {value}
       </p>

@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { CoachCard, type CoachCardData } from "@/components/CoachCard";
 import { EmptyState, Skeleton, ErrorState } from "@forzza/ui/native";
-import { colors, spacing, typography, radius } from "@forzza/ui/tokens";
+import { colors, fontSize, spacing, typography, radius } from "@forzza/ui/tokens";
 
 interface CountryConfig {
   currency_symbol: string;
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: typography.heading,
     color: colors.white,
-    fontSize: 40,
+    fontSize: fontSize.screenTitle,
     letterSpacing: 1,
     textTransform: "uppercase",
   },

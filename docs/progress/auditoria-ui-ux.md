@@ -46,19 +46,28 @@ Auditoría exhaustiva de UI/UX sobre **landing, backoffice coach (/coach), backo
 2. **Flujo reset-password:** creada `app/(auth)/reset-password/page.tsx` (PKCE: `exchangeCodeForSession` + `updateUser`), `resetPasswordSchema` agregado a `@forzza/core`, y corregido el `redirectTo` de forgot-password (`/auth/reset-password` → `/reset-password`). Verificado visual.
 3. **Safe areas mobile:** instalado `react-native-safe-area-context ~5.6.2` + `SafeAreaProvider` en el root. Pantallas con header propio (4 tabs + routine/[id] + session) usan `insets.top`; las de header nativo (notifications, marketplace) bajaron el padding redundante. Pendiente de validación visual (sin emulador).
 
-## ⏳ Backlog (NECESITA-DECISIÓN) — pendiente de tu criterio
+## ✅ Backlog resuelto (2026-06-15, tercera tanda) — items 4-12 cerrados
 
 ### Consistencia / design system
-4. **Migración a tokens:** /coach y /admin usan hex hardcodeados (#0A0A0A, #111111, #C8FF00…) que no coinciden con `packages/ui/tokens` (bg real #080810). CLAUDE.md exige tokens.
-5. **Íconos emoji en navegación** (coach + admin): no heredan el color activo y varían por OS. Reemplazar por SVG monocromáticos (lucide/heroicons).
-6. **Fondo inconsistente:** público mezcla `#0A0A0A` (home/coaches/upgrade/legales) vs `#080810` (auth/onboarding).
-7. **Features PRO no coinciden** entre `/` (home) y `/upgrade`.
-8. **Inputs auth distintos** entre login y forgot-password (extraer a componente compartido).
-9. **Jerarquía tipográfica:** sin token `fontSize.screenTitle`; títulos oscilan 32/36/40px entre pantallas mobile.
+4. **Migración a tokens** ✅ — `globals.css`: `:root` → `@theme` (Tailwind v4 expone `bg-surface`/`text-muted`/`border-border`/`text-lime`); hex hardcodeados → tokens en todas las páginas coach/admin/auth/landing. Commit `0b6727e`.
+5. **Íconos emoji → SVG** ✅ — `lucide-react` añadido; `CoachSideNav`/`AdminSideNav` usan íconos monocromáticos que heredan el color activo. Commit `0b6727e`.
+6. **Fondo inconsistente** ✅ — landing unificada a `var(--color-bg)`. Commit `0b6727e`.
+7. **Features PRO no coinciden** ✅ — extraídas a `lib/plans.ts` (fuente única); `/` y `/upgrade` la consumen. Commit `0b6727e`.
+8. **Inputs auth distintos** ✅ — login/forgot/reset normalizados. Commit `0b6727e`.
+9. **Jerarquía tipográfica** ✅ — token `fontSize.screenTitle: 32` en `packages/ui/tokens`; aplicado a títulos de pantalla de lista (tabs index/routines/progress/chat, notifications, marketplace/index, routine/[id]). `upgrade` (hero paywall) y `marketplace/[coachId]` (hero de detalle) se dejaron deliberadamente más grandes.
 
-### Layout / responsive (menor)
-10. /coach y /admin sin `max-width` en desktop → cards estiradas a ~1140px.
-11. Admin: chips de filtro (pagos/tickets) hacen wrap a 2 filas (considerar scroll horizontal); KPI cards con label de 2 líneas descuadran el valor; 3 cards en grid-cols-2 dejan una huérfana.
-12. Estados faltantes: `(tabs)/index` (sin error), `chat` (sin error), `progress` (sin loading), `upgrade` (sin error/skeleton de precio), `admin/configuracion` (empty pobre).
+### Layout / responsive
+10. **max-width desktop** ✅ — `max-w-6xl mx-auto` en layouts /coach y /admin. Commit `0b6727e`.
+11. **Admin layout** ✅ — chips de filtro (pagos/tickets) a scroll horizontal una fila (`scrollbar-none`); KPI cards con valor alineado a línea base via `mt-auto` aunque el label tenga 2 líneas; grid de 3 cards a `grid-cols-3` (sin huérfana).
+12. **Estados faltantes** ✅ — mobile: `(tabs)/index` (error), `chat` (error con retry), `progress` (loading por hidratación de zustand persist). Web: `upgrade` (Suspense + `PriceSkeleton` + fallback de precio con aviso si la query falla), `admin/configuracion` (empty state con ícono Lucide + banner de error).
 
-> Evidencia visual: `.audit/screens/{landing,coach,admin}/*--{mobile,desktop}.png`. Script de captura: `.audit/capture.js`.
+> Verificación: `pnpm --filter web typecheck/lint` y `pnpm --filter mobile typecheck/lint` verdes (los 283 warnings de lint mobile son pre-existentes del cast `supabase as any`). Captura visual mobile sigue bloqueada (sin emulador, ver HUMAN_REQUIRED).
+
+> Evidencia visual web: `.audit/screens/{landing,coach,admin}/*--{mobile,desktop}.png`. Script de captura: `.audit/capture.js`.
+
+---
+
+## 🏁 Estado final auditoría UI/UX
+- **Críticos:** 100% resueltos (rutas rotas, crash rutinas/nueva, reset-password, safe areas mobile).
+- **Backlog (items 4-12):** 100% resuelto.
+- **Único pendiente:** HUMAN_REQUIRED — captura visual mobile con emulador Android (validación de los fixes de tap-targets/padding/screenTitle/estados sobre pantalla real). Todo lo demás está verificado por código + typecheck + lint.

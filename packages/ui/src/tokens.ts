@@ -99,4 +99,6 @@ export const fontSize = {
   "3xl": 30,
   "4xl": 36,
   "5xl": 48,
+  // Título estándar de pantalla de lista (tabs + screens con header de lista)
+  screenTitle: 32,
 } as const;

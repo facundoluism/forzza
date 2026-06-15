@@ -11,8 +11,8 @@ import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
-import { EmptyState } from "@forzza/ui/native";
-import { colors, spacing, radius, typography } from "@forzza/ui/tokens";
+import { EmptyState, ErrorState } from "@forzza/ui/native";
+import { colors, fontSize, spacing, radius, typography } from "@forzza/ui/tokens";
 
 // El chat se modela 1:1 por assignment (no existe tabla conversations)
 interface AssignmentChat {
@@ -100,6 +100,7 @@ export default function ChatTab(): React.JSX.Element {
   const router = useRouter();
   const [chats, setChats] = useState<AssignmentChat[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
   const insets = useSafeAreaInsets();
 
   const loadChats = useCallback(async () => {
@@ -120,6 +121,7 @@ export default function ChatTab(): React.JSX.Element {
       .eq("status", "active");
 
     if (error || !assignments) {
+      setHasError(true);
       setLoading(false);
       return;
     }
@@ -179,6 +181,25 @@ export default function ChatTab(): React.JSX.Element {
     );
   }
 
+  if (hasError) {
+    return (
+      <View style={styles.container}>
+        <View style={[styles.header, { paddingTop: insets.top + spacing[2] }]}>
+          <Text style={styles.headerTitle}>Mensajes</Text>
+        </View>
+        <ErrorState
+          title="No pudimos cargar tus chats"
+          description="Revisá tu conexión e intentá de nuevo."
+          onRetry={() => {
+            setHasError(false);
+            setLoading(true);
+            void loadChats();
+          }}
+        />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + spacing[2] }]}>
@@ -230,7 +251,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontFamily: typography.heading,
     color: colors.white,
-    fontSize: 32,
+    fontSize: fontSize.screenTitle,
     letterSpacing: 1,
     textTransform: "uppercase",
   },

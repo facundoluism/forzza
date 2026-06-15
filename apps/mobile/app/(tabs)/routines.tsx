@@ -13,7 +13,7 @@ import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { EmptyState, Card, Skeleton, UpgradeModal } from "@forzza/ui/native";
-import { colors, spacing, radius, typography } from "@forzza/ui/tokens";
+import { colors, fontSize, spacing, radius, typography } from "@forzza/ui/tokens";
 
 const FREE_ROUTINE_LIMIT = 3;
 
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
   screenTitle: {
     fontFamily: typography.heading,
     color: colors.text,
-    fontSize: 32,
+    fontSize: fontSize.screenTitle,
     letterSpacing: -1,
     textTransform: "uppercase",
   },

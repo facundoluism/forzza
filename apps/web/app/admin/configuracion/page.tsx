@@ -1,5 +1,6 @@
 import { requireAdmin } from "@/lib/auth/admin";
 import type { Metadata } from "next";
+import { AlertTriangle } from "lucide-react";
 import { ConfigEditor } from "./ConfigEditor";
 
 export const metadata: Metadata = {
@@ -30,6 +31,22 @@ export default async function AdminConfiguracionPage() {
           Parámetros por país: comisión, precios y moneda
         </p>
       </div>
+
+      {/* Error state: query falló */}
+      {error && (
+        <div className="rounded-xl border border-error/30 bg-error/5 p-5 mb-6 flex items-start gap-4">
+          <AlertTriangle className="text-error mt-0.5 shrink-0" size={20} />
+          <div>
+            <p className="text-error text-sm font-semibold">
+              Error al cargar la configuración
+            </p>
+            <p className="text-muted text-xs mt-1">
+              No se pudo conectar con la base de datos. Recargá la página o
+              revisá los logs.
+            </p>
+          </div>
+        </div>
+      )}
 
       <ConfigEditor configs={rows} />
     </div>

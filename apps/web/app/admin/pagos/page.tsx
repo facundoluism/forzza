@@ -112,39 +112,39 @@ export default async function AdminPagosPage({ searchParams }: PageProps) {
         </p>
       </div>
 
-      {/* Summary cards — 1 col mobile, 3 col desktop; last card spans full on mobile */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div className="rounded-xl border border-border bg-surface p-5">
-          <p className="text-muted text-xs uppercase tracking-wider mb-2">
+      {/* Summary cards — 3 col always; en mobile texto compacto */}
+      <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-8">
+        <div className="rounded-xl border border-border bg-surface p-3 sm:p-5">
+          <p className="text-muted text-[10px] sm:text-xs uppercase tracking-wider mb-1 sm:mb-2 min-h-[2rem] sm:min-h-[2.5rem] flex items-start">
             Revenue total
           </p>
-          <p className="text-[#C8FF00] text-2xl font-bold">
+          <p className="text-lime text-base sm:text-2xl font-bold font-mono">
             {formatCents(totalApproved)}
           </p>
-          <p className="text-muted text-xs mt-1">pagos aprobados</p>
+          <p className="text-muted text-[10px] sm:text-xs mt-1 hidden sm:block">pagos aprobados</p>
         </div>
-        <div className="rounded-xl border border-border bg-surface p-5">
-          <p className="text-muted text-xs uppercase tracking-wider mb-2">
+        <div className="rounded-xl border border-border bg-surface p-3 sm:p-5">
+          <p className="text-muted text-[10px] sm:text-xs uppercase tracking-wider mb-1 sm:mb-2 min-h-[2rem] sm:min-h-[2.5rem] flex items-start">
             Este mes
           </p>
-          <p className="text-text text-2xl font-bold">
+          <p className="text-text text-base sm:text-2xl font-bold font-mono">
             {formatCents(monthApproved)}
           </p>
-          <p className="text-muted text-xs mt-1">pagos aprobados</p>
+          <p className="text-muted text-[10px] sm:text-xs mt-1 hidden sm:block">pagos aprobados</p>
         </div>
-        <div className="rounded-xl border border-border bg-surface p-5">
-          <p className="text-muted text-xs uppercase tracking-wider mb-2">
+        <div className="rounded-xl border border-border bg-surface p-3 sm:p-5">
+          <p className="text-muted text-[10px] sm:text-xs uppercase tracking-wider mb-1 sm:mb-2 min-h-[2rem] sm:min-h-[2.5rem] flex items-start">
             Transacciones
           </p>
-          <p className="text-text text-2xl font-bold">{rows.length}</p>
-          <p className="text-muted text-xs mt-1">
+          <p className="text-text text-base sm:text-2xl font-bold">{rows.length}</p>
+          <p className="text-muted text-[10px] sm:text-xs mt-1 hidden sm:block">
             {filterStatus ? statusLabel[filterStatus] : "todos los estados"}
           </p>
         </div>
       </div>
 
-      {/* Status filter — single row with horizontal scroll */}
-      <div className="overflow-x-auto mb-6">
+      {/* Status filter — single row with horizontal scroll, scrollbar hidden */}
+      <div className="overflow-x-auto scrollbar-none mb-6">
         <div className="flex flex-nowrap gap-2 min-w-max">
           <a
             href="/admin/pagos"

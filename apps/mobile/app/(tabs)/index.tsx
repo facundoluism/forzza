@@ -14,8 +14,8 @@ import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
 import { useWorkoutStore } from "@/stores/workoutStore";
 import { useEntitlements } from "@/hooks/useEntitlements";
-import { EmptyState, Card, Skeleton } from "@forzza/ui/native";
-import { colors, spacing, radius, typography } from "@forzza/ui/tokens";
+import { EmptyState, ErrorState, Card, Skeleton } from "@forzza/ui/native";
+import { colors, fontSize, spacing, radius, typography } from "@forzza/ui/tokens";
 
 const TEN_DAYS_MS = 10 * 24 * 60 * 60 * 1000;
 
@@ -128,7 +128,7 @@ export default function HomeTab(): React.JSX.Element {
   const tenDaysAgo = new Date(Date.now() - TEN_DAYS_MS).toISOString();
 
   // Perfil del alumno (solo columnas que existen en student_profiles)
-  const { data: profile, isLoading: profileLoading } = useQuery({
+  const { data: profile, isLoading: profileLoading, isError: profileError } = useQuery({
     queryKey: ["student_profile", user?.id],
     queryFn: async (): Promise<StudentProfile | null> => {
       if (!user) return null;
@@ -144,7 +144,7 @@ export default function HomeTab(): React.JSX.Element {
   });
 
   // Rutina activa: la más reciente donde active=true y student_id=user.id
-  const { data: routine, isLoading: routineLoading } = useQuery({
+  const { data: routine, isLoading: routineLoading, isError: routineError } = useQuery({
     queryKey: ["active_routine", user?.id],
     queryFn: async (): Promise<Routine | null> => {
       if (!user) return null;
@@ -209,7 +209,19 @@ export default function HomeTab(): React.JSX.Element {
     : allRecentSessions.filter((s) => s.started_at >= tenDaysAgo);
 
   const isLoading = profileLoading || routineLoading || assignmentLoading;
+  const isError = profileError || routineError;
   const hasCoach = activeAssignment !== null;
+
+  if (isError) {
+    return (
+      <View style={[styles.scroll, styles.errorContainer, { paddingTop: insets.top + spacing[2] }]}>
+        <ErrorState
+          title="No pudimos cargar tu inicio"
+          description="Revisá tu conexión e intentá de nuevo."
+        />
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing[2] }]}>
@@ -279,6 +291,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg,
   },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+  },
   content: {
     padding: spacing[4],
     paddingBottom: spacing[20],
@@ -294,7 +310,7 @@ const styles = StyleSheet.create({
   displayName: {
     fontFamily: typography.heading,
     color: colors.text,
-    fontSize: 36,
+    fontSize: fontSize.screenTitle,
     letterSpacing: -1,
     textTransform: "uppercase",
   },

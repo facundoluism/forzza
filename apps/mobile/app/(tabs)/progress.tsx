@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
+import { useState, useEffect } from "react";
+import { View, Text, ScrollView, StyleSheet, Pressable, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "@/providers/AuthProvider";
 import { useWorkoutStore } from "@/stores/workoutStore";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { EmptyState, Card, UpgradeModal } from "@forzza/ui/native";
-import { colors, spacing, radius, typography } from "@forzza/ui/tokens";
+import { colors, fontSize, spacing, radius, typography } from "@forzza/ui/tokens";
 
 const TEN_DAYS_MS = 10 * 24 * 60 * 60 * 1000;
 
@@ -116,7 +116,17 @@ export default function ProgressTab(): React.JSX.Element {
   const syncQueue = useWorkoutStore((s) => s.syncQueue);
   const { isPro } = useEntitlements();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [storeHydrated, setStoreHydrated] = useState(
+    () => useWorkoutStore.persist.hasHydrated()
+  );
   const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    if (storeHydrated) return;
+    return useWorkoutStore.persist.onFinishHydration(() => {
+      setStoreHydrated(true);
+    });
+  }, [storeHydrated]);
 
   const tenDaysAgo = new Date(Date.now() - TEN_DAYS_MS);
 
@@ -148,6 +158,14 @@ export default function ProgressTab(): React.JSX.Element {
   const weekCount = sessionsThisWeek(completedSessions);
   const streak = calcStreak(completedSessions);
   const lastFive = completedSessions.slice(0, 5);
+
+  if (!storeHydrated) {
+    return (
+      <View style={[styles.scroll, styles.loadingContainer, { paddingTop: insets.top + spacing[2] }]}>
+        <ActivityIndicator color={colors.lime} size="large" />
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing[2] }]}>
@@ -231,11 +249,16 @@ const styles = StyleSheet.create({
   screenTitle: {
     fontFamily: typography.heading,
     color: colors.text,
-    fontSize: 32,
+    fontSize: fontSize.screenTitle,
     fontWeight: "900",
     letterSpacing: -1,
     textTransform: "uppercase",
     marginBottom: spacing[5],
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
   statsRow: {
     flexDirection: "row",

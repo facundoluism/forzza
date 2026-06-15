@@ -129,7 +129,16 @@ a {
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: #0A0A0A; }
 ::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #C8FF00; }
+
+/* Ocultar scrollbar en chips de filtro (scroll horizontal sin barra visible) */
+.scrollbar-none {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}

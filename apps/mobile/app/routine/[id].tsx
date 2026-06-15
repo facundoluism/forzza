@@ -18,7 +18,7 @@ import type { RoutineExerciseDefinition } from "@/stores/workoutStore";
 import { getExerciseIcon } from "@/constants/exerciseIcons";
 import { ExercisePreviewSheet } from "@/components/ExercisePreviewSheet";
 import { Button, Card, EmptyState } from "@forzza/ui/native";
-import { colors, spacing, typography, radius } from "@forzza/ui/tokens";
+import { colors, fontSize, spacing, typography, radius } from "@forzza/ui/tokens";
 
 // Shape canónico del JSONB routines.exercises (coordinado con el seed)
 interface RoutineExercise {
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
   routineTitle: {
     fontFamily: typography.heading,
     color: colors.white,
-    fontSize: 36,
+    fontSize: fontSize.screenTitle,
     letterSpacing: 1,
     textTransform: "uppercase",
     marginBottom: spacing[1],

@@ -139,12 +139,25 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
 
   if (configs.length === 0) {
     return (
-      <div className="rounded-xl border border-border bg-surface p-12 text-center">
-        <Globe size={40} className="mx-auto mb-4 text-muted" />
-        <p className="text-text text-lg font-semibold">No hay configuraciones de países.</p>
-        <p className="text-muted text-sm mt-2">
-          Los parámetros de países activos aparecerán acá.
-        </p>
+      <div className="rounded-xl border border-border bg-surface p-12 flex flex-col items-center text-center gap-4">
+        <div className="w-14 h-14 rounded-full bg-surface-2 flex items-center justify-center">
+          <Globe size={28} className="text-muted" />
+        </div>
+        <div>
+          <p className="text-text text-lg font-semibold">
+            No hay países configurados
+          </p>
+          <p className="text-muted text-sm mt-1 max-w-sm mx-auto leading-relaxed">
+            Todavía no se cargaron parámetros de países en la base de datos.
+            Revisá que la tabla <code className="text-lime text-xs">country_config</code> tenga registros activos.
+          </p>
+        </div>
+        <a
+          href="mailto:dev@forzza.com"
+          className="px-4 py-2 rounded-lg border border-border text-muted text-sm hover:text-text hover:border-muted transition-colors"
+        >
+          Contactar soporte técnico
+        </a>
       </div>
     );
   }

@@ -11,7 +11,7 @@ import { useRouter } from "expo-router";
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
 import { EmptyState } from "@forzza/ui/native";
-import { colors, spacing, radius, typography } from "@forzza/ui/tokens";
+import { colors, fontSize, spacing, radius, typography } from "@forzza/ui/tokens";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
 interface Notification {
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontFamily: typography.heading,
     color: colors.white,
-    fontSize: 32,
+    fontSize: fontSize.screenTitle,
     letterSpacing: 1,
     textTransform: "uppercase",
   },

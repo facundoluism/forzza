@@ -82,8 +82,8 @@ export default async function AdminTicketsPage({ searchParams }: PageProps) {
         </p>
       </div>
 
-      {/* Status filter — single row with horizontal scroll */}
-      <div className="overflow-x-auto mb-6">
+      {/* Status filter — single row with horizontal scroll, scrollbar hidden */}
+      <div className="overflow-x-auto scrollbar-none mb-6">
         <div className="flex flex-nowrap gap-2 min-w-max">
           <a
             href="/admin/tickets"
