@@ -12,7 +12,10 @@ interface CoachData {
   legal_entity_type: string;
   fiscal_id: string;
   country: "AR" | "CL";
-  bank_account: string;
+  /** CBU (22 dígitos) para AR */
+  cbu: string;
+  /** Alias CBU para AR */
+  alias_cbu: string;
   constancia_file: File | null;
 }
 
@@ -26,7 +29,8 @@ export default function OnboardingCoachPage() {
     legal_entity_type: "",
     fiscal_id: "",
     country: "AR",
-    bank_account: "",
+    cbu: "",
+    alias_cbu: "",
     constancia_file: null,
   });
 
@@ -78,7 +82,7 @@ export default function OnboardingCoachPage() {
         constancia_path = path;
       }
 
-      // Crear el perfil de coach
+      // Crear el perfil de coach — usa cbu/alias_cbu (columnas 0615)
       const { error: profileError } = await supabase
         .from("coach_profiles")
         .insert({
@@ -88,7 +92,8 @@ export default function OnboardingCoachPage() {
           country: data.country,
           legal_entity_type: data.legal_entity_type as "monotributo" | "responsable_inscripto" | "empresa" | "otro",
           fiscal_id: data.fiscal_id,
-          bank_account: data.bank_account,
+          cbu: data.cbu || null,
+          alias_cbu: data.alias_cbu || null,
           constancia_path: constancia_path ?? null,
           status: "pending",
         });
@@ -230,7 +235,7 @@ export default function OnboardingCoachPage() {
               onError={setError}
             />
 
-            {error && <p style={{ color: "#FF4444", marginBottom: "16px", fontSize: "14px" }}>{error}</p>}
+            {error && <p style={{ color: "#FF4466", marginBottom: "16px", fontSize: "14px" }}>{error}</p>}
 
             <div style={{ display: "flex", gap: "12px" }}>
               <button onClick={() => setStep(1)} style={secondaryButtonStyle}>← Atrás</button>
@@ -257,31 +262,46 @@ export default function OnboardingCoachPage() {
             <h2 style={{ color: "#FAFAFA", marginBottom: "8px" }}>Datos bancarios</h2>
             <p style={{ color: "#AAAAAA", marginBottom: "24px", fontSize: "14px" }}>
               {data.country === "AR"
-                ? "Ingresá tu CBU o alias de Mercado Pago / banco."
+                ? "Ingresá tu CBU (22 dígitos) y/o alias bancario."
                 : "Ingresá tu número de cuenta y RUT."}
             </p>
 
-            <div style={{ marginBottom: "24px" }}>
+            <div style={{ marginBottom: "16px" }}>
               <label style={{ display: "block", color: "#AAAAAA", marginBottom: "8px", fontSize: "14px" }}>
-                {data.country === "AR" ? "CBU o alias *" : "Cuenta bancaria + RUT *"}
+                {data.country === "AR" ? "CBU (22 dígitos) *" : "Cuenta bancaria + RUT *"}
               </label>
               <input
                 type="text"
-                value={data.bank_account}
-                onChange={(e) => updateData({ bank_account: e.target.value })}
+                value={data.cbu}
+                onChange={(e) => updateData({ cbu: e.target.value })}
                 placeholder={data.country === "AR" ? "0000003100012345678901" : "12345678-9 / Banco XX"}
                 style={inputStyle}
               />
             </div>
 
-            {error && <p style={{ color: "#FF4444", marginBottom: "16px", fontSize: "14px" }}>{error}</p>}
+            {data.country === "AR" && (
+              <div style={{ marginBottom: "24px" }}>
+                <label style={{ display: "block", color: "#AAAAAA", marginBottom: "8px", fontSize: "14px" }}>
+                  Alias bancario (opcional)
+                </label>
+                <input
+                  type="text"
+                  value={data.alias_cbu}
+                  onChange={(e) => updateData({ alias_cbu: e.target.value })}
+                  placeholder="mi.alias.banco"
+                  style={inputStyle}
+                />
+              </div>
+            )}
+
+            {error && <p style={{ color: "#FF4466", marginBottom: "16px", fontSize: "14px" }}>{error}</p>}
 
             <div style={{ display: "flex", gap: "12px" }}>
               <button onClick={() => setStep(2)} style={secondaryButtonStyle}>← Atrás</button>
               <button
                 onClick={() => {
-                  if (!data.bank_account.trim()) {
-                    setError("El dato bancario es obligatorio");
+                  if (!data.cbu.trim()) {
+                    setError("El CBU es obligatorio");
                     return;
                   }
                   setError(null);
@@ -316,7 +336,7 @@ export default function OnboardingCoachPage() {
               />
             </div>
 
-            {error && <p style={{ color: "#FF4444", marginBottom: "16px", fontSize: "14px" }}>{error}</p>}
+            {error && <p style={{ color: "#FF4466", marginBottom: "16px", fontSize: "14px" }}>{error}</p>}
 
             <div style={{ display: "flex", gap: "12px" }}>
               <button onClick={() => setStep(3)} style={secondaryButtonStyle}>← Atrás</button>

@@ -26,14 +26,28 @@ export async function POST(request: Request) {
     }
 
     // Verify coach role
-    const { data: profile } = await supabase
+    const { data: userRow } = await supabase
       .from("users")
       .select("role")
       .eq("id", user.id)
       .single();
 
-    if (profile?.role !== "coach") {
+    if (userRow?.role !== "coach") {
       return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
+    }
+
+    // Resolve coach_profiles.id — all coach tables use this, NOT the auth user id
+    const { data: coachProfile } = await supabase
+      .from("coach_profiles")
+      .select("id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!coachProfile) {
+      return NextResponse.json(
+        { error: "Perfil de coach no encontrado" },
+        { status: 404 }
+      );
     }
 
     const body: unknown = await request.json();
@@ -51,7 +65,7 @@ export async function POST(request: Request) {
     // Create template with questions embedded as JSONB
     const { data: template, error: tmplError } = await supabase
       .from("checkin_templates")
-      .insert({ coach_id: user.id, title: name, questions })
+      .insert({ coach_id: coachProfile.id, title: name, questions })
       .select("id")
       .single();
 

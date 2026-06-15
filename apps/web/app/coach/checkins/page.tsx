@@ -24,12 +24,12 @@ function formatDate(dateStr: string | null): string {
 }
 
 export default async function CheckinsPage() {
-  const { supabase, coachUserId } = await requireCoach();
+  const { supabase, coachProfileId } = await requireCoach();
 
   const { data: templates, error } = await supabase
     .from("checkin_templates")
     .select("id, title, questions, created_at")
-    .eq("coach_id", coachUserId)
+    .eq("coach_id", coachProfileId)
     .order("created_at", { ascending: false });
 
   if (error) {

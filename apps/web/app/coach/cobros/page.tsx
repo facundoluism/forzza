@@ -66,14 +66,14 @@ function getLastMonthRange() {
 }
 
 export default async function CobrosPage() {
-  const { supabase, coachUserId } = await requireCoach();
+  const { supabase, coachProfileId } = await requireCoach();
 
   const { data: settlements, error } = await supabase
     .from("settlements")
     .select(
       "id, period_start, period_end, gross_amount, commission, net_amount, status, invoice_path, transferred_at"
     )
-    .eq("coach_id", coachUserId)
+    .eq("coach_id", coachProfileId)
     .order("period_start", { ascending: false });
 
   if (error) {

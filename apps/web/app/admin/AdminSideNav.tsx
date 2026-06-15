@@ -24,7 +24,7 @@ export function AdminSideNav() {
             FORZZA
           </span>
           <p className="text-[#555555] text-xs mt-1 uppercase tracking-wider">
-            Admin Panel
+            OWNER
           </p>
         </div>
         <nav className="flex-1 p-4 space-y-0.5">
@@ -61,7 +61,7 @@ export function AdminSideNav() {
       </aside>
 
       {/* Mobile bottom tabs */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#0D0D0D] border-t border-[#1E1E1E] flex z-10">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#0D0D0D] border-t border-[#1E1E1E] flex z-10 pb-[env(safe-area-inset-bottom)]">
         {navItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
           return (

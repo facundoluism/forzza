@@ -44,7 +44,7 @@ export default function ForgotPasswordPage() {
         <p style={{ color: "#AAAAAA" }}>
           Revisá tu bandeja de entrada y seguí las instrucciones para restablecer tu contraseña.
         </p>
-        <a href="/auth/login" style={{ color: "#C8FF00", display: "block", marginTop: "24px" }}>
+        <a href="/login" style={{ color: "#C8FF00", display: "block", marginTop: "24px" }}>
           Volver al inicio de sesión
         </a>
       </div>
@@ -81,7 +81,7 @@ export default function ForgotPasswordPage() {
         </div>
 
         {error && (
-          <p style={{ color: "#FF4444", marginBottom: "16px", fontSize: "14px" }}>{error}</p>
+          <p style={{ color: "#FF4466", marginBottom: "16px", fontSize: "14px" }}>{error}</p>
         )}
 
         <button
@@ -102,7 +102,7 @@ export default function ForgotPasswordPage() {
           {state === "loading" ? "Enviando..." : "Enviar link de recuperación"}
         </button>
 
-        <a href="/auth/login" style={{ display: "block", textAlign: "center", marginTop: "16px", color: "#AAAAAA", fontSize: "14px" }}>
+        <a href="/login" style={{ display: "block", textAlign: "center", marginTop: "16px", color: "#AAAAAA", fontSize: "14px" }}>
           Volver al inicio de sesión
         </a>
       </form>

@@ -142,7 +142,7 @@ export default async function AdminUsuariosPage({ searchParams }: PageProps) {
                   <tr key={u.id} className="hover:bg-[#161616] transition-colors">
                     <td className="px-6 py-4">
                       <span className="font-mono text-[#888888] text-xs">
-                        {u.id}
+                        {`${u.id.slice(0, 8)}…`}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-[#888888] hidden sm:table-cell">

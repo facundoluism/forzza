@@ -26,7 +26,7 @@ export default async function CoachLayout({
           <span className="text-[#666666] text-xs uppercase tracking-wider">Coach</span>
         </header>
 
-        <div className="flex-1 p-4 lg:p-8 pb-20 lg:pb-8">{children}</div>
+        <div className="flex-1 p-4 lg:p-8 pb-28 lg:pb-8">{children}</div>
       </main>
     </div>
   );

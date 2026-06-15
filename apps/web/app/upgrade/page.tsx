@@ -106,7 +106,7 @@ export default async function UpgradePage(): Promise<React.JSX.Element> {
       </div>
 
       {/* Plan cards */}
-      <div className="flex flex-wrap gap-6 justify-center max-w-[900px] mx-auto">
+      <div className="flex flex-wrap gap-10 md:gap-6 justify-center max-w-[900px] mx-auto">
         {/* Free card */}
         <div className="bg-[#111111] rounded-2xl border-2 border-[#3A3A3A] p-6 flex-1 min-w-[280px] max-w-[400px] flex flex-col gap-4">
           <div>
@@ -124,7 +124,7 @@ export default async function UpgradePage(): Promise<React.JSX.Element> {
           </div>
 
           <Link
-            href="/auth/login"
+            href="/login"
             className="block text-center py-4 bg-[#2A2A2A] text-[#FAFAFA] rounded-xl font-bold text-base hover:bg-[#3A3A3A] transition-colors"
           >
             Tu plan actual

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 };
 
 export default async function PerfilPage() {
-  const { supabase, coachUserId } = await requireCoach();
+  const { supabase, coachProfileId } = await requireCoach();
 
   // Fetch coach profile
   const { data: coachProfile } = await supabase
@@ -15,14 +15,14 @@ export default async function PerfilPage() {
     .select(
       "id, display_name, bio, specialties, years_experience, country"
     )
-    .eq("user_id", coachUserId)
+    .eq("id", coachProfileId)
     .single();
 
   // Fetch packages
   const { data: packages } = await supabase
     .from("coach_packages")
     .select("id, title, description, price, active")
-    .eq("coach_id", coachUserId)
+    .eq("coach_id", coachProfileId)
     .order("created_at", { ascending: true });
 
   // Fetch min_coach_price from country_config

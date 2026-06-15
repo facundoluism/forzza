@@ -84,7 +84,7 @@ export default async function HomePage() {
             Ver coaches
           </Link>
         </div>
-        <p style={{ color: '#4A4A4A', fontSize: '13px', fontFamily: 'var(--font-mono)' }}>Sin tarjeta · Plan Free para siempre</p>
+        <p style={{ color: '#9898C0', fontSize: '13px', fontFamily: 'var(--font-mono)' }}>Sin tarjeta · Plan Free para siempre</p>
       </section>
 
       {/* STATS STRIP */}
@@ -202,7 +202,7 @@ export default async function HomePage() {
               <Link key={l} href={h} style={{ color: '#4A4A4A', fontSize: '14px', textDecoration: 'none' }}>{l}</Link>
             ))}
           </div>
-          <p style={{ color: '#555555', fontSize: '13px', fontFamily: 'var(--font-mono)', margin: 0 }}>© 2026 Forzza · Argentina</p>
+          <p style={{ color: '#9898C0', fontSize: '13px', fontFamily: 'var(--font-mono)', margin: 0 }}>© 2026 Forzza · Argentina</p>
         </div>
       </footer>
     </main>

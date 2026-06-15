@@ -14,15 +14,15 @@ interface WorkoutSession {
   id: string;
   status: WorkoutStatus;
   started_at: string;
-  finished_at: string | null;
-  routines: { name: string } | null;
+  completed_at: string | null;
+  routines: { title: string } | null;
 }
 
 interface CheckinResponse {
   id: string;
   submitted_at: string;
   answers: Record<string, unknown>;
-  checkin_templates: { name: string } | null;
+  checkin_templates: { title: string } | null;
 }
 
 const workoutStatusLabel: Record<WorkoutStatus, string> = {
@@ -54,7 +54,7 @@ export default async function StudentDetailPage({
   params: Promise<{ studentId: string }>;
 }) {
   const { studentId } = await params;
-  const { supabase, coachUserId } = await requireCoach();
+  const { supabase, coachProfileId } = await requireCoach();
 
   // Verify coach has an assignment with this student
   const { data: assignment } = await supabase
@@ -64,10 +64,10 @@ export default async function StudentDetailPage({
       id,
       status,
       routine_id,
-      routines!coach_assignments_routine_id_fkey(name)
+      routines!coach_assignments_routine_id_fkey(title)
     `
     )
-    .eq("coach_id", coachUserId)
+    .eq("coach_id", coachProfileId)
     .eq("student_id", studentId)
     .single();
 
@@ -88,8 +88,8 @@ export default async function StudentDetailPage({
       id,
       status,
       started_at,
-      finished_at,
-      routines!workout_sessions_routine_id_fkey(name)
+      completed_at,
+      routines!workout_sessions_routine_id_fkey(title)
     `
     )
     .eq("student_id", studentId)
@@ -129,7 +129,7 @@ export default async function StudentDetailPage({
       id,
       submitted_at,
       answers,
-      checkin_templates!checkin_responses_template_id_fkey(name)
+      checkin_templates!checkin_responses_template_id_fkey(title)
     `
     )
     .eq("student_id", studentId)
@@ -143,7 +143,7 @@ export default async function StudentDetailPage({
     id: string;
     status: string;
     routine_id: string | null;
-    routines: { name: string } | null;
+    routines: { title: string } | null;
   };
 
   return (
@@ -197,7 +197,7 @@ export default async function StudentDetailPage({
           {assignmentData.routines ? (
             <div className="flex items-center justify-between">
               <span className="text-[#FAFAFA] font-medium">
-                {assignmentData.routines.name}
+                {assignmentData.routines.title}
               </span>
               <Link
                 href="/coach/rutinas"
@@ -229,7 +229,7 @@ export default async function StudentDetailPage({
           <div>
             <div className="flex items-center justify-between mb-3">
               <span className="text-[#AAAAAA] text-sm">
-                {checkin.checkin_templates?.name ?? "Check-in"}
+                {checkin.checkin_templates?.title ?? "Check-in"}
               </span>
               <span className="text-[#666666] text-xs">
                 {formatDate(checkin.submitted_at)}
@@ -267,7 +267,7 @@ export default async function StudentDetailPage({
               >
                 <div>
                   <p className="text-[#FAFAFA] text-sm font-medium">
-                    {session.routines?.name ?? "Entrenamiento libre"}
+                    {session.routines?.title ?? "Entrenamiento libre"}
                   </p>
                   <p className="text-[#666666] text-xs mt-0.5">
                     {formatDate(session.started_at)}

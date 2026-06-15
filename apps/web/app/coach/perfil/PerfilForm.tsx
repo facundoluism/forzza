@@ -60,7 +60,8 @@ export function PerfilForm({
       {
         name: "",
         description: "",
-        price_cents: minCoachPrice * 100,
+        // minCoachPrice is already in centavos (from country_config.min_coach_price)
+        price_cents: minCoachPrice,
         billing_type: "mensual",
         features: [],
         is_active: true,
@@ -115,16 +116,17 @@ export function PerfilForm({
     e.preventDefault();
 
     // Validate packages price
+    // minCoachPrice and price_cents are both in centavos (country_config.min_coach_price)
     const activePackages = packages.filter((p) => !p._deleted);
     for (const pkg of activePackages) {
       if (!pkg.name.trim()) {
         setError("Todos los paquetes deben tener un nombre.");
         return;
       }
-      const priceInUnits = pkg.price_cents / 100;
-      if (priceInUnits < minCoachPrice) {
+      if (pkg.price_cents < minCoachPrice) {
+        const minDisplay = (minCoachPrice / 100).toLocaleString("es-AR");
         setError(
-          `El precio mínimo por paquete es ${currencySymbol} ${minCoachPrice.toLocaleString("es-AR")}.`
+          `El precio mínimo por paquete es ${currencySymbol} ${minDisplay}.`
         );
         return;
       }
@@ -359,12 +361,12 @@ export function PerfilForm({
                   <div>
                     <label className="block text-[#666666] text-xs mb-1">
                       Precio ({currencySymbol}) — mínimo{" "}
-                      {currencySymbol} {minCoachPrice.toLocaleString("es-AR")}
+                      {currencySymbol} {(minCoachPrice / 100).toLocaleString("es-AR")}
                     </label>
                     <input
                       type="number"
-                      min={minCoachPrice}
-                      step={100}
+                      min={minCoachPrice / 100}
+                      step={1}
                       value={pkg.price_cents / 100}
                       onChange={(e) =>
                         updatePackage(

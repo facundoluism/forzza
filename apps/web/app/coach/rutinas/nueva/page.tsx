@@ -3,33 +3,37 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import type { Tables } from "@forzza/db-types";
 
-interface Exercise {
-  id: string;
-  name: string;
-  muscle_groups: string[] | null;
-}
+type ExerciseRow = Pick<
+  Tables<"exercise_library">,
+  "id" | "name" | "primary_group" | "primary_muscles" | "muscle_groups"
+>;
 
 interface Student {
   user_id: string;
   display_name: string | null;
 }
 
+/** Contrato canónico JSONB routines.exercises — idéntico al de mobile */
 interface RoutineExerciseEntry {
   exercise_id: string;
-  exercise_name: string;
+  /** Snapshot del nombre al momento de crear la rutina */
+  name: string;
   order: number;
-  sets: number | null;
-  reps: number | null;
+  sets: number;
+  /** Acepta rangos como "8-12" */
+  reps: string;
+  rest_seconds: number;
   duration_seconds: number | null;
-  rest_seconds: number | null;
+  notes?: string;
 }
 
 export default function NuevaRutinaPage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [exercises, setExercises] = useState<RoutineExerciseEntry[]>([]);
-  const [allExercises, setAllExercises] = useState<Exercise[]>([]);
+  const [allExercises, setAllExercises] = useState<ExerciseRow[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
   const [selectedStudentId, setSelectedStudentId] = useState<string>("");
   const [exerciseSearch, setExerciseSearch] = useState("");
@@ -42,18 +46,32 @@ export default function NuevaRutinaPage() {
 
     void (async () => {
       const [{ data: exData }, { data: { user } }] = await Promise.all([
-        supabase.from("exercise_library").select("id, name, muscle_groups").order("name"),
+        supabase
+          .from("exercise_library")
+          .select("id, name, primary_group, primary_muscles, muscle_groups")
+          .order("name"),
         supabase.auth.getUser(),
       ]);
 
-      if (exData) setAllExercises(exData as Exercise[]);
+      if (exData) setAllExercises(exData as ExerciseRow[]);
 
       if (user) {
-        const { data: stData } = await supabase
-          .from("coach_assignments")
-          .select("student_id, student_profiles!coach_assignments_student_id_fkey(display_name, user_id)")
-          .eq("coach_id", user.id)
-          .eq("status", "active");
+        // Resolve coach_profiles.id — coach_assignments.coach_id references coach_profiles.id, not auth user id
+        const { data: coachProfile } = await supabase
+          .from("coach_profiles")
+          .select("id")
+          .eq("user_id", user.id)
+          .single();
+
+        const coachProfileId = coachProfile?.id;
+
+        const { data: stData } = coachProfileId
+          ? await supabase
+              .from("coach_assignments")
+              .select("student_id, student_profiles!coach_assignments_student_id_fkey(display_name, user_id)")
+              .eq("coach_id", coachProfileId)
+              .eq("status", "active")
+          : { data: null };
 
         if (stData) {
           const studentList = (stData as unknown as { student_profiles: Student | null }[])
@@ -71,15 +89,15 @@ export default function NuevaRutinaPage() {
       !exercises.some((e) => e.exercise_id === ex.id)
   );
 
-  function addExercise(exercise: Exercise) {
+  function addExercise(exercise: ExerciseRow) {
     setExercises((prev) => [
       ...prev,
       {
         exercise_id: exercise.id,
-        exercise_name: exercise.name,
+        name: exercise.name,
         order: prev.length + 1,
         sets: 3,
-        reps: 10,
+        reps: "10",
         duration_seconds: null,
         rest_seconds: 60,
       },
@@ -88,13 +106,19 @@ export default function NuevaRutinaPage() {
     setExerciseSearch("");
   }
 
-  function updateExercise(
+  function updateExerciseNumber(
     index: number,
-    field: keyof RoutineExerciseEntry,
+    field: "sets" | "rest_seconds" | "duration_seconds",
     value: number | null
   ) {
     setExercises((prev) =>
       prev.map((ex, i) => (i === index ? { ...ex, [field]: value } : ex))
+    );
+  }
+
+  function updateExerciseReps(index: number, value: string) {
+    setExercises((prev) =>
+      prev.map((ex, i) => (i === index ? { ...ex, reps: value } : ex))
     );
   }
 
@@ -126,7 +150,7 @@ export default function NuevaRutinaPage() {
         body: JSON.stringify({
           name: name.trim(),
           student_id: selectedStudentId || undefined,
-          exercises: exercises.map(({ exercise_name: _n, ...rest }) => rest),
+          exercises,
         }),
       });
 
@@ -225,21 +249,34 @@ export default function NuevaRutinaPage() {
                     No se encontraron ejercicios
                   </p>
                 ) : (
-                  filteredExercises.map((ex) => (
-                    <button
-                      key={ex.id}
-                      type="button"
-                      onClick={() => addExercise(ex)}
-                      className="w-full text-left px-3 py-2 rounded-lg hover:bg-[#1A1A1A] transition-colors"
-                    >
-                      <span className="text-[#FAFAFA] text-sm">{ex.name}</span>
-                      {ex.muscle_groups && ex.muscle_groups.length > 0 && (
-                        <span className="text-[#666666] text-xs ml-2">
-                          {ex.muscle_groups.join(", ")}
-                        </span>
-                      )}
-                    </button>
-                  ))
+                  filteredExercises.map((ex) => {
+                    const muscleLabel =
+                      ex.primary_muscles.length > 0
+                        ? ex.primary_muscles.join(", ")
+                        : (ex.muscle_groups ?? []).join(", ");
+                    return (
+                      <button
+                        key={ex.id}
+                        type="button"
+                        onClick={() => addExercise(ex)}
+                        className="w-full text-left px-3 py-2 rounded-lg hover:bg-[#1A1A1A] transition-colors"
+                      >
+                        <div className="flex items-baseline gap-2 flex-wrap">
+                          <span className="text-[#FAFAFA] text-sm">{ex.name}</span>
+                          {ex.primary_group && (
+                            <span className="text-[#C8FF00] text-xs font-medium">
+                              {ex.primary_group}
+                            </span>
+                          )}
+                          {muscleLabel && (
+                            <span className="text-[#666666] text-xs">
+                              {muscleLabel}
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })
                 )}
               </div>
               <button
@@ -275,7 +312,7 @@ export default function NuevaRutinaPage() {
                         {index + 1}
                       </span>
                       <span className="text-[#FAFAFA] font-medium text-sm">
-                        {ex.exercise_name}
+                        {ex.name}
                       </span>
                     </div>
                     <button
@@ -294,9 +331,9 @@ export default function NuevaRutinaPage() {
                       <input
                         type="number"
                         min={1}
-                        value={ex.sets ?? ""}
+                        value={ex.sets}
                         onChange={(e) =>
-                          updateExercise(
+                          updateExerciseNumber(
                             index,
                             "sets",
                             e.target.value ? parseInt(e.target.value) : null
@@ -307,19 +344,15 @@ export default function NuevaRutinaPage() {
                     </div>
                     <div>
                       <label className="block text-[#666666] text-xs mb-1">
-                        Reps
+                        Reps (ej: 10 o 8-12)
                       </label>
                       <input
-                        type="number"
-                        min={1}
-                        value={ex.reps ?? ""}
+                        type="text"
+                        value={ex.reps}
                         onChange={(e) =>
-                          updateExercise(
-                            index,
-                            "reps",
-                            e.target.value ? parseInt(e.target.value) : null
-                          )
+                          updateExerciseReps(index, e.target.value)
                         }
+                        placeholder="10 o 8-12"
                         className="w-full px-2 py-1.5 bg-[#1A1A1A] border border-[#2A2A2A] rounded text-[#FAFAFA] text-sm focus:outline-none focus:border-[#C8FF00]"
                       />
                     </div>
@@ -332,7 +365,7 @@ export default function NuevaRutinaPage() {
                         min={1}
                         value={ex.duration_seconds ?? ""}
                         onChange={(e) =>
-                          updateExercise(
+                          updateExerciseNumber(
                             index,
                             "duration_seconds",
                             e.target.value ? parseInt(e.target.value) : null
@@ -348,9 +381,9 @@ export default function NuevaRutinaPage() {
                       <input
                         type="number"
                         min={0}
-                        value={ex.rest_seconds ?? ""}
+                        value={ex.rest_seconds}
                         onChange={(e) =>
-                          updateExercise(
+                          updateExerciseNumber(
                             index,
                             "rest_seconds",
                             e.target.value ? parseInt(e.target.value) : null

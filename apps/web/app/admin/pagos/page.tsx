@@ -121,7 +121,7 @@ export default async function AdminPagosPage({ searchParams }: PageProps) {
           <p className="text-[#C8FF00] text-2xl font-bold">
             {formatCents(totalApproved)}
           </p>
-          <p className="text-[#444444] text-xs mt-1">pagos aprobados</p>
+          <p className="text-[#9898C0] text-xs mt-1">pagos aprobados</p>
         </div>
         <div className="rounded-xl border border-[#1E1E1E] bg-[#111111] p-5">
           <p className="text-[#555555] text-xs uppercase tracking-wider mb-2">
@@ -130,14 +130,14 @@ export default async function AdminPagosPage({ searchParams }: PageProps) {
           <p className="text-[#FAFAFA] text-2xl font-bold">
             {formatCents(monthApproved)}
           </p>
-          <p className="text-[#444444] text-xs mt-1">pagos aprobados</p>
+          <p className="text-[#9898C0] text-xs mt-1">pagos aprobados</p>
         </div>
         <div className="rounded-xl border border-[#1E1E1E] bg-[#111111] p-5">
           <p className="text-[#555555] text-xs uppercase tracking-wider mb-2">
             Transacciones
           </p>
           <p className="text-[#FAFAFA] text-2xl font-bold">{rows.length}</p>
-          <p className="text-[#444444] text-xs mt-1">
+          <p className="text-[#9898C0] text-xs mt-1">
             {filterStatus ? statusLabel[filterStatus] : "todos los estados"}
           </p>
         </div>
@@ -193,7 +193,7 @@ export default async function AdminPagosPage({ searchParams }: PageProps) {
             <tbody className="divide-y divide-[#1A1A1A]">
               {rows.map((p) => (
                 <tr key={p.id} className="hover:bg-[#161616] transition-colors">
-                  <td className="px-6 py-3 font-mono text-[#444444] text-xs">
+                  <td className="px-6 py-3 font-mono text-[#9898C0] text-xs">
                     {p.id.slice(0, 8)}…
                   </td>
                   <td className="px-6 py-3 font-mono text-[#888888] text-xs hidden md:table-cell">
@@ -215,7 +215,7 @@ export default async function AdminPagosPage({ searchParams }: PageProps) {
                   <td className="px-6 py-3 text-[#666666] text-xs capitalize hidden sm:table-cell">
                     {p.gateway}
                   </td>
-                  <td className="px-6 py-3 text-[#444444] text-xs hidden lg:table-cell">
+                  <td className="px-6 py-3 text-[#9898C0] text-xs hidden lg:table-cell">
                     {formatDate(p.created_at)}
                   </td>
                 </tr>

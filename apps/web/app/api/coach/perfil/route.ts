@@ -80,13 +80,14 @@ export async function PATCH(request: Request) {
     const { profile, packages } = parsed.data;
 
     // Validate package prices
+    // Both minCoachPrice and pkg.price_cents are in centavos (country_config.min_coach_price)
     const activePackages = packages.filter((p) => !p._deleted);
     for (const pkg of activePackages) {
-      const priceInUnits = pkg.price_cents / 100;
-      if (priceInUnits < minCoachPrice) {
+      if (pkg.price_cents < minCoachPrice) {
+        const minDisplay = (minCoachPrice / 100).toLocaleString("es-AR");
         return NextResponse.json(
           {
-            error: `El precio mínimo es ${minCoachPrice}. El paquete "${pkg.name}" está por debajo del mínimo.`,
+            error: `El precio mínimo es ${minDisplay}. El paquete "${pkg.name}" está por debajo del mínimo.`,
           },
           { status: 400 }
         );
@@ -111,7 +112,8 @@ export async function PATCH(request: Request) {
       );
     }
 
-    // Handle packages
+    // Handle packages — always use coach_profiles.id (not auth user id)
+    const coachProfileId = coachProfile.id;
     for (const pkg of packages) {
       if (pkg._deleted && pkg.id) {
         // Soft delete: mark as inactive
@@ -119,7 +121,7 @@ export async function PATCH(request: Request) {
           .from("coach_packages")
           .update({ active: false })
           .eq("id", pkg.id)
-          .eq("coach_id", user.id);
+          .eq("coach_id", coachProfileId);
         continue;
       }
 
@@ -134,11 +136,11 @@ export async function PATCH(request: Request) {
             active: pkg.is_active,
           })
           .eq("id", pkg.id)
-          .eq("coach_id", user.id);
+          .eq("coach_id", coachProfileId);
       } else if (!pkg._deleted) {
         // Insert new
         await supabase.from("coach_packages").insert({
-          coach_id: user.id,
+          coach_id: coachProfileId,
           title: pkg.name,
           description: pkg.description ?? null,
           price: pkg.price_cents,

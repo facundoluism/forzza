@@ -30,13 +30,13 @@ interface MetricCardProps {
 function MetricCard({ label, value, sub, accent }: MetricCardProps) {
   return (
     <div className="rounded-xl border border-[#1E1E1E] bg-[#111111] p-5">
-      <p className="text-[#555555] text-xs uppercase tracking-wider mb-3">{label}</p>
+      <p className="text-[#9898C0] text-xs uppercase tracking-wider mb-3">{label}</p>
       <p
         className={`text-2xl font-bold ${accent ? "text-[#C8FF00]" : "text-[#FAFAFA]"}`}
       >
         {value}
       </p>
-      {sub && <p className="text-[#444444] text-xs mt-1">{sub}</p>}
+      {sub && <p className="text-[#9898C0] text-xs mt-1">{sub}</p>}
     </div>
   );
 }

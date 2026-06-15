@@ -17,7 +17,7 @@ interface StudentAssignment {
     user_id: string;
   } | null;
   coach_packages: {
-    name: string;
+    title: string;
   } | null;
 }
 
@@ -47,7 +47,7 @@ function formatDate(dateStr: string | null): string {
 }
 
 export default async function AlumnosPage() {
-  const { supabase, coachUserId } = await requireCoach();
+  const { supabase, coachProfileId } = await requireCoach();
 
   const { data: assignments, error } = await supabase
     .from("coach_assignments")
@@ -58,10 +58,10 @@ export default async function AlumnosPage() {
       started_at,
       student_id,
       student_profiles!coach_assignments_student_id_fkey(display_name, user_id),
-      coach_packages!coach_assignments_package_id_fkey(name)
+      coach_packages!coach_assignments_package_id_fkey(title)
     `
     )
-    .eq("coach_id", coachUserId)
+    .eq("coach_id", coachProfileId)
     .order("started_at", { ascending: false });
 
   if (error) {
@@ -108,7 +108,7 @@ export default async function AlumnosPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-[#AAAAAA] hidden md:table-cell">
-                    {row.coach_packages?.name ?? "—"}
+                    {row.coach_packages?.title ?? "—"}
                   </td>
                   <td className="px-6 py-4 text-[#AAAAAA] hidden sm:table-cell">
                     {formatDate(row.started_at)}

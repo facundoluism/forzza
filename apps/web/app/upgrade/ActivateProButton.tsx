@@ -15,7 +15,7 @@ export function ActivateProButton() {
     try {
       const res = await fetch("/api/mp-preapproval", { method: "POST" });
       if (res.status === 401) {
-        window.location.href = "/auth/login?redirect=/upgrade";
+        window.location.href = "/login?redirect=/upgrade";
         return;
       }
       if (!res.ok) {
@@ -50,7 +50,7 @@ export function ActivateProButton() {
         {loading ? "Procesando..." : "Activar PRO"}
       </button>
       {error && (
-        <p className="text-[#FF4444] text-[13px] m-0 text-center">
+        <p className="text-[#FF4466] text-[13px] m-0 text-center">
           {error}
         </p>
       )}

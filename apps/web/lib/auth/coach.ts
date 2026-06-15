@@ -41,7 +41,8 @@ export async function requireCoach() {
     return {
       supabase: mockClient,
       user: { id: "dev-coach-000", email: "coach@dev.local" } as never,
-      coachUserId: "dev-coach-000",
+      /** coach_profiles.id (NOT auth user id) */
+      coachProfileId: "dev-coach-000",
     };
   }
 
@@ -62,13 +63,27 @@ export async function requireCoach() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
+  const { data: userRow } = await supabase
     .from("users")
-    .select("role, id")
+    .select("role")
     .eq("id", user.id)
     .single();
 
-  if (profile?.role !== "coach") redirect("/");
+  if (userRow?.role !== "coach") redirect("/");
 
-  return { supabase, user, coachUserId: user.id };
+  // Resolve the coach_profiles row — all coach tables use coach_profiles.id, NOT auth user id
+  const { data: coachProfile } = await supabase
+    .from("coach_profiles")
+    .select("id")
+    .eq("user_id", user.id)
+    .single();
+
+  if (!coachProfile) redirect("/onboarding-coach");
+
+  return {
+    supabase,
+    user,
+    /** coach_profiles.id — use this as coach_id in all table filters/inserts */
+    coachProfileId: coachProfile.id,
+  };
 }

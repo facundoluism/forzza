@@ -10,8 +10,9 @@ export const metadata: Metadata = {
 
 interface CoachPackage {
   id: string;
-  price_cents: number;
-  billing_type: "mensual" | "paquete";
+  /** price is stored in centavos/enteros */
+  price: number;
+  active: boolean;
 }
 
 interface Coach {
@@ -25,10 +26,11 @@ interface Coach {
 }
 
 function cheapestPrice(packages: CoachPackage[]): number | null {
-  if (!packages || packages.length === 0) return null;
-  return packages.reduce(
-    (min, p) => (p.price_cents < min ? p.price_cents : min),
-    packages[0]!.price_cents
+  const active = packages.filter((p) => p.active);
+  if (active.length === 0) return null;
+  return active.reduce(
+    (min, p) => (p.price < min ? p.price : min),
+    active[0]!.price
   );
 }
 
@@ -44,11 +46,12 @@ async function getCoaches(): Promise<Coach[]> {
   if (!isSupabaseConfigured()) return [];
   try {
     const supabase = await createClient();
+    // TODO: regenerar db-types para eliminar el cast
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: coaches } = await (supabase as any)
       .from("coach_profiles")
       .select(
-        "id, display_name, bio, specialties, avatar_url, years_experience, packages:coach_packages(id, price_cents, billing_type)"
+        "id, display_name, bio, specialties, avatar_url, years_experience, packages:coach_packages(id, price, active)"
       )
       .eq("status", "approved")
       .order("created_at", { ascending: false });

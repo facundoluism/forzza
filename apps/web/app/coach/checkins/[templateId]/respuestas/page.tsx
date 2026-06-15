@@ -50,14 +50,14 @@ export default async function RespuestasPage({
   params: Promise<{ templateId: string }>;
 }) {
   const { templateId } = await params;
-  const { supabase, coachUserId } = await requireCoach();
+  const { supabase, coachProfileId } = await requireCoach();
 
   // Verify template belongs to this coach
   const { data: template } = await supabase
     .from("checkin_templates")
     .select("id, title, questions")
     .eq("id", templateId)
-    .eq("coach_id", coachUserId)
+    .eq("coach_id", coachProfileId)
     .single();
 
   if (!template) notFound();

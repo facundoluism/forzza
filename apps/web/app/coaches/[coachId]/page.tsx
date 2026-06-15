@@ -5,12 +5,13 @@ import { isSupabaseConfigured, createClient } from "@/lib/supabase/server";
 
 interface CoachPackage {
   id: string;
-  name: string;
+  /** title is the real column in coach_packages */
+  title: string;
   description: string | null;
-  price_cents: number;
-  billing_type: "mensual" | "paquete";
-  features: string[];
-  is_active: boolean;
+  /** price in centavos/enteros */
+  price: number;
+  tier: "starter" | "pro" | "elite";
+  active: boolean;
 }
 
 interface CoachProfile {
@@ -74,11 +75,12 @@ export default async function CoachProfilePage({ params }: PageProps) {
   let coachData: CoachProfile;
   try {
     const supabase = await createClient();
+    // TODO: regenerar db-types para eliminar el cast
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: coach } = await (supabase as any)
       .from("coach_profiles")
       .select(
-        "id, display_name, bio, specialties, avatar_url, years_experience, packages:coach_packages(id, name, description, price_cents, billing_type, features, is_active)"
+        "id, display_name, bio, specialties, avatar_url, years_experience, packages:coach_packages(id, title, description, price, tier, active)"
       )
       .eq("id", coachId)
       .eq("status", "approved")
@@ -92,7 +94,7 @@ export default async function CoachProfilePage({ params }: PageProps) {
     notFound();
   }
 
-  const activePackages = coachData.packages.filter((p) => p.is_active);
+  const activePackages = coachData.packages.filter((p) => p.active);
   const initials = getInitials(coachData.display_name);
 
   return (
@@ -168,9 +170,7 @@ export default async function CoachProfilePage({ params }: PageProps) {
           ) : (
             <div className="flex flex-col gap-4">
               {activePackages.map((pkg) => {
-                const price = (pkg.price_cents / 100).toLocaleString("es-AR");
-                const billingLabel =
-                  pkg.billing_type === "mensual" ? "/mes" : " (paquete único)";
+                const price = (pkg.price / 100).toLocaleString("es-AR");
 
                 return (
                   <div
@@ -179,14 +179,14 @@ export default async function CoachProfilePage({ params }: PageProps) {
                   >
                     <div className="flex justify-between items-start flex-wrap gap-3">
                       <h3 className="text-[#FAFAFA] text-[22px] font-extrabold m-0 tracking-tight">
-                        {pkg.name}
+                        {pkg.title}
                       </h3>
                       <div className="text-right">
                         <span className="text-[#C8FF00] font-bold text-[22px] font-mono">
                           ${price}
                         </span>
                         <span className="text-[#6A6A6A] text-[13px]">
-                          {billingLabel}
+                          {"/mes"}
                         </span>
                       </div>
                     </div>
@@ -195,17 +195,6 @@ export default async function CoachProfilePage({ params }: PageProps) {
                       <p className="text-[#8A8A8A] text-sm leading-relaxed m-0">
                         {pkg.description}
                       </p>
-                    )}
-
-                    {pkg.features.length > 0 && (
-                      <ul className="list-none p-0 m-0 flex flex-col gap-1">
-                        {pkg.features.map((feat, idx) => (
-                          <li key={idx} className="text-[#AAAAAA] text-sm pl-5 relative">
-                            <span className="absolute left-0 text-[#C8FF00]">{"•"}</span>
-                            {feat}
-                          </li>
-                        ))}
-                      </ul>
                     )}
 
                     <div className="flex items-center gap-3 mt-2 flex-wrap">

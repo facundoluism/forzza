@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 interface Routine {
   id: string;
-  name: string;
+  title: string;
   created_at: string;
   student_id: string | null;
   student_profiles: { display_name: string | null } | null;
@@ -23,20 +23,20 @@ function formatDate(dateStr: string): string {
 }
 
 export default async function RutinasPage() {
-  const { supabase, coachUserId } = await requireCoach();
+  const { supabase, coachProfileId } = await requireCoach();
 
   const { data: routines, error } = await supabase
     .from("routines")
     .select(
       `
       id,
-      name,
+      title,
       created_at,
       student_id,
       student_profiles!routines_student_id_fkey(display_name)
     `
     )
-    .eq("coach_id", coachUserId)
+    .eq("coach_id", coachProfileId)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -84,7 +84,7 @@ export default async function RutinasPage() {
               className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-5 hover:border-[#C8FF00]/30 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
             >
               <h3 className="font-semibold text-[#FAFAFA] text-base mb-1">
-                {routine.name}
+                {routine.title}
               </h3>
               <p className="text-[#666666] text-xs mb-3">
                 Creada el {formatDate(routine.created_at)}
