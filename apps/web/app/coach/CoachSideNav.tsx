@@ -2,13 +2,21 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Users, ClipboardList, ClipboardCheck, Wallet, User } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-const navItems = [
-  { href: "/coach/alumnos", label: "Alumnos", icon: "👥" },
-  { href: "/coach/rutinas", label: "Rutinas", icon: "📋" },
-  { href: "/coach/checkins", label: "Check-ins", icon: "✅" },
-  { href: "/coach/cobros", label: "Cobros", icon: "💰" },
-  { href: "/coach/perfil", label: "Mi perfil", icon: "👤" },
+interface NavItem {
+  href: string;
+  label: string;
+  Icon: LucideIcon;
+}
+
+const navItems: NavItem[] = [
+  { href: "/coach/alumnos", label: "Alumnos", Icon: Users },
+  { href: "/coach/rutinas", label: "Rutinas", Icon: ClipboardList },
+  { href: "/coach/checkins", label: "Check-ins", Icon: ClipboardCheck },
+  { href: "/coach/cobros", label: "Cobros", Icon: Wallet },
+  { href: "/coach/perfil", label: "Mi perfil", Icon: User },
 ];
 
 export function CoachSideNav() {
@@ -17,36 +25,36 @@ export function CoachSideNav() {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex flex-col w-60 min-h-screen bg-[#111111] border-r border-[#2A2A2A] fixed left-0 top-0 bottom-0">
-        <div className="p-6 border-b border-[#2A2A2A]">
+      <aside className="hidden lg:flex flex-col w-60 min-h-screen bg-surface border-r border-border fixed left-0 top-0 bottom-0">
+        <div className="p-6 border-b border-border">
           <span style={{ color: "#C8FF00", fontWeight: 800, fontSize: "20px", letterSpacing: "5px" }}>
             FORZZA
           </span>
-          <p className="text-[#555555] text-xs mt-1 uppercase tracking-wider">Coach</p>
+          <p className="text-muted text-xs mt-1 uppercase tracking-wider">Coach</p>
         </div>
         <nav className="flex-1 p-4 space-y-1">
-          {navItems.map((item) => {
-            const isActive = pathname.startsWith(item.href);
+          {navItems.map(({ href, label, Icon }) => {
+            const isActive = pathname.startsWith(href);
             return (
               <Link
-                key={item.href}
-                href={item.href}
+                key={href}
+                href={href}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                   isActive
-                    ? "bg-[#C8FF00]/10 text-[#C8FF00] border border-[#C8FF00]/20"
-                    : "text-[#AAAAAA] hover:text-[#FAFAFA] hover:bg-[#1A1A1A]"
+                    ? "bg-[#C8FF00]/10 text-lime border border-[#C8FF00]/20"
+                    : "text-muted hover:text-text hover:bg-surface-2"
                 }`}
               >
-                <span className="text-base">{item.icon}</span>
-                {item.label}
+                <Icon size={20} aria-hidden="true" />
+                {label}
               </Link>
             );
           })}
         </nav>
-        <div className="p-4 border-t border-[#2A2A2A]">
+        <div className="p-4 border-t border-border">
           <Link
             href="/"
-            className="flex items-center gap-2 text-[#555555] hover:text-[#AAAAAA] text-xs transition-colors"
+            className="flex items-center gap-2 text-muted hover:text-muted text-xs transition-colors"
           >
             ← Volver al inicio
           </Link>
@@ -54,19 +62,19 @@ export function CoachSideNav() {
       </aside>
 
       {/* Mobile bottom tabs */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#111111] border-t border-[#2A2A2A] flex z-10">
-        {navItems.map((item) => {
-          const isActive = pathname.startsWith(item.href);
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-surface border-t border-border flex z-10">
+        {navItems.map(({ href, label, Icon }) => {
+          const isActive = pathname.startsWith(href);
           return (
             <Link
-              key={item.href}
-              href={item.href}
+              key={href}
+              href={href}
               className={`flex-1 flex flex-col items-center gap-1 py-2 transition-colors ${
-                isActive ? "text-[#C8FF00]" : "text-[#666666] hover:text-[#C8FF00]"
+                isActive ? "text-lime" : "text-muted hover:text-lime"
               }`}
             >
-              <span className="text-lg">{item.icon}</span>
-              <span className="text-[10px] font-medium">{item.label}</span>
+              <Icon size={20} aria-hidden="true" />
+              <span className="text-[10px] font-medium">{label}</span>
             </Link>
           );
         })}

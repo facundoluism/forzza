@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Globe } from "lucide-react";
 
 interface CountryConfig {
   country_code: string;
@@ -138,8 +139,12 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
 
   if (configs.length === 0) {
     return (
-      <div className="rounded-xl border border-[#1E1E1E] bg-[#111111] p-12 text-center">
-        <p className="text-[#555555]">No hay configuraciones de países.</p>
+      <div className="rounded-xl border border-border bg-surface p-12 text-center">
+        <Globe size={40} className="mx-auto mb-4 text-muted" />
+        <p className="text-text text-lg font-semibold">No hay configuraciones de países.</p>
+        <p className="text-muted text-sm mt-2">
+          Los parámetros de países activos aparecerán acá.
+        </p>
       </div>
     );
   }
@@ -156,20 +161,20 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
         return (
           <div
             key={config.country_code}
-            className="rounded-xl border border-[#1E1E1E] bg-[#111111] overflow-hidden"
+            className="rounded-xl border border-border bg-surface overflow-hidden"
           >
             {/* Header */}
-            <div className="px-6 py-4 border-b border-[#1E1E1E] flex items-center justify-between">
+            <div className="px-6 py-4 border-b border-border flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <h2 className="text-base font-semibold text-[#FAFAFA]">
+                <h2 className="text-base font-semibold text-text">
                   {config.country_code}
                 </h2>
-                <span className="text-[#555555] text-sm">
+                <span className="text-muted text-sm">
                   {config.currency} ({config.currency_code})
                 </span>
               </div>
               <label className="flex items-center gap-2 cursor-pointer">
-                <span className="text-[#666666] text-xs">
+                <span className="text-muted text-xs">
                   {state.active ? "Activo" : "Inactivo"}
                 </span>
                 <div className="relative">
@@ -186,7 +191,7 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
                       updateField(config.country_code, "active", !state.active)
                     }
                     className={`w-10 h-6 rounded-full transition-colors cursor-pointer ${
-                      state.active ? "bg-[#C8FF00]" : "bg-[#2A2A2A]"
+                      state.active ? "bg-[#C8FF00]" : "bg-border"
                     }`}
                   >
                     <div
@@ -202,7 +207,7 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
             {/* Fields */}
             <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               <div>
-                <label className="block text-[#555555] text-xs uppercase tracking-wider mb-2">
+                <label className="block text-muted text-xs uppercase tracking-wider mb-2">
                   Comisión (%)
                 </label>
                 <div className="relative">
@@ -219,16 +224,16 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
                         e.target.value
                       )
                     }
-                    className="w-full bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg px-3 py-2.5 text-[#FAFAFA] text-sm focus:outline-none focus:border-[#C8FF00] pr-8"
+                    className="w-full bg-surface-2 border border-border rounded-lg px-3 py-2.5 text-text text-sm focus:outline-none focus:border-[#C8FF00] pr-8"
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#444444] text-sm">
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted text-sm">
                     %
                   </span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-[#555555] text-xs uppercase tracking-wider mb-2">
+                <label className="block text-muted text-xs uppercase tracking-wider mb-2">
                   Precio mínimo coach (centavos)
                 </label>
                 <input
@@ -243,9 +248,9 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
                       e.target.value
                     )
                   }
-                  className="w-full bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg px-3 py-2.5 text-[#FAFAFA] text-sm focus:outline-none focus:border-[#C8FF00]"
+                  className="w-full bg-surface-2 border border-border rounded-lg px-3 py-2.5 text-text text-sm focus:outline-none focus:border-[#C8FF00]"
                 />
-                <p className="text-[#444444] text-xs mt-1">
+                <p className="text-muted text-xs mt-1">
                   = {state.currency_symbol}{" "}
                   {(parseInt(state.min_coach_price || "0") / 100).toLocaleString(
                     "es-AR"
@@ -254,7 +259,7 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
               </div>
 
               <div>
-                <label className="block text-[#555555] text-xs uppercase tracking-wider mb-2">
+                <label className="block text-muted text-xs uppercase tracking-wider mb-2">
                   Precio PRO mensual (centavos)
                 </label>
                 <input
@@ -269,9 +274,9 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
                       e.target.value
                     )
                   }
-                  className="w-full bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg px-3 py-2.5 text-[#FAFAFA] text-sm focus:outline-none focus:border-[#C8FF00]"
+                  className="w-full bg-surface-2 border border-border rounded-lg px-3 py-2.5 text-text text-sm focus:outline-none focus:border-[#C8FF00]"
                 />
-                <p className="text-[#444444] text-xs mt-1">
+                <p className="text-muted text-xs mt-1">
                   = {state.currency_symbol}{" "}
                   {(
                     parseInt(state.pro_monthly_price_cents || "0") / 100
@@ -280,7 +285,7 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
               </div>
 
               <div>
-                <label className="block text-[#555555] text-xs uppercase tracking-wider mb-2">
+                <label className="block text-muted text-xs uppercase tracking-wider mb-2">
                   Símbolo de moneda
                 </label>
                 <input
@@ -294,16 +299,16 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
                       e.target.value
                     )
                   }
-                  className="w-full bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg px-3 py-2.5 text-[#FAFAFA] text-sm focus:outline-none focus:border-[#C8FF00]"
+                  className="w-full bg-surface-2 border border-border rounded-lg px-3 py-2.5 text-text text-sm focus:outline-none focus:border-[#C8FF00]"
                 />
               </div>
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-4 border-t border-[#1E1E1E] flex items-center justify-between">
+            <div className="px-6 py-4 border-t border-border flex items-center justify-between">
               {message ? (
                 <p
-                  className={`text-sm ${isSuccess ? "text-[#C8FF00]" : "text-red-400"}`}
+                  className={`text-sm ${isSuccess ? "text-lime" : "text-error"}`}
                 >
                   {message}
                 </p>

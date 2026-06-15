@@ -49,8 +49,8 @@ export default async function RutinasPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-[#FAFAFA]">Rutinas</h1>
-          <p className="text-[#666666] text-sm mt-1">
+          <h1 className="text-2xl font-bold text-text">Rutinas</h1>
+          <p className="text-muted text-sm mt-1">
             {rows.length} rutina{rows.length !== 1 ? "s" : ""} creadas
           </p>
         </div>
@@ -63,10 +63,10 @@ export default async function RutinasPage() {
       </div>
 
       {rows.length === 0 ? (
-        <div className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-12 text-center">
+        <div className="rounded-xl border border-border bg-surface p-12 text-center">
           <p className="text-4xl mb-4">📋</p>
-          <p className="text-[#FAFAFA] text-lg font-semibold">Todavía no creaste ninguna rutina.</p>
-          <p className="text-[#666666] text-sm mt-2 mb-6">
+          <p className="text-text text-lg font-semibold">Todavía no creaste ninguna rutina.</p>
+          <p className="text-muted text-sm mt-2 mb-6">
             Creá rutinas y asignálas a tus alumnos.
           </p>
           <Link
@@ -81,28 +81,28 @@ export default async function RutinasPage() {
           {rows.map((routine) => (
             <div
               key={routine.id}
-              className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-5 hover:border-[#C8FF00]/30 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
+              className="rounded-xl border border-border bg-surface p-5 hover:border-[#C8FF00]/30 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
             >
-              <h3 className="font-semibold text-[#FAFAFA] text-base mb-1">
+              <h3 className="font-semibold text-text text-base mb-1">
                 {routine.title}
               </h3>
-              <p className="text-[#666666] text-xs mb-3">
+              <p className="text-muted text-xs mb-3">
                 Creada el {formatDate(routine.created_at)}
               </p>
               {routine.student_profiles?.display_name && (
-                <p className="text-[#AAAAAA] text-xs mb-3">
+                <p className="text-muted text-xs mb-3">
                   Asignada a: {routine.student_profiles.display_name}
                 </p>
               )}
               {!routine.student_id && (
-                <p className="text-[#444444] text-xs mb-3 italic">
+                <p className="text-muted text-xs mb-3 italic opacity-50">
                   Sin alumno asignado
                 </p>
               )}
-              <div className="mt-auto pt-3 border-t border-[#1A1A1A]">
+              <div className="mt-auto pt-3 border-t border-surface-2">
                 <Link
                   href={`/coach/rutinas/${routine.id}`}
-                  className="text-[#C8FF00] hover:text-[#AADD00] text-xs font-medium transition-colors"
+                  className="text-lime hover:text-[#AADD00] text-xs font-medium transition-colors"
                 >
                   Ver rutina →
                 </Link>

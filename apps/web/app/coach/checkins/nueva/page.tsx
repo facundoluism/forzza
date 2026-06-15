@@ -102,17 +102,17 @@ export default function NuevaPlantillaPage() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="text-[#666666] hover:text-[#AAAAAA] text-sm transition-colors mb-2 block"
+          className="text-muted hover:text-muted text-sm transition-colors mb-2 block"
         >
           ← Volver
         </button>
-        <h1 className="text-2xl font-bold text-[#FAFAFA]">Nueva plantilla de check-in</h1>
+        <h1 className="text-2xl font-bold text-text">Nueva plantilla de check-in</h1>
       </div>
 
       <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">
         {/* Nombre */}
         <div>
-          <label className="block text-sm font-medium text-[#FAFAFA] mb-2">
+          <label className="block text-sm font-medium text-text mb-2">
             Nombre de la plantilla <span className="text-red-400">*</span>
           </label>
           <input
@@ -120,28 +120,28 @@ export default function NuevaPlantillaPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Ej: Check-in semanal"
-            className="w-full px-4 py-3 bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg text-[#FAFAFA] placeholder-[#444444] focus:outline-none focus:border-[#C8FF00] transition-colors"
+            className="w-full px-4 py-3 bg-surface-2 border border-border rounded-lg text-text placeholder-[#444444] focus:outline-none focus:border-[#C8FF00] transition-colors"
           />
         </div>
 
         {/* Preguntas */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <label className="text-sm font-medium text-[#FAFAFA]">
+            <label className="text-sm font-medium text-text">
               Preguntas <span className="text-red-400">*</span>
             </label>
             <button
               type="button"
               onClick={addQuestion}
-              className="text-[#C8FF00] hover:text-[#AADD00] text-sm font-medium transition-colors"
+              className="text-lime hover:text-[#AADD00] text-sm font-medium transition-colors"
             >
               + Agregar pregunta
             </button>
           </div>
 
           {questions.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-[#2A2A2A] p-8 text-center">
-              <p className="text-[#444444] text-sm">
+            <div className="rounded-lg border border-dashed border-border p-8 text-center">
+              <p className="text-muted text-sm opacity-60">
                 Agregá preguntas a la plantilla
               </p>
             </div>
@@ -150,16 +150,16 @@ export default function NuevaPlantillaPage() {
               {questions.map((q, index) => (
                 <div
                   key={index}
-                  className="rounded-lg border border-[#2A2A2A] bg-[#111111] p-4"
+                  className="rounded-lg border border-border bg-surface p-4"
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-[#666666] text-xs font-mono">
+                    <span className="text-muted text-xs font-mono">
                       Pregunta {index + 1}
                     </span>
                     <button
                       type="button"
                       onClick={() => removeQuestion(index)}
-                      className="text-[#666666] hover:text-red-400 text-xs transition-colors"
+                      className="text-muted hover:text-red-400 text-xs transition-colors"
                     >
                       Quitar
                     </button>
@@ -172,11 +172,11 @@ export default function NuevaPlantillaPage() {
                         updateQuestion(index, "label", e.target.value)
                       }
                       placeholder="Texto de la pregunta"
-                      className="w-full px-3 py-2 bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg text-[#FAFAFA] placeholder-[#444444] focus:outline-none focus:border-[#C8FF00] text-sm transition-colors"
+                      className="w-full px-3 py-2 bg-surface-2 border border-border rounded-lg text-text placeholder-[#444444] focus:outline-none focus:border-[#C8FF00] text-sm transition-colors"
                     />
                     <div className="flex items-center gap-4">
                       <div className="flex-1">
-                        <label className="block text-[#666666] text-xs mb-1">
+                        <label className="block text-muted text-xs mb-1">
                           Tipo de respuesta
                         </label>
                         <select
@@ -188,7 +188,7 @@ export default function NuevaPlantillaPage() {
                               e.target.value as QuestionType
                             )
                           }
-                          className="w-full px-3 py-2 bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg text-[#FAFAFA] text-sm focus:outline-none focus:border-[#C8FF00] transition-colors"
+                          className="w-full px-3 py-2 bg-surface-2 border border-border rounded-lg text-text text-sm focus:outline-none focus:border-[#C8FF00] transition-colors"
                         >
                           {(
                             Object.entries(questionTypeLabels) as [
@@ -211,7 +211,7 @@ export default function NuevaPlantillaPage() {
                           }
                           className="w-4 h-4 accent-[#C8FF00]"
                         />
-                        <span className="text-[#AAAAAA] text-sm">
+                        <span className="text-muted text-sm">
                           Obligatoria
                         </span>
                       </label>

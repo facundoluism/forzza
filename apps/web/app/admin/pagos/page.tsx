@@ -106,81 +106,83 @@ export default async function AdminPagosPage({ searchParams }: PageProps) {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#FAFAFA]">Pagos</h1>
-        <p className="text-[#555555] text-sm mt-1">
+        <h1 className="text-2xl font-bold text-text">Pagos</h1>
+        <p className="text-muted text-sm mt-1">
           Historial de transacciones de la plataforma
         </p>
       </div>
 
-      {/* Summary cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        <div className="rounded-xl border border-[#1E1E1E] bg-[#111111] p-5">
-          <p className="text-[#555555] text-xs uppercase tracking-wider mb-2">
+      {/* Summary cards — 1 col mobile, 3 col desktop; last card spans full on mobile */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div className="rounded-xl border border-border bg-surface p-5">
+          <p className="text-muted text-xs uppercase tracking-wider mb-2">
             Revenue total
           </p>
           <p className="text-[#C8FF00] text-2xl font-bold">
             {formatCents(totalApproved)}
           </p>
-          <p className="text-[#9898C0] text-xs mt-1">pagos aprobados</p>
+          <p className="text-muted text-xs mt-1">pagos aprobados</p>
         </div>
-        <div className="rounded-xl border border-[#1E1E1E] bg-[#111111] p-5">
-          <p className="text-[#555555] text-xs uppercase tracking-wider mb-2">
+        <div className="rounded-xl border border-border bg-surface p-5">
+          <p className="text-muted text-xs uppercase tracking-wider mb-2">
             Este mes
           </p>
-          <p className="text-[#FAFAFA] text-2xl font-bold">
+          <p className="text-text text-2xl font-bold">
             {formatCents(monthApproved)}
           </p>
-          <p className="text-[#9898C0] text-xs mt-1">pagos aprobados</p>
+          <p className="text-muted text-xs mt-1">pagos aprobados</p>
         </div>
-        <div className="rounded-xl border border-[#1E1E1E] bg-[#111111] p-5">
-          <p className="text-[#555555] text-xs uppercase tracking-wider mb-2">
+        <div className="rounded-xl border border-border bg-surface p-5">
+          <p className="text-muted text-xs uppercase tracking-wider mb-2">
             Transacciones
           </p>
-          <p className="text-[#FAFAFA] text-2xl font-bold">{rows.length}</p>
-          <p className="text-[#9898C0] text-xs mt-1">
+          <p className="text-text text-2xl font-bold">{rows.length}</p>
+          <p className="text-muted text-xs mt-1">
             {filterStatus ? statusLabel[filterStatus] : "todos los estados"}
           </p>
         </div>
       </div>
 
-      {/* Status filter */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        <a
-          href="/admin/pagos"
-          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-            !filterStatus
-              ? "bg-[#C8FF00] text-[#0A0A0A]"
-              : "bg-[#111111] border border-[#1E1E1E] text-[#666666] hover:text-[#FAFAFA]"
-          }`}
-        >
-          Todos
-        </a>
-        {ALL_STATUSES.map((s) => (
+      {/* Status filter — single row with horizontal scroll */}
+      <div className="overflow-x-auto mb-6">
+        <div className="flex flex-nowrap gap-2 min-w-max">
           <a
-            key={s}
-            href={`/admin/pagos?status=${s}`}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-              filterStatus === s
+            href="/admin/pagos"
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
+              !filterStatus
                 ? "bg-[#C8FF00] text-[#0A0A0A]"
-                : "bg-[#111111] border border-[#1E1E1E] text-[#666666] hover:text-[#FAFAFA]"
+                : "bg-surface border border-border text-muted hover:text-text"
             }`}
           >
-            {statusLabel[s]}
+            Todos
           </a>
-        ))}
+          {ALL_STATUSES.map((s) => (
+            <a
+              key={s}
+              href={`/admin/pagos?status=${s}`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
+                filterStatus === s
+                  ? "bg-[#C8FF00] text-[#0A0A0A]"
+                  : "bg-surface border border-border text-muted hover:text-text"
+              }`}
+            >
+              {statusLabel[s]}
+            </a>
+          ))}
+        </div>
       </div>
 
       {rows.length === 0 ? (
-        <div className="rounded-xl border border-[#1E1E1E] bg-[#111111] p-12 text-center">
+        <div className="rounded-xl border border-border bg-surface p-12 text-center">
           <p className="text-4xl mb-4">💳</p>
-          <p className="text-[#FAFAFA] text-lg font-semibold">No hay pagos para mostrar.</p>
-          <p className="text-[#555555] text-sm mt-2">Las transacciones aparecerán acá una vez que se procesen.</p>
+          <p className="text-text text-lg font-semibold">No hay pagos para mostrar.</p>
+          <p className="text-muted text-sm mt-2">Las transacciones aparecerán acá una vez que se procesen.</p>
         </div>
       ) : (
-        <div className="rounded-xl border border-[#1E1E1E] bg-[#111111] overflow-hidden">
+        <div className="rounded-xl border border-border bg-surface overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-[#555555] text-xs uppercase tracking-wider border-b border-[#1A1A1A]">
+              <tr className="text-muted text-xs uppercase tracking-wider border-b border-surface-2">
                 <th className="text-left px-6 py-3">ID</th>
                 <th className="text-left px-6 py-3 hidden md:table-cell">Pagador</th>
                 <th className="text-left px-6 py-3 hidden md:table-cell">Beneficiario</th>
@@ -190,19 +192,19 @@ export default async function AdminPagosPage({ searchParams }: PageProps) {
                 <th className="text-left px-6 py-3 hidden lg:table-cell">Fecha</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1A1A1A]">
+            <tbody className="divide-y divide-surface-2">
               {rows.map((p) => (
-                <tr key={p.id} className="hover:bg-[#161616] transition-colors">
-                  <td className="px-6 py-3 font-mono text-[#9898C0] text-xs">
+                <tr key={p.id} className="hover:bg-surface-2 transition-colors">
+                  <td className="px-6 py-3 font-mono text-muted text-xs">
                     {p.id.slice(0, 8)}…
                   </td>
-                  <td className="px-6 py-3 font-mono text-[#888888] text-xs hidden md:table-cell">
+                  <td className="px-6 py-3 font-mono text-muted text-xs hidden md:table-cell">
                     {p.user_id.slice(0, 8)}…
                   </td>
-                  <td className="px-6 py-3 font-mono text-[#888888] text-xs hidden md:table-cell">
+                  <td className="px-6 py-3 font-mono text-muted text-xs hidden md:table-cell">
                     {p.coach_id.slice(0, 8)}…
                   </td>
-                  <td className="px-6 py-3 text-right font-semibold text-[#FAFAFA]">
+                  <td className="px-6 py-3 text-right font-semibold text-text">
                     {formatCents(p.amount, p.currency)}
                   </td>
                   <td className="px-6 py-3">
@@ -212,10 +214,10 @@ export default async function AdminPagosPage({ searchParams }: PageProps) {
                       {statusLabel[p.status]}
                     </span>
                   </td>
-                  <td className="px-6 py-3 text-[#666666] text-xs capitalize hidden sm:table-cell">
+                  <td className="px-6 py-3 text-muted text-xs capitalize hidden sm:table-cell">
                     {p.gateway}
                   </td>
-                  <td className="px-6 py-3 text-[#9898C0] text-xs hidden lg:table-cell">
+                  <td className="px-6 py-3 text-muted text-xs hidden lg:table-cell">
                     {formatDate(p.created_at)}
                   </td>
                 </tr>

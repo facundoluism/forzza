@@ -95,56 +95,56 @@ export default async function RespuestasPage({
       <div className="mb-8">
         <Link
           href="/coach/checkins"
-          className="text-[#666666] hover:text-[#AAAAAA] text-sm transition-colors"
+          className="text-muted hover:text-muted text-sm transition-colors"
         >
           ← Volver a check-ins
         </Link>
-        <h1 className="text-2xl font-bold text-[#FAFAFA] mt-2">{template.title}</h1>
-        <p className="text-[#666666] text-sm mt-1">
+        <h1 className="text-2xl font-bold text-text mt-2">{template.title}</h1>
+        <p className="text-muted text-sm mt-1">
           {rows.length} respuesta{rows.length !== 1 ? "s" : ""}
         </p>
       </div>
 
       {rows.length === 0 ? (
-        <div className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-12 text-center">
-          <p className="text-[#666666] text-lg">Todavía no hay respuestas para esta plantilla.</p>
+        <div className="rounded-xl border border-border bg-surface p-12 text-center">
+          <p className="text-muted text-lg">Todavía no hay respuestas para esta plantilla.</p>
         </div>
       ) : (
         <div className="space-y-4">
           {rows.map((response) => (
             <details
               key={response.id}
-              className="rounded-xl border border-[#2A2A2A] bg-[#111111] overflow-hidden group"
+              className="rounded-xl border border-border bg-surface overflow-hidden group"
             >
-              <summary className="flex items-center justify-between px-6 py-4 cursor-pointer hover:bg-[#161616] transition-colors list-none">
+              <summary className="flex items-center justify-between px-6 py-4 cursor-pointer hover:bg-surface-2 transition-colors list-none">
                 <div>
-                  <span className="font-medium text-[#FAFAFA]">
+                  <span className="font-medium text-text">
                     {response.student_profiles?.display_name ?? "Alumno sin nombre"}
                   </span>
-                  <p className="text-[#666666] text-xs mt-0.5">
+                  <p className="text-muted text-xs mt-0.5">
                     {formatDate(response.submitted_at)}
                   </p>
                 </div>
-                <span className="text-[#666666] text-sm group-open:rotate-180 transition-transform">
+                <span className="text-muted text-sm group-open:rotate-180 transition-transform">
                   ▾
                 </span>
               </summary>
-              <div className="px-6 py-4 border-t border-[#1A1A1A] space-y-3">
+              <div className="px-6 py-4 border-t border-surface-2 space-y-3">
                 {response.answers && typeof response.answers === "object" ? (
                   Object.entries(response.answers as Record<string, unknown>).map(
                     ([key, val]) => (
                       <div key={key} className="flex gap-3 text-sm">
-                        <span className="text-[#666666] min-w-0 flex-shrink-0">
+                        <span className="text-muted min-w-0 flex-shrink-0">
                           {questionMap.get(key) ?? key}:
                         </span>
-                        <span className="text-[#FAFAFA]">
+                        <span className="text-text">
                           {renderValue(val)}
                         </span>
                       </div>
                     )
                   )
                 ) : (
-                  <p className="text-[#444444] text-sm">Sin respuestas</p>
+                  <p className="text-muted text-sm opacity-50">Sin respuestas</p>
                 )}
               </div>
             </details>

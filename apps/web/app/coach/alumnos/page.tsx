@@ -73,25 +73,25 @@ export default async function AlumnosPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#FAFAFA]">Alumnos</h1>
-        <p className="text-[#666666] text-sm mt-1">
+        <h1 className="text-2xl font-bold text-text">Alumnos</h1>
+        <p className="text-muted text-sm mt-1">
           {rows.length} alumno{rows.length !== 1 ? "s" : ""} en total
         </p>
       </div>
 
       {rows.length === 0 ? (
-        <div className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-12 text-center">
+        <div className="rounded-xl border border-border bg-surface p-12 text-center">
           <p className="text-4xl mb-4">👥</p>
-          <p className="text-[#FAFAFA] text-lg font-semibold">Todavía no tenés alumnos asignados.</p>
-          <p className="text-[#666666] text-sm mt-2">
+          <p className="text-text text-lg font-semibold">Todavía no tenés alumnos asignados.</p>
+          <p className="text-muted text-sm mt-2">
             Cuando un alumno te seleccione, aparecerá acá.
           </p>
         </div>
       ) : (
-        <div className="rounded-xl border border-[#2A2A2A] bg-[#111111] overflow-hidden">
+        <div className="rounded-xl border border-border bg-surface overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[#2A2A2A] text-[#666666] text-xs uppercase tracking-wider">
+              <tr className="border-b border-border text-muted text-xs uppercase tracking-wider">
                 <th className="text-left px-6 py-3">Alumno</th>
                 <th className="text-left px-6 py-3 hidden md:table-cell">Paquete</th>
                 <th className="text-left px-6 py-3 hidden sm:table-cell">Inicio</th>
@@ -99,18 +99,18 @@ export default async function AlumnosPage() {
                 <th className="text-right px-6 py-3"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1A1A1A]">
+            <tbody className="divide-y divide-surface-2">
               {rows.map((row) => (
-                <tr key={row.id} className="hover:bg-[#161616] transition-colors">
+                <tr key={row.id} className="hover:bg-surface-2 transition-colors">
                   <td className="px-6 py-4">
-                    <span className="font-medium text-[#FAFAFA]">
+                    <span className="font-medium text-text">
                       {row.student_profiles?.display_name ?? "Sin nombre"}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-[#AAAAAA] hidden md:table-cell">
+                  <td className="px-6 py-4 text-muted hidden md:table-cell">
                     {row.coach_packages?.title ?? "—"}
                   </td>
-                  <td className="px-6 py-4 text-[#AAAAAA] hidden sm:table-cell">
+                  <td className="px-6 py-4 text-muted hidden sm:table-cell">
                     {formatDate(row.started_at)}
                   </td>
                   <td className="px-6 py-4">
@@ -123,7 +123,7 @@ export default async function AlumnosPage() {
                   <td className="px-6 py-4 text-right">
                     <Link
                       href={`/coach/alumnos/${row.student_profiles?.user_id ?? ""}`}
-                      className="text-[#C8FF00] hover:text-[#AADD00] text-xs font-medium transition-colors"
+                      className="text-lime hover:text-[#AADD00] text-xs font-medium transition-colors"
                     >
                       Ver detalle →
                     </Link>

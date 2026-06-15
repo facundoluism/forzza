@@ -9,7 +9,7 @@ export default function AuthLayout({
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: "#0A0A0A",
+      backgroundColor: "var(--color-bg)",
       padding: "24px",
     }}>
       <div style={{ width: "100%", maxWidth: "400px" }}>

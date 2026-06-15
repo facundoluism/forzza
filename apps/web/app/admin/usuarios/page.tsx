@@ -38,12 +38,12 @@ const roleLabel: Record<string, string> = {
 const roleColors: Record<string, string> = {
   student: "bg-blue-500/10 text-blue-400 border border-blue-500/20",
   coach: "bg-purple-500/10 text-purple-400 border border-purple-500/20",
-  owner: "bg-[#C8FF00]/10 text-[#C8FF00] border border-[#C8FF00]/20",
+  owner: "bg-[#C8FF00]/10 text-lime border border-[#C8FF00]/20",
   promoter: "bg-orange-500/10 text-orange-400 border border-orange-500/20",
 };
 
 const planColors: Record<string, string> = {
-  free: "text-[#555555]",
+  free: "text-muted",
   pro: "text-[#C8FF00]",
   elite: "text-purple-400",
 };
@@ -84,8 +84,8 @@ export default async function AdminUsuariosPage({ searchParams }: PageProps) {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#FAFAFA]">Usuarios</h1>
-        <p className="text-[#555555] text-sm mt-1">
+        <h1 className="text-2xl font-bold text-text">Usuarios</h1>
+        <p className="text-muted text-sm mt-1">
           {rows.length} usuario{rows.length !== 1 ? "s" : ""} mostrados
         </p>
       </div>
@@ -98,7 +98,7 @@ export default async function AdminUsuariosPage({ searchParams }: PageProps) {
             name="q"
             defaultValue={search}
             placeholder="Buscar por ID de usuario…"
-            className="flex-1 max-w-sm bg-[#111111] border border-[#1E1E1E] rounded-lg px-4 py-2.5 text-[#FAFAFA] text-sm placeholder-[#444444] focus:outline-none focus:border-[#C8FF00]"
+            className="flex-1 max-w-sm bg-surface border border-border rounded-lg px-4 py-2.5 text-text text-sm placeholder-[var(--color-muted)] focus:outline-none focus:border-[#C8FF00]"
           />
           <button
             type="submit"
@@ -109,7 +109,7 @@ export default async function AdminUsuariosPage({ searchParams }: PageProps) {
           {search && (
             <a
               href="/admin/usuarios"
-              className="px-4 py-2.5 bg-[#1A1A1A] text-[#888888] text-sm rounded-lg hover:text-[#FAFAFA] transition-colors"
+              className="px-4 py-2.5 bg-surface-2 text-muted text-sm rounded-lg hover:text-text transition-colors"
             >
               Limpiar
             </a>
@@ -118,14 +118,14 @@ export default async function AdminUsuariosPage({ searchParams }: PageProps) {
       </form>
 
       {rows.length === 0 ? (
-        <div className="rounded-xl border border-[#1E1E1E] bg-[#111111] p-12 text-center">
-          <p className="text-[#555555] text-lg">No se encontraron usuarios.</p>
+        <div className="rounded-xl border border-border bg-surface p-12 text-center">
+          <p className="text-muted text-lg">No se encontraron usuarios.</p>
         </div>
       ) : (
-        <div className="rounded-xl border border-[#1E1E1E] bg-[#111111] overflow-hidden">
+        <div className="rounded-xl border border-border bg-surface overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-[#555555] text-xs uppercase tracking-wider border-b border-[#1A1A1A]">
+              <tr className="text-muted text-xs uppercase tracking-wider border-b border-surface-2">
                 <th className="text-left px-6 py-3">ID</th>
                 <th className="text-left px-6 py-3 hidden sm:table-cell">País</th>
                 <th className="text-left px-6 py-3">Rol</th>
@@ -133,24 +133,24 @@ export default async function AdminUsuariosPage({ searchParams }: PageProps) {
                 <th className="text-left px-6 py-3 hidden lg:table-cell">Registro</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1A1A1A]">
+            <tbody className="divide-y divide-surface-2">
               {rows.map((u) => {
                 const activeSub = u.subscriptions?.find(
                   (s) => s.status === "active"
                 );
                 return (
-                  <tr key={u.id} className="hover:bg-[#161616] transition-colors">
+                  <tr key={u.id} className="hover:bg-surface-2 transition-colors">
                     <td className="px-6 py-4">
-                      <span className="font-mono text-[#888888] text-xs">
+                      <span className="font-mono text-muted text-xs">
                         {`${u.id.slice(0, 8)}…`}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-[#888888] hidden sm:table-cell">
+                    <td className="px-6 py-4 text-muted hidden sm:table-cell">
                       {u.country}
                     </td>
                     <td className="px-6 py-4">
                       <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${roleColors[u.role] ?? "bg-[#1A1A1A] text-[#888888] border border-[#2A2A2A]"}`}
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${roleColors[u.role] ?? "bg-surface-2 text-muted border border-border"}`}
                       >
                         {roleLabel[u.role] ?? u.role}
                       </span>
@@ -158,15 +158,15 @@ export default async function AdminUsuariosPage({ searchParams }: PageProps) {
                     <td className="px-6 py-4 hidden md:table-cell">
                       {activeSub ? (
                         <span
-                          className={`text-sm font-semibold capitalize ${planColors[activeSub.plan] ?? "text-[#888888]"}`}
+                          className={`text-sm font-semibold capitalize ${planColors[activeSub.plan] ?? "text-muted"}`}
                         >
                           {activeSub.plan}
                         </span>
                       ) : (
-                        <span className="text-[#444444] text-xs">—</span>
+                        <span className="text-muted text-xs">—</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-[#555555] text-xs hidden lg:table-cell">
+                    <td className="px-6 py-4 text-muted text-xs hidden lg:table-cell">
                       {formatDate(u.created_at)}
                     </td>
                   </tr>

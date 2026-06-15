@@ -6,6 +6,17 @@ import { forgotPasswordSchema } from "@forzza/core";
 
 type PageState = "idle" | "loading" | "success" | "error";
 
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  padding: "12px",
+  backgroundColor: "var(--color-surface)",
+  border: "1px solid var(--color-border)",
+  borderRadius: "8px",
+  color: "var(--color-text)",
+  fontSize: "16px",
+  boxSizing: "border-box",
+};
+
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [state, setState] = useState<PageState>("idle");
@@ -41,7 +52,7 @@ export default function ForgotPasswordPage() {
         <h2 style={{ color: "#FAFAFA", marginBottom: "8px" }}>
           Email enviado
         </h2>
-        <p style={{ color: "#AAAAAA" }}>
+        <p style={{ color: "var(--color-muted)" }}>
           Revisá tu bandeja de entrada y seguí las instrucciones para restablecer tu contraseña.
         </p>
         <a href="/login" style={{ color: "#C8FF00", display: "block", marginTop: "24px" }}>
@@ -54,7 +65,7 @@ export default function ForgotPasswordPage() {
   return (
     <div>
       <h2 style={{ color: "#FAFAFA", marginBottom: "8px" }}>Recuperar contraseña</h2>
-      <p style={{ color: "#AAAAAA", marginBottom: "24px" }}>
+      <p style={{ color: "var(--color-muted)", marginBottom: "24px" }}>
         Ingresá tu email y te enviamos un link para restablecer tu contraseña.
       </p>
 
@@ -67,16 +78,7 @@ export default function ForgotPasswordPage() {
             placeholder="tu@email.com"
             required
             disabled={state === "loading"}
-            style={{
-              width: "100%",
-              padding: "12px",
-              backgroundColor: "#1A1A1A",
-              border: "1px solid #3A3A3A",
-              borderRadius: "8px",
-              color: "#FAFAFA",
-              fontSize: "16px",
-              boxSizing: "border-box",
-            }}
+            style={inputStyle}
           />
         </div>
 
@@ -102,7 +104,7 @@ export default function ForgotPasswordPage() {
           {state === "loading" ? "Enviando..." : "Enviar link de recuperación"}
         </button>
 
-        <a href="/login" style={{ display: "block", textAlign: "center", marginTop: "16px", color: "#AAAAAA", fontSize: "14px" }}>
+        <a href="/login" style={{ display: "block", textAlign: "center", marginTop: "16px", color: "var(--color-muted)", fontSize: "14px" }}>
           Volver al inicio de sesión
         </a>
       </form>

@@ -6,7 +6,7 @@ export const metadata = {
 
 export default function PrivacidadPage() {
   return (
-    <main className="bg-[#0A0A0A] min-h-screen px-6 py-16 max-w-[800px] mx-auto text-[#FAFAFA]">
+    <main className="bg-bg min-h-screen px-6 py-16 max-w-[800px] mx-auto text-[#FAFAFA]">
       <Link href="/" className="text-[#C8FF00] text-sm hover:text-[#b8ef00] transition-colors">
         ← Volver al inicio
       </Link>
@@ -18,7 +18,7 @@ export default function PrivacidadPage() {
           ⚠️ DRAFT — Este documento está pendiente de revisión legal.
         </p>
       </div>
-      <div className="text-[#AAAAAA] leading-[1.8] text-base">
+      <div className="text-muted leading-[1.8] text-base">
         <p>TODO_COPY — Pendiente de redacción final por abogado especialista en datos personales (PDPA Argentina).</p>
         <h2 className="text-[#FAFAFA] text-2xl font-bold mt-8 mb-3">Datos que recopilamos</h2>
         <p>Email, nombre, fecha de nacimiento, historial de entrenamientos y datos de pago (gestionados por Mercado Pago/RevenueCat).</p>

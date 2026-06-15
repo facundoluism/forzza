@@ -6,7 +6,7 @@ export const metadata = {
 
 export default function TerminosPage() {
   return (
-    <main className="bg-[#0A0A0A] min-h-screen px-6 py-16 max-w-[800px] mx-auto text-[#FAFAFA]">
+    <main className="bg-bg min-h-screen px-6 py-16 max-w-[800px] mx-auto text-[#FAFAFA]">
       <Link href="/" className="text-[#C8FF00] text-sm hover:text-[#b8ef00] transition-colors">
         ← Volver al inicio
       </Link>
@@ -18,7 +18,7 @@ export default function TerminosPage() {
           ⚠️ DRAFT — Este documento está pendiente de revisión legal. No es vinculante hasta su publicación oficial.
         </p>
       </div>
-      <div className="text-[#AAAAAA] leading-[1.8] text-base">
+      <div className="text-muted leading-[1.8] text-base">
         <p>TODO_COPY — Contenido pendiente de revisión legal por abogado. Ver §23 del master doc para el checklist legal completo.</p>
         <h2 className="text-[#FAFAFA] text-2xl font-bold mt-8 mb-3">1. Aceptación de los términos</h2>
         <p>Al usar Forzza, aceptás estos términos. Si sos menor de 18 años, necesitás el consentimiento de un adulto responsable.</p>

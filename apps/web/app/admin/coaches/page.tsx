@@ -90,14 +90,14 @@ export default async function AdminCoachesPage({ searchParams }: PageProps) {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#FAFAFA]">Coaches</h1>
-        <p className="text-[#555555] text-sm mt-1">
+        <h1 className="text-2xl font-bold text-text">Coaches</h1>
+        <p className="text-muted text-sm mt-1">
           Gestioná las solicitudes y el estado de los coaches
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="grid grid-cols-4 gap-1 mb-6 bg-[#111111] border border-[#1E1E1E] rounded-xl p-1">
+      <div className="grid grid-cols-4 gap-1 mb-6 bg-surface border border-border rounded-xl p-1">
         {tabs.map((t) => (
           <a
             key={t.key}
@@ -105,7 +105,7 @@ export default async function AdminCoachesPage({ searchParams }: PageProps) {
             className={`px-2 sm:px-4 py-2 rounded-lg text-[11px] sm:text-sm font-medium transition-colors text-center truncate ${
               tab === t.key
                 ? "bg-[#C8FF00] text-[#0A0A0A]"
-                : "text-[#666666] hover:text-[#FAFAFA]"
+                : "text-muted hover:text-text"
             }`}
           >
             {t.label}
@@ -114,12 +114,12 @@ export default async function AdminCoachesPage({ searchParams }: PageProps) {
       </div>
 
       {rows.length === 0 ? (
-        <div className="rounded-xl border border-[#1E1E1E] bg-[#111111] p-12 text-center">
+        <div className="rounded-xl border border-border bg-surface p-12 text-center">
           <p className="text-4xl mb-4">🏋️</p>
-          <p className="text-[#FAFAFA] text-lg font-semibold">
+          <p className="text-text text-lg font-semibold">
             No hay coaches {statusLabel[tab].toLowerCase()} por ahora.
           </p>
-          <p className="text-[#555555] text-sm mt-2">
+          <p className="text-muted text-sm mt-2">
             Los coaches aparecerán acá según su estado.
           </p>
         </div>
@@ -128,28 +128,28 @@ export default async function AdminCoachesPage({ searchParams }: PageProps) {
         {/* Mobile: card layout */}
         <div className="md:hidden space-y-3">
           {rows.map((coach) => (
-            <div key={coach.id} className="rounded-xl border border-[#1E1E1E] bg-[#111111] p-4 space-y-3">
+            <div key={coach.id} className="rounded-xl border border-border bg-surface p-4 space-y-3">
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <p className="font-medium text-[#FAFAFA] text-sm">{coach.display_name}</p>
-                  <p className="text-[#444444] font-mono text-xs">{coach.user_id.slice(0, 8)}…</p>
+                  <p className="font-medium text-text text-sm">{coach.display_name}</p>
+                  <p className="text-muted font-mono text-xs">{coach.user_id.slice(0, 8)}…</p>
                 </div>
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium shrink-0 ${statusColors[coach.status]}`}>
                   {statusLabel[coach.status]}
                 </span>
               </div>
-              <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#666666]">
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
                 <span>{coach.country}</span>
                 <span className="capitalize">{coach.billing_model}</span>
                 <span>{formatDate(coach.created_at)}</span>
               </div>
-              <div className="flex items-center justify-between pt-1 border-t border-[#1A1A1A]">
+              <div className="flex items-center justify-between pt-1 border-t border-surface-2">
                 {coach.constanciaSignedUrl ? (
                   <a href={coach.constanciaSignedUrl} target="_blank" rel="noopener noreferrer" className="text-[#C8FF00] hover:text-[#AADD00] text-xs transition-colors">
                     Ver doc →
                   </a>
                 ) : (
-                  <span className="text-[#444444] text-xs">Sin doc</span>
+                  <span className="text-muted text-xs">Sin doc</span>
                 )}
                 <ApproveRejectButtons coachId={coach.id} currentStatus={coach.status} />
               </div>
@@ -158,10 +158,10 @@ export default async function AdminCoachesPage({ searchParams }: PageProps) {
         </div>
 
         {/* Desktop: table layout */}
-        <div className="hidden md:block rounded-xl border border-[#1E1E1E] bg-[#111111] overflow-hidden">
+        <div className="hidden md:block rounded-xl border border-border bg-surface overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-[#555555] text-xs uppercase tracking-wider border-b border-[#1A1A1A]">
+              <tr className="text-muted text-xs uppercase tracking-wider border-b border-surface-2">
                 <th className="text-left px-6 py-3">Coach</th>
                 <th className="text-left px-6 py-3">País</th>
                 <th className="text-left px-6 py-3 hidden lg:table-cell">Modelo</th>
@@ -171,16 +171,16 @@ export default async function AdminCoachesPage({ searchParams }: PageProps) {
                 <th className="text-right px-6 py-3">Acción</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1A1A1A]">
+            <tbody className="divide-y divide-surface-2">
               {rows.map((coach) => (
-                <tr key={coach.id} className="hover:bg-[#161616] transition-colors">
+                <tr key={coach.id} className="hover:bg-surface-2 transition-colors">
                   <td className="px-6 py-4">
-                    <p className="font-medium text-[#FAFAFA]">{coach.display_name}</p>
-                    <p className="text-[#444444] font-mono text-xs">{coach.user_id.slice(0, 8)}…</p>
+                    <p className="font-medium text-text">{coach.display_name}</p>
+                    <p className="text-muted font-mono text-xs">{coach.user_id.slice(0, 8)}…</p>
                   </td>
-                  <td className="px-6 py-4 text-[#888888]">{coach.country}</td>
-                  <td className="px-6 py-4 text-[#888888] capitalize hidden lg:table-cell">{coach.billing_model}</td>
-                  <td className="px-6 py-4 text-[#555555] text-xs">{formatDate(coach.created_at)}</td>
+                  <td className="px-6 py-4 text-muted">{coach.country}</td>
+                  <td className="px-6 py-4 text-muted capitalize hidden lg:table-cell">{coach.billing_model}</td>
+                  <td className="px-6 py-4 text-muted text-xs">{formatDate(coach.created_at)}</td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[coach.status]}`}>
                       {statusLabel[coach.status]}
@@ -192,7 +192,7 @@ export default async function AdminCoachesPage({ searchParams }: PageProps) {
                         Ver doc →
                       </a>
                     ) : (
-                      <span className="text-[#444444] text-xs">Sin doc</span>
+                      <span className="text-muted text-xs">Sin doc</span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-right">

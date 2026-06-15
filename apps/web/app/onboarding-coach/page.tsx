@@ -151,7 +151,7 @@ export default function OnboardingCoachPage() {
           <div>
             <h2 style={{ color: "#FAFAFA", marginBottom: "24px" }}>Tu cuenta</h2>
             <div style={{ marginBottom: "16px" }}>
-              <label style={{ display: "block", color: "#AAAAAA", marginBottom: "8px", fontSize: "14px" }}>
+              <label style={{ display: "block", color: "var(--color-muted)", marginBottom: "8px", fontSize: "14px" }}>
                 Nombre público *
               </label>
               <input
@@ -163,7 +163,7 @@ export default function OnboardingCoachPage() {
               />
             </div>
             <div style={{ marginBottom: "24px" }}>
-              <label style={{ display: "block", color: "#AAAAAA", marginBottom: "8px", fontSize: "14px" }}>
+              <label style={{ display: "block", color: "var(--color-muted)", marginBottom: "8px", fontSize: "14px" }}>
                 País
               </label>
               <select
@@ -195,12 +195,12 @@ export default function OnboardingCoachPage() {
         {step === 2 && (
           <div>
             <h2 style={{ color: "#FAFAFA", marginBottom: "8px" }}>Datos fiscales</h2>
-            <p style={{ color: "#AAAAAA", marginBottom: "24px", fontSize: "14px" }}>
+            <p style={{ color: "var(--color-muted)", marginBottom: "24px", fontSize: "14px" }}>
               Necesitamos estos datos para poder liquidarte los pagos.
             </p>
 
             <div style={{ marginBottom: "16px" }}>
-              <label style={{ display: "block", color: "#AAAAAA", marginBottom: "8px", fontSize: "14px" }}>
+              <label style={{ display: "block", color: "var(--color-muted)", marginBottom: "8px", fontSize: "14px" }}>
                 Figura impositiva *
               </label>
               <select
@@ -217,7 +217,7 @@ export default function OnboardingCoachPage() {
             </div>
 
             <div style={{ marginBottom: "16px" }}>
-              <label style={{ display: "block", color: "#AAAAAA", marginBottom: "8px", fontSize: "14px" }}>
+              <label style={{ display: "block", color: "var(--color-muted)", marginBottom: "8px", fontSize: "14px" }}>
                 {data.country === "AR" ? "CUIT *" : "RUT *"}
               </label>
               <input
@@ -260,14 +260,14 @@ export default function OnboardingCoachPage() {
         {step === 3 && (
           <div>
             <h2 style={{ color: "#FAFAFA", marginBottom: "8px" }}>Datos bancarios</h2>
-            <p style={{ color: "#AAAAAA", marginBottom: "24px", fontSize: "14px" }}>
+            <p style={{ color: "var(--color-muted)", marginBottom: "24px", fontSize: "14px" }}>
               {data.country === "AR"
                 ? "Ingresá tu CBU (22 dígitos) y/o alias bancario."
                 : "Ingresá tu número de cuenta y RUT."}
             </p>
 
             <div style={{ marginBottom: "16px" }}>
-              <label style={{ display: "block", color: "#AAAAAA", marginBottom: "8px", fontSize: "14px" }}>
+              <label style={{ display: "block", color: "var(--color-muted)", marginBottom: "8px", fontSize: "14px" }}>
                 {data.country === "AR" ? "CBU (22 dígitos) *" : "Cuenta bancaria + RUT *"}
               </label>
               <input
@@ -281,7 +281,7 @@ export default function OnboardingCoachPage() {
 
             {data.country === "AR" && (
               <div style={{ marginBottom: "24px" }}>
-                <label style={{ display: "block", color: "#AAAAAA", marginBottom: "8px", fontSize: "14px" }}>
+                <label style={{ display: "block", color: "var(--color-muted)", marginBottom: "8px", fontSize: "14px" }}>
                   Alias bancario (opcional)
                 </label>
                 <input
@@ -319,12 +319,12 @@ export default function OnboardingCoachPage() {
         {step === 4 && (
           <div>
             <h2 style={{ color: "#FAFAFA", marginBottom: "8px" }}>Tu perfil público</h2>
-            <p style={{ color: "#AAAAAA", marginBottom: "24px", fontSize: "14px" }}>
+            <p style={{ color: "var(--color-muted)", marginBottom: "24px", fontSize: "14px" }}>
               Esto es lo que van a ver los alumnos en el marketplace.
             </p>
 
             <div style={{ marginBottom: "24px" }}>
-              <label style={{ display: "block", color: "#AAAAAA", marginBottom: "8px", fontSize: "14px" }}>
+              <label style={{ display: "block", color: "var(--color-muted)", marginBottom: "8px", fontSize: "14px" }}>
                 Descripción (opcional)
               </label>
               <textarea
@@ -400,7 +400,7 @@ function PdfDropzone({
   if (file) {
     return (
       <div style={{ marginBottom: "24px" }}>
-        <label style={{ display: "block", color: "#9898C0", marginBottom: "8px", fontSize: "14px" }}>
+        <label style={{ display: "block", color: "var(--color-muted)", marginBottom: "8px", fontSize: "14px" }}>
           Constancia de inscripción
         </label>
         <div
@@ -409,8 +409,8 @@ function PdfDropzone({
             alignItems: "center",
             gap: "12px",
             padding: "16px",
-            backgroundColor: "#0E0E18",
-            border: "1px solid #242436",
+            backgroundColor: "var(--color-surface)",
+            border: "1px solid var(--color-border)",
             borderRadius: "12px",
           }}
         >
@@ -479,12 +479,12 @@ function PdfDropzone({
         onDragLeave={() => setDragging(false)}
         onDrop={handleDrop}
         style={{
-          border: `2px dashed ${dragging ? "#C8FF00" : "#242436"}`,
+          border: `2px dashed ${dragging ? "#C8FF00" : "var(--color-border)"}`,
           borderRadius: "12px",
           padding: "32px 16px",
           textAlign: "center",
           cursor: "pointer",
-          backgroundColor: dragging ? "rgba(200,255,0,0.04)" : "#0E0E18",
+          backgroundColor: dragging ? "rgba(200,255,0,0.04)" : "var(--color-surface)",
           transition: "all 0.15s ease",
         }}
       >
@@ -517,10 +517,10 @@ function PdfDropzone({
 const inputStyle: React.CSSProperties = {
   width: "100%",
   padding: "12px",
-  backgroundColor: "#1A1A1A",
-  border: "1px solid #3A3A3A",
+  backgroundColor: "var(--color-surface)",
+  border: "1px solid var(--color-border)",
   borderRadius: "8px",
-  color: "#FAFAFA",
+  color: "var(--color-text)",
   fontSize: "16px",
   boxSizing: "border-box",
 };
@@ -540,8 +540,8 @@ const buttonStyle: React.CSSProperties = {
 const secondaryButtonStyle: React.CSSProperties = {
   padding: "14px 24px",
   backgroundColor: "transparent",
-  color: "#AAAAAA",
-  border: "1px solid #3A3A3A",
+  color: "var(--color-muted)",
+  border: "1px solid var(--color-border)",
   borderRadius: "8px",
   fontSize: "16px",
   cursor: "pointer",

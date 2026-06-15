@@ -35,8 +35,8 @@ export default async function PerfilPage() {
   return (
     <div className="max-w-2xl">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#FAFAFA]">Mi perfil</h1>
-        <p className="text-[#666666] text-sm mt-1">
+        <h1 className="text-2xl font-bold text-text">Mi perfil</h1>
+        <p className="text-muted text-sm mt-1">
           Editá tu perfil público y paquetes de servicio
         </p>
       </div>

@@ -58,13 +58,25 @@ export default function LoginPage() {
     window.location.href = "/coach";
   }
 
+  const inputStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "12px",
+    backgroundColor: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
+    borderRadius: "8px",
+    color: "var(--color-text)",
+    fontSize: "16px",
+    boxSizing: "border-box",
+    outline: "none",
+  };
+
   return (
-    <div style={{ minHeight: '100vh', background: '#080810', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ width: '100%', maxWidth: '400px', padding: '40px 24px' }}>
         <h1 style={{ color: "#C8FF00", fontSize: "32px", fontWeight: "bold", marginBottom: "8px", fontFamily: "var(--font-display)", letterSpacing: "4px" }}>
           FORZZA
         </h1>
-        <p style={{ color: "#9898C0", marginBottom: "32px" }}>
+        <p style={{ color: "var(--color-muted)", marginBottom: "32px" }}>
           Iniciá sesión en tu cuenta
         </p>
 
@@ -81,7 +93,7 @@ export default function LoginPage() {
 
         <form onSubmit={(e) => { void handleSubmit(e); }}>
           <div style={{ marginBottom: "16px" }}>
-            <label style={{ display: "block", color: "#F0F0FF", marginBottom: "8px", fontSize: '14px' }}>
+            <label style={{ display: "block", color: "var(--color-text)", marginBottom: "8px", fontSize: '14px' }}>
               Email
             </label>
             <input
@@ -91,22 +103,12 @@ export default function LoginPage() {
               placeholder="tu@email.com"
               required
               disabled={loading}
-              style={{
-                width: "100%",
-                padding: "12px",
-                backgroundColor: "#0E0E18",
-                border: "1px solid #242436",
-                borderRadius: "8px",
-                color: "#F0F0FF",
-                fontSize: "16px",
-                boxSizing: "border-box",
-                outline: 'none',
-              }}
+              style={inputStyle}
             />
           </div>
 
           <div style={{ marginBottom: "16px" }}>
-            <label style={{ display: "block", color: "#F0F0FF", marginBottom: "8px", fontSize: '14px' }}>
+            <label style={{ display: "block", color: "var(--color-text)", marginBottom: "8px", fontSize: '14px' }}>
               Contraseña
             </label>
             <input
@@ -116,17 +118,7 @@ export default function LoginPage() {
               placeholder="••••••••"
               required
               disabled={loading}
-              style={{
-                width: "100%",
-                padding: "12px",
-                backgroundColor: "#0E0E18",
-                border: "1px solid #242436",
-                borderRadius: "8px",
-                color: "#F0F0FF",
-                fontSize: "16px",
-                boxSizing: "border-box",
-                outline: 'none',
-              }}
+              style={inputStyle}
             />
           </div>
 
@@ -158,7 +150,7 @@ export default function LoginPage() {
           <div style={{ marginTop: "16px", textAlign: "center" }}>
             <a
               href="/forgot-password"
-              style={{ color: "#6868A0", fontSize: "14px" }}
+              style={{ color: "var(--color-muted)", fontSize: "14px" }}
             >
               ¿Olvidaste tu contraseña?
             </a>

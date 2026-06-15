@@ -9,7 +9,7 @@ export default function OfflinePage() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#0A0A0A",
+        backgroundColor: "var(--color-bg)",
         color: "#FFFFFF",
         fontFamily: "system-ui, -apple-system, sans-serif",
         padding: "0 24px",
@@ -45,7 +45,7 @@ export default function OfflinePage() {
       <p
         style={{
           fontSize: 16,
-          color: "#999999",
+          color: "var(--color-muted)",
           margin: 0,
           maxWidth: 320,
           lineHeight: 1.5,

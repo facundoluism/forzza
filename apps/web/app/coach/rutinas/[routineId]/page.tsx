@@ -165,26 +165,26 @@ export default async function RutinaDetailPage({ params }: PageProps) {
       <div className="mb-8">
         <Link
           href="/coach/rutinas"
-          className="text-[#666666] hover:text-[#AAAAAA] text-sm transition-colors mb-2 block"
+          className="text-muted hover:text-muted text-sm transition-colors mb-2 block"
         >
           ← Volver a rutinas
         </Link>
-        <h1 className="text-2xl font-bold text-[#FAFAFA]">{routine.title}</h1>
-        <p className="text-[#666666] text-xs mt-1">
+        <h1 className="text-2xl font-bold text-text">{routine.title}</h1>
+        <p className="text-muted text-xs mt-1">
           Creada el {formatDate(routine.created_at)}
           {studentProfile?.display_name
             ? ` · Asignada a ${studentProfile.display_name}`
             : " · Sin alumno asignado"}
         </p>
         {routine.description && (
-          <p className="text-[#AAAAAA] text-sm mt-3">{routine.description}</p>
+          <p className="text-muted text-sm mt-3">{routine.description}</p>
         )}
       </div>
 
       {/* Lista de ejercicios */}
       {enriched.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-[#2A2A2A] p-12 text-center">
-          <p className="text-[#444444] text-sm">
+        <div className="rounded-xl border border-dashed border-border p-12 text-center">
+          <p className="text-muted text-sm opacity-60">
             Esta rutina no tiene ejercicios cargados.
           </p>
         </div>
@@ -202,21 +202,21 @@ export default async function RutinaDetailPage({ params }: PageProps) {
             return (
               <div
                 key={ex.exercise_id ?? index}
-                className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-5"
+                className="rounded-xl border border-border bg-surface p-5"
               >
                 {/* Encabezado */}
                 <div className="flex items-start justify-between gap-3 mb-4">
                   <div className="flex items-center gap-3 min-w-0">
-                    <span className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-full bg-[#1A1A1A] text-[#666666] text-xs font-mono">
+                    <span className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-full bg-surface-2 text-muted text-xs font-mono">
                       {index + 1}
                     </span>
                     <div className="min-w-0">
-                      <p className="text-[#FAFAFA] font-semibold text-sm leading-tight truncate">
+                      <p className="text-text font-semibold text-sm leading-tight truncate">
                         {displayName}
                       </p>
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
                         {primaryGroup && (
-                          <span className="text-[#C8FF00] text-xs font-medium">
+                          <span className="text-lime text-xs font-medium">
                             {primaryGroup}
                           </span>
                         )}
@@ -234,14 +234,14 @@ export default async function RutinaDetailPage({ params }: PageProps) {
                 {(primaryMuscles.length > 0 || secondaryMuscles.length > 0) && (
                   <div className="mb-3 space-y-1">
                     {primaryMuscles.length > 0 && (
-                      <p className="text-[#666666] text-xs">
-                        <span className="text-[#AAAAAA] font-medium">Principal: </span>
+                      <p className="text-muted text-xs">
+                        <span className="text-muted font-medium">Principal: </span>
                         {primaryMuscles.join(", ")}
                       </p>
                     )}
                     {secondaryMuscles.length > 0 && (
-                      <p className="text-[#666666] text-xs">
-                        <span className="text-[#AAAAAA] font-medium">Secundario: </span>
+                      <p className="text-muted text-xs">
+                        <span className="text-muted font-medium">Secundario: </span>
                         {secondaryMuscles.join(", ")}
                       </p>
                     )}
@@ -250,50 +250,50 @@ export default async function RutinaDetailPage({ params }: PageProps) {
 
                 {/* Equipment */}
                 {equipment.length > 0 && (
-                  <p className="text-[#444444] text-xs mb-3">
+                  <p className="text-muted text-xs mb-3 opacity-60">
                     Equipamiento: {equipment.join(", ")}
                   </p>
                 )}
 
                 {/* Series / reps / descanso */}
-                <div className="grid grid-cols-3 gap-3 pt-3 border-t border-[#1A1A1A]">
+                <div className="grid grid-cols-3 gap-3 pt-3 border-t border-surface-2">
                   {ex.sets != null && (
                     <div className="text-center">
-                      <p className="text-[#C8FF00] font-bold text-lg leading-none">
+                      <p className="text-lime font-bold text-lg leading-none">
                         {ex.sets}
                       </p>
-                      <p className="text-[#666666] text-xs mt-0.5">series</p>
+                      <p className="text-muted text-xs mt-0.5">series</p>
                     </div>
                   )}
                   {ex.reps != null && (
                     <div className="text-center">
-                      <p className="text-[#C8FF00] font-bold text-lg leading-none">
+                      <p className="text-lime font-bold text-lg leading-none">
                         {ex.reps}
                       </p>
-                      <p className="text-[#666666] text-xs mt-0.5">reps</p>
+                      <p className="text-muted text-xs mt-0.5">reps</p>
                     </div>
                   )}
                   {ex.duration_seconds != null && (
                     <div className="text-center">
-                      <p className="text-[#C8FF00] font-bold text-lg leading-none">
+                      <p className="text-lime font-bold text-lg leading-none">
                         {ex.duration_seconds}s
                       </p>
-                      <p className="text-[#666666] text-xs mt-0.5">duración</p>
+                      <p className="text-muted text-xs mt-0.5">duración</p>
                     </div>
                   )}
                   {ex.rest_seconds != null && (
                     <div className="text-center">
-                      <p className="text-[#AAAAAA] font-bold text-lg leading-none">
+                      <p className="text-muted font-bold text-lg leading-none">
                         {ex.rest_seconds}s
                       </p>
-                      <p className="text-[#666666] text-xs mt-0.5">descanso</p>
+                      <p className="text-muted text-xs mt-0.5">descanso</p>
                     </div>
                   )}
                 </div>
 
                 {/* Notas opcionales */}
                 {ex.notes && (
-                  <p className="mt-3 text-[#666666] text-xs italic border-t border-[#1A1A1A] pt-3">
+                  <p className="mt-3 text-muted text-xs italic border-t border-surface-2 pt-3">
                     {ex.notes}
                   </p>
                 )}
@@ -304,7 +304,7 @@ export default async function RutinaDetailPage({ params }: PageProps) {
       )}
 
       {/* Footer */}
-      <p className="text-[#333333] text-xs text-center mt-8">
+      <p className="text-muted text-xs text-center mt-8 opacity-30">
         Última actualización: {formatDate(routine.updated_at)}
       </p>
     </div>

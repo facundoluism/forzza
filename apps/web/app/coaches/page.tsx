@@ -91,7 +91,7 @@ function CoachCard({ coach }: { coach: Coach }) {
               {coach.display_name}
             </h3>
             {coach.years_experience !== null && (
-              <p className="text-[#8A8A8A] text-[13px] m-0">
+              <p className="text-muted text-[13px] m-0">
                 {coach.years_experience}{" "}
                 {coach.years_experience === 1 ? "año" : "años"} de experiencia
               </p>
@@ -105,7 +105,7 @@ function CoachCard({ coach }: { coach: Coach }) {
             {coach.specialties.slice(0, 3).map((s) => (
               <span
                 key={s}
-                className="bg-[#2A2A2A] text-[#AAAAAA] rounded-full px-3 py-1 text-xs font-semibold"
+                className="bg-[#2A2A2A] text-muted rounded-full px-3 py-1 text-xs font-semibold"
               >
                 {s}
               </span>
@@ -115,14 +115,14 @@ function CoachCard({ coach }: { coach: Coach }) {
 
         {/* Bio snippet */}
         {bioSnippet && (
-          <p className="text-[#8A8A8A] text-sm leading-relaxed m-0 flex-1">
+          <p className="text-muted text-sm leading-relaxed m-0 flex-1">
             {bioSnippet}
           </p>
         )}
 
         {/* Price */}
         {minPrice !== null && (
-          <p className="text-[#6A6A6A] text-[13px] m-0">
+          <p className="text-muted text-[13px] m-0">
             Desde{" "}
             <span className="text-[#C8FF00] font-bold font-mono text-base">
               ${(minPrice / 100).toLocaleString("es-AR")}
@@ -144,16 +144,16 @@ export default async function CoachesPage() {
   const coachList = await getCoaches();
 
   return (
-    <main className="bg-[#0A0A0A] min-h-screen text-[#FAFAFA]">
+    <main className="bg-bg min-h-screen text-[#FAFAFA]">
       {/* Header */}
       <section className="px-6 pt-16 pb-8 max-w-[1200px] mx-auto">
-        <Link href="/" className="text-[#6A6A6A] text-sm hover:text-[#FAFAFA] transition-colors">
+        <Link href="/" className="text-muted text-sm hover:text-[#FAFAFA] transition-colors">
           {"← Volver al inicio"}
         </Link>
         <h1 className="text-[clamp(36px,5vw,64px)] font-black text-[#FAFAFA] mt-4 mb-2 tracking-tight">
           Coaches verificados
         </h1>
-        <p className="text-[#8A8A8A] text-lg max-w-[600px]">
+        <p className="text-muted text-lg max-w-[600px]">
           Todos nuestros coaches pasan por un proceso de validación. Encontrá al que mejor se adapte a tus objetivos.
         </p>
       </section>
@@ -164,7 +164,7 @@ export default async function CoachesPage() {
           <div className="text-center py-24">
             <p className="text-6xl mb-4">🏋️</p>
             <h2 className="text-2xl font-bold text-[#FAFAFA] mb-3">Coaches próximamente</h2>
-            <p className="text-[#8A8A8A]">Estamos incorporando los primeros coaches verificados.</p>
+            <p className="text-muted">Estamos incorporando los primeros coaches verificados.</p>
             <Link href="/" className="mt-6 inline-block px-6 py-3 bg-[#C8FF00] text-black font-bold rounded-xl hover:bg-[#b8ef00] transition-colors">
               Volver al inicio
             </Link>

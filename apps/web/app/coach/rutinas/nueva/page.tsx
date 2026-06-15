@@ -174,17 +174,17 @@ export default function NuevaRutinaPage() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="text-[#666666] hover:text-[#AAAAAA] text-sm transition-colors mb-2 block"
+          className="text-muted hover:text-muted text-sm transition-colors mb-2 block"
         >
           ← Volver
         </button>
-        <h1 className="text-2xl font-bold text-[#FAFAFA]">Nueva rutina</h1>
+        <h1 className="text-2xl font-bold text-text">Nueva rutina</h1>
       </div>
 
       <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">
         {/* Nombre */}
         <div>
-          <label className="block text-sm font-medium text-[#FAFAFA] mb-2">
+          <label className="block text-sm font-medium text-text mb-2">
             Nombre de la rutina <span className="text-red-400">*</span>
           </label>
           <input
@@ -192,20 +192,20 @@ export default function NuevaRutinaPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Ej: Fuerza upper body"
-            className="w-full px-4 py-3 bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg text-[#FAFAFA] placeholder-[#444444] focus:outline-none focus:border-[#C8FF00] transition-colors"
+            className="w-full px-4 py-3 bg-surface-2 border border-border rounded-lg text-text placeholder-[#444444] focus:outline-none focus:border-[#C8FF00] transition-colors"
           />
         </div>
 
         {/* Asignar a alumno */}
         {students.length > 0 && (
           <div>
-            <label className="block text-sm font-medium text-[#FAFAFA] mb-2">
+            <label className="block text-sm font-medium text-text mb-2">
               Asignar a alumno (opcional)
             </label>
             <select
               value={selectedStudentId}
               onChange={(e) => setSelectedStudentId(e.target.value)}
-              className="w-full px-4 py-3 bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg text-[#FAFAFA] focus:outline-none focus:border-[#C8FF00] transition-colors"
+              className="w-full px-4 py-3 bg-surface-2 border border-border rounded-lg text-text focus:outline-none focus:border-[#C8FF00] transition-colors"
             >
               <option value="">Sin asignar</option>
               {students.map((s) => (
@@ -220,13 +220,13 @@ export default function NuevaRutinaPage() {
         {/* Ejercicios */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <label className="text-sm font-medium text-[#FAFAFA]">
+            <label className="text-sm font-medium text-text">
               Ejercicios <span className="text-red-400">*</span>
             </label>
             <button
               type="button"
               onClick={() => setShowExercisePicker(true)}
-              className="text-[#C8FF00] hover:text-[#AADD00] text-sm font-medium transition-colors"
+              className="text-lime hover:text-[#AADD00] text-sm font-medium transition-colors"
             >
               + Agregar ejercicio
             </button>
@@ -234,18 +234,18 @@ export default function NuevaRutinaPage() {
 
           {/* Exercise picker */}
           {showExercisePicker && (
-            <div className="mb-4 rounded-lg border border-[#2A2A2A] bg-[#111111] p-4">
+            <div className="mb-4 rounded-lg border border-border bg-surface p-4">
               <input
                 type="text"
                 value={exerciseSearch}
                 onChange={(e) => setExerciseSearch(e.target.value)}
                 placeholder="Buscar ejercicio..."
                 autoFocus
-                className="w-full px-3 py-2 bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg text-[#FAFAFA] placeholder-[#444444] focus:outline-none focus:border-[#C8FF00] text-sm transition-colors mb-3"
+                className="w-full px-3 py-2 bg-surface-2 border border-border rounded-lg text-text placeholder-[#444444] focus:outline-none focus:border-[#C8FF00] text-sm transition-colors mb-3"
               />
               <div className="max-h-48 overflow-y-auto space-y-1">
                 {filteredExercises.length === 0 ? (
-                  <p className="text-[#444444] text-sm text-center py-4">
+                  <p className="text-muted text-sm text-center py-4 opacity-60">
                     No se encontraron ejercicios
                   </p>
                 ) : (
@@ -259,17 +259,17 @@ export default function NuevaRutinaPage() {
                         key={ex.id}
                         type="button"
                         onClick={() => addExercise(ex)}
-                        className="w-full text-left px-3 py-2 rounded-lg hover:bg-[#1A1A1A] transition-colors"
+                        className="w-full text-left px-3 py-2 rounded-lg hover:bg-surface-2 transition-colors"
                       >
                         <div className="flex items-baseline gap-2 flex-wrap">
-                          <span className="text-[#FAFAFA] text-sm">{ex.name}</span>
+                          <span className="text-text text-sm">{ex.name}</span>
                           {ex.primary_group && (
-                            <span className="text-[#C8FF00] text-xs font-medium">
+                            <span className="text-lime text-xs font-medium">
                               {ex.primary_group}
                             </span>
                           )}
                           {muscleLabel && (
-                            <span className="text-[#666666] text-xs">
+                            <span className="text-muted text-xs">
                               {muscleLabel}
                             </span>
                           )}
@@ -285,7 +285,7 @@ export default function NuevaRutinaPage() {
                   setShowExercisePicker(false);
                   setExerciseSearch("");
                 }}
-                className="mt-3 text-[#666666] hover:text-[#AAAAAA] text-xs transition-colors"
+                className="mt-3 text-muted hover:text-muted text-xs transition-colors"
               >
                 Cancelar
               </button>
@@ -294,8 +294,8 @@ export default function NuevaRutinaPage() {
 
           {/* Exercise list */}
           {exercises.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-[#2A2A2A] p-8 text-center">
-              <p className="text-[#444444] text-sm">
+            <div className="rounded-lg border border-dashed border-border p-8 text-center">
+              <p className="text-muted text-sm opacity-60">
                 Agregá ejercicios a la rutina
               </p>
             </div>
@@ -304,28 +304,28 @@ export default function NuevaRutinaPage() {
               {exercises.map((ex, index) => (
                 <div
                   key={ex.exercise_id}
-                  className="rounded-lg border border-[#2A2A2A] bg-[#111111] p-4"
+                  className="rounded-lg border border-border bg-surface p-4"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-[#666666] text-xs font-mono w-5 text-center">
+                      <span className="text-muted text-xs font-mono w-5 text-center">
                         {index + 1}
                       </span>
-                      <span className="text-[#FAFAFA] font-medium text-sm">
+                      <span className="text-text font-medium text-sm">
                         {ex.name}
                       </span>
                     </div>
                     <button
                       type="button"
                       onClick={() => removeExercise(index)}
-                      className="text-[#666666] hover:text-red-400 text-xs transition-colors"
+                      className="text-muted hover:text-red-400 text-xs transition-colors"
                     >
                       Quitar
                     </button>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <div>
-                      <label className="block text-[#666666] text-xs mb-1">
+                      <label className="block text-muted text-xs mb-1">
                         Series
                       </label>
                       <input
@@ -339,11 +339,11 @@ export default function NuevaRutinaPage() {
                             e.target.value ? parseInt(e.target.value) : null
                           )
                         }
-                        className="w-full px-2 py-1.5 bg-[#1A1A1A] border border-[#2A2A2A] rounded text-[#FAFAFA] text-sm focus:outline-none focus:border-[#C8FF00]"
+                        className="w-full px-2 py-1.5 bg-surface-2 border border-border rounded text-text text-sm focus:outline-none focus:border-[#C8FF00]"
                       />
                     </div>
                     <div>
-                      <label className="block text-[#666666] text-xs mb-1">
+                      <label className="block text-muted text-xs mb-1">
                         Reps (ej: 10 o 8-12)
                       </label>
                       <input
@@ -353,11 +353,11 @@ export default function NuevaRutinaPage() {
                           updateExerciseReps(index, e.target.value)
                         }
                         placeholder="10 o 8-12"
-                        className="w-full px-2 py-1.5 bg-[#1A1A1A] border border-[#2A2A2A] rounded text-[#FAFAFA] text-sm focus:outline-none focus:border-[#C8FF00]"
+                        className="w-full px-2 py-1.5 bg-surface-2 border border-border rounded text-text text-sm focus:outline-none focus:border-[#C8FF00]"
                       />
                     </div>
                     <div>
-                      <label className="block text-[#666666] text-xs mb-1">
+                      <label className="block text-muted text-xs mb-1">
                         Duración (seg)
                       </label>
                       <input
@@ -371,11 +371,11 @@ export default function NuevaRutinaPage() {
                             e.target.value ? parseInt(e.target.value) : null
                           )
                         }
-                        className="w-full px-2 py-1.5 bg-[#1A1A1A] border border-[#2A2A2A] rounded text-[#FAFAFA] text-sm focus:outline-none focus:border-[#C8FF00]"
+                        className="w-full px-2 py-1.5 bg-surface-2 border border-border rounded text-text text-sm focus:outline-none focus:border-[#C8FF00]"
                       />
                     </div>
                     <div>
-                      <label className="block text-[#666666] text-xs mb-1">
+                      <label className="block text-muted text-xs mb-1">
                         Descanso (seg)
                       </label>
                       <input
@@ -389,7 +389,7 @@ export default function NuevaRutinaPage() {
                             e.target.value ? parseInt(e.target.value) : null
                           )
                         }
-                        className="w-full px-2 py-1.5 bg-[#1A1A1A] border border-[#2A2A2A] rounded text-[#FAFAFA] text-sm focus:outline-none focus:border-[#C8FF00]"
+                        className="w-full px-2 py-1.5 bg-surface-2 border border-border rounded text-text text-sm focus:outline-none focus:border-[#C8FF00]"
                       />
                     </div>
                   </div>

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/server'
+import { PRO_FEATURES } from '@/lib/plans'
 
 export const metadata: Metadata = {
   title: 'Forzza — Entrenamiento con coach que funciona',
@@ -23,7 +24,6 @@ const steps = [
 ]
 
 const freeFeatures = ['3 rutinas activas', 'Historial 10 días', 'Registro de sesiones', 'Marketplace de coaches']
-const proFeatures = ['Rutinas ilimitadas', 'Historial completo', 'Fotos de progreso (privadas)', 'Análisis avanzado', 'Sin publicidad', 'Prioridad de soporte']
 
 export default async function HomePage() {
   // Fetch PRO price from country_config. Falls back to 999900 cents (AR default) if DB not available.
@@ -84,7 +84,7 @@ export default async function HomePage() {
             Ver coaches
           </Link>
         </div>
-        <p style={{ color: '#9898C0', fontSize: '13px', fontFamily: 'var(--font-mono)' }}>Sin tarjeta · Plan Free para siempre</p>
+        <p style={{ color: 'var(--color-muted)', fontSize: '13px', fontFamily: 'var(--font-mono)' }}>Sin tarjeta · Plan Free para siempre</p>
       </section>
 
       {/* STATS STRIP */}
@@ -118,7 +118,7 @@ export default async function HomePage() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section style={{ padding: '80px 24px', background: '#080808' }}>
+      <section style={{ padding: '80px 24px', background: 'var(--color-bg)' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
           <h2 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 700, marginBottom: '56px', fontFamily: 'var(--font-display)' }}>Tres pasos para empezar</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '40px' }}>
@@ -142,7 +142,7 @@ export default async function HomePage() {
           <div style={{ padding: '36px', background: 'var(--color-surface)', borderRadius: '20px', border: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column' }}>
             <div style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', letterSpacing: '3px', color: '#6A6A6A', marginBottom: '16px' }}>{"// FREE"}</div>
             <div style={{ fontSize: '64px', fontWeight: 800, color: 'var(--color-text)', fontFamily: 'var(--font-display)', lineHeight: 1, letterSpacing: '1px', marginBottom: '4px' }}>$0</div>
-            <div style={{ color: '#6A6A6A', fontSize: '14px', marginBottom: '28px', fontFamily: 'var(--font-mono)' }}>Para siempre</div>
+            <div style={{ color: 'var(--color-muted)', fontSize: '14px', marginBottom: '28px', fontFamily: 'var(--font-mono)' }}>Para siempre</div>
             <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px', display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
               {freeFeatures.map(f => (
                 <li key={f} style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--color-muted)', fontSize: '15px' }}>
@@ -161,9 +161,9 @@ export default async function HomePage() {
             <div style={{ position: 'absolute', top: '-14px', left: '50%', transform: 'translateX(-50%)', background: 'var(--color-lime)', color: '#000', padding: '4px 14px', borderRadius: '999px', fontSize: '11px', fontWeight: 700, letterSpacing: '1px', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>⚡ RECOMENDADO</div>
             <div style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', letterSpacing: '3px', color: 'var(--color-lime)', marginBottom: '16px' }}>{"// PRO"}</div>
             <div style={{ fontSize: '64px', fontWeight: 800, color: 'var(--color-text)', fontFamily: 'var(--font-display)', lineHeight: 1, letterSpacing: '1px', marginBottom: '4px' }}>{proPriceFormatted}</div>
-            <div style={{ color: '#6A6A6A', fontSize: '14px', marginBottom: '28px', fontFamily: 'var(--font-mono)' }}>por mes · cancelás cuando querés</div>
+            <div style={{ color: 'var(--color-muted)', fontSize: '14px', marginBottom: '28px', fontFamily: 'var(--font-mono)' }}>por mes · cancelás cuando querés</div>
             <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px', display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
-              {proFeatures.map(f => (
+              {PRO_FEATURES.map(f => (
                 <li key={f} style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--color-muted)', fontSize: '15px' }}>
                   <span style={{ color: 'var(--color-lime)', fontSize: '16px' }}>●</span>{f}
                 </li>
@@ -177,7 +177,7 @@ export default async function HomePage() {
       </section>
 
       {/* COACH CTA */}
-      <section style={{ padding: '80px 24px', background: '#050505' }}>
+      <section style={{ padding: '80px 24px', background: 'var(--color-bg)' }}>
         <div style={{ maxWidth: '700px', margin: '0 auto', textAlign: 'center', padding: 'clamp(32px, 5vw, 56px) clamp(20px, 4vw, 40px)', background: 'var(--color-surface)', borderRadius: '24px', border: '1px solid var(--color-border)', position: 'relative', overflow: 'hidden' }}>
           {/* Corner accent */}
           <div style={{ position: 'absolute', top: 0, right: 0, width: '120px', height: '120px', background: 'radial-gradient(circle at top right, rgba(200,255,0,0.15), transparent 70%)' }} />
@@ -199,10 +199,10 @@ export default async function HomePage() {
           <span style={{ color: 'var(--color-lime)', fontSize: '20px', fontWeight: 800, letterSpacing: '6px', fontFamily: 'var(--font-display)' }}>FORZZA</span>
           <div style={{ display: 'flex', gap: '24px' }}>
             {([['Coaches', '/coaches'], ['Planes', '/upgrade'], ['Términos', '/legales/terminos'], ['Privacidad', '/legales/privacidad']] as [string, string][]).map(([l, h]) => (
-              <Link key={l} href={h} style={{ color: '#4A4A4A', fontSize: '14px', textDecoration: 'none' }}>{l}</Link>
+              <Link key={l} href={h} style={{ color: 'var(--color-muted)', fontSize: '14px', textDecoration: 'none' }}>{l}</Link>
             ))}
           </div>
-          <p style={{ color: '#9898C0', fontSize: '13px', fontFamily: 'var(--font-mono)', margin: 0 }}>© 2026 Forzza · Argentina</p>
+          <p style={{ color: 'var(--color-muted)', fontSize: '13px', fontFamily: 'var(--font-mono)', margin: 0 }}>© 2026 Forzza · Argentina</p>
         </div>
       </footer>
     </main>

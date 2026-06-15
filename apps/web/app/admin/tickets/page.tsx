@@ -41,7 +41,7 @@ const statusColors: Record<TicketStatus, string> = {
   open: "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20",
   in_progress: "bg-blue-500/10 text-blue-400 border border-blue-500/20",
   resolved: "bg-green-500/10 text-green-400 border border-green-500/20",
-  closed: "bg-[#1A1A1A] text-[#555555] border border-[#2A2A2A]",
+  closed: "bg-surface-2 text-muted border border-border",
 };
 
 const ALL_STATUSES: TicketStatus[] = ["open", "in_progress", "resolved", "closed"];
@@ -75,52 +75,54 @@ export default async function AdminTicketsPage({ searchParams }: PageProps) {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#FAFAFA]">Tickets de soporte</h1>
-        <p className="text-[#555555] text-sm mt-1">
+        <h1 className="text-2xl font-bold text-text">Tickets de soporte</h1>
+        <p className="text-muted text-sm mt-1">
           {openCount} abierto{openCount !== 1 ? "s" : ""},{" "}
           {inProgressCount} en progreso
         </p>
       </div>
 
-      {/* Status filter */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        <a
-          href="/admin/tickets"
-          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-            !filterStatus
-              ? "bg-[#C8FF00] text-[#0A0A0A]"
-              : "bg-[#111111] border border-[#1E1E1E] text-[#666666] hover:text-[#FAFAFA]"
-          }`}
-        >
-          Todos
-        </a>
-        {ALL_STATUSES.map((s) => (
+      {/* Status filter — single row with horizontal scroll */}
+      <div className="overflow-x-auto mb-6">
+        <div className="flex flex-nowrap gap-2 min-w-max">
           <a
-            key={s}
-            href={`/admin/tickets?status=${s}`}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-              filterStatus === s
+            href="/admin/tickets"
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
+              !filterStatus
                 ? "bg-[#C8FF00] text-[#0A0A0A]"
-                : "bg-[#111111] border border-[#1E1E1E] text-[#666666] hover:text-[#FAFAFA]"
+                : "bg-surface border border-border text-muted hover:text-text"
             }`}
           >
-            {statusLabel[s]}
+            Todos
           </a>
-        ))}
+          {ALL_STATUSES.map((s) => (
+            <a
+              key={s}
+              href={`/admin/tickets?status=${s}`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
+                filterStatus === s
+                  ? "bg-[#C8FF00] text-[#0A0A0A]"
+                  : "bg-surface border border-border text-muted hover:text-text"
+              }`}
+            >
+              {statusLabel[s]}
+            </a>
+          ))}
+        </div>
       </div>
 
       {rows.length === 0 ? (
-        <div className="rounded-xl border border-[#1E1E1E] bg-[#111111] p-12 text-center">
+        <div className="rounded-xl border border-border bg-surface p-12 text-center">
           <p className="text-4xl mb-4">🎫</p>
-          <p className="text-[#FAFAFA] text-lg font-semibold">No hay tickets para mostrar.</p>
-          <p className="text-[#555555] text-sm mt-2">Los tickets de soporte aparecerán acá.</p>
+          <p className="text-text text-lg font-semibold">No hay tickets para mostrar.</p>
+          <p className="text-muted text-sm mt-2">Los tickets de soporte aparecerán acá.</p>
         </div>
       ) : (
         <div className="space-y-3">
           {rows.map((ticket) => (
             <div
               key={ticket.id}
-              className="rounded-xl border border-[#1E1E1E] bg-[#111111] p-5"
+              className="rounded-xl border border-border bg-surface p-5"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
@@ -130,25 +132,25 @@ export default async function AdminTicketsPage({ searchParams }: PageProps) {
                     >
                       {statusLabel[ticket.status]}
                     </span>
-                    <span className="text-[#444444] text-xs font-mono">
+                    <span className="text-muted text-xs font-mono">
                       #{ticket.id.slice(0, 8)}
                     </span>
-                    <span className="text-[#444444] text-xs">
+                    <span className="text-muted text-xs">
                       {formatDate(ticket.created_at)}
                     </span>
                   </div>
 
-                  <h3 className="text-[#FAFAFA] font-medium text-sm mb-1 truncate">
+                  <h3 className="text-text font-medium text-sm mb-1 truncate">
                     {ticket.subject}
                   </h3>
 
                   {ticket.body && (
-                    <p className="text-[#666666] text-xs line-clamp-2">
+                    <p className="text-muted text-xs line-clamp-2">
                       {ticket.body}
                     </p>
                   )}
 
-                  <p className="text-[#444444] text-xs mt-2 font-mono">
+                  <p className="text-muted text-xs mt-2 font-mono">
                     Usuario: {ticket.user_id.slice(0, 8)}…
                   </p>
                 </div>

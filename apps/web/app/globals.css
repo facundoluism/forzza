@@ -1,16 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 @import "tailwindcss";
 
-:root {
+/* Design tokens — @theme expone utilities (bg-surface, text-muted, border-border,
+   text-lime, etc.) además de las CSS vars var(--color-*) usadas por estilos inline. */
+@theme {
   --color-bg: #0A0A0A;
   --color-surface: #111827;
   --color-surface-2: #1F2937;
+  --color-surface-3: #2A2A2A;
   --color-border: rgba(255, 255, 255, 0.08);
   --color-text: #F8FAFC;
   --color-muted: #94A3B8;
   --color-lime: #C8FF00;
   --color-lime-glow: rgba(200, 255, 0, 0.15);
   --color-lime-dim: #A3D900;
+  --color-error: #FF4466;
+  --color-success: #22C55E;
+  --color-warning: #FF8840;
   --font-display: 'Barlow Condensed', 'Impact', sans-serif;
   --font-body: 'Barlow', system-ui, sans-serif;
   --font-mono: 'Space Mono', monospace;

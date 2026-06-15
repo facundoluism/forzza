@@ -25,8 +25,8 @@ export default async function AdminConfiguracionPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#FAFAFA]">Configuración</h1>
-        <p className="text-[#555555] text-sm mt-1">
+        <h1 className="text-2xl font-bold text-text">Configuración</h1>
+        <p className="text-muted text-sm mt-1">
           Parámetros por país: comisión, precios y moneda
         </p>
       </div>

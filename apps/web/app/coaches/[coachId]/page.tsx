@@ -98,10 +98,10 @@ export default async function CoachProfilePage({ params }: PageProps) {
   const initials = getInitials(coachData.display_name);
 
   return (
-    <main className="bg-[#0A0A0A] min-h-screen text-[#FAFAFA]">
+    <main className="bg-bg min-h-screen text-[#FAFAFA]">
       <div className="max-w-[800px] mx-auto px-6 py-16">
         {/* Back link */}
-        <Link href="/coaches" className="text-[#6A6A6A] text-sm hover:text-[#FAFAFA] transition-colors">
+        <Link href="/coaches" className="text-muted text-sm hover:text-[#FAFAFA] transition-colors">
           {"← Todos los coaches"}
         </Link>
 
@@ -125,7 +125,7 @@ export default async function CoachProfilePage({ params }: PageProps) {
           </h1>
 
           {coachData.years_experience !== null && (
-            <p className="text-[#8A8A8A] text-[15px] m-0">
+            <p className="text-muted text-[15px] m-0">
               {coachData.years_experience}{" "}
               {coachData.years_experience === 1 ? "año" : "años"} de experiencia
             </p>
@@ -136,7 +136,7 @@ export default async function CoachProfilePage({ params }: PageProps) {
               {coachData.specialties.map((s) => (
                 <span
                   key={s}
-                  className="bg-[#2A2A2A] text-[#AAAAAA] rounded-full px-3 py-1 text-[13px] font-semibold"
+                  className="bg-[#2A2A2A] text-muted rounded-full px-3 py-1 text-[13px] font-semibold"
                 >
                   {s}
                 </span>
@@ -148,10 +148,10 @@ export default async function CoachProfilePage({ params }: PageProps) {
         {/* Bio */}
         {coachData.bio && (
           <section className="mb-10">
-            <h2 className="text-[#6A6A6A] text-xs font-bold uppercase tracking-[2px] mb-3">
+            <h2 className="text-muted text-xs font-bold uppercase tracking-[2px] mb-3">
               Sobre el coach
             </h2>
-            <p className="text-[#AAAAAA] text-base leading-[1.7] m-0">
+            <p className="text-muted text-base leading-[1.7] m-0">
               {coachData.bio}
             </p>
           </section>
@@ -159,12 +159,12 @@ export default async function CoachProfilePage({ params }: PageProps) {
 
         {/* Packages */}
         <section>
-          <h2 className="text-[#6A6A6A] text-xs font-bold uppercase tracking-[2px] mb-4">
+          <h2 className="text-muted text-xs font-bold uppercase tracking-[2px] mb-4">
             Paquetes disponibles
           </h2>
 
           {activePackages.length === 0 ? (
-            <div className="bg-[#111111] rounded-xl border border-[#2A2A2A] p-6 text-center text-[#6A6A6A] text-[15px]">
+            <div className="bg-[#111111] rounded-xl border border-[#2A2A2A] p-6 text-center text-muted text-[15px]">
               Este coach no tiene paquetes publicados todavía.
             </div>
           ) : (
@@ -185,14 +185,14 @@ export default async function CoachProfilePage({ params }: PageProps) {
                         <span className="text-[#C8FF00] font-bold text-[22px] font-mono">
                           ${price}
                         </span>
-                        <span className="text-[#6A6A6A] text-[13px]">
+                        <span className="text-muted text-[13px]">
                           {"/mes"}
                         </span>
                       </div>
                     </div>
 
                     {pkg.description && (
-                      <p className="text-[#8A8A8A] text-sm leading-relaxed m-0">
+                      <p className="text-muted text-sm leading-relaxed m-0">
                         {pkg.description}
                       </p>
                     )}

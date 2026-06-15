@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/server";
 import { ActivateProButton } from "./ActivateProButton";
+import { PRO_FEATURES } from "@/lib/plans";
 
 export const metadata: Metadata = {
   title: "Elegí tu plan — Forzza",
@@ -24,15 +25,7 @@ const FREE_FEATURES: PlanFeature[] = [
   { text: "Fotos de progreso", available: false },
 ];
 
-const PRO_FEATURES: PlanFeature[] = [
-  { text: "Rutinas ilimitadas", available: true },
-  { text: "Historial completo sin límites", available: true },
-  { text: "Tracking de series y reps", available: true },
-  { text: "Métricas corporales", available: true },
-  { text: "Fotos de progreso", available: true },
-  { text: "Soporte prioritario", available: true },
-  { text: "Acceso anticipado a nuevas funciones", available: true },
-];
+// PRO_FEATURES viene de @/lib/plans (fuente de verdad canónica)
 
 function FeatureRow({ feature }: { feature: PlanFeature }): React.JSX.Element {
   return (
@@ -85,10 +78,10 @@ export default async function UpgradePage(): Promise<React.JSX.Element> {
   const proPrice = await getProPrice();
 
   return (
-    <main className="bg-[#0A0A0A] min-h-screen text-[#FAFAFA] px-6 py-12 pb-20">
+    <main className="bg-bg min-h-screen text-[#FAFAFA] px-6 py-12 pb-20">
       {/* Back link */}
       <div className="max-w-[900px] mx-auto mb-8">
-        <Link href="/" className="text-[#6A6A6A] text-sm hover:text-[#FAFAFA] transition-colors">
+        <Link href="/" className="text-muted text-sm hover:text-[#FAFAFA] transition-colors">
           {"← Volver al inicio"}
         </Link>
       </div>
@@ -99,7 +92,7 @@ export default async function UpgradePage(): Promise<React.JSX.Element> {
           Elegí tu{" "}
           <span className="text-[#C8FF00]">plan</span>
         </h1>
-        <p className="text-[#8A8A8A] text-lg leading-relaxed">
+        <p className="text-muted text-lg leading-relaxed">
           Empezá gratis y actualizá cuando estés listo para llevar tu
           entrenamiento al siguiente nivel.
         </p>
@@ -114,7 +107,7 @@ export default async function UpgradePage(): Promise<React.JSX.Element> {
               Free
             </h2>
             <div className="text-[#FAFAFA] text-4xl font-black leading-none">$0</div>
-            <div className="text-[#6A6A6A] text-sm mt-1">Para siempre gratis</div>
+            <div className="text-muted text-sm mt-1">Para siempre gratis</div>
           </div>
 
           <div className="flex-1">
@@ -144,14 +137,14 @@ export default async function UpgradePage(): Promise<React.JSX.Element> {
             <div className="text-[#FAFAFA] text-4xl font-black leading-none">
               {proPrice.formatted}
             </div>
-            <div className="text-[#6A6A6A] text-sm mt-1">
+            <div className="text-muted text-sm mt-1">
               {proPrice.note}
             </div>
           </div>
 
           <div className="flex-1">
             {PRO_FEATURES.map((f) => (
-              <FeatureRow key={f.text} feature={f} />
+              <FeatureRow key={f} feature={{ text: f, available: true }} />
             ))}
           </div>
 
@@ -161,7 +154,7 @@ export default async function UpgradePage(): Promise<React.JSX.Element> {
       </div>
 
       {/* Footer note */}
-      <p className="text-center text-[#4A4A4A] text-[13px] mt-10 max-w-[500px] mx-auto leading-relaxed">
+      <p className="text-center text-muted text-[13px] mt-10 max-w-[500px] mx-auto leading-relaxed">
         Todos los precios en ARS. Sin sorpresas: cancelá en cualquier momento
         desde tu perfil.
       </p>

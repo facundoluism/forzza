@@ -180,13 +180,13 @@ export function PerfilForm({
   return (
     <form onSubmit={(e) => void handleSubmit(e)} className="space-y-8">
       {/* Profile section */}
-      <section className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-6 space-y-5">
-        <h2 className="text-sm font-semibold text-[#FAFAFA] uppercase tracking-wider">
+      <section className="rounded-xl border border-border bg-surface p-6 space-y-5">
+        <h2 className="text-sm font-semibold text-text uppercase tracking-wider">
           Datos del perfil
         </h2>
 
         <div>
-          <label className="block text-sm font-medium text-[#FAFAFA] mb-2">
+          <label className="block text-sm font-medium text-text mb-2">
             Biografía
           </label>
           <textarea
@@ -194,12 +194,12 @@ export function PerfilForm({
             onChange={(e) => setProfile((p) => ({ ...p, bio: e.target.value }))}
             rows={4}
             placeholder="Contá quién sos, tu experiencia y metodología..."
-            className="w-full px-4 py-3 bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg text-[#FAFAFA] placeholder-[#444444] focus:outline-none focus:border-[#C8FF00] transition-colors resize-none text-sm"
+            className="w-full px-4 py-3 bg-surface-2 border border-border rounded-lg text-text placeholder-[#444444] focus:outline-none focus:border-[#C8FF00] transition-colors resize-none text-sm"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#FAFAFA] mb-2">
+          <label className="block text-sm font-medium text-text mb-2">
             Años de experiencia
           </label>
           <input
@@ -216,12 +216,12 @@ export function PerfilForm({
               }))
             }
             placeholder="Ej: 5"
-            className="w-full px-4 py-3 bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg text-[#FAFAFA] placeholder-[#444444] focus:outline-none focus:border-[#C8FF00] transition-colors text-sm"
+            className="w-full px-4 py-3 bg-surface-2 border border-border rounded-lg text-text placeholder-[#444444] focus:outline-none focus:border-[#C8FF00] transition-colors text-sm"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#FAFAFA] mb-2">
+          <label className="block text-sm font-medium text-text mb-2">
             Especialidades
           </label>
           <div className="flex gap-2 mb-3">
@@ -236,12 +236,12 @@ export function PerfilForm({
                 }
               }}
               placeholder="Ej: Pérdida de peso"
-              className="flex-1 px-4 py-2 bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg text-[#FAFAFA] placeholder-[#444444] focus:outline-none focus:border-[#C8FF00] transition-colors text-sm"
+              className="flex-1 px-4 py-2 bg-surface-2 border border-border rounded-lg text-text placeholder-[#444444] focus:outline-none focus:border-[#C8FF00] transition-colors text-sm"
             />
             <button
               type="button"
               onClick={addSpecialty}
-              className="px-3 py-2 bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg text-[#C8FF00] hover:border-[#C8FF00] transition-colors text-sm"
+              className="px-3 py-2 bg-surface-2 border border-border rounded-lg text-lime hover:border-[#C8FF00] transition-colors text-sm"
             >
               +
             </button>
@@ -251,13 +251,13 @@ export function PerfilForm({
               {profile.specialties.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center gap-1 px-3 py-1 bg-[#1A1A1A] border border-[#2A2A2A] rounded-full text-xs text-[#AAAAAA]"
+                  className="inline-flex items-center gap-1 px-3 py-1 bg-surface-2 border border-border rounded-full text-xs text-muted"
                 >
                   {tag}
                   <button
                     type="button"
                     onClick={() => removeSpecialty(tag)}
-                    className="text-[#666666] hover:text-red-400 transition-colors ml-1"
+                    className="text-muted hover:text-red-400 transition-colors ml-1"
                   >
                     ×
                   </button>
@@ -269,23 +269,23 @@ export function PerfilForm({
       </section>
 
       {/* Packages section */}
-      <section className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-6">
+      <section className="rounded-xl border border-border bg-surface p-6">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-sm font-semibold text-[#FAFAFA] uppercase tracking-wider">
+          <h2 className="text-sm font-semibold text-text uppercase tracking-wider">
             Paquetes
           </h2>
           <button
             type="button"
             onClick={addPackage}
-            className="text-[#C8FF00] hover:text-[#AADD00] text-sm font-medium transition-colors"
+            className="text-lime hover:text-[#AADD00] text-sm font-medium transition-colors"
           >
             + Agregar paquete
           </button>
         </div>
 
         {visiblePackages.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-[#2A2A2A] p-8 text-center">
-            <p className="text-[#444444] text-sm">Sin paquetes. Agregá tu primer paquete.</p>
+          <div className="rounded-lg border border-dashed border-border p-8 text-center">
+            <p className="text-muted text-sm opacity-60">Sin paquetes. Agregá tu primer paquete.</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -294,10 +294,10 @@ export function PerfilForm({
               return (
                 <div
                   key={index}
-                  className="rounded-lg border border-[#2A2A2A] bg-[#0F0F0F] p-4 space-y-4"
+                  className="rounded-lg border border-border bg-surface-2 p-4 space-y-4"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-[#666666] text-xs font-mono">
+                    <span className="text-muted text-xs font-mono">
                       Paquete {index + 1}
                     </span>
                     <div className="flex items-center gap-3">
@@ -310,12 +310,12 @@ export function PerfilForm({
                           }
                           className="w-3.5 h-3.5 accent-[#C8FF00]"
                         />
-                        <span className="text-[#666666] text-xs">Activo</span>
+                        <span className="text-muted text-xs">Activo</span>
                       </label>
                       <button
                         type="button"
                         onClick={() => removePackage(index)}
-                        className="text-[#666666] hover:text-red-400 text-xs transition-colors"
+                        className="text-muted hover:text-red-400 text-xs transition-colors"
                       >
                         Eliminar
                       </button>
@@ -324,7 +324,7 @@ export function PerfilForm({
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[#666666] text-xs mb-1">
+                      <label className="block text-muted text-xs mb-1">
                         Nombre
                       </label>
                       <input
@@ -334,11 +334,11 @@ export function PerfilForm({
                           updatePackage(index, "name", e.target.value)
                         }
                         placeholder="Ej: Plan Básico"
-                        className="w-full px-3 py-2 bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg text-[#FAFAFA] placeholder-[#444444] focus:outline-none focus:border-[#C8FF00] text-sm transition-colors"
+                        className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-text placeholder-[#444444] focus:outline-none focus:border-[#C8FF00] text-sm transition-colors"
                       />
                     </div>
                     <div>
-                      <label className="block text-[#666666] text-xs mb-1">
+                      <label className="block text-muted text-xs mb-1">
                         Tipo de facturación
                       </label>
                       <select
@@ -350,7 +350,7 @@ export function PerfilForm({
                             e.target.value as "mensual" | "paquete"
                           )
                         }
-                        className="w-full px-3 py-2 bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg text-[#FAFAFA] text-sm focus:outline-none focus:border-[#C8FF00] transition-colors"
+                        className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-text text-sm focus:outline-none focus:border-[#C8FF00] transition-colors"
                       >
                         <option value="mensual">Mensual</option>
                         <option value="paquete">Paquete</option>
@@ -359,7 +359,7 @@ export function PerfilForm({
                   </div>
 
                   <div>
-                    <label className="block text-[#666666] text-xs mb-1">
+                    <label className="block text-muted text-xs mb-1">
                       Precio ({currencySymbol}) — mínimo{" "}
                       {currencySymbol} {(minCoachPrice / 100).toLocaleString("es-AR")}
                     </label>
@@ -375,12 +375,12 @@ export function PerfilForm({
                           Math.round(parseFloat(e.target.value || "0") * 100)
                         )
                       }
-                      className="w-full px-3 py-2 bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg text-[#FAFAFA] text-sm focus:outline-none focus:border-[#C8FF00] transition-colors"
+                      className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-text text-sm focus:outline-none focus:border-[#C8FF00] transition-colors"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[#666666] text-xs mb-1">
+                    <label className="block text-muted text-xs mb-1">
                       Descripción
                     </label>
                     <textarea
@@ -390,19 +390,19 @@ export function PerfilForm({
                       }
                       rows={2}
                       placeholder="Describí qué incluye este paquete..."
-                      className="w-full px-3 py-2 bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg text-[#FAFAFA] placeholder-[#444444] focus:outline-none focus:border-[#C8FF00] text-sm resize-none transition-colors"
+                      className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-text placeholder-[#444444] focus:outline-none focus:border-[#C8FF00] text-sm resize-none transition-colors"
                     />
                   </div>
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-[#666666] text-xs">
+                      <label className="text-muted text-xs">
                         Características
                       </label>
                       <button
                         type="button"
                         onClick={() => addFeature(index)}
-                        className="text-[#C8FF00] text-xs hover:text-[#AADD00] transition-colors"
+                        className="text-lime text-xs hover:text-[#AADD00] transition-colors"
                       >
                         + Agregar
                       </button>
@@ -414,11 +414,11 @@ export function PerfilForm({
                             key={fi}
                             className="flex items-center justify-between text-xs"
                           >
-                            <span className="text-[#AAAAAA]">• {feat}</span>
+                            <span className="text-muted">• {feat}</span>
                             <button
                               type="button"
                               onClick={() => removeFeature(index, fi)}
-                              className="text-[#666666] hover:text-red-400 transition-colors"
+                              className="text-muted hover:text-red-400 transition-colors"
                             >
                               ×
                             </button>

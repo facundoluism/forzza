@@ -29,14 +29,14 @@ interface MetricCardProps {
 
 function MetricCard({ label, value, sub, accent }: MetricCardProps) {
   return (
-    <div className="rounded-xl border border-[#1E1E1E] bg-[#111111] p-5">
-      <p className="text-[#9898C0] text-xs uppercase tracking-wider mb-3">{label}</p>
+    <div className="rounded-xl border border-border bg-surface p-5">
+      <p className="text-muted text-xs uppercase tracking-wider mb-3 min-h-[2.5rem] flex items-start">{label}</p>
       <p
-        className={`text-2xl font-bold ${accent ? "text-[#C8FF00]" : "text-[#FAFAFA]"}`}
+        className={`text-2xl font-bold ${accent ? "text-[#C8FF00]" : "text-text"}`}
       >
         {value}
       </p>
-      {sub && <p className="text-[#9898C0] text-xs mt-1">{sub}</p>}
+      {sub && <p className="text-muted text-xs mt-1">{sub}</p>}
     </div>
   );
 }
@@ -103,8 +103,8 @@ export default async function AdminDashboardPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#FAFAFA]">Dashboard</h1>
-        <p className="text-[#555555] text-sm mt-1">
+        <h1 className="text-2xl font-bold text-text">Dashboard</h1>
+        <p className="text-muted text-sm mt-1">
           Métricas generales de la plataforma
         </p>
       </div>
@@ -136,42 +136,42 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Recent signups */}
-      <div className="rounded-xl border border-[#1E1E1E] bg-[#111111] overflow-hidden">
-        <div className="px-6 py-4 border-b border-[#1E1E1E]">
-          <h2 className="text-sm font-semibold text-[#FAFAFA]">
+      <div className="rounded-xl border border-border bg-surface overflow-hidden">
+        <div className="px-6 py-4 border-b border-border">
+          <h2 className="text-sm font-semibold text-text">
             Últimos registros
           </h2>
         </div>
         {recentUsers.length === 0 ? (
           <div className="p-12 text-center">
             <p className="text-3xl mb-3">👥</p>
-            <p className="text-[#555555]">No hay usuarios registrados aún.</p>
+            <p className="text-muted">No hay usuarios registrados aún.</p>
           </div>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-[#555555] text-xs uppercase tracking-wider border-b border-[#1A1A1A]">
+              <tr className="text-muted text-xs uppercase tracking-wider border-b border-surface-2">
                 <th className="text-left px-6 py-3">ID</th>
                 <th className="text-left px-6 py-3 hidden sm:table-cell">País</th>
                 <th className="text-left px-6 py-3">Rol</th>
                 <th className="text-left px-6 py-3 hidden md:table-cell">Registro</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1A1A1A]">
+            <tbody className="divide-y divide-surface-2">
               {recentUsers.map((u) => (
-                <tr key={u.id} className="hover:bg-[#161616] transition-colors">
-                  <td className="px-6 py-3 font-mono text-[#888888] text-xs">
+                <tr key={u.id} className="hover:bg-surface-2 transition-colors">
+                  <td className="px-6 py-3 font-mono text-muted text-xs">
                     {u.id.slice(0, 8)}…
                   </td>
-                  <td className="px-6 py-3 text-[#AAAAAA] hidden sm:table-cell">
+                  <td className="px-6 py-3 text-muted hidden sm:table-cell">
                     {u.country}
                   </td>
                   <td className="px-6 py-3">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#1A1A1A] text-[#AAAAAA] border border-[#2A2A2A]">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-surface-2 text-muted border border-border">
                       {roleLabel[u.role] ?? u.role}
                     </span>
                   </td>
-                  <td className="px-6 py-3 text-[#555555] text-xs hidden md:table-cell">
+                  <td className="px-6 py-3 text-muted text-xs hidden md:table-cell">
                     {formatDate(u.created_at)}
                   </td>
                 </tr>

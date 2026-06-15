@@ -153,15 +153,15 @@ export default async function StudentDetailPage({
         <div>
           <Link
             href="/coach/alumnos"
-            className="text-[#666666] hover:text-[#AAAAAA] text-sm transition-colors"
+            className="text-muted hover:text-muted text-sm transition-colors"
           >
             ← Volver a alumnos
           </Link>
-          <h1 className="text-2xl font-bold text-[#FAFAFA] mt-2">
+          <h1 className="text-2xl font-bold text-text mt-2">
             {studentProfile?.display_name ?? "Sin nombre"}
           </h1>
           {studentProfile?.level && (
-            <p className="text-[#AAAAAA] text-sm mt-1">
+            <p className="text-muted text-sm mt-1">
               Nivel: {studentProfile.level}
             </p>
           )}
@@ -170,8 +170,8 @@ export default async function StudentDetailPage({
 
       {/* Goals & profile */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-5">
-          <h2 className="text-xs uppercase tracking-wider text-[#666666] mb-3">
+        <div className="rounded-xl border border-border bg-surface p-5">
+          <h2 className="text-xs uppercase tracking-wider text-muted mb-3">
             Objetivos
           </h2>
           {studentProfile?.goals && studentProfile.goals.length > 0 ? (
@@ -179,39 +179,39 @@ export default async function StudentDetailPage({
               {studentProfile.goals.map((goal, i) => (
                 <span
                   key={i}
-                  className="px-2.5 py-1 rounded-full bg-[#1A1A1A] border border-[#2A2A2A] text-xs text-[#AAAAAA]"
+                  className="px-2.5 py-1 rounded-full bg-surface-2 border border-border text-xs text-muted"
                 >
                   {goal}
                 </span>
               ))}
             </div>
           ) : (
-            <p className="text-[#444444] text-sm">Sin objetivos registrados</p>
+            <p className="text-muted text-sm opacity-50">Sin objetivos registrados</p>
           )}
         </div>
 
-        <div className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-5">
-          <h2 className="text-xs uppercase tracking-wider text-[#666666] mb-3">
+        <div className="rounded-xl border border-border bg-surface p-5">
+          <h2 className="text-xs uppercase tracking-wider text-muted mb-3">
             Rutina asignada
           </h2>
           {assignmentData.routines ? (
             <div className="flex items-center justify-between">
-              <span className="text-[#FAFAFA] font-medium">
+              <span className="text-text font-medium">
                 {assignmentData.routines.title}
               </span>
               <Link
                 href="/coach/rutinas"
-                className="text-[#C8FF00] hover:text-[#AADD00] text-xs transition-colors"
+                className="text-lime hover:text-[#AADD00] text-xs transition-colors"
               >
                 Cambiar rutina →
               </Link>
             </div>
           ) : (
             <div className="flex items-center justify-between">
-              <span className="text-[#444444] text-sm">Sin rutina asignada</span>
+              <span className="text-muted text-sm opacity-50">Sin rutina asignada</span>
               <Link
                 href="/coach/rutinas/nueva"
-                className="text-[#C8FF00] hover:text-[#AADD00] text-xs transition-colors"
+                className="text-lime hover:text-[#AADD00] text-xs transition-colors"
               >
                 Asignar rutina →
               </Link>
@@ -221,17 +221,17 @@ export default async function StudentDetailPage({
       </div>
 
       {/* Last check-in */}
-      <div className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-5">
-        <h2 className="text-xs uppercase tracking-wider text-[#666666] mb-3">
+      <div className="rounded-xl border border-border bg-surface p-5">
+        <h2 className="text-xs uppercase tracking-wider text-muted mb-3">
           Último check-in
         </h2>
         {checkin ? (
           <div>
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[#AAAAAA] text-sm">
+              <span className="text-muted text-sm">
                 {checkin.checkin_templates?.title ?? "Check-in"}
               </span>
-              <span className="text-[#666666] text-xs">
+              <span className="text-muted text-xs">
                 {formatDate(checkin.submitted_at)}
               </span>
             </div>
@@ -240,36 +240,36 @@ export default async function StudentDetailPage({
                 .slice(0, 3)
                 .map(([key, value]) => (
                   <div key={key} className="flex gap-2 text-sm">
-                    <span className="text-[#666666]">{key}:</span>
-                    <span className="text-[#FAFAFA]">{String(value)}</span>
+                    <span className="text-muted">{key}:</span>
+                    <span className="text-text">{String(value)}</span>
                   </div>
                 ))}
             </div>
           </div>
         ) : (
-          <p className="text-[#444444] text-sm">Sin respuestas de check-in</p>
+          <p className="text-muted text-sm opacity-50">Sin respuestas de check-in</p>
         )}
       </div>
 
       {/* Last 5 workout sessions */}
-      <div className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-5">
-        <h2 className="text-xs uppercase tracking-wider text-[#666666] mb-4">
+      <div className="rounded-xl border border-border bg-surface p-5">
+        <h2 className="text-xs uppercase tracking-wider text-muted mb-4">
           Últimas sesiones de entrenamiento
         </h2>
         {workoutSessions.length === 0 ? (
-          <p className="text-[#444444] text-sm">Sin sesiones registradas</p>
+          <p className="text-muted text-sm opacity-50">Sin sesiones registradas</p>
         ) : (
           <div className="space-y-2">
             {workoutSessions.map((session) => (
               <div
                 key={session.id}
-                className="flex items-center justify-between py-2 border-b border-[#1A1A1A] last:border-0"
+                className="flex items-center justify-between py-2 border-b border-surface-2 last:border-0"
               >
                 <div>
-                  <p className="text-[#FAFAFA] text-sm font-medium">
+                  <p className="text-text text-sm font-medium">
                     {session.routines?.title ?? "Entrenamiento libre"}
                   </p>
-                  <p className="text-[#666666] text-xs mt-0.5">
+                  <p className="text-muted text-xs mt-0.5">
                     {formatDate(session.started_at)}
                   </p>
                 </div>
@@ -285,9 +285,9 @@ export default async function StudentDetailPage({
       </div>
 
       {/* Sesiones por día — últimas 4 semanas */}
-      <div className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-5">
+      <div className="rounded-xl border border-border bg-surface p-5">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xs uppercase tracking-wider text-[#666666]">
+          <h2 className="text-xs uppercase tracking-wider text-muted">
             Sesiones por día (últimas 4 semanas)
           </h2>
         </div>
@@ -300,14 +300,14 @@ export default async function StudentDetailPage({
               showDots
               style={{ width: "100%", height: "80px" }}
             />
-            <div className="flex justify-between mt-2 text-[#444444] text-xs">
+            <div className="flex justify-between mt-2 text-muted text-xs opacity-50">
               <span>Hace 4 semanas</span>
               <span>Hoy</span>
             </div>
           </div>
         ) : (
-          <div className="h-20 rounded-lg bg-[#1A1A1A] border border-[#2A2A2A] flex items-center justify-center">
-            <p className="text-[#444444] text-sm">
+          <div className="h-20 rounded-lg bg-surface-2 border border-border flex items-center justify-center">
+            <p className="text-muted text-sm opacity-50">
               Sin sesiones registradas en los últimos 28 días
             </p>
           </div>
@@ -315,14 +315,14 @@ export default async function StudentDetailPage({
       </div>
 
       {/* Progress placeholder */}
-      <div className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-5">
+      <div className="rounded-xl border border-border bg-surface p-5">
         <div className="flex items-center justify-between">
-          <h2 className="text-xs uppercase tracking-wider text-[#666666]">
+          <h2 className="text-xs uppercase tracking-wider text-muted">
             Progreso general
           </h2>
           <button
             type="button"
-            className="text-[#C8FF00] hover:text-[#AADD00] text-xs transition-colors cursor-not-allowed opacity-50"
+            className="text-lime hover:text-[#AADD00] text-xs transition-colors cursor-not-allowed opacity-50"
             disabled
           >
             Ver progreso (próximamente)

@@ -117,46 +117,46 @@ export default async function CobrosPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#FAFAFA]">Cobros</h1>
-        <p className="text-[#666666] text-sm mt-1">Tus liquidaciones y ganancias</p>
+        <h1 className="text-2xl font-bold text-text">Cobros</h1>
+        <p className="text-muted text-sm mt-1">Tus liquidaciones y ganancias</p>
       </div>
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-        <div className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-5">
-          <p className="text-[#666666] text-xs uppercase tracking-wider mb-2">
+        <div className="rounded-xl border border-border bg-surface p-5">
+          <p className="text-muted text-xs uppercase tracking-wider mb-2">
             Este mes
           </p>
-          <p className="text-[#C8FF00] text-2xl font-bold">
+          <p className="text-lime text-2xl font-bold">
             {formatCents(thisMonthTotal)}
           </p>
-          <p className="text-[#444444] text-xs mt-1">neto estimado</p>
+          <p className="text-muted text-xs mt-1 opacity-60">neto estimado</p>
         </div>
-        <div className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-5">
-          <p className="text-[#666666] text-xs uppercase tracking-wider mb-2">
+        <div className="rounded-xl border border-border bg-surface p-5">
+          <p className="text-muted text-xs uppercase tracking-wider mb-2">
             Mes anterior
           </p>
-          <p className="text-[#FAFAFA] text-2xl font-bold">
+          <p className="text-text text-2xl font-bold">
             {formatCents(lastMonthTotal)}
           </p>
-          <p className="text-[#444444] text-xs mt-1">neto cobrado</p>
+          <p className="text-muted text-xs mt-1 opacity-60">neto cobrado</p>
         </div>
       </div>
 
       {/* Settlements table */}
       {rows.length === 0 ? (
-        <div className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-12 text-center">
+        <div className="rounded-xl border border-border bg-surface p-12 text-center">
           <p className="text-4xl mb-4">💰</p>
-          <p className="text-[#FAFAFA] text-lg font-semibold">Todavía no hay liquidaciones.</p>
-          <p className="text-[#666666] text-sm mt-2">
+          <p className="text-text text-lg font-semibold">Todavía no hay liquidaciones.</p>
+          <p className="text-muted text-sm mt-2">
             Tus cobros aparecerán acá una vez que se procesen.
           </p>
         </div>
       ) : (
-        <div className="rounded-xl border border-[#2A2A2A] bg-[#111111] overflow-hidden">
+        <div className="rounded-xl border border-border bg-surface overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[#2A2A2A] text-[#666666] text-xs uppercase tracking-wider">
+              <tr className="border-b border-border text-muted text-xs uppercase tracking-wider">
                 <th className="text-left px-6 py-3">Período</th>
                 <th className="text-right px-6 py-3 hidden md:table-cell">Bruto</th>
                 <th className="text-right px-6 py-3 hidden md:table-cell">Comisión</th>
@@ -165,24 +165,24 @@ export default async function CobrosPage() {
                 <th className="text-right px-6 py-3"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1A1A1A]">
+            <tbody className="divide-y divide-surface-2">
               {rows.map((s) => (
-                <tr key={s.id} className="hover:bg-[#161616] transition-colors">
+                <tr key={s.id} className="hover:bg-surface-2 transition-colors">
                   <td className="px-6 py-4">
-                    <p className="text-[#FAFAFA] font-medium">
+                    <p className="text-text font-medium">
                       {formatDate(s.period_start)}
                     </p>
-                    <p className="text-[#444444] text-xs">
+                    <p className="text-muted text-xs opacity-60">
                       al {formatDate(s.period_end)}
                     </p>
                   </td>
-                  <td className="px-6 py-4 text-right text-[#AAAAAA] hidden md:table-cell">
+                  <td className="px-6 py-4 text-right text-muted hidden md:table-cell">
                     {formatCents(s.gross_amount)}
                   </td>
                   <td className="px-6 py-4 text-right text-red-400 hidden md:table-cell">
                     -{formatCents(s.commission)}
                   </td>
-                  <td className="px-6 py-4 text-right text-[#C8FF00] font-semibold">
+                  <td className="px-6 py-4 text-right text-lime font-semibold">
                     {formatCents(s.net_amount)}
                   </td>
                   <td className="px-6 py-4">
@@ -200,10 +200,10 @@ export default async function CobrosPage() {
                       <InvoiceViewButton signedUrl={s.invoice_signed_url} />
                     )}
                     {(s.status === "invoiced" || s.status === "transferred") && !s.invoice_signed_url && (
-                      <span className="text-[#444444] text-xs">Factura pendiente</span>
+                      <span className="text-muted text-xs opacity-60">Factura pendiente</span>
                     )}
                     {s.status === "transferred" && s.transferred_at && (
-                      <p className="text-[#444444] text-xs mt-1">
+                      <p className="text-muted text-xs mt-1 opacity-60">
                         Transferido el {formatDate(s.transferred_at)}
                       </p>
                     )}
