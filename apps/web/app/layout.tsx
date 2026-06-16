@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from "next";
+import { getLocale } from "next-intl/server";
 import "./globals.css";
 
 // Root layout — provides the HTML document structure.
 // Locale-specific wiring (NextIntlClientProvider) lives in app/[locale]/layout.tsx.
-// The lang attribute is set here to "es" as a default; next-intl injects the
-// correct locale into the <html> tag via generateStaticParams + setRequestLocale
-// in the [locale]/layout.tsx. suppressHydrationWarning prevents React from
-// complaining when the lang attribute is patched client-side.
+// getLocale() reads the locale injected by next-intl middleware into the request
+// headers; it works in all runtime RSC contexts. No suppressHydrationWarning
+// needed because the lang attribute is set server-side to the correct value.
+// metadata/viewport are defined HERE only (removed duplicate from [locale]/layout.tsx).
 
 export const metadata: Metadata = {
   title: {
@@ -31,13 +32,18 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // getLocale() is provided by next-intl/server and reads the locale from the
+  // middleware-injected request context. Falls back to "es" (default locale)
+  // during build-time prerender passes where no request context exists.
+  const locale = await getLocale();
+
   return (
-    <html suppressHydrationWarning>
+    <html lang={locale}>
       <head>
         {process.env.NEXT_PUBLIC_SUPABASE_URL && (
           <link

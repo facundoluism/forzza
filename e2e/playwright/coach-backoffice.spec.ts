@@ -163,8 +163,8 @@ test.describe('Coach backoffice — alumnos page', () => {
       test.skip();
       return;
     }
-    // Renders "{n} alumno/s en total"
-    await expect(page.getByText(/alumno.* en total/i)).toBeVisible();
+    // Renders "Alumnos asignados a tu cuenta" (i18n key coach.alumnos.subtitle)
+    await expect(page.getByText(/alumnos asignados a tu cuenta/i)).toBeVisible();
   });
 
   test('alumnos page shows empty state when no students', async ({ page }) => {
@@ -174,8 +174,9 @@ test.describe('Coach backoffice — alumnos page', () => {
       return;
     }
     // In dev mode with no real DB, the supabase query returns an error/empty
-    // result, so the empty-state div must be shown
-    const emptyState = page.getByText(/todavía no tenés alumnos asignados/i);
+    // result, so the empty-state div must be shown.
+    // i18n key: coach.alumnos.emptyState = "No tenés alumnos asignados."
+    const emptyState = page.getByText(/no ten.s alumnos asignados/i);
     const tableHead = page.getByRole('columnheader', { name: /alumno/i });
 
     // Either the empty state or a populated table must be visible

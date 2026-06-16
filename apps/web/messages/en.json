@@ -408,7 +408,7 @@
       "tabApproved": "Approved",
       "tabRejected": "Rejected",
       "tabSuspended": "Suspended",
-      "emptyState": "No {tab} coaches at the moment.",
+      "emptyState": "No coaches in this category at the moment.",
       "emptySubtitle": "Coaches will appear here according to their status.",
       "colCoach": "Coach",
       "colCountry": "Country",

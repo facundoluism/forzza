@@ -1,5 +1,8 @@
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 
-export default function CoachIndexPage() {
-  redirect("/coach/alumnos");
+type Props = { params: Promise<{ locale: string }> };
+
+export default async function CoachIndexPage({ params }: Props) {
+  const { locale } = await params;
+  redirect({ href: "/coach/alumnos", locale });
 }

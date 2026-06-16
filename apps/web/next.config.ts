@@ -1,16 +1,17 @@
-// next-pwa does not ship ESM-native types, so we use require() for the plugin
-// itself while keeping the NextConfig type annotation fully typed.
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const withPWA = require("next-pwa")({
+// @ducanh2912/next-pwa is the actively maintained fork of next-pwa with full
+// Next.js 15 App Router support. next-pwa@5.6.0 has a webpack runtime
+// incompatibility with Next.js 15 that causes clientReferenceManifest errors
+// during static page generation under [locale] routes.
+import withPWAInit from "@ducanh2912/next-pwa";
+
+const withPWA = withPWAInit({
   dest: "public",
-  // Service worker is generated at build time by next-pwa; it is NOT committed.
+  // Service worker is generated at build time; it is NOT committed to git.
   // In development the SW is disabled to avoid stale-cache friction.
   disable: process.env.NODE_ENV === "development",
   register: true,
-  skipWaiting: true,
-  // Cache strategy overrides (next-pwa default is network-first for pages,
-  // cache-first for static assets — aligns with our PWA requirements).
-  // Custom runtimeCaching is left to next-pwa defaults here; extend as needed.
+  // Cache strategy: network-first for pages, cache-first for static assets.
+  // This aligns with the PWA requirements (Lighthouse PWA ≥ 90).
 });
 
 import type { NextConfig } from "next";

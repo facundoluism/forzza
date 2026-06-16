@@ -1,4 +1,3 @@
-import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
@@ -7,28 +6,8 @@ import { InstallPrompt } from "@/components/InstallPrompt";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: {
-    template: "%s — Forzza",
-    default: "Forzza — Tu plataforma de entrenamiento personalizado",
-  },
-  description:
-    "Entrená con el coach correcto. Rutinas, seguimiento y resultados reales.",
-  manifest: "/manifest.json",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "black-translucent",
-    title: "Forzza",
-  },
-  other: {
-    "mobile-web-app-capable": "yes",
-  },
-};
-
-export const viewport: Viewport = {
-  themeColor: "#C8FF00",
-  colorScheme: "dark",
-};
+// metadata and viewport are defined in the root layout (app/layout.tsx) — a
+// single source of truth. Per-page overrides still work via generateMetadata.
 
 // Generate static params so the [locale] segment is known to Next.js during build.
 export function generateStaticParams() {

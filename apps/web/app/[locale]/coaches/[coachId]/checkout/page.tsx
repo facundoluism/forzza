@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/server";
 import { CheckoutClient } from "./CheckoutClient";
 import type { Locale } from "@/i18n/routing";
@@ -48,15 +48,20 @@ export default async function CoachCheckoutPage({
 
   // Si no hay package_id, redirigir al perfil del coach
   if (!packageId) {
-    redirect(`/coaches/${coachId}`);
+    redirect({ href: `/coaches/${coachId}`, locale });
+    // redirect() throws internally — the assertion below is unreachable at
+    // runtime but satisfies TypeScript's narrowing after this block.
+    return null;
   }
+  // packageId is guaranteed string from here on.
+  const safePackageId: string = packageId;
 
   // Si Supabase no está configurado, mostrar el checkout igual (el cliente manejará el error)
   if (!isSupabaseConfigured()) {
     return (
       <CheckoutClient
         coachId={coachId}
-        packageId={packageId}
+        packageId={safePackageId}
         coachName="Coach"
         packageTitle={t("selectedPackageFallback")}
         packagePrice={0}
@@ -75,9 +80,12 @@ export default async function CoachCheckoutPage({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    const redirectUrl = `/coaches/${coachId}/checkout?package_id=${packageId}`;
-    redirect(`/login?redirect=${encodeURIComponent(redirectUrl)}`);
+    const redirectUrl = `/coaches/${coachId}/checkout?package_id=${safePackageId}`;
+    redirect({ href: `/login?redirect=${encodeURIComponent(redirectUrl)}`, locale });
+    return null;
   }
+  // user is guaranteed non-null from here.
+  const safeUser = user;
 
   // Verificar menor de edad sin consentimiento paternal (Regla #7)
   let isMinorWithoutConsent = false;
@@ -85,7 +93,7 @@ export default async function CoachCheckoutPage({
   const { data: studentProfile } = await (supabase as any)
     .from("student_profiles")
     .select("birth_date, parental_consent_at")
-    .eq("user_id", user.id)
+    .eq("user_id", safeUser.id)
     .single();
 
   if (studentProfile?.birth_date) {
@@ -109,7 +117,7 @@ export default async function CoachCheckoutPage({
     return (
       <CheckoutClient
         coachId={coachId}
-        packageId={packageId}
+        packageId={safePackageId}
         coachName="Coach"
         packageTitle=""
         packagePrice={0}
@@ -126,7 +134,7 @@ export default async function CoachCheckoutPage({
   const { data: packageData } = await (supabase as any)
     .from("coach_packages")
     .select("id, title, price, active, tier, description")
-    .eq("id", packageId)
+    .eq("id", safePackageId)
     .eq("coach_id", coachId)
     .eq("active", true)
     .single();
@@ -135,7 +143,7 @@ export default async function CoachCheckoutPage({
     return (
       <CheckoutClient
         coachId={coachId}
-        packageId={packageId}
+        packageId={safePackageId}
         coachName={coach.display_name}
         packageTitle=""
         packagePrice={0}
@@ -153,7 +161,7 @@ export default async function CoachCheckoutPage({
   const { data: userRecord } = await (supabase as any)
     .from("users")
     .select("country")
-    .eq("id", user.id)
+    .eq("id", safeUser.id)
     .single();
 
   const country = (userRecord?.country as string) ?? "AR";
@@ -171,7 +179,7 @@ export default async function CoachCheckoutPage({
   return (
     <CheckoutClient
       coachId={coachId}
-      packageId={packageId}
+      packageId={safePackageId}
       coachName={coach.display_name}
       packageTitle={pkg.title}
       packagePrice={pkg.price}

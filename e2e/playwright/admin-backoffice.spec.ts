@@ -273,8 +273,8 @@ test.describe('Admin backoffice — coaches management page', () => {
       test.skip();
       return;
     }
-    // Empty state text: "No hay coaches pendiente por ahora." (matches status label)
-    const emptyMsg = page.getByText(/no hay coaches pendiente/i);
+    // Empty state text: "No hay coaches en esta categoría por ahora."
+    const emptyMsg = page.getByText(/no hay coaches en esta categor/i);
     // Desktop table header (hidden md:block) — use Coach column header
     const tableHead = page.getByRole('columnheader', { name: /coach/i });
     // Mobile card layout has no table headers — also check for a card presence
