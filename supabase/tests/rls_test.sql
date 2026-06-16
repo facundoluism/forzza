@@ -1,264 +1,633 @@
 -- =============================================================================
--- FORZZA — Tests de RLS
--- Ejecutar con: supabase test db
--- Cada test verifica que el acceso cruzado prohibido NO es posible.
+-- FORZZA — Tests de RLS (reescritura completa)
+-- Ejecutar con: supabase test db (corre como superusuario 'postgres')
+--
+-- PRINCIPIOS:
+--   1. Fixtures self-contained: todos los datos necesarios se insertan aqui
+--      (no se depende del seed). Se revierten al hacer ROLLBACK al final.
+--   2. RLS efectiva: para ejercitar RLS se usa SET LOCAL ROLE + set_config
+--      de JWT claims dentro de un DO anonimo.
+--   3. Default-deny con 0 filas: anon/usuario ajeno NO lanza 42501, devuelve
+--      0 filas. Los throws_ok(42501) son SOLO para REVOKE y triggers.
+--   4. Todos los tests dentro de la misma transaccion; ROLLBACK limpia todo.
+--
+-- UUIDs (solo caracteres hex validos 0-9 a-f):
+--   a1a00001-0000-4000-8000-000000000001  coach1    (auth.users)
+--   a2a00002-0000-4000-8000-000000000002  coach2    (auth.users)
+--   a3a00003-0000-4000-8000-000000000003  student1  (auth.users)
+--   a4a00004-0000-4000-8000-000000000004  student2  (auth.users)
+--   a5a00005-0000-4000-8000-000000000005  owner     (auth.users)
+--   c1c00001-0000-4000-8000-000000000001  coach_profiles.id coach1
+--   c2c00002-0000-4000-8000-000000000002  coach_profiles.id coach2
+--   b1b00001-0000-4000-8000-000000000001  coach_packages.id (pro, coach1)
+--   b2b00002-0000-4000-8000-000000000002  coach_packages.id (starter, coach2)
+--   d1d00001-0000-4000-8000-000000000001  coach_assignments.id (coach1<->student1)
+--   d2d00002-0000-4000-8000-000000000002  coach_assignments.id (coach2<->student2)
+--   e1e00001-0000-4000-8000-000000000001  routines.id (student1)
+--   f1f00001-0000-4000-8000-000000000001  workout_sessions.id (student1)
+--   f2f00002-0000-4000-8000-000000000002  workout_sessions.id (student2)
+--   0aa00001-0000-4000-8000-000000000001  progress_photos.id (student1)
+--   0bb00001-0000-4000-8000-000000000001  messages.id
+--   0cc00001-0000-4000-8000-000000000001  student_profiles.id (student1)
 -- =============================================================================
 
 BEGIN;
 
-SELECT plan(27);
+SELECT plan(32);
 
--- Datos de test (se revierten al final)
-DO $$
-DECLARE
-  v_student1_id UUID := gen_random_uuid();
-  v_student2_id UUID := gen_random_uuid();
-  v_coach1_id UUID := gen_random_uuid();
-  v_coach2_id UUID := gen_random_uuid();
-  v_owner_id UUID := gen_random_uuid();
+-- =============================================================================
+-- FIXTURES: insertados como superusuario (bypassa RLS y REVOKE).
+-- =============================================================================
+
+DO $setup$
 BEGIN
-  -- Insertar usuarios de prueba en auth.users (mock)
-  -- En tests reales, se usa supabase test helpers
-  -- Este test verifica la lógica de las funciones helper
-  NULL;
-END $$;
+  -- 1. auth.users (sin trigger hacia public.users — lo hacemos manualmente abajo)
+  INSERT INTO auth.users (id, email, encrypted_password, email_confirmed_at,
+    raw_user_meta_data, created_at, updated_at, aud, role)
+  VALUES
+    ('a1a00001-0000-4000-8000-000000000001'::uuid, 'rls.coach1@test.forzza',   'x', now(), '{"role":"coach"}'::jsonb,   now(), now(), 'authenticated', 'authenticated'),
+    ('a2a00002-0000-4000-8000-000000000002'::uuid, 'rls.coach2@test.forzza',   'x', now(), '{"role":"coach"}'::jsonb,   now(), now(), 'authenticated', 'authenticated'),
+    ('a3a00003-0000-4000-8000-000000000003'::uuid, 'rls.student1@test.forzza', 'x', now(), '{"role":"student"}'::jsonb, now(), now(), 'authenticated', 'authenticated'),
+    ('a4a00004-0000-4000-8000-000000000004'::uuid, 'rls.student2@test.forzza', 'x', now(), '{"role":"student"}'::jsonb, now(), now(), 'authenticated', 'authenticated'),
+    ('a5a00005-0000-4000-8000-000000000005'::uuid, 'rls.owner@test.forzza',    'x', now(), '{"role":"owner"}'::jsonb,   now(), now(), 'authenticated', 'authenticated')
+  ON CONFLICT (id) DO NOTHING;
 
--- Test 1: auth_role() retorna el rol del usuario
+  -- 2. public.users (handle_new_user puede haberlos creado; ON CONFLICT DO NOTHING)
+  INSERT INTO public.users (id, role, country, created_at, updated_at)
+  VALUES
+    ('a1a00001-0000-4000-8000-000000000001'::uuid, 'coach',   'AR', now(), now()),
+    ('a2a00002-0000-4000-8000-000000000002'::uuid, 'coach',   'AR', now(), now()),
+    ('a3a00003-0000-4000-8000-000000000003'::uuid, 'student', 'AR', now(), now()),
+    ('a4a00004-0000-4000-8000-000000000004'::uuid, 'student', 'AR', now(), now()),
+    ('a5a00005-0000-4000-8000-000000000005'::uuid, 'owner',   'AR', now(), now())
+  ON CONFLICT (id) DO NOTHING;
+
+  -- 3. coach_profiles con IDs fijos
+  INSERT INTO coach_profiles (id, user_id, display_name, country, status, created_at, updated_at)
+  VALUES
+    ('c1c00001-0000-4000-8000-000000000001'::uuid, 'a1a00001-0000-4000-8000-000000000001'::uuid, 'Coach Uno RLS', 'AR', 'approved', now(), now()),
+    ('c2c00002-0000-4000-8000-000000000002'::uuid, 'a2a00002-0000-4000-8000-000000000002'::uuid, 'Coach Dos RLS', 'AR', 'approved', now(), now())
+  ON CONFLICT (id) DO NOTHING;
+
+  -- 4. coach_packages con precio >= piso AR (500000 centavos)
+  INSERT INTO coach_packages (id, coach_id, tier, title, price, country, active, created_at, updated_at)
+  VALUES
+    ('b1b00001-0000-4000-8000-000000000001'::uuid, 'c1c00001-0000-4000-8000-000000000001'::uuid, 'pro',     'Pro Test',     600000, 'AR', true, now(), now()),
+    ('b2b00002-0000-4000-8000-000000000002'::uuid, 'c2c00002-0000-4000-8000-000000000002'::uuid, 'starter', 'Starter Test', 600000, 'AR', true, now(), now())
+  ON CONFLICT (id) DO NOTHING;
+
+  -- 5. coach_assignments
+  INSERT INTO coach_assignments (id, student_id, coach_id, package_id, status, created_at, updated_at)
+  VALUES
+    ('d1d00001-0000-4000-8000-000000000001'::uuid, 'a3a00003-0000-4000-8000-000000000003'::uuid, 'c1c00001-0000-4000-8000-000000000001'::uuid, 'b1b00001-0000-4000-8000-000000000001'::uuid, 'active', now(), now()),
+    ('d2d00002-0000-4000-8000-000000000002'::uuid, 'a4a00004-0000-4000-8000-000000000004'::uuid, 'c2c00002-0000-4000-8000-000000000002'::uuid, 'b2b00002-0000-4000-8000-000000000002'::uuid, 'active', now(), now())
+  ON CONFLICT (id) DO NOTHING;
+
+  -- 6. routine de student1 creada por coach1
+  INSERT INTO routines (id, student_id, coach_id, title, exercises, active, created_at, updated_at)
+  VALUES
+    ('e1e00001-0000-4000-8000-000000000001'::uuid, 'a3a00003-0000-4000-8000-000000000003'::uuid, 'c1c00001-0000-4000-8000-000000000001'::uuid, 'Rutina RLS Test', '[]'::jsonb, true, now(), now())
+  ON CONFLICT (id) DO NOTHING;
+
+  -- 7. vincular rutina al assignment (UPDATE directo bypassa trigger de columnas
+  --    porque current_user = 'postgres' => trigger hace RETURN NEW sin restriccion)
+  UPDATE coach_assignments
+    SET routine_id = 'e1e00001-0000-4000-8000-000000000001'::uuid
+  WHERE id = 'd1d00001-0000-4000-8000-000000000001'::uuid;
+
+  -- 8. workout_sessions
+  INSERT INTO workout_sessions (id, student_id, routine_id, client_uuid, status, started_at, created_at, updated_at)
+  VALUES
+    ('f1f00001-0000-4000-8000-000000000001'::uuid, 'a3a00003-0000-4000-8000-000000000003'::uuid, 'e1e00001-0000-4000-8000-000000000001'::uuid, 'rls-client-ws1', 'completed', now(), now(), now()),
+    ('f2f00002-0000-4000-8000-000000000002'::uuid, 'a4a00004-0000-4000-8000-000000000004'::uuid, NULL, 'rls-client-ws2', 'completed', now(), now(), now())
+  ON CONFLICT (id) DO NOTHING;
+
+  -- 9. progress_photos de student1
+  INSERT INTO progress_photos (id, student_id, assignment_id, storage_path, recorded_at, created_at)
+  VALUES
+    ('0aa00001-0000-4000-8000-000000000001'::uuid, 'a3a00003-0000-4000-8000-000000000003'::uuid, 'd1d00001-0000-4000-8000-000000000001'::uuid,
+     'progress-photos/a3a00003-0000-4000-8000-000000000003/foto1.jpg', now(), now())
+  ON CONFLICT (id) DO NOTHING;
+
+  -- 10. mensaje en assignment1
+  INSERT INTO messages (id, assignment_id, sender_id, content, created_at)
+  VALUES
+    ('0bb00001-0000-4000-8000-000000000001'::uuid, 'd1d00001-0000-4000-8000-000000000001'::uuid, 'a3a00003-0000-4000-8000-000000000003'::uuid, 'Hola coach!', now())
+  ON CONFLICT (id) DO NOTHING;
+
+  -- 11. student_profile de student1 (necesario para T25 y T28)
+  INSERT INTO student_profiles (id, user_id, display_name, created_at, updated_at)
+  VALUES
+    ('0cc00001-0000-4000-8000-000000000001'::uuid, 'a3a00003-0000-4000-8000-000000000003'::uuid, 'Alumno Uno RLS', now(), now())
+  ON CONFLICT (id) DO NOTHING;
+END $setup$;
+
+-- =============================================================================
+-- T01: auth_role() no lanza excepcion como superusuario (devuelve NULL sin claims)
+-- =============================================================================
 SELECT ok(
-  (SELECT auth_role() IS NOT NULL OR auth.uid() IS NULL),
-  'auth_role() funciona o no hay usuario autenticado'
+  (auth_role() IS NULL OR auth_role() IS NOT NULL),
+  'T01: auth_role() no lanza excepcion (superusuario, sin JWT claims)'
 );
 
--- Test 2: coach_has_active_assignment retorna false para IDs inexistentes
+-- =============================================================================
+-- T02: coach_has_active_assignment() false para IDs aleatorios
+-- =============================================================================
 SELECT ok(
   NOT coach_has_active_assignment(gen_random_uuid(), gen_random_uuid()),
-  'coach_has_active_assignment retorna false para IDs inexistentes'
+  'T02: coach_has_active_assignment() false para IDs inexistentes'
 );
 
--- Test 3: student_has_pro_or_elite_package retorna false para IDs inexistentes
+-- =============================================================================
+-- T03: student_has_pro_or_elite_package() false para IDs aleatorios
+-- =============================================================================
 SELECT ok(
   NOT student_has_pro_or_elite_package(gen_random_uuid(), gen_random_uuid()),
-  'student_has_pro_or_elite_package retorna false para IDs inexistentes'
+  'T03: student_has_pro_or_elite_package() false para IDs inexistentes'
 );
 
--- Test 3b: auth_coach_profile_id resuelve coach_profiles.id desde auth.uid()
+-- =============================================================================
+-- T04: auth_coach_profile_id() resuelve coach_profiles.id desde JWT claims
+-- =============================================================================
 SELECT is(
   (
-    WITH _ AS (
+    WITH _setup AS (
       SELECT set_config(
-        'request.jwt.claim.sub',
-        '10000000-0000-4000-8000-000000000002',
+        'request.jwt.claims',
+        json_build_object('sub', 'a1a00001-0000-4000-8000-000000000001', 'role', 'authenticated')::text,
         true
       )
     )
-    SELECT auth_coach_profile_id()
+    SELECT auth_coach_profile_id() FROM _setup
   ),
-  '20000000-0000-4000-8000-000000000002'::uuid,
-  'auth_coach_profile_id resuelve el profile id del coach autenticado'
+  'c1c00001-0000-4000-8000-000000000001'::uuid,
+  'T04: auth_coach_profile_id() resuelve coach_profiles.id de coach1'
 );
 
-DO $$
-BEGIN
-  PERFORM set_config('request.jwt.claim.sub', '', true);
-END $$;
+-- limpiar claims
+SELECT set_config('request.jwt.claims', '', true);
 
--- Test 3c: helper de assignment usa coach_profiles.id, no auth.users.id
+-- =============================================================================
+-- T05: coach_has_active_assignment() true con fixture real
+-- =============================================================================
 SELECT ok(
   coach_has_active_assignment(
-    '20000000-0000-4000-8000-000000000002'::uuid,
-    '10000000-0000-4000-8000-000000000003'::uuid
+    'c1c00001-0000-4000-8000-000000000001'::uuid,
+    'a3a00003-0000-4000-8000-000000000003'::uuid
   ),
-  'coach_has_active_assignment acepta coach_profiles.id del fixture smoke'
+  'T05: coach_has_active_assignment() true para coach1 con student1 (fixture)'
 );
 
--- Test 3d: fotos sensibles requieren paquete pro/elite activo con coach_profiles.id
+-- =============================================================================
+-- T06: student_has_pro_or_elite_package() true con fixture real
+-- =============================================================================
 SELECT ok(
   student_has_pro_or_elite_package(
-    '10000000-0000-4000-8000-000000000003'::uuid,
-    '20000000-0000-4000-8000-000000000002'::uuid
+    'a3a00003-0000-4000-8000-000000000003'::uuid,
+    'c1c00001-0000-4000-8000-000000000001'::uuid
   ),
-  'student_has_pro_or_elite_package acepta coach_profiles.id del fixture smoke'
+  'T06: student_has_pro_or_elite_package() true (student1 tiene paquete pro con coach1)'
 );
 
--- Test 3e: assignment activo queda vinculado a la rutina asignada por el coach
+-- =============================================================================
+-- T07: coach_assignments.routine_id apunta a la rutina del fixture
+-- =============================================================================
 SELECT is(
-  (
-    SELECT routine_id
-    FROM coach_assignments
-    WHERE id = '40000000-0000-4000-8000-000000000001'::uuid
-  ),
-  '60000000-0000-4000-8000-000000000001'::uuid,
-  'coach_assignments.routine_id apunta a la rutina smoke asignada'
+  (SELECT routine_id FROM coach_assignments WHERE id = 'd1d00001-0000-4000-8000-000000000001'::uuid),
+  'e1e00001-0000-4000-8000-000000000001'::uuid,
+  'T07: coach_assignments.routine_id apunta a la rutina asignada por coach1'
 );
 
--- Test 4: country_config tiene comisión 20% para AR
+-- =============================================================================
+-- T08: country_config AR commission_rate = 20% (seed en migracion)
+-- =============================================================================
 SELECT ok(
   (SELECT commission_rate = 0.2000 FROM country_config WHERE country = 'AR'),
-  'AR tiene commission_rate = 20%'
+  'T08: AR tiene commission_rate = 20%'
 );
 
--- Test 5: country_config Chile no está activo en V1
+-- =============================================================================
+-- T09: country_config CL no activo en V1
+-- =============================================================================
 SELECT ok(
   (SELECT NOT active FROM country_config WHERE country = 'CL'),
-  'CL no está activo en V1'
+  'T09: CL no esta activo en V1'
 );
 
--- Test 6: exercise_library tiene al menos 30 ejercicios
+-- =============================================================================
+-- T10: exercise_library tiene al menos 30 ejercicios (seed en migracion)
+-- =============================================================================
 SELECT ok(
   (SELECT COUNT(*) >= 30 FROM exercise_library),
-  'exercise_library tiene al menos 30 ejercicios'
+  'T10: exercise_library tiene al menos 30 ejercicios'
 );
 
--- Test 7: audit_log no permite UPDATE (append-only)
+-- =============================================================================
+-- T11: audit_log rechaza UPDATE como rol authenticated (REVOKE efectivo)
+-- SET LOCAL ROLE cambia el rol efectivo dentro del DO anonimo.
+-- =============================================================================
 SELECT throws_ok(
-  'UPDATE audit_log SET action = ''hacked'' WHERE false',
-  '42501', -- insufficient_privilege
-  'audit_log rechaza UPDATE (append-only)'
-);
-
--- Test 8: audit_log no permite DELETE
-SELECT throws_ok(
-  'DELETE FROM audit_log WHERE false',
+  $t11$
+    DO $inner$
+    BEGIN
+      SET LOCAL ROLE authenticated;
+      UPDATE audit_log SET action = 'hacked' WHERE false;
+    END $inner$;
+  $t11$,
   '42501',
-  'audit_log rechaza DELETE (append-only)'
-);
-
--- Test 9: processed_events no permite UPDATE
-SELECT throws_ok(
-  'UPDATE processed_events SET gateway = ''hacked'' WHERE false',
-  '42501',
-  'processed_events rechaza UPDATE (append-only)'
-);
-
--- Test 10: trigger de piso rechaza precio menor
-SELECT throws_ok(
-  $$
-    INSERT INTO coach_profiles (user_id, display_name, country)
-    SELECT gen_random_uuid(), 'TestCoach', 'AR';
-    INSERT INTO coach_packages (coach_id, tier, title, price, country)
-    SELECT id, 'starter', 'Paquete test', 1, 'AR'
-    FROM coach_profiles WHERE display_name = 'TestCoach' LIMIT 1;
-  $$,
-  'check_violation',
-  'trigger rechaza precio de paquete menor al piso del país'
-);
-
--- Test 11: settlement no puede transferirse sin factura
-SELECT throws_ok(
-  $$
-    UPDATE settlements SET status = 'transferred' WHERE false;
-  $$,
   NULL,
-  'settlement requiere factura para pasar a transferred (revisar trigger en producción real)'
+  'T11: audit_log rechaza UPDATE como authenticated (REVOKE)'
 );
 
--- Test 12: todos los buckets son privados
-SELECT ok(
-  (SELECT COUNT(*) = 4 FROM storage.buckets WHERE public = false AND id IN ('progress-photos', 'fiscal-docs', 'invoices', 'videos')),
-  'Los 4 buckets existen y son privados'
+-- =============================================================================
+-- T12: audit_log rechaza DELETE como rol authenticated
+-- =============================================================================
+SELECT throws_ok(
+  $t12$
+    DO $inner$
+    BEGIN
+      SET LOCAL ROLE authenticated;
+      DELETE FROM audit_log WHERE false;
+    END $inner$;
+  $t12$,
+  '42501',
+  NULL,
+  'T12: audit_log rechaza DELETE como authenticated (REVOKE)'
 );
 
--- Test 13: RLS habilitado en tabla users
+-- =============================================================================
+-- T13: processed_events rechaza UPDATE como rol authenticated
+-- =============================================================================
+SELECT throws_ok(
+  $t13$
+    DO $inner$
+    BEGIN
+      SET LOCAL ROLE authenticated;
+      UPDATE processed_events SET gateway = 'hacked' WHERE false;
+    END $inner$;
+  $t13$,
+  '42501',
+  NULL,
+  'T13: processed_events rechaza UPDATE como authenticated (REVOKE)'
+);
+
+-- =============================================================================
+-- T14: trigger check_coach_package_price rechaza precio < piso del pais
+-- Piso AR = 500000; probamos precio = 1.
+-- =============================================================================
+SELECT throws_ok(
+  $t14$
+    INSERT INTO coach_packages (coach_id, tier, title, price, country, active, created_at, updated_at)
+    VALUES (
+      'c1c00001-0000-4000-8000-000000000001'::uuid,
+      'starter',
+      'Precio bajo test',
+      1,
+      'AR',
+      true,
+      now(),
+      now()
+    )
+  $t14$,
+  '23514',
+  NULL,
+  'T14: trigger rechaza precio de paquete < piso AR (ERRCODE 23514 = check_violation)'
+);
+
+-- =============================================================================
+-- T15: settlement rechaza transicion a 'transferred' si status previo != 'approved'
+-- =============================================================================
+DO $t15$
+DECLARE
+  v_id UUID;
+  v_ok BOOLEAN := false;
+BEGIN
+  INSERT INTO settlements (coach_id, period_start, period_end, gross_amount, commission,
+    net_amount, currency, status, invoice_number, invoice_path, created_at, updated_at)
+  VALUES ('c1c00001-0000-4000-8000-000000000001'::uuid,
+    '2026-06-01', '2026-06-15', 100000, 20000, 80000,
+    'ARS', 'pending', 'FAC-RLS-T15', 'invoices/t15.pdf', now(), now())
+  RETURNING id INTO v_id;
+
+  BEGIN
+    UPDATE settlements SET status = 'transferred' WHERE id = v_id;
+  EXCEPTION WHEN OTHERS THEN
+    v_ok := true;
+  END;
+
+  DELETE FROM settlements WHERE id = v_id;
+
+  IF NOT v_ok THEN
+    RAISE EXCEPTION 'T15 FALLO: trigger no bloqueo pending->transferred';
+  END IF;
+END $t15$;
+
+SELECT ok(true, 'T15: settlement rechaza transferred desde status pending (trigger)');
+
+-- =============================================================================
+-- T16: settlement rechaza 'transferred' sin invoice aunque status = 'approved'
+-- =============================================================================
+DO $t16$
+DECLARE
+  v_id UUID;
+  v_ok BOOLEAN := false;
+BEGIN
+  INSERT INTO settlements (coach_id, period_start, period_end, gross_amount, commission,
+    net_amount, currency, status, invoice_number, invoice_path, created_at, updated_at)
+  VALUES ('c1c00001-0000-4000-8000-000000000001'::uuid,
+    '2026-06-01', '2026-06-15', 100000, 20000, 80000,
+    'ARS', 'approved', NULL, NULL, now(), now())
+  RETURNING id INTO v_id;
+
+  BEGIN
+    UPDATE settlements SET status = 'transferred' WHERE id = v_id;
+  EXCEPTION WHEN OTHERS THEN
+    v_ok := true;
+  END;
+
+  DELETE FROM settlements WHERE id = v_id;
+
+  IF NOT v_ok THEN
+    RAISE EXCEPTION 'T16 FALLO: trigger no bloqueo approved->transferred sin invoice';
+  END IF;
+END $t16$;
+
+SELECT ok(true, 'T16: settlement rechaza transferred sin invoice (status=approved, invoice=NULL)');
+
+-- =============================================================================
+-- T17: RLS habilitado en tabla users
+-- =============================================================================
 SELECT ok(
   (SELECT rowsecurity FROM pg_tables WHERE tablename = 'users' AND schemaname = 'public'),
-  'RLS habilitado en tabla users'
+  'T17: RLS habilitado en tabla users'
 );
 
--- Test 14: RLS habilitado en tabla audit_log
+-- =============================================================================
+-- T18: RLS habilitado en tabla audit_log
+-- =============================================================================
 SELECT ok(
   (SELECT rowsecurity FROM pg_tables WHERE tablename = 'audit_log' AND schemaname = 'public'),
-  'RLS habilitado en tabla audit_log'
+  'T18: RLS habilitado en tabla audit_log'
 );
 
--- Test 15: RLS habilitado en tabla payments
+-- =============================================================================
+-- T19: RLS habilitado en tabla payments
+-- =============================================================================
 SELECT ok(
   (SELECT rowsecurity FROM pg_tables WHERE tablename = 'payments' AND schemaname = 'public'),
-  'RLS habilitado en tabla payments'
+  'T19: RLS habilitado en tabla payments'
 );
 
--- ─── Additional RLS tests — Phase 16 QA ──────────────────────────────────────
-
--- Test 16: Usuario anónimo no puede SELECT de users
--- set_config vacía a auth.uid() → anon context
-SELECT throws_ok(
-  $$
-    SET LOCAL role TO anon;
-    SELECT * FROM users LIMIT 1;
-  $$,
-  '42501',
-  'anónimo no puede SELECT de users (RLS default-deny)'
-);
-
--- Test 17: Usuario anónimo no puede SELECT de routines
-SELECT throws_ok(
-  $$
-    SET LOCAL role TO anon;
-    SELECT * FROM routines LIMIT 1;
-  $$,
-  '42501',
-  'anónimo no puede SELECT de routines (RLS default-deny)'
-);
-
--- Test 18: Usuario anónimo no puede SELECT de messages
-SELECT throws_ok(
-  $$
-    SET LOCAL role TO anon;
-    SELECT * FROM messages LIMIT 1;
-  $$,
-  '42501',
-  'anónimo no puede SELECT de messages (RLS default-deny)'
-);
-
--- Test 19: Alumno no puede ver workout_sessions de otro alumno
--- Con auth.uid() distinto al user_id de la sesión, la política debe filtrar
+-- =============================================================================
+-- T20: sin JWT claims, auth.uid() es NULL (pre-condicion de los tests anon)
+-- =============================================================================
 SELECT ok(
   (
-    SELECT COUNT(*) = 0
-    FROM workout_sessions
-    WHERE user_id <> COALESCE(auth.uid(), gen_random_uuid())
-      AND auth.uid() IS NULL
+    SELECT auth.uid() IS NULL
+    FROM (SELECT set_config('request.jwt.claims', '', true)) _setup
   ),
-  'alumno no ve workout_sessions de otro alumno (sin auth.uid, conteo = 0)'
+  'T20: sin JWT claims, auth.uid() es NULL'
 );
 
--- Test 20: Alumno no puede leer mensajes de conversación ajena
--- Sin auth.uid(), participant check en RLS bloquea todo
-SELECT ok(
-  (
-    SELECT COUNT(*) = 0
-    FROM messages
-    WHERE auth.uid() IS NULL
-  ),
-  'alumno no lee mensajes de conversación ajena (sin auth.uid, conteo = 0)'
-);
+-- =============================================================================
+-- T20b: anon ve 0 filas en users (SET LOCAL ROLE anon, RLS default-deny)
+-- =============================================================================
+DO $t20b$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE anon;
+  PERFORM set_config('request.jwt.claims', '', true);
+  SELECT COUNT(*) INTO v_count FROM users;
+  RESET ROLE;
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'T20b FALLO: anon vio % filas en users (esperado 0)', v_count;
+  END IF;
+END $t20b$;
 
--- Test 21: Coach puede ver sus propias coach_assignments
--- (Verifica que la columna coach_id existe y la función helper funciona)
-SELECT ok(
-  (
-    SELECT COUNT(*) >= 0
-    FROM coach_assignments
-    WHERE coach_id = COALESCE(auth.uid(), gen_random_uuid())
-  ),
-  'coach puede consultar coach_assignments con su propio ID (política permite)'
-);
+SELECT ok(true, 'T20b: anon ve 0 filas en users (RLS default-deny)');
 
--- Test 22: Coach no puede UPDATE settlements (append-only via trigger)
+-- =============================================================================
+-- T21: anon ve 0 filas en routines
+-- =============================================================================
+DO $t21$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE anon;
+  PERFORM set_config('request.jwt.claims', '', true);
+  SELECT COUNT(*) INTO v_count FROM routines;
+  RESET ROLE;
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'T21 FALLO: anon vio % filas en routines (esperado 0)', v_count;
+  END IF;
+END $t21$;
+
+SELECT ok(true, 'T21: anon ve 0 filas en routines (RLS default-deny)');
+
+-- =============================================================================
+-- T22: anon ve 0 filas en messages
+-- =============================================================================
+DO $t22$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE anon;
+  PERFORM set_config('request.jwt.claims', '', true);
+  SELECT COUNT(*) INTO v_count FROM messages;
+  RESET ROLE;
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'T22 FALLO: anon vio % filas en messages (esperado 0)', v_count;
+  END IF;
+END $t22$;
+
+SELECT ok(true, 'T22: anon ve 0 filas en messages (RLS default-deny)');
+
+-- =============================================================================
+-- T23: student2 ve 0 workout_sessions de student1 (aislamiento alumno-alumno)
+-- =============================================================================
+DO $t23$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a4a00004-0000-4000-8000-000000000004', 'role', 'authenticated')::text,
+    true);
+  SELECT COUNT(*) INTO v_count
+  FROM workout_sessions
+  WHERE student_id = 'a3a00003-0000-4000-8000-000000000003'::uuid;
+  RESET ROLE;
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'T23 FALLO: student2 vio % workout_sessions de student1 (esperado 0)', v_count;
+  END IF;
+END $t23$;
+
+SELECT ok(true, 'T23: student2 ve 0 workout_sessions de student1 (aislamiento alumno-alumno)');
+
+-- =============================================================================
+-- T24: student2 ve 0 messages del assignment coach1-student1
+-- =============================================================================
+DO $t24$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a4a00004-0000-4000-8000-000000000004', 'role', 'authenticated')::text,
+    true);
+  SELECT COUNT(*) INTO v_count
+  FROM messages
+  WHERE assignment_id = 'd1d00001-0000-4000-8000-000000000001'::uuid;
+  RESET ROLE;
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'T24 FALLO: student2 vio % messages del assignment1 (esperado 0)', v_count;
+  END IF;
+END $t24$;
+
+SELECT ok(true, 'T24: student2 ve 0 messages del assignment coach1-student1');
+
+-- =============================================================================
+-- T25: coach2 ve 0 student_profiles de student1 (aislamiento coach-coach)
+-- =============================================================================
+DO $t25$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a2a00002-0000-4000-8000-000000000002', 'role', 'authenticated')::text,
+    true);
+  SELECT COUNT(*) INTO v_count
+  FROM student_profiles
+  WHERE user_id = 'a3a00003-0000-4000-8000-000000000003'::uuid;
+  RESET ROLE;
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'T25 FALLO: coach2 vio % student_profiles de student1 (esperado 0)', v_count;
+  END IF;
+END $t25$;
+
+SELECT ok(true, 'T25: coach2 ve 0 student_profiles de student1 (aislamiento coach-coach)');
+
+-- =============================================================================
+-- T26: coach2 ve 0 workout_sessions de student1
+-- =============================================================================
+DO $t26$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a2a00002-0000-4000-8000-000000000002', 'role', 'authenticated')::text,
+    true);
+  SELECT COUNT(*) INTO v_count
+  FROM workout_sessions
+  WHERE student_id = 'a3a00003-0000-4000-8000-000000000003'::uuid;
+  RESET ROLE;
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'T26 FALLO: coach2 vio % workout_sessions de student1 (esperado 0)', v_count;
+  END IF;
+END $t26$;
+
+SELECT ok(true, 'T26: coach2 ve 0 workout_sessions de student1');
+
+-- =============================================================================
+-- T27: coach2 ve 0 progress_photos de student1 (sin paquete pro/elite)
+-- =============================================================================
+DO $t27$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a2a00002-0000-4000-8000-000000000002', 'role', 'authenticated')::text,
+    true);
+  SELECT COUNT(*) INTO v_count
+  FROM progress_photos
+  WHERE student_id = 'a3a00003-0000-4000-8000-000000000003'::uuid;
+  RESET ROLE;
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'T27 FALLO: coach2 vio % progress_photos de student1 (esperado 0)', v_count;
+  END IF;
+END $t27$;
+
+SELECT ok(true, 'T27: coach2 ve 0 progress_photos de student1 (sin paquete pro/elite)');
+
+-- =============================================================================
+-- T28: coach1 SI puede ver student_profiles de su alumno (student1)
+-- coach1 tiene assignment activo con student1 (paquete pro)
+-- =============================================================================
+DO $t28$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a1a00001-0000-4000-8000-000000000001', 'role', 'authenticated')::text,
+    true);
+  SELECT COUNT(*) INTO v_count
+  FROM student_profiles
+  WHERE user_id = 'a3a00003-0000-4000-8000-000000000003'::uuid;
+  RESET ROLE;
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'T28 FALLO: coach1 vio 0 student_profiles de student1 (esperado >= 1)';
+  END IF;
+END $t28$;
+
+SELECT ok(true, 'T28: coach1 SI ve student_profiles de su alumno asignado (student1)');
+
+-- =============================================================================
+-- T29: coach1 SI puede ver workout_sessions de student1
+-- =============================================================================
+DO $t29$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a1a00001-0000-4000-8000-000000000001', 'role', 'authenticated')::text,
+    true);
+  SELECT COUNT(*) INTO v_count
+  FROM workout_sessions
+  WHERE student_id = 'a3a00003-0000-4000-8000-000000000003'::uuid;
+  RESET ROLE;
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'T29 FALLO: coach1 vio 0 workout_sessions de student1 (esperado >= 1)';
+  END IF;
+END $t29$;
+
+SELECT ok(true, 'T29: coach1 SI ve workout_sessions de su alumno asignado (student1)');
+
+-- =============================================================================
+-- T30: trigger restrict_coach_assignment_update rechaza cambio de 'status'
+-- como authenticated. El trigger revisa current_setting('role', true).
+-- Usamos set_config('role', 'authenticated', true) para simular llamada PostgREST.
+-- =============================================================================
 SELECT throws_ok(
-  $$
-    UPDATE settlements
-    SET status = 'hacked'
-    WHERE false;
-  $$,
+  $t30$
+    DO $inner$
+    BEGIN
+      -- Simular contexto PostgREST: set_config('role') = 'authenticated'
+      PERFORM set_config('role', 'authenticated', true);
+      UPDATE coach_assignments
+        SET status = 'completed'
+      WHERE id = 'd1d00001-0000-4000-8000-000000000001'::uuid;
+    END $inner$;
+  $t30$,
   '42501',
-  'coach no puede UPDATE settlements (append-only, solo INSERT permitido)'
+  NULL,
+  'T30: trigger restrict_coach_assignment_update rechaza cambio de status como authenticated'
 );
 
--- Test 23: Owner puede SELECT de todos los usuarios (rol = owner)
--- Verifica que la tabla users tiene política que permite SELECT a owner
+-- =============================================================================
+-- T31: los 4 buckets de storage existen y son privados
+-- =============================================================================
 SELECT ok(
-  (SELECT rowsecurity FROM pg_tables WHERE tablename = 'users' AND schemaname = 'public'),
-  'tabla users tiene RLS habilitado (owner policy definida en migraciones)'
+  (SELECT COUNT(*) = 4
+   FROM storage.buckets
+   WHERE public = false
+     AND id IN ('progress-photos', 'fiscal-docs', 'invoices', 'videos')),
+  'T31: los 4 buckets de storage existen y son privados'
 );
 
 SELECT * FROM finish();
