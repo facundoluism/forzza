@@ -314,32 +314,56 @@ BEGIN
     description = EXCLUDED.description,
     exercises = EXCLUDED.exercises,
     active = EXCLUDED.active;
-END $$;
 
-INSERT INTO workout_sessions (
-  id,
-  student_id,
-  routine_id,
-  client_uuid,
-  status,
-  started_at,
-  completed_at,
-  sets_data
-)
-VALUES (
-  '70000000-0000-4000-8000-000000000001',
-  '10000000-0000-4000-8000-000000000003',
-  '60000000-0000-4000-8000-000000000001',
-  'smoke-session-20260616-0001',
-  'completed',
-  '2026-06-16T18:00:00+00:00',
-  '2026-06-16T19:05:00+00:00',
-  '[
-    {"exercise_id":"smoke-bench","sets":[{"set_number":1,"reps":10,"weight_kg":24},{"set_number":2,"reps":9,"weight_kg":24},{"set_number":3,"reps":8,"weight_kg":24}]},
-    {"exercise_id":"smoke-incline","sets":[{"set_number":1,"reps":12,"weight_kg":20},{"set_number":2,"reps":11,"weight_kg":20},{"set_number":3,"reps":10,"weight_kg":20}]}
-  ]'::jsonb
-)
-ON CONFLICT (client_uuid) DO NOTHING;
+  UPDATE coach_assignments
+  SET routine_id = '60000000-0000-4000-8000-000000000001'
+  WHERE id = '40000000-0000-4000-8000-000000000001';
+
+  INSERT INTO workout_sessions (
+    id,
+    student_id,
+    routine_id,
+    client_uuid,
+    status,
+    started_at,
+    completed_at,
+    sets_data
+  )
+  VALUES (
+    '70000000-0000-4000-8000-000000000001',
+    '10000000-0000-4000-8000-000000000003',
+    '60000000-0000-4000-8000-000000000001',
+    'smoke-session-20260616-0001',
+    'completed',
+    '2026-06-16T18:00:00+00:00',
+    '2026-06-16T19:05:00+00:00',
+    jsonb_build_array(
+      jsonb_build_object(
+        'exercise_id', v_bench,
+        'sets', jsonb_build_array(
+          jsonb_build_object('set_number', 1, 'reps', 10, 'weight_kg', 24),
+          jsonb_build_object('set_number', 2, 'reps', 9, 'weight_kg', 24),
+          jsonb_build_object('set_number', 3, 'reps', 8, 'weight_kg', 24)
+        )
+      ),
+      jsonb_build_object(
+        'exercise_id', v_incline,
+        'sets', jsonb_build_array(
+          jsonb_build_object('set_number', 1, 'reps', 12, 'weight_kg', 20),
+          jsonb_build_object('set_number', 2, 'reps', 11, 'weight_kg', 20),
+          jsonb_build_object('set_number', 3, 'reps', 10, 'weight_kg', 20)
+        )
+      )
+    )
+  )
+  ON CONFLICT (client_uuid) DO UPDATE SET
+    student_id = EXCLUDED.student_id,
+    routine_id = EXCLUDED.routine_id,
+    status = EXCLUDED.status,
+    started_at = EXCLUDED.started_at,
+    completed_at = EXCLUDED.completed_at,
+    sets_data = EXCLUDED.sets_data;
+END $$;
 
 INSERT INTO settlements (
   id,

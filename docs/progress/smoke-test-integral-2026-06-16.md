@@ -22,20 +22,51 @@ Validacion enfocada en el flujo de negocio V1:
 - `NEXT_STANDALONE=true` queda opt-in para evitar fallo de symlinks `EPERM` en builds locales Windows.
 - En mobile/session se corrigio el avance y logueo de sets para rutinas con ejercicios manuales o mixtos: ahora navega por la definicion completa de la rutina y registra cada set con una clave estable.
 - En mobile/alumno se agrego previsualizacion de ficha desde la biblioteca antes de agregar un ejercicio, para que un usuario pueda entender ejecucion, musculos e info sin salir del armado de rutina.
+- En mobile/home la "Rutina de hoy" ahora muestra resumen accionable inspirado en `forza-complete.jsx`: ejercicios, series, minutos estimados, primeros ejercicios y CTA para ver la rutina y empezar, en vez de una tarjeta ciega.
 - En mobile/session se agrego el plan visible del ejercicio actual (series, reps, descanso y notas) y aviso cuando se completan las series previstas.
+- Se extrajo a `@forzza/core/workout` la logica pura de entrenamiento mobile: inicio de sesion, logueo de series, numeracion estable y payload offline para `workout_sessions`.
+- `apps/mobile/stores/workoutStore.ts` ahora consume esa logica compartida y queda como wrapper de Zustand/AsyncStorage, reduciendo divergencia entre UI mobile y contrato Supabase.
+- `apps/mobile/services/sync.ts` ahora usa `toWorkoutSessionUpsert()` de core para construir el upsert exacto de `workout_sessions`, incluyendo normalizacion de `routine_id` vacio a `null` para no perder entrenos libres o rutinas borradas.
+- Se agrego `supabase/seed/smoke-flow.sql` con fixture integral: owner, coach aprobado, alumno, paquete PRO, pago Mercado Pago aprobado, assignment activo, rutina con ejercicios linkeados a biblioteca, sesion completada y liquidaciones en `pending_invoice`, `invoiced` y `approved`.
+- El fixture smoke ahora guarda la sesion completada con los mismos `exercise_id` UUID de la rutina, para validar el flujo alumno rutina -> series -> historial sin IDs ficticios.
+- `supabase/config.toml` ahora declara `db.seed.sql_paths` para cargar seeds base, ejercicios, descripciones y smoke fixture sin depender de `seed-demo.sql`.
+- `scripts/smoke-test.js` valida por REST los datos del fixture cuando existen `NEXT_PUBLIC_SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY`; con `SMOKE_EXPECT_FIXTURES=1` o `--require-fixtures`, la ausencia de fixture pasa a FAIL.
+- `scripts/smoke-test.js` ahora valida tambien `workout_sessions`: alumno correcto, rutina correcta, estado `completed`, `completed_at`, sets registrados y correspondencia entre `sets_data.exercise_id` y ejercicios linkeados de la rutina.
+- Se agrego migracion `20260616000003_fix_coach_rls_profile_id.sql` para corregir policies que comparaban `coach_assignments.coach_id` contra `auth.uid()` en vez de `coach_profiles.id`.
+- Se agregaron tests RLS para `auth_coach_profile_id()`, assignment activo coach-alumno y paquete pro/elite usando el fixture smoke.
+- Se corrigio middleware web para redirigir rutas protegidas a `/login` o `/<locale>/login` en vez de `/auth/login`, compatible con route groups `(auth)` y `app/[locale]`.
+- `scripts/smoke-test.js` ahora valida redirects de coach/admin a login cuando Supabase esta configurado; en dev placeholder lo reporta como `MANUAL_REQUIRED` porque el bypass es intencional.
+- El login web real ahora redirige por rol: owner a `/admin/dashboard`, coach a `/coach`, evitando que un owner autenticado caiga en una ruta de coach bloqueada.
+- El browser smoke ahora inicia sesion con `coach.smoke@forzza.app` y `owner.smoke@forzza.app` cuando Supabase esta configurado, y valida cobros/liquidaciones en contextos separados.
+- Se agrego migracion `20260616000004_add_assignment_routine_link.sql` para que `coach_assignments.routine_id` represente la rutina asignada actualmente al alumno.
+- El API `POST /api/coach/rutinas` ahora, despues de crear la rutina, vincula el assignment activo del alumno con `routine_id`, cerrando el flujo coach crea/asigna rutina -> ficha del alumno muestra rutina asignada.
+- El fixture y smoke REST validan que el assignment pagado activo apunta a la rutina smoke.
+- Se corrigio el redirect raiz de admin localizado para que `app/[locale]/admin/page.tsx` compile con `@/i18n/navigation`.
 
 ## Evidencia
 
 | Check | Resultado | Evidencia |
 |---|---:|---|
-| `pnpm --filter @forzza/core test` | PASS | 5 files, 49 tests passed; billing/gating 100% coverage |
+| `pnpm --filter @forzza/core test` | PASS | 6 files, 55 tests passed; incluye workout mobile start/log/finish y upsert sync |
 | `pnpm typecheck` | PASS | Turbo typecheck: 6 successful, 6 total |
 | `pnpm --filter mobile typecheck` | PASS | 0 TypeScript errors |
+| mobile locales JSON parse | PASS | `es.json` y `en.json` parsean con `ConvertFrom-Json` |
+| `pnpm --filter @forzza/core typecheck` | PASS | 0 TypeScript errors |
 | `pnpm --filter web typecheck` | PASS | 0 TypeScript errors |
+| `pnpm --filter @forzza/db-types typecheck` | PASS | 0 TypeScript errors |
 | `pnpm --filter web lint` | PASS | No ESLint warnings or errors |
 | `pnpm --filter web build` | PASS | Build completed with placeholders and `NEXT_STANDALONE=false` |
 | `pnpm smoke-test -- --url http://127.0.0.1:3001` | PASS | 30 PASS, 0 FAIL, 7 MANUAL_REQUIRED |
 | `BASE_URL=http://127.0.0.1:3001 pnpm e2e` | PASS | 80 passed, 1 skipped |
+| `pnpm smoke-test:fixtures` | PENDING | Requiere Docker/Supabase local con `supabase db reset` o `supabase seed --local` |
+| `node --check scripts/smoke-test.js` | PASS | Sintaxis JS valida |
+| `git diff --check` smoke/fixture files | PASS | Sin whitespace errors |
+| `pnpm typecheck` | PASS | Turbo typecheck: 6 successful, 6 total |
+| `pnpm test:rls` | BLOCKED_ENV | Postgres local `127.0.0.1:54322` rechazo conexion |
+| `supabase test db` | PENDING | Requiere Docker/Supabase local; cubre RLS con fixture smoke |
+| `supabase db lint` | BLOCKED_ENV | Postgres local `127.0.0.1:54322` no esta levantado |
+| `pnpm --filter web typecheck` | PASS | 0 TypeScript errors; corrido fuera del sandbox por EPERM en node_modules |
+| `node --check scripts/smoke-test.js` | PASS | Browser smoke autenticado tiene sintaxis valida |
 
 ## Smoke narrativo
 

@@ -3,3 +3,4 @@ export * from "./analytics";
 export * from "./billing";
 export * from "./gating";
 export * from "./schemas";
+export * from "./workout";

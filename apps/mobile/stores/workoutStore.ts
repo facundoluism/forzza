@@ -2,49 +2,17 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { randomUUID } from "expo-crypto";
+import {
+  createActiveWorkoutSession,
+  finishWorkoutSession as finishCoreWorkoutSession,
+  logWorkoutSet,
+  type ActiveWorkoutSession as ActiveSession,
+  type RoutineExerciseDefinition,
+  type WorkoutSetLog as SetLog,
+  type WorkoutSyncItem as SyncItem,
+} from "@forzza/core";
 
-export interface SetLog {
-  set_number: number;
-  reps: number | null;
-  weight_kg: number | null;
-  duration_seconds: number | null;
-  completed_at: string;
-}
-
-export interface ExerciseLog {
-  exercise_id: string;
-  sets: SetLog[];
-}
-
-/** Definición de un ejercicio de la rutina — transportada en la sesión activa */
-export interface RoutineExerciseDefinition {
-  exercise_id?: string;
-  name: string;
-  sets: number;
-  reps: string;
-  rest_seconds: number;
-  notes?: string;
-}
-
-export interface ActiveSession {
-  id: string;
-  client_uuid: string;
-  routine_id: string;
-  routine_name: string;
-  student_id: string; // requerido (NOT NULL) para el upsert a workout_sessions
-  started_at: string;
-  exercises: ExerciseLog[];
-  /** Definición completa de ejercicios de la rutina — para mostrar nombres y descanso real */
-  routineExercises: RoutineExerciseDefinition[];
-  status: "active" | "paused" | "completed";
-}
-
-export interface SyncItem {
-  client_uuid: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  payload: any;
-  retries: number;
-}
+export type { ActiveSession, RoutineExerciseDefinition, SetLog, SyncItem };
 
 interface WorkoutState {
   activeSession: ActiveSession | null;
@@ -78,46 +46,30 @@ export const useWorkoutStore = create<WorkoutStore>()(
       isOnline: true,
 
       startSession: (routine_id, routine_name, student_id, routineExercises) => {
-        const session: ActiveSession = {
-          id: randomUUID(),
-          client_uuid: randomUUID(),
-          routine_id,
-          routine_name,
-          student_id,
-          started_at: new Date().toISOString(),
-          exercises: [],
-          routineExercises: routineExercises ?? [],
-          status: "active",
-        };
-        set({ activeSession: session });
+        set({
+          activeSession: createActiveWorkoutSession({
+            id: randomUUID(),
+            clientUuid: randomUUID(),
+            routineId: routine_id,
+            routineName: routine_name,
+            studentId: student_id,
+            startedAt: new Date().toISOString(),
+            routineExercises: routineExercises ?? [],
+          }),
+        });
       },
 
       logSet: (exercise_id, set_data) => {
         const { activeSession } = get();
         if (!activeSession) return;
 
-        const exercises = [...activeSession.exercises];
-        const existingIdx = exercises.findIndex((e) => e.exercise_id === exercise_id);
-
-        const newSet: SetLog = {
-          ...set_data,
-          set_number: 1,
-          completed_at: new Date().toISOString(),
-        };
-
-        if (existingIdx >= 0) {
-          const existing = exercises[existingIdx]!;
-          newSet.set_number = existing.sets.length + 1;
-          exercises[existingIdx] = {
-            ...existing,
-            sets: [...existing.sets, newSet],
-          };
-        } else {
-          exercises.push({ exercise_id, sets: [newSet] });
-        }
-
         set({
-          activeSession: { ...activeSession, exercises },
+          activeSession: logWorkoutSet(
+            activeSession,
+            exercise_id,
+            set_data,
+            new Date().toISOString()
+          ),
         });
       },
 
@@ -137,29 +89,16 @@ export const useWorkoutStore = create<WorkoutStore>()(
         const { activeSession, syncQueue } = get();
         if (!activeSession) return;
 
-        const completedSession = { ...activeSession, status: "completed" as const };
-
-        const syncItem: SyncItem = {
-          client_uuid: activeSession.client_uuid,
-          payload: {
-            client_uuid: activeSession.client_uuid,
-            student_id: activeSession.student_id,    // requerido NOT NULL en workout_sessions
-            routine_id: activeSession.routine_id,
-            started_at: activeSession.started_at,
-            completed_at: new Date().toISOString(),  // columna real: completed_at (no finished_at)
-            sets_data: activeSession.exercises,       // columna real: sets_data (no exercises)
-            status: "completed",
-            routine_name: activeSession.routine_name, // solo para mostrar en UI local
-          },
-          retries: 0,
-        };
+        const { completedSession, syncItem } = finishCoreWorkoutSession(
+          activeSession,
+          new Date().toISOString()
+        );
 
         set({
           activeSession: completedSession,
           syncQueue: [...syncQueue, syncItem],
         });
 
-        // Clear session after adding to sync queue
         set({ activeSession: null });
       },
 

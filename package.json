@@ -19,6 +19,7 @@
     "clean": "turbo run clean && node scripts/clean.js",
     "validate-env": "node scripts/validate-env.js",
     "smoke-test": "node scripts/smoke-test.js",
+    "smoke-test:fixtures": "cross-env SMOKE_EXPECT_FIXTURES=1 node scripts/smoke-test.js",
     "smoke-test:staging": "node scripts/smoke-test.js --url https://staging.forzza.app"
   },
   "devDependencies": {

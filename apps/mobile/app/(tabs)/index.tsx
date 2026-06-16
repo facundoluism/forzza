@@ -28,6 +28,7 @@ interface StudentProfile {
 
 // Shape canónico del JSONB routines.exercises
 interface RoutineExercise {
+  exercise_id?: string;
   name: string;
   sets: number;
   reps: string;
@@ -120,6 +121,16 @@ function QuickStartButton({ onPress }: { onPress: () => void }): React.JSX.Eleme
       </Animated.View>
     </Pressable>
   );
+}
+
+function estimateRoutineMinutes(exercises: RoutineExercise[]): number {
+  const seconds = exercises.reduce((acc, exercise) => {
+    const setWorkSeconds = exercise.sets * 45;
+    const restSeconds = Math.max(0, exercise.sets - 1) * exercise.rest_seconds;
+    return acc + setWorkSeconds + restSeconds;
+  }, 0);
+
+  return Math.max(5, Math.ceil(seconds / 60));
 }
 
 export default function HomeTab(): React.JSX.Element {
@@ -215,6 +226,12 @@ export default function HomeTab(): React.JSX.Element {
   const isLoading = profileLoading || routineLoading || assignmentLoading;
   const isError = profileError || routineError;
   const hasCoach = activeAssignment !== null;
+  const routineExercises = routine?.exercises ?? [];
+  const routineExerciseCount = routineExercises.length;
+  const routineSetCount = routineExercises.reduce((acc, exercise) => acc + exercise.sets, 0);
+  const routineMinutes = routineExercises.length > 0 ? estimateRoutineMinutes(routineExercises) : 0;
+  const routinePreviewExercises = routineExercises.slice(0, 3);
+  const hiddenExerciseCount = Math.max(0, routineExerciseCount - routinePreviewExercises.length);
 
   if (isError) {
     return (
@@ -247,7 +264,48 @@ export default function HomeTab(): React.JSX.Element {
             onPress={() => router.push(`/routine/${routine.id}`)}
           >
             <Text style={styles.routineName}>{routine.title}</Text>
-            <Text style={styles.routineHint}>{t("home.touchToSeeExercises")}</Text>
+            <View style={styles.routineStatsRow}>
+              <View style={styles.routineStatPill}>
+                <Text style={styles.routineStatValue}>{routineExerciseCount}</Text>
+                <Text style={styles.routineStatLabel}>{t("home.summaryExercises")}</Text>
+              </View>
+              <View style={styles.routineStatPill}>
+                <Text style={styles.routineStatValue}>{routineSetCount}</Text>
+                <Text style={styles.routineStatLabel}>{t("home.summarySets")}</Text>
+              </View>
+              <View style={styles.routineStatPill}>
+                <Text style={styles.routineStatValue}>{routineMinutes}</Text>
+                <Text style={styles.routineStatLabel}>{t("home.summaryMinutes")}</Text>
+              </View>
+            </View>
+            {routinePreviewExercises.length > 0 && (
+              <View style={styles.routinePreviewList}>
+                <Text style={styles.routinePreviewTitle}>{t("home.nextExercises")}</Text>
+                {routinePreviewExercises.map((exercise, idx) => (
+                  <View key={`${exercise.exercise_id ?? exercise.name}-${idx}`} style={styles.routinePreviewRow}>
+                    <Text style={styles.routinePreviewIndex}>{idx + 1}</Text>
+                    <View style={styles.routinePreviewInfo}>
+                      <Text style={styles.routinePreviewName}>{exercise.name}</Text>
+                      <Text style={styles.routinePreviewMeta}>
+                        {t("home.exercisePlanLine", {
+                          sets: exercise.sets,
+                          reps: exercise.reps,
+                          rest: exercise.rest_seconds,
+                        })}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+                {hiddenExerciseCount > 0 && (
+                  <Text style={styles.routinePreviewMore}>
+                    {t("home.moreExercises", { count: hiddenExerciseCount })}
+                  </Text>
+                )}
+              </View>
+            )}
+            <View style={styles.routineCta}>
+              <Text style={styles.routineCtaText}>{t("home.openRoutine")}</Text>
+            </View>
           </Card>
         ) : hasCoach ? (
           <EmptyState
@@ -339,6 +397,106 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontSize: 22,
     letterSpacing: -0.5,
+    textTransform: "uppercase",
+  },
+  routineStatsRow: {
+    flexDirection: "row",
+    gap: spacing[2],
+    marginTop: spacing[2],
+  },
+  routineStatPill: {
+    flex: 1,
+    backgroundColor: colors.surface2,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingVertical: spacing[2],
+    alignItems: "center",
+  },
+  routineStatValue: {
+    fontFamily: typography.mono,
+    color: colors.lime,
+    fontSize: 17,
+    fontWeight: "700",
+  },
+  routineStatLabel: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: 10,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginTop: 2,
+  },
+  routinePreviewList: {
+    marginTop: spacing[3],
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    paddingTop: spacing[3],
+    gap: spacing[2],
+  },
+  routinePreviewTitle: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: 11,
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: 1,
+  },
+  routinePreviewRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: spacing[3],
+  },
+  routinePreviewIndex: {
+    width: 24,
+    height: 24,
+    borderRadius: radius.full,
+    backgroundColor: colors.surface2,
+    borderWidth: 1,
+    borderColor: colors.border,
+    textAlign: "center",
+    textAlignVertical: "center",
+    fontFamily: typography.mono,
+    color: colors.lime,
+    fontSize: 12,
+    lineHeight: 22,
+    fontWeight: "700",
+  },
+  routinePreviewInfo: {
+    flex: 1,
+  },
+  routinePreviewName: {
+    fontFamily: typography.body,
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: "700",
+  },
+  routinePreviewMeta: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: 12,
+    marginTop: 2,
+  },
+  routinePreviewMore: {
+    fontFamily: typography.body,
+    color: colors.gray500,
+    fontSize: 12,
+    fontWeight: "600",
+    marginLeft: 36,
+  },
+  routineCta: {
+    marginTop: spacing[3],
+    backgroundColor: colors.lime,
+    borderRadius: radius.md,
+    minHeight: 44,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  routineCtaText: {
+    fontFamily: typography.heading,
+    color: colors.black,
+    fontSize: 16,
+    letterSpacing: 0.5,
     textTransform: "uppercase",
   },
   routineHint: {
