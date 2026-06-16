@@ -42,6 +42,14 @@ Validacion enfocada en el flujo de negocio V1:
 - El API `POST /api/coach/rutinas` ahora, despues de crear la rutina, vincula el assignment activo del alumno con `routine_id`, cerrando el flujo coach crea/asigna rutina -> ficha del alumno muestra rutina asignada.
 - El fixture y smoke REST validan que el assignment pagado activo apunta a la rutina smoke.
 - Se corrigio el redirect raiz de admin localizado para que `app/[locale]/admin/page.tsx` compile con `@/i18n/navigation`.
+- Se corrigio middleware web para proteger `/coach` como segmento exacto sin bloquear `/coaches`, manteniendo marketplace publico.
+- Se habilito Supabase local en CSP `connect-src` para smoke auth contra `127.0.0.1:54321`.
+- El seed smoke completa tokens auth vacios para evitar 500 de GoTrue local en password login.
+- El input de numero de factura en coach/cobros ahora tiene `aria-label`, y el smoke valida esa accesibilidad.
+- El smoke ya no marca RLS como manual porque la suite se ejecuta aparte con `pnpm test:rls`.
+- Se actualizo el smoke mobile Maestro `e2e/flows/03-workout-session.yaml` para usar el alumno fixture: login, rutina asignada, ficha del ejercicio, carga de series, descanso y finalizacion.
+- Se agregaron `testID`/labels estables en mobile y UI native para que el flujo no dependa de textos visuales fragiles.
+- `package.json` agrega `pnpm smoke-test:mobile`.
 
 ## Evidencia
 
@@ -58,15 +66,19 @@ Validacion enfocada en el flujo de negocio V1:
 | `pnpm --filter web build` | PASS | Build completed with placeholders and `NEXT_STANDALONE=false` |
 | `pnpm smoke-test -- --url http://127.0.0.1:3001` | PASS | 30 PASS, 0 FAIL, 7 MANUAL_REQUIRED |
 | `BASE_URL=http://127.0.0.1:3001 pnpm e2e` | PASS | 80 passed, 1 skipped |
-| `pnpm smoke-test:fixtures` | PENDING | Requiere Docker/Supabase local con `supabase db reset` o `supabase seed --local` |
+| `supabase db reset` | PASS | Aplica migraciones y seeds base + `smoke-flow.sql` |
+| `pnpm smoke-test:fixtures -- --url http://localhost:3105` | PASS | 45 PASS, 0 FAIL, 3 MANUAL_REQUIRED |
 | `node --check scripts/smoke-test.js` | PASS | Sintaxis JS valida |
 | `git diff --check` smoke/fixture files | PASS | Sin whitespace errors |
 | `pnpm typecheck` | PASS | Turbo typecheck: 6 successful, 6 total |
-| `pnpm test:rls` | BLOCKED_ENV | Postgres local `127.0.0.1:54322` rechazo conexion |
-| `supabase test db` | PENDING | Requiere Docker/Supabase local; cubre RLS con fixture smoke |
-| `supabase db lint` | BLOCKED_ENV | Postgres local `127.0.0.1:54322` no esta levantado |
+| `pnpm test:rls` | PASS | Supabase local: 1 file, 32 RLS tests passed |
+| `supabase test db` | PASS | Ejecutado via `pnpm test:rls`; cubre `supabase/tests/rls_test.sql` |
+| `supabase db lint` | PASS | No schema errors found |
 | `pnpm --filter web typecheck` | PASS | 0 TypeScript errors; corrido fuera del sandbox por EPERM en node_modules |
 | `node --check scripts/smoke-test.js` | PASS | Browser smoke autenticado tiene sintaxis valida |
+| `pnpm --filter mobile typecheck` | PASS | 0 TypeScript errors despues de IDs/accessibility mobile |
+| `pnpm --filter @forzza/ui typecheck` | PASS | 0 TypeScript errors despues de `Card`/`Sheet` testID |
+| `pnpm smoke-test:mobile` | PENDING_ENV | Maestro no esta instalado en esta maquina; requiere simulador/dispositivo Expo |
 
 ## Smoke narrativo
 
@@ -76,16 +88,15 @@ PASS:
 - Upgrade PRO carga y expone plan PRO.
 - Onboarding coach avanza por Cuenta -> Fiscal -> Bancario -> Perfil publico.
 - Coach/cobros carga resumen de este mes y mes anterior.
+- Coach/cobros muestra numero de factura accesible antes de subir factura.
 - Admin/coaches carga tabs Pendientes/Aprobados/Rechazados/Suspendidos.
 - Admin/liquidaciones carga KPIs "Por aprobar" y "Listas para transferir".
+- Admin/liquidaciones permite marcar una factura aprobada como transferida con fixture local.
 - Marketplace publico carga.
+- Marketplace publico muestra al menos un coach aprobado del fixture.
 
 MANUAL_REQUIRED:
 
-- Interaccion real de carga de factura: falta fixture de settlement visible.
-- Accion admin "Marcar transferido": falta fixture de settlement aprobado.
-- Checkout marketplace: falta fixture de coach aprobado con paquete activo.
-- RLS: requiere Docker + `supabase start` + `pnpm test:rls`.
 - Mercado Pago sandbox end-to-end: requiere credenciales MP y webhook tunnel.
 - RevenueCat restore purchases: requiere productos sandbox App Store/Play.
 - Mobile device smoke: requiere Expo instalado en simulador/dispositivo para Maestro.
@@ -93,5 +104,7 @@ MANUAL_REQUIRED:
 ## Notas
 
 - El servidor en `127.0.0.1:3000` no correspondia a esta app web durante la validacion; se uso Next en `127.0.0.1:3001`.
+- Una corrida posterior de `pnpm smoke-test` sin `--url` termino por timeout y no se toma como evidencia; repetir con web levantada y URL explicita.
+- La corrida verde final uso Supabase local reseteado y Next en `http://localhost:3105`.
 - El build mantiene una advertencia de Supabase en Edge Runtime desde middleware; no bloquea build.
 - `NEXT_STANDALONE=true` queda reservado para entornos que permiten symlinks o despliegues Docker.

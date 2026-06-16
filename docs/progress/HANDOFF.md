@@ -20,6 +20,15 @@ Smoke integral y cierre de brechas V1 entre mobile, web coach/admin, Supabase y 
 - `scripts/smoke-test.js` valida que el assignment smoke pagado y activo apunte a la rutina smoke.
 - `apps/web/app/[locale]/admin/page.tsx` corrige redirect localizado para compilar con `@/i18n/navigation`.
 - `docs/progress/smoke-test-integral-2026-06-16.md` registra la nueva cobertura mobile/core.
+- `apps/web/middleware.ts` protege `/coach` como segmento exacto y deja publico `/coaches` marketplace.
+- `apps/web/next.config.ts` permite Supabase local en CSP `connect-src` para smoke auth local.
+- `supabase/seed/smoke-flow.sql` completa tokens auth vacios para que GoTrue local pueda autenticar usuarios smoke.
+- `apps/web/app/[locale]/coach/cobros/InvoiceUploadButton.tsx` agrega label accesible al numero de factura.
+- `scripts/smoke-test.js` valida fixtures REST, login coach/owner, cobros, liquidaciones admin y marketplace con 0 FAIL.
+- `e2e/flows/03-workout-session.yaml` queda convertido en smoke mobile real con alumno fixture: login, rutina de hoy, ficha de ejercicio, inicio de entreno, carga de series, descanso y finalizacion.
+- `apps/mobile` agrega IDs/accesibilidad para login, rutina de hoy, detalle de rutina y sesion de entrenamiento.
+- `packages/ui/native` propaga `testID` en `Card` clickeable y `Sheet`, para que Maestro pueda tocar tarjetas y validar fichas.
+- `package.json` agrega `pnpm smoke-test:mobile`.
 
 ## Validacion ejecutada
 
@@ -31,27 +40,32 @@ Smoke integral y cierre de brechas V1 entre mobile, web coach/admin, Supabase y 
 - `pnpm --filter web typecheck`: PASS.
 - `node --check scripts/smoke-test.js`: PASS.
 - `git diff --check` sobre archivos tocados: PASS.
-- `pnpm test:rls`: BLOCKED_ENV, Postgres local `127.0.0.1:54322` rechazo conexion.
+- `pnpm test:rls`: PASS, 32 tests RLS.
+- `supabase db lint`: PASS, no schema errors.
+- `supabase db reset`: PASS, aplica migraciones y seeds incluyendo `smoke-flow.sql`.
+- `pnpm smoke-test:fixtures -- --url http://localhost:3105`: PASS, 45 PASS, 0 FAIL, 3 MANUAL_REQUIRED.
+- `pnpm --filter mobile typecheck`: PASS despues de IDs mobile.
+- `pnpm --filter @forzza/ui typecheck`: PASS.
+- `package.json` parse: PASS.
 
 ## A medias / pendiente
 
-- No se corrio `supabase test db`: requiere Docker/Supabase local.
-- No se corrio `pnpm smoke-test:fixtures`: requiere `supabase db reset` o seed local con credenciales.
-- No se hizo smoke mobile en dispositivo/simulador Expo; el flujo queda cubierto por core test y typecheck, pero falta validacion interactiva.
+- No se ejecuto `pnpm smoke-test:mobile`: Maestro no esta instalado en esta maquina y falta simulador/dispositivo Expo.
+- Mercado Pago sandbox end-to-end y RevenueCat sandbox siguen fuera del entorno local automatizado.
 - No se hizo commit WIP porque el worktree tiene cambios mezclados y algunos parecen previos/no relacionados.
 
 ## Proximos 3 pasos exactos
 
-1. Levantar Supabase local y correr `pnpm test:rls` / `supabase test db` para validar policies con fixture smoke.
-2. Correr `pnpm smoke-test:fixtures` con `NEXT_PUBLIC_SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY` contra la instancia seed.
-3. Ejecutar smoke mobile manual/Expo: alumno entra, ve rutina, abre ficha de ejercicio, carga sets, completa sesion y verifica que queda en cola/sync.
+1. Instalar Maestro y ejecutar `pnpm smoke-test:mobile` con Expo apuntando al Supabase local seed.
+2. Probar Mercado Pago sandbox end-to-end con credenciales y webhook tunnel.
+3. Probar RevenueCat restore purchases con productos sandbox App Store/Play.
 
 ## HUMAN_REQUIRED
 
-- Docker/Supabase local o credenciales de staging para fixtures.
 - Credenciales sandbox Mercado Pago y webhook tunnel para checkout real.
 - Entorno Expo/simulador o dispositivo para smoke mobile interactivo.
+- Productos sandbox App Store/Play para RevenueCat.
 
 ## Prompt para retomar
 
-Continuar el objetivo activo de Forzza desde `docs/progress/HANDOFF.md`: validar Supabase/RLS con fixture smoke, correr smoke fixtures y cerrar smoke mobile interactivo.
+Continuar el objetivo activo de Forzza desde `docs/progress/HANDOFF.md`: cerrar smoke mobile interactivo, Mercado Pago sandbox y RevenueCat sandbox; smoke web/fixture/RLS local ya estan verdes.

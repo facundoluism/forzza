@@ -17,7 +17,18 @@ const variantBg: Record<CardVariant, string> = {
   surface3: colors.surface3,
 };
 
-export function Card({ padding = "md", variant = "surface", style, children, featured = false, onPress, ...rest }: CardProps) {
+export function Card({
+  padding = "md",
+  variant = "surface",
+  style,
+  children,
+  featured = false,
+  onPress,
+  testID,
+  accessibilityLabel,
+  accessible,
+  ...rest
+}: CardProps) {
   const scale = useRef(new Animated.Value(1)).current;
 
   const onPressIn = () =>
@@ -56,6 +67,9 @@ export function Card({ padding = "md", variant = "surface", style, children, fea
   if (onPress) {
     return (
       <Pressable
+        testID={testID}
+        accessibilityLabel={accessibilityLabel}
+        accessible={accessible ?? true}
         onPressIn={onPressIn}
         onPressOut={onPressOut}
         onPress={onPress}
@@ -66,7 +80,24 @@ export function Card({ padding = "md", variant = "surface", style, children, fea
     );
   }
 
-  return cardContent;
+  return (
+    <Animated.View
+      testID={testID}
+      accessibilityLabel={accessibilityLabel}
+      accessible={accessible}
+      style={[
+        styles.card,
+        { backgroundColor: variantBg[variant] },
+        styles[`padding_${padding}`],
+        featured && styles.featured,
+        style,
+      ]}
+      {...rest}
+    >
+      {featured && <View style={styles.featuredStrip} />}
+      {children}
+    </Animated.View>
+  );
 }
 
 const styles = StyleSheet.create({

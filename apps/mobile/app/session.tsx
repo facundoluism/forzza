@@ -29,13 +29,16 @@ interface NumberInputProps {
   value: string;
   onChangeText: (v: string) => void;
   placeholder?: string;
+  testID?: string;
 }
 
-function NumberInput({ label, value, onChangeText, placeholder = "0" }: NumberInputProps): React.JSX.Element {
+function NumberInput({ label, value, onChangeText, placeholder = "0", testID }: NumberInputProps): React.JSX.Element {
   return (
     <View style={styles.inputGroup}>
       <Text style={styles.inputLabel}>{label}</Text>
       <TextInput
+        testID={testID}
+        accessibilityLabel={label}
         style={styles.input}
         value={value}
         onChangeText={onChangeText}
@@ -86,6 +89,8 @@ function RestTimer({ seconds, onDone, restingLabel, skipLabel }: { seconds: numb
         <Text style={styles.restTimerTitle}>{restingLabel}</Text>
         <Text style={styles.restTimerCount}>{remaining}s</Text>
         <Pressable
+          testID="skip-rest-button"
+          accessibilityLabel={skipLabel}
           style={styles.restSkipBtn}
           onPress={onDone}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -108,6 +113,8 @@ function LogSetButton({ onPress, label }: { onPress: () => void; label: string }
 
   return (
     <Pressable
+      testID="log-set-button"
+      accessibilityLabel={label}
       onPressIn={onPressIn}
       onPressOut={onPressOut}
       onPress={onPress}
@@ -425,10 +432,11 @@ export default function SessionScreen(): React.JSX.Element | null {
             </Text>
             <View style={styles.inputRow}>
               <View style={styles.inputCell}>
-                <NumberInput label={t('session.reps')} value={reps} onChangeText={setReps} />
+                <NumberInput testID="reps-input" label={t('session.reps')} value={reps} onChangeText={setReps} />
               </View>
               <View style={styles.inputCell}>
                 <NumberInput
+                  testID="weight-input"
                   label={t('session.weightKg')}
                   value={weightKg}
                   onChangeText={setWeightKg}
@@ -437,6 +445,7 @@ export default function SessionScreen(): React.JSX.Element | null {
               </View>
             </View>
             <NumberInput
+              testID="duration-input"
               label={t('session.durationS')}
               value={durationSeconds}
               onChangeText={setDurationSeconds}
@@ -458,12 +467,14 @@ export default function SessionScreen(): React.JSX.Element | null {
         {/* Exercise navigation buttons */}
         <View style={styles.exerciseNav}>
           <Button
+            testID="previous-exercise-button"
             label={t('session.prevExercise')}
             variant="secondary"
             onPress={() => setCurrentExerciseIndex((i) => Math.max(0, i - 1))}
             disabled={currentExerciseIndex === 0}
           />
           <Button
+            testID="next-exercise-button"
             label={t('session.nextExercise')}
             variant="secondary"
             onPress={() =>
@@ -479,6 +490,7 @@ export default function SessionScreen(): React.JSX.Element | null {
       {/* Footer */}
       <View style={styles.footer}>
         <Button
+          testID="finish-workout-button"
           label={isSyncing ? t('session.saving') : t('session.finishTitle')}
           variant="danger"
           onPress={handleFinish}

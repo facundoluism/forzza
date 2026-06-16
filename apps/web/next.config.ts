@@ -34,7 +34,7 @@ const CSP = [
   // Supabase storage for images/avatars
   "img-src 'self' data: blob: https://*.supabase.co",
   // Supabase API, Mercado Pago SDK, PostHog, Sentry
-  "connect-src 'self' https://*.supabase.co https://api.mercadopago.com https://app.posthog.com https://ingest.sentry.io",
+  "connect-src 'self' https://*.supabase.co http://127.0.0.1:54321 http://localhost:54321 https://api.mercadopago.com https://app.posthog.com https://ingest.sentry.io",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

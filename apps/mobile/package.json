@@ -9,7 +9,9 @@
     "typecheck": "tsc --noEmit",
     "lint": "cross-env ESLINT_USE_FLAT_CONFIG=false eslint app/ components/",
     "lint:fix": "cross-env ESLINT_USE_FLAT_CONFIG=false eslint app/ components/ --fix",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "dependencies": {
     "@expo-google-fonts/bebas-neue": "^0.4.1",

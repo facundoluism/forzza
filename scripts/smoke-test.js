@@ -343,7 +343,7 @@ async function checkCoachBilling(page) {
   await visible(page, page.getByText(/Este mes/i), "coach sees current month earnings");
   await visible(page, page.getByText(/Mes anterior/i), "coach sees previous month earnings");
   if (await page.getByRole("button", { name: /Subir factura/i }).first().isVisible().catch(() => false)) {
-    await visible(page, page.getByPlaceholder(/Nro factura/i), "coach invoice upload requires invoice number");
+    await visible(page, page.getByLabel(/Número de factura/i), "coach invoice upload requires invoice number");
   } else {
     manual("coach invoice upload interaction", "no settlement fixture visible in current environment");
   }
@@ -459,7 +459,6 @@ async function main() {
   await runFixtureSmoke();
   await runBrowserSmoke();
 
-  manual("RLS access-crossing suite", "requires Docker + supabase start + pnpm test:rls");
   manual("Mercado Pago sandbox end-to-end", "requires MP sandbox credentials and webhook tunnel");
   manual("RevenueCat restore purchases", "requires App Store/Play sandbox products");
   manual("Mobile device smoke", "requires Expo app installed on simulator/device for Maestro flows");

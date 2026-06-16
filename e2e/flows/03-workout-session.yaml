@@ -1,20 +1,64 @@
 appId: com.forzza.app
+# Preconditions:
+# - Run `supabase db reset` from the repo root so smoke-flow.sql is loaded.
+# - Start the mobile app with EXPO_PUBLIC_SUPABASE_URL / ANON_KEY pointing to
+#   the same Supabase instance. Android emulator usually needs 10.0.2.2
+#   instead of 127.0.0.1.
 ---
-- launchApp
-- assertVisible: "Tu entrenamiento"
-- tapOn: "Rutinas"
-- assertVisible: "Mis rutinas"
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: "email-input"
+- inputText:
+    id: "email-input"
+    text: "alumno.smoke@forzza.app"
+- inputText:
+    id: "password-input"
+    text: "ForzzaSmoke123!"
 - tapOn:
-    text: "Ver rutina"
-    index: 0
-- assertVisible: "Iniciar entreno"
-- tapOn: "Iniciar entreno"
-- assertVisible: "Serie 1"
+    id: "login-submit"
+- assertVisible:
+    id: "today-routine-card"
+- tapOn:
+    id: "today-routine-card"
+- assertVisible:
+    id: "start-workout-button"
+- tapOn:
+    id: "routine-exercise-0"
+- assertVisible:
+    id: "exercise-preview-sheet"
+- back
+- tapOn:
+    id: "start-workout-button"
+- assertVisible:
+    id: "reps-input"
 - inputText:
     id: "reps-input"
     text: "10"
-- tapOn: "Registrar serie"
-- assertVisible: "Serie 2"
+- inputText:
+    id: "weight-input"
+    text: "40"
+- tapOn:
+    id: "log-set-button"
+- assertVisible:
+    id: "skip-rest-button"
+- tapOn:
+    id: "skip-rest-button"
+- tapOn:
+    id: "next-exercise-button"
+- assertVisible:
+    id: "reps-input"
+- inputText:
+    id: "reps-input"
+    text: "12"
+- tapOn:
+    id: "log-set-button"
+- assertVisible:
+    id: "skip-rest-button"
+- tapOn:
+    id: "skip-rest-button"
+- tapOn:
+    id: "finish-workout-button"
 - tapOn: "Finalizar"
-- tapOn: "Confirmar"
-- assertVisible: "Tu entrenamiento"
+- assertVisible:
+    id: "today-routine-card"

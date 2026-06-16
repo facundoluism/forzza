@@ -56,6 +56,8 @@ export default function LoginScreen() {
         <Text style={styles.subtitle}>{t('auth.login.title')}</Text>
 
         <TextInput
+          testID="email-input"
+          accessibilityLabel={t('auth.login.email')}
           style={styles.input}
           placeholder={t('auth.login.email')}
           placeholderTextColor="#6A6A6A"
@@ -67,6 +69,8 @@ export default function LoginScreen() {
         />
 
         <TextInput
+          testID="password-input"
+          accessibilityLabel={t('auth.login.password')}
           style={styles.input}
           placeholder={t('auth.login.password')}
           placeholderTextColor="#6A6A6A"
@@ -79,6 +83,8 @@ export default function LoginScreen() {
         {error && <Text style={styles.error}>{error}</Text>}
 
         <TouchableOpacity
+          testID="login-submit"
+          accessibilityLabel={t('auth.login.submit')}
           style={[styles.button, loading && styles.buttonDisabled]}
           onPress={() => { void handleLogin(); }}
           disabled={loading}

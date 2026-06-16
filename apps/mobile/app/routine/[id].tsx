@@ -99,7 +99,12 @@ function ExerciseRow({ item, index, libraryEntry, onPress, restLabel }: Exercise
   }
 
   return (
-    <Pressable onPress={onPress} android_ripple={{ color: colors.limeGlow }}>
+    <Pressable
+      testID={`routine-exercise-${index}`}
+      accessibilityLabel={`${displayName}. ${label}${rest ? `. ${rest}` : ""}`}
+      onPress={onPress}
+      android_ripple={{ color: colors.limeGlow }}
+    >
       {content}
     </Pressable>
   );
@@ -267,6 +272,7 @@ export default function RoutineDetailScreen() {
           </View>
         ) : (
           <Button
+            testID="start-workout-button"
             label={t('routineDetail.startWorkout')}
             onPress={handleStartSession}
             fullWidth

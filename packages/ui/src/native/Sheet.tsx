@@ -19,9 +19,10 @@ export interface SheetProps {
   onClose: () => void;
   children: ReactNode;
   snapPoints?: number[];
+  testID?: string;
 }
 
-export function Sheet({ visible, onClose, children, snapPoints }: SheetProps) {
+export function Sheet({ visible, onClose, children, snapPoints, testID }: SheetProps) {
   const snap = snapPoints?.[0] ?? DEFAULT_SNAP;
   const translateY = useRef(new Animated.Value(snap)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
@@ -92,6 +93,7 @@ export function Sheet({ visible, onClose, children, snapPoints }: SheetProps) {
           <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
         </Animated.View>
         <Animated.View
+          testID={testID}
           style={[styles.sheet, { transform: [{ translateY }], height: snap }]}
         >
           <View {...panResponder.panHandlers} style={styles.handleArea}>

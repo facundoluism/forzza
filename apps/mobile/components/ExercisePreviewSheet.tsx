@@ -277,7 +277,12 @@ export function ExercisePreviewSheet({
   };
 
   return (
-    <Sheet visible={exerciseId !== null} onClose={onClose} snapPoints={[620]}>
+    <Sheet
+      visible={exerciseId !== null}
+      onClose={onClose}
+      snapPoints={[620]}
+      testID="exercise-preview-sheet"
+    >
       {renderBody()}
     </Sheet>
   );

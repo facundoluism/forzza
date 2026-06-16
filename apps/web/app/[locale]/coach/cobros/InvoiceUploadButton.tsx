@@ -76,6 +76,7 @@ export function InvoiceUploadButton({ settlementId }: Props) {
       <input
         value={invoiceNumber}
         onChange={(e) => setInvoiceNumber(e.target.value)}
+        aria-label={t("cobros.upload.invoiceNumber")}
         placeholder={t("cobros.upload.invoicePlaceholder")}
         className="w-32 rounded-lg border border-border bg-bg px-2 py-1.5 text-right text-xs text-text placeholder:text-muted focus:border-[#C8FF00] focus:outline-none"
       />

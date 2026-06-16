@@ -4,3 +4,9 @@
 
 expo-env.d.ts
 # @end expo-cli
+
+# Proyectos nativos generados por `expo prebuild` / `expo run` — regenerables,
+# NO se commitean en workflow Expo managed (incluyen keystores y binarios).
+/android
+/ios
+.expo

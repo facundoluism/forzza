@@ -259,6 +259,8 @@ export default function HomeTab(): React.JSX.Element {
           <SkeletonCard />
         ) : routine ? (
           <Card
+            testID="today-routine-card"
+            accessibilityLabel={t("home.todayRoutine")}
             featured
             style={styles.routineCard}
             onPress={() => router.push(`/routine/${routine.id}`)}
@@ -304,7 +306,7 @@ export default function HomeTab(): React.JSX.Element {
               </View>
             )}
             <View style={styles.routineCta}>
-              <Text style={styles.routineCtaText}>{t("home.openRoutine")}</Text>
+              <Text testID="open-routine-button" style={styles.routineCtaText}>{t("home.openRoutine")}</Text>
             </View>
           </Card>
         ) : hasCoach ? (

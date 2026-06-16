@@ -23,6 +23,10 @@ function loginPathFor(pathname: string): string {
   return "/login";
 }
 
+function isRouteSegment(pathname: string, segment: string): boolean {
+  return pathname === segment || pathname.startsWith(`${segment}/`);
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -65,7 +69,8 @@ export async function middleware(request: NextRequest) {
 
   // Only protect /coach/* and /admin/* routes.
   const needsAuth =
-    canonicalPath.startsWith("/coach") || canonicalPath.startsWith("/admin");
+    isRouteSegment(canonicalPath, "/coach") ||
+    isRouteSegment(canonicalPath, "/admin");
 
   if (!needsAuth) return intlResponse;
 
@@ -107,14 +112,14 @@ export async function middleware(request: NextRequest) {
     .single();
 
   if (
-    canonicalPath.startsWith("/admin") &&
+    isRouteSegment(canonicalPath, "/admin") &&
     userData?.role !== "owner"
   ) {
     return NextResponse.redirect(new URL(loginPathFor(pathname), request.url));
   }
 
   if (
-    canonicalPath.startsWith("/coach") &&
+    isRouteSegment(canonicalPath, "/coach") &&
     userData?.role !== "coach"
   ) {
     return NextResponse.redirect(new URL(loginPathFor(pathname), request.url));
