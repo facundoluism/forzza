@@ -10,11 +10,13 @@ import {
   Platform,
 } from "react-native";
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import { loginSchema, TRACKED_EVENTS } from "@forzza/core";
 import { track } from "@/lib/analytics";
 
 export default function LoginScreen() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +26,7 @@ export default function LoginScreen() {
     setError(null);
     const result = loginSchema.safeParse({ email, password });
     if (!result.success) {
-      setError(result.error.errors[0]?.message ?? "Datos inválidos");
+      setError(result.error.errors[0]?.message ?? t('auth.login.errorInvalidData'));
       return;
     }
 
@@ -35,7 +37,7 @@ export default function LoginScreen() {
     });
 
     if (authError) {
-      setError("Email o contraseña incorrectos");
+      setError(t('auth.login.errorInvalidCredentials'));
       setLoading(false);
       return;
     }
@@ -51,11 +53,11 @@ export default function LoginScreen() {
     >
       <View style={styles.content}>
         <Text style={styles.logo}>FORZZA</Text>
-        <Text style={styles.subtitle}>Iniciá sesión en tu cuenta</Text>
+        <Text style={styles.subtitle}>{t('auth.login.title')}</Text>
 
         <TextInput
           style={styles.input}
-          placeholder="Email"
+          placeholder={t('auth.login.email')}
           placeholderTextColor="#6A6A6A"
           value={email}
           onChangeText={setEmail}
@@ -66,7 +68,7 @@ export default function LoginScreen() {
 
         <TextInput
           style={styles.input}
-          placeholder="Contraseña"
+          placeholder={t('auth.login.password')}
           placeholderTextColor="#6A6A6A"
           value={password}
           onChangeText={setPassword}
@@ -83,7 +85,7 @@ export default function LoginScreen() {
         >
           {loading
             ? <ActivityIndicator color="#0A0A0A" />
-            : <Text style={styles.buttonText}>Iniciar sesión</Text>
+            : <Text style={styles.buttonText}>{t('auth.login.submit')}</Text>
           }
         </TouchableOpacity>
 
@@ -91,14 +93,14 @@ export default function LoginScreen() {
           onPress={() => router.push("/(auth)/signup")}
           style={styles.link}
         >
-          <Text style={styles.linkText}>¿No tenés cuenta? Registrate</Text>
+          <Text style={styles.linkText}>{t('auth.login.noAccount')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={() => router.push("/(auth)/forgot-password")}
           style={styles.link}
         >
-          <Text style={styles.linkTextMuted}>Olvidé mi contraseña</Text>
+          <Text style={styles.linkTextMuted}>{t('auth.login.forgotPassword')}</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>

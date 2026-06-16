@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useLayoutEffect } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,8 @@ import {
   StyleSheet,
   type ListRenderItemInfo,
 } from "react-native";
+import { useNavigation } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { CoachCard, type CoachCardData } from "@/components/CoachCard";
@@ -33,7 +35,13 @@ function CoachCardSkeleton() {
 }
 
 export default function MarketplaceScreen() {
+  const { t } = useTranslation();
+  const navigation = useNavigation();
   const [search, setSearch] = useState("");
+
+  useLayoutEffect(() => {
+    navigation.setOptions({ title: t('marketplace.index.screenTitle') });
+  }, [t, navigation]);
 
   const { data: coaches, isLoading, isError, refetch } = useQuery({
     queryKey: ["marketplace_coaches"],
@@ -86,9 +94,9 @@ export default function MarketplaceScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Coaches</Text>
+        <Text style={styles.title}>{t('marketplace.index.screenTitle')}</Text>
         <Text style={styles.subtitle}>
-          Encontrá al coach ideal para tus objetivos
+          {t('marketplace.index.subtitle')}
         </Text>
       </View>
 
@@ -96,7 +104,7 @@ export default function MarketplaceScreen() {
       <View style={styles.searchWrapper}>
         <TextInput
           style={styles.searchInput}
-          placeholder="Buscar por nombre..."
+          placeholder={t('marketplace.index.searchPlaceholder')}
           placeholderTextColor={colors.gray500}
           value={search}
           onChangeText={setSearch}
@@ -114,8 +122,8 @@ export default function MarketplaceScreen() {
         </View>
       ) : isError ? (
         <ErrorState
-          title="No pudimos cargar los coaches"
-          description="Revisá tu conexión e intentá de nuevo."
+          title={t('marketplace.index.errorTitle')}
+          description={t('marketplace.index.errorDesc')}
           onRetry={() => void refetch()}
         />
       ) : (
@@ -127,11 +135,11 @@ export default function MarketplaceScreen() {
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <EmptyState
-              title="No hay coaches disponibles"
+              title={t('marketplace.index.emptyTitle')}
               description={
                 search
-                  ? `No encontramos coaches con ese nombre.`
-                  : "No hay coaches aprobados todavía. Volvé pronto."
+                  ? t('marketplace.index.emptyNoResults')
+                  : t('marketplace.index.emptyNoneApproved')
               }
               icon="🔍"
             />

@@ -8,11 +8,13 @@ import {
   Alert,
   Linking,
 } from "react-native";
+import { useNavigation } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { restorePurchases } from "@/services/revenuecat";
 import { colors, spacing, radius, typography } from "@forzza/ui/tokens";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import { TRACKED_EVENTS } from "@forzza/core";
 import { track } from "@/lib/analytics";
 
@@ -26,25 +28,6 @@ interface PlanFeature {
   text: string;
   available: boolean;
 }
-
-const FREE_FEATURES: PlanFeature[] = [
-  { text: "Hasta 3 rutinas", available: true },
-  { text: "Historial últimos 10 días", available: true },
-  { text: "Tracking de series y reps", available: true },
-  { text: "Historial completo", available: false },
-  { text: "Rutinas ilimitadas", available: false },
-  { text: "Métricas corporales", available: false },
-];
-
-const PRO_FEATURES: PlanFeature[] = [
-  { text: "Rutinas ilimitadas", available: true },
-  { text: "Historial completo sin límites", available: true },
-  { text: "Tracking de series y reps", available: true },
-  { text: "Métricas corporales", available: true },
-  { text: "Fotos de progreso", available: true },
-  { text: "Soporte prioritario", available: true },
-  { text: "Acceso anticipado a nuevas funciones", available: true },
-];
 
 function FeatureRow({ feature }: { feature: PlanFeature }) {
   return (
@@ -70,12 +53,35 @@ function FeatureRow({ feature }: { feature: PlanFeature }) {
 }
 
 export default function UpgradeScreen() {
+  const { t } = useTranslation();
+  const navigation = useNavigation();
   const [activating, setActivating] = useState(false);
   const [restoring, setRestoring] = useState(false);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({ title: t('upgrade.screenTitle') });
+  }, [t, navigation]);
 
   useEffect(() => {
     track(TRACKED_EVENTS.UPGRADE_MODAL_SHOWN);
   }, []);
+
+  const FREE_FEATURES: PlanFeature[] = [
+    { text: t('upgrade.free_feat1'), available: true },
+    { text: t('upgrade.free_feat2'), available: true },
+    { text: t('upgrade.free_feat3'), available: true },
+    { text: t('upgrade.free_feat4'), available: true },
+    { text: t('upgrade.pro_feat2'), available: false },
+    { text: t('upgrade.pro_feat1'), available: false },
+  ];
+
+  const PRO_FEATURES: PlanFeature[] = [
+    { text: t('upgrade.pro_feat1'), available: true },
+    { text: t('upgrade.pro_feat2'), available: true },
+    { text: t('upgrade.pro_feat3'), available: true },
+    { text: t('upgrade.pro_feat4'), available: true },
+    { text: t('upgrade.pro_feat5'), available: true },
+  ];
 
   const { data: config, isLoading: configLoading } = useQuery<CountryConfig>({
     queryKey: ["country-config"],
@@ -111,15 +117,15 @@ export default function UpgradeScreen() {
 
       if (error || !data?.init_point) {
         Alert.alert(
-          "Error",
-          error?.message ?? "No se pudo iniciar el pago. Intentá de nuevo."
+          t('upgrade.errorPurchaseTitle'),
+          error?.message ?? t('upgrade.errorPurchaseDesc')
         );
         return;
       }
 
       await Linking.openURL(data.init_point);
     } catch {
-      Alert.alert("Error", "No se pudo conectar con el servidor.");
+      Alert.alert(t('upgrade.errorPurchaseTitle'), t('upgrade.errorPurchaseDesc'));
     } finally {
       setActivating(false);
     }
@@ -131,11 +137,11 @@ export default function UpgradeScreen() {
       const result = await restorePurchases();
       if (!result.success) {
         Alert.alert(
-          "Restaurar compra",
-          result.error ?? "No se encontraron compras previas."
+          t('upgrade.errorRestoreTitle'),
+          result.error ?? t('upgrade.errorRestoreDesc')
         );
       } else {
-        Alert.alert("Listo", "Tu suscripción fue restaurada.");
+        Alert.alert(t('upgrade.screenTitle'), t('upgrade.restoreSuccess'));
       }
     } finally {
       setRestoring(false);
@@ -149,18 +155,18 @@ export default function UpgradeScreen() {
     >
       {/* Header */}
       <Text style={styles.title}>
-        Elegí tu{" "}
-        <Text style={{ color: colors.lime }}>plan</Text>
+        {t('upgrade.title').split(' ').slice(0, -1).join(' ')}{" "}
+        <Text style={{ color: colors.lime }}>{t('upgrade.title').split(' ').at(-1)}</Text>
       </Text>
       <Text style={styles.subtitle}>
-        Empezá gratis y actualizá cuando estés listo.
+        {t('upgrade.subtitle')}
       </Text>
 
       {/* Free card */}
       <View style={[styles.card, styles.cardFree]}>
         <Text style={styles.cardName}>Free</Text>
         <Text style={styles.cardPrice}>$0</Text>
-        <Text style={styles.cardPriceNote}>Para siempre gratis</Text>
+        <Text style={styles.cardPriceNote}>{t('upgrade.freePlanName')}</Text>
         <View style={styles.features}>
           {FREE_FEATURES.map((f) => (
             <FeatureRow key={f.text} feature={f} />
@@ -168,7 +174,7 @@ export default function UpgradeScreen() {
         </View>
         <View style={[styles.ctaButton, styles.ctaButtonFree]}>
           <Text style={[styles.ctaLabel, { color: colors.white }]}>
-            Tu plan actual
+            {t('upgrade.currentPlan')}
           </Text>
         </View>
       </View>
@@ -176,12 +182,12 @@ export default function UpgradeScreen() {
       {/* PRO card */}
       <View style={[styles.card, styles.cardPro]}>
         <View style={styles.recommendedBadge}>
-          <Text style={styles.recommendedText}>RECOMENDADO</Text>
+          <Text style={styles.recommendedText}>{t('upgrade.recommended')}</Text>
         </View>
         <Text style={[styles.cardName, { color: colors.lime }]}>PRO</Text>
         <Text style={styles.cardPrice}>{formatPrice()}</Text>
         <Text style={styles.cardPriceNote}>
-          por mes · cancelá cuando quieras
+          {t('upgrade.perMonth')}
         </Text>
         <View style={styles.features}>
           {PRO_FEATURES.map((f) => (
@@ -199,7 +205,7 @@ export default function UpgradeScreen() {
             <ActivityIndicator color={colors.black} />
           ) : (
             <Text style={[styles.ctaLabel, { color: colors.black }]}>
-              Activar PRO
+              {t('upgrade.activatePro')}
             </Text>
           )}
         </TouchableOpacity>
@@ -216,13 +222,12 @@ export default function UpgradeScreen() {
         {restoring ? (
           <ActivityIndicator color={colors.gray400} size="small" />
         ) : (
-          <Text style={styles.restoreLabel}>Restaurar compra</Text>
+          <Text style={styles.restoreLabel}>{t('upgrade.restorePurchase')}</Text>
         )}
       </TouchableOpacity>
 
       <Text style={styles.footerNote}>
-        Todos los precios en ARS. Sin sorpresas: cancelá en cualquier momento
-        desde tu perfil.
+        {t('upgrade.priceNote')}
       </Text>
     </ScrollView>
   );

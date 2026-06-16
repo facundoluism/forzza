@@ -439,6 +439,8 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          description_en: string | null
+          description_es: string | null
           difficulty: string | null
           equipment: string[] | null
           icon_id: string | null
@@ -458,6 +460,8 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
+          description_en?: string | null
+          description_es?: string | null
           difficulty?: string | null
           equipment?: string[] | null
           icon_id?: string | null
@@ -477,6 +481,8 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
+          description_en?: string | null
+          description_es?: string | null
           difficulty?: string | null
           equipment?: string[] | null
           icon_id?: string | null

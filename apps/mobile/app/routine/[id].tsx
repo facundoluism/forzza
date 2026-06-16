@@ -9,6 +9,7 @@ import {
   Pressable,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
@@ -51,13 +52,14 @@ interface ExerciseRowProps {
   index: number;
   libraryEntry: ExerciseLibraryEntry | null;
   onPress: () => void;
+  restLabel: string;
 }
 
-function ExerciseRow({ item, index, libraryEntry, onPress }: ExerciseRowProps) {
+function ExerciseRow({ item, index, libraryEntry, onPress, restLabel }: ExerciseRowProps) {
   const icon = getExerciseIcon(libraryEntry?.icon_id ?? null);
   const displayName = libraryEntry?.name ?? item.name;
   const label = `${item.sets} x ${item.reps}`;
-  const rest = item.rest_seconds > 0 ? `Descanso: ${item.rest_seconds}s` : null;
+  const rest = item.rest_seconds > 0 ? restLabel : null;
   const isTappable = !!item.exercise_id;
 
   const content = (
@@ -106,6 +108,7 @@ function ExerciseRow({ item, index, libraryEntry, onPress }: ExerciseRowProps) {
 export default function RoutineDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const startSession = useWorkoutStore((s) => s.startSession);
   const activeSession = useWorkoutStore((s) => s.activeSession);
@@ -192,11 +195,11 @@ export default function RoutineDetailScreen() {
     return (
       <View style={styles.container}>
         <TouchableOpacity style={[styles.backBtn, { paddingTop: insets.top + spacing[2] }]} onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 20, right: 20 }}>
-          <Text style={styles.backBtnText}>‹ Volver</Text>
+          <Text style={styles.backBtnText}>{t('routineDetail.back')}</Text>
         </TouchableOpacity>
         <EmptyState
-          title="No se pudo cargar la rutina"
-          description="Revisá tu conexión e intentá de nuevo."
+          title={t('routineDetail.errorTitle')}
+          description={t('routineDetail.errorDesc')}
           icon="⚠️"
         />
       </View>
@@ -208,7 +211,7 @@ export default function RoutineDetailScreen() {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={[styles.backBtn, { paddingTop: insets.top + spacing[2] }]} onPress={() => router.back()}>
-        <Text style={styles.backBtnText}>‹ Volver</Text>
+        <Text style={styles.backBtnText}>{t('routineDetail.back')}</Text>
       </TouchableOpacity>
 
       <ScrollView
@@ -218,15 +221,14 @@ export default function RoutineDetailScreen() {
       >
         <Text style={styles.routineTitle}>{routine.title}</Text>
         <Text style={styles.exerciseCount}>
-          {exercises.length}{" "}
-          {exercises.length === 1 ? "ejercicio" : "ejercicios"}
+          {t('routineDetail.exercise', { count: exercises.length })}
         </Text>
 
         <View style={styles.exerciseList}>
           {exercises.length === 0 ? (
             <EmptyState
-              title="Esta rutina no tiene ejercicios"
-              description="Tu coach todavía no agregó ejercicios."
+              title={t('routineDetail.emptyTitle')}
+              description={t('routineDetail.emptyDesc')}
               icon="📋"
             />
           ) : (
@@ -239,6 +241,7 @@ export default function RoutineDetailScreen() {
                   item={ex}
                   index={idx}
                   libraryEntry={libraryEntry}
+                  restLabel={t('routineDetail.restSeconds', { n: ex.rest_seconds })}
                   onPress={() => {
                     if (ex.exercise_id) setSelectedExerciseId(ex.exercise_id);
                   }}
@@ -253,10 +256,10 @@ export default function RoutineDetailScreen() {
         {hasActiveSession ? (
           <View style={styles.activeSessionNotice}>
             <Text style={styles.activeSessionText}>
-              Ya tenés un entreno activo
+              {t('routineDetail.activeWorkoutTitle')}
             </Text>
             <Button
-              label="Continuar entreno"
+              label={t('routineDetail.continueWorkout')}
               onPress={() => router.push("/session")}
               fullWidth
               variant="secondary"
@@ -264,7 +267,7 @@ export default function RoutineDetailScreen() {
           </View>
         ) : (
           <Button
-            label="Iniciar entreno"
+            label={t('routineDetail.startWorkout')}
             onPress={handleStartSession}
             fullWidth
             size="lg"

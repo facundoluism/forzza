@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useLayoutEffect } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,8 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useNavigation } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
 import { EmptyState } from "@forzza/ui/native";
@@ -25,27 +26,14 @@ interface Notification {
   created_at: string;
 }
 
-function timeAgo(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
-  const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return "ahora";
-  if (minutes < 60) return `hace ${minutes}m`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `hace ${hours}h`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `hace ${days}d`;
-  return new Date(iso).toLocaleDateString("es-AR", {
-    day: "numeric",
-    month: "short",
-  });
-}
-
 function NotificationItem({
   item,
   onPress,
+  timeLabel,
 }: {
   item: Notification;
   onPress: () => void;
+  timeLabel: string;
 }): React.JSX.Element {
   const isUnread = item.read_at === null;
 
@@ -66,7 +54,7 @@ function NotificationItem({
           >
             {item.title}
           </Text>
-          <Text style={styles.itemTime}>{timeAgo(item.created_at)}</Text>
+          <Text style={styles.itemTime}>{timeLabel}</Text>
         </View>
         <Text style={styles.itemBody} numberOfLines={3}>
           {item.body}
@@ -102,6 +90,8 @@ function navigateForType(
 }
 
 export default function NotificationsScreen(): React.JSX.Element {
+  const { t } = useTranslation();
+  const navigation = useNavigation();
   const { user } = useAuth();
   const router = useRouter();
   const channelRef = useRef<RealtimeChannel | null>(null);
@@ -111,6 +101,25 @@ export default function NotificationsScreen(): React.JSX.Element {
   const [markingAll, setMarkingAll] = useState(false);
 
   const unreadCount = notifications.filter((n) => n.read_at === null).length;
+
+  useLayoutEffect(() => {
+    navigation.setOptions({ title: t('notifications.screenTitle') });
+  }, [t, navigation]);
+
+  function timeAgo(iso: string): string {
+    const diff = Date.now() - new Date(iso).getTime();
+    const minutes = Math.floor(diff / 60000);
+    if (minutes < 1) return t('notifications.timeNow');
+    if (minutes < 60) return t('notifications.timeMinutes', { n: minutes });
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return t('notifications.timeHours', { n: hours });
+    const days = Math.floor(hours / 24);
+    if (days < 7) return t('notifications.timeDays', { n: days });
+    return new Date(iso).toLocaleDateString(undefined, {
+      day: "numeric",
+      month: "short",
+    });
+  }
 
   const loadNotifications = useCallback(async () => {
     if (!user) return;
@@ -228,7 +237,7 @@ export default function NotificationsScreen(): React.JSX.Element {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Notificaciones</Text>
+        <Text style={styles.headerTitle}>{t('notifications.screenTitle')}</Text>
         {unreadCount > 0 && (
           <TouchableOpacity
             onPress={() => void markAllAsRead()}
@@ -238,7 +247,7 @@ export default function NotificationsScreen(): React.JSX.Element {
             style={styles.markAllBtn}
           >
             <Text style={styles.markAllText}>
-              {markingAll ? "Marcando..." : "Marcar todas como leídas"}
+              {markingAll ? t('notifications.markingRead') : t('notifications.markAllRead')}
             </Text>
           </TouchableOpacity>
         )}
@@ -246,8 +255,8 @@ export default function NotificationsScreen(): React.JSX.Element {
 
       {notifications.length === 0 ? (
         <EmptyState
-          title="Sin notificaciones"
-          description="Tus notificaciones van a aparecer acá."
+          title={t('notifications.emptyTitle')}
+          description={t('notifications.emptyDesc')}
           icon="🔔"
         />
       ) : (
@@ -258,6 +267,7 @@ export default function NotificationsScreen(): React.JSX.Element {
             <NotificationItem
               item={item}
               onPress={() => handlePress(item)}
+              timeLabel={timeAgo(item.created_at)}
             />
           )}
           contentContainerStyle={styles.list}

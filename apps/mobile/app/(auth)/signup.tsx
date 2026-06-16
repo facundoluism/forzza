@@ -11,11 +11,13 @@ import {
   ScrollView,
 } from "react-native";
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import { signupSchema, TRACKED_EVENTS } from "@forzza/core";
 import { track } from "@/lib/analytics";
 
 export default function SignupScreen() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -27,7 +29,7 @@ export default function SignupScreen() {
     setError(null);
     const result = signupSchema.safeParse({ email, password, confirmPassword });
     if (!result.success) {
-      setError(result.error.errors[0]?.message ?? "Datos inválidos");
+      setError(result.error.errors[0]?.message ?? t('auth.login.errorInvalidData'));
       return;
     }
 
@@ -38,7 +40,7 @@ export default function SignupScreen() {
     });
 
     if (authError) {
-      setError("No se pudo crear la cuenta. Intentá con otro email.");
+      setError(t('auth.signup.errorCreate'));
       setLoading(false);
       return;
     }
@@ -53,13 +55,13 @@ export default function SignupScreen() {
       <View style={[styles.container, { justifyContent: "center", alignItems: "center", padding: 24 }]}>
         <Text style={{ fontSize: 64, marginBottom: 24 }}>📧</Text>
         <Text style={{ color: "#FAFAFA", fontSize: 24, fontWeight: "bold", marginBottom: 12, textAlign: "center" }}>
-          ¡Revisá tu email!
+          {t('auth.signup.successTitle')}
         </Text>
         <Text style={{ color: "#AAAAAA", textAlign: "center", lineHeight: 22 }}>
-          Te enviamos un link de verificación. Una vez que lo confirmes, podés iniciar sesión.
+          {t('auth.signup.successDesc')}
         </Text>
         <TouchableOpacity onPress={() => router.push("/(auth)/login")} style={[styles.button, { marginTop: 32 }]}>
-          <Text style={styles.buttonText}>Ir al inicio de sesión</Text>
+          <Text style={styles.buttonText}>{t('auth.signup.goToLogin')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -72,11 +74,11 @@ export default function SignupScreen() {
     >
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.logo}>FORZZA</Text>
-        <Text style={styles.subtitle}>Creá tu cuenta gratis</Text>
+        <Text style={styles.subtitle}>{t('auth.signup.title')}</Text>
 
         <TextInput
           style={styles.input}
-          placeholder="Email"
+          placeholder={t('auth.login.email')}
           placeholderTextColor="#6A6A6A"
           value={email}
           onChangeText={setEmail}
@@ -86,7 +88,7 @@ export default function SignupScreen() {
         />
         <TextInput
           style={styles.input}
-          placeholder="Contraseña (mín. 8 caracteres)"
+          placeholder={t('auth.signup.passwordPlaceholder')}
           placeholderTextColor="#6A6A6A"
           value={password}
           onChangeText={setPassword}
@@ -95,7 +97,7 @@ export default function SignupScreen() {
         />
         <TextInput
           style={styles.input}
-          placeholder="Repetí la contraseña"
+          placeholder={t('auth.signup.confirmPasswordPlaceholder')}
           placeholderTextColor="#6A6A6A"
           value={confirmPassword}
           onChangeText={setConfirmPassword}
@@ -112,12 +114,12 @@ export default function SignupScreen() {
         >
           {loading
             ? <ActivityIndicator color="#0A0A0A" />
-            : <Text style={styles.buttonText}>Registrarme</Text>
+            : <Text style={styles.buttonText}>{t('auth.signup.submit')}</Text>
           }
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => router.push("/(auth)/login")} style={styles.link}>
-          <Text style={styles.linkTextMuted}>Ya tengo cuenta — Iniciar sesión</Text>
+          <Text style={styles.linkTextMuted}>{t('auth.signup.alreadyHaveAccount')}</Text>
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>

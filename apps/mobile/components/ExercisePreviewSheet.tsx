@@ -14,6 +14,7 @@ import { colors, spacing, fontSize, typography } from "@forzza/ui/tokens";
 import { supabase } from "@/lib/supabase";
 import { useLanguageStore } from "@/stores/languageStore";
 import { getExerciseIcon } from "@/constants/exerciseIcons";
+import { localizeMeta } from "@/constants/exerciseI18n";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -51,7 +52,6 @@ function EjecucionTab({
       contentContainerStyle={styles.tabContent}
     >
       <Text style={styles.descriptionText}>
-        {/* TODO i18n Fase 3: description_es/en + label maps */}
         {description ?? t("exercisePreview.noDescription")}
       </Text>
     </ScrollView>
@@ -68,17 +68,17 @@ function MusculosTab({
   secondaryMuscles: string[];
 }): React.JSX.Element {
   const { t } = useTranslation();
+  const language = useLanguageStore((s) => s.language);
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.tabContent}
     >
-      {/* TODO i18n Fase 3: description_es/en + label maps — músculo names remain as-is from DB */}
       <Text style={styles.muscleGroupTitle}>{t("exercisePreview.primaryMuscles")}</Text>
       {primaryMuscles.length > 0 ? (
         <View style={styles.pillRow}>
           {primaryMuscles.map((m) => (
-            <Pill key={m} label={m} variant="active" />
+            <Pill key={m} label={localizeMeta(m, "muscle", language)} variant="active" />
           ))}
         </View>
       ) : (
@@ -91,7 +91,7 @@ function MusculosTab({
       {secondaryMuscles.length > 0 ? (
         <View style={styles.pillRow}>
           {secondaryMuscles.map((m) => (
-            <Pill key={m} label={m} variant="default" />
+            <Pill key={m} label={localizeMeta(m, "muscle", language)} variant="default" />
           ))}
         </View>
       ) : (
@@ -105,24 +105,29 @@ function MusculosTab({
 
 function InfoTab({ exercise }: { exercise: ExerciseLibraryRow }): React.JSX.Element {
   const { t } = useTranslation();
+  const language = useLanguageStore((s) => s.language);
 
   const infoRows: { label: string; value: string }[] = [
     {
       label: t("exercisePreview.equipment"),
       value:
         exercise.equipment && exercise.equipment.length > 0
-          ? exercise.equipment.join(", ")
+          ? exercise.equipment
+              .map((e) => localizeMeta(e, "equipment", language))
+              .join(", ")
           : t("exercisePreview.noEquipment"),
     },
     {
-      // TODO i18n Fase 3: description_es/en + label maps — movement_pattern value from DB
       label: t("exercisePreview.movementPattern"),
-      value: exercise.movement_pattern ?? "—",
+      value: exercise.movement_pattern
+        ? localizeMeta(exercise.movement_pattern, "movement", language)
+        : "—",
     },
     {
-      // TODO i18n Fase 3: description_es/en + label maps — difficulty value from DB
       label: t("exercisePreview.difficulty"),
-      value: exercise.difficulty ?? "—",
+      value: exercise.difficulty
+        ? localizeMeta(exercise.difficulty, "difficulty", language)
+        : "—",
     },
   ];
 
@@ -140,7 +145,7 @@ function InfoTab({ exercise }: { exercise: ExerciseLibraryRow }): React.JSX.Elem
 
       {exercise.tags && exercise.tags.length > 0 && (
         <View style={styles.tagsSection}>
-          {/* TODO i18n Fase 3: description_es/en + label maps — tag values from DB */}
+          {/* tags: keywords de búsqueda técnica, no se traducen (ver exerciseI18n.ts) */}
           <Text style={styles.infoLabel}>{t("exercisePreview.tags")}</Text>
           <View style={styles.pillRow}>
             {exercise.tags.map((tag) => (
@@ -173,11 +178,19 @@ function ExerciseDetailContent({
 
   const icon = getExerciseIcon(exercise.icon_id);
 
-  // Nombre según idioma: name_en cuando EN, fallback a name si null.
-  // TODO i18n Fase 3: description_es/en + label maps
   const language = useLanguageStore((s) => s.language);
+
+  // Nombre según idioma: name_en cuando EN, fallback a name si null.
   const displayName =
     language === "en" && exercise.name_en ? exercise.name_en : exercise.name;
+
+  // Descripción localizada con fallback robusto al campo original.
+  // description_en puede ser null en db:reset fresco para ejercicios cuyo
+  // `description` ya está en inglés; en ese caso usamos description directamente.
+  const localizedDescription =
+    language === "es"
+      ? (exercise.description_es ?? exercise.description)
+      : (exercise.description_en ?? exercise.description);
 
   return (
     <>
@@ -206,7 +219,7 @@ function ExerciseDetailContent({
       {/* Cuerpo del tab activo */}
       <View style={styles.tabBody}>
         {activeTab === "ejecucion" && (
-          <EjecucionTab description={exercise.description} />
+          <EjecucionTab description={localizedDescription} />
         )}
         {activeTab === "musculos" && (
           <MusculosTab

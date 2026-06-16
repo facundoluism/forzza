@@ -8,7 +8,9 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
+import { useLayoutEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -47,12 +49,18 @@ function isMinor(birthDate: string): boolean {
 }
 
 export default function CheckoutScreen() {
+  const { t } = useTranslation();
+  const navigation = useNavigation();
   const { coach_id, package_id } = useLocalSearchParams<{
     coach_id: string;
     package_id: string;
   }>();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({ title: t('marketplace.checkout.screenTitle') });
+  }, [t, navigation]);
 
   const { data: pkg, isLoading: pkgLoading } = useQuery({
     queryKey: ["checkout_package", package_id, coach_id],
@@ -125,7 +133,7 @@ export default function CheckoutScreen() {
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Ocurrió un error inesperado";
-      Alert.alert("Error al procesar el pago", message, [{ text: "Cerrar" }]);
+      Alert.alert(t('marketplace.checkout.errorTitle'), message, [{ text: t('marketplace.checkout.close') }]);
     } finally {
       setLoading(false);
     }
@@ -142,8 +150,8 @@ export default function CheckoutScreen() {
   if (!pkg) {
     return (
       <ErrorState
-        title="Paquete no disponible"
-        description="No pudimos cargar los detalles de este paquete."
+        title={t('marketplace.checkout.packageUnavailable')}
+        description={t('marketplace.checkout.packageUnavailableDesc')}
       />
     );
   }
@@ -154,17 +162,17 @@ export default function CheckoutScreen() {
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Resumen de tu contratación</Text>
+      <Text style={styles.title}>{t('marketplace.checkout.title')}</Text>
 
       {/* Summary card */}
       <Card style={styles.summaryCard} padding="lg">
         <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Coach</Text>
+          <Text style={styles.summaryLabel}>{t('marketplace.checkout.labelCoach')}</Text>
           <Text style={styles.summaryValue}>{coachName}</Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Paquete</Text>
+          <Text style={styles.summaryLabel}>{t('marketplace.checkout.labelPackage')}</Text>
           <Text style={styles.summaryValue}>{pkg.title}</Text>
         </View>
         {pkg.description ? (
@@ -172,7 +180,7 @@ export default function CheckoutScreen() {
         ) : null}
         <View style={styles.divider} />
         <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Precio</Text>
+          <Text style={styles.summaryLabel}>{t('marketplace.checkout.labelPrice')}</Text>
           <View style={styles.priceGroup}>
             <Text style={styles.priceAmount}>
               {currencySymbol}
@@ -186,15 +194,14 @@ export default function CheckoutScreen() {
       {minorBlocked && (
         <Card style={styles.warningCard} padding="md">
           <Text style={styles.warningText}>
-            Necesitás el consentimiento de tu tutor/a. Volvé a tu perfil para
-            completarlo.
+            {t('marketplace.checkout.minorBlock')}
           </Text>
         </Card>
       )}
 
       {/* Refund policy */}
       <Text style={styles.refundNote}>
-        Tenés 72 horas desde la contratación para solicitar un reembolso completo.
+        {t('marketplace.checkout.cancelInfo')}
       </Text>
 
       {/* CTA */}
@@ -210,7 +217,7 @@ export default function CheckoutScreen() {
         {loading ? (
           <ActivityIndicator color={colors.black} />
         ) : (
-          <Text style={styles.confirmText}>Confirmar y pagar</Text>
+          <Text style={styles.confirmText}>{t('marketplace.checkout.submit')}</Text>
         )}
       </TouchableOpacity>
     </ScrollView>

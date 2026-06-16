@@ -7,7 +7,9 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter, useNavigation } from "expo-router";
+import { useLayoutEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/providers/AuthProvider";
@@ -60,10 +62,12 @@ function PackageCard({
   pkg,
   currencySymbol,
   onContratar,
+  hireLabel,
 }: {
   pkg: CoachPackage;
   currencySymbol: string;
   onContratar: (packageId: string) => void;
+  hireLabel: string;
 }) {
   // Precio en centavos → mostrar formateado
   const price = (pkg.price / 100).toLocaleString("es-AR");
@@ -87,7 +91,7 @@ function PackageCard({
           activeOpacity={0.8}
           onPress={() => onContratar(pkg.id)}
         >
-          <Text style={styles.contratarText}>Contratar</Text>
+          <Text style={styles.contratarText}>{hireLabel}</Text>
         </TouchableOpacity>
       </View>
     </Card>
@@ -97,7 +101,13 @@ function PackageCard({
 export default function CoachProfileScreen() {
   const { coachId } = useLocalSearchParams<{ coachId: string }>();
   const router = useRouter();
+  const navigation = useNavigation();
+  const { t } = useTranslation();
   const { user } = useAuth();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({ title: t('marketplace.coach.screenTitle') });
+  }, [t, navigation]);
 
   const { data: coach, isLoading, isError, refetch } = useQuery({
     queryKey: ["coach_profile", coachId],
@@ -154,9 +164,9 @@ export default function CoachProfileScreen() {
       !studentProfile.parental_consent_at
     ) {
       Alert.alert(
-        "Consentimiento requerido",
-        "Sos menor de edad y necesitás el consentimiento de tu tutor/a para contratar un coach. Andá a tu perfil y completá el proceso.",
-        [{ text: "Entendido" }]
+        t('marketplace.coach.consentRequired'),
+        t('marketplace.coach.consentRequiredDesc'),
+        [{ text: t('common.close') }]
       );
       return;
     }
@@ -187,8 +197,8 @@ export default function CoachProfileScreen() {
   if (isError || !coach) {
     return (
       <ErrorState
-        title="Coach no encontrado"
-        description="Este coach no existe o ya no está disponible."
+        title={t('marketplace.coach.notFound')}
+        description={t('marketplace.coach.notFoundDesc')}
         onRetry={() => void refetch()}
       />
     );
@@ -197,6 +207,15 @@ export default function CoachProfileScreen() {
   const initials = getInitials(coach.display_name);
   // Filtrar solo paquetes activos
   const activePackages = coach.packages.filter((p) => p.active);
+
+  // Build experience string using plural helper
+  const yearsExp = coach.years_experience;
+  const experienceText = yearsExp !== null
+    ? t('marketplace.coach.experience', {
+        count: yearsExp,
+        unit: t('marketplace.coach.year', { count: yearsExp }),
+      })
+    : null;
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
@@ -216,11 +235,8 @@ export default function CoachProfileScreen() {
 
         <Text style={styles.coachName}>{coach.display_name}</Text>
 
-        {coach.years_experience !== null && (
-          <Text style={styles.experience}>
-            {coach.years_experience}{" "}
-            {coach.years_experience === 1 ? "año" : "años"} de experiencia
-          </Text>
+        {experienceText !== null && (
+          <Text style={styles.experience}>{experienceText}</Text>
         )}
 
         {coach.specialties.length > 0 && (
@@ -235,18 +251,18 @@ export default function CoachProfileScreen() {
       {/* Bio */}
       {coach.bio ? (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Sobre el coach</Text>
+          <Text style={styles.sectionTitle}>{t('marketplace.coach.about')}</Text>
           <Text style={styles.bio}>{coach.bio}</Text>
         </View>
       ) : null}
 
       {/* Packages */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Paquetes disponibles</Text>
+        <Text style={styles.sectionTitle}>{t('marketplace.coach.packages')}</Text>
         {activePackages.length === 0 ? (
           <Card>
             <Text style={styles.noPackages}>
-              Este coach no tiene paquetes publicados todavía.
+              {t('marketplace.coach.noPackages')}
             </Text>
           </Card>
         ) : (
@@ -256,6 +272,7 @@ export default function CoachProfileScreen() {
               pkg={pkg}
               currencySymbol={currencySymbol}
               onContratar={handleContratar}
+              hireLabel={t('marketplace.coach.hire')}
             />
           ))
         )}

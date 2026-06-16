@@ -23,6 +23,7 @@ import {
   type ExerciseIconId,
   EXERCISE_ICON_MAP,
 } from "@/constants/exerciseIcons";
+import { localizeMeta } from "@/constants/exerciseI18n";
 
 // ─── Tipos ───────────────────────────────────────────────────────────────────
 
@@ -93,13 +94,13 @@ function ExerciseRow({
   onSelect: () => void;
 }): React.JSX.Element {
   // Nombre según idioma activo: name_en cuando EN, fallback a name si null.
-  // TODO i18n Fase 3: description_es/en + label maps
   const language = useLanguageStore((s) => s.language);
   const displayName =
     language === "en" && item.name_en ? item.name_en : item.name;
 
   const icon = getExerciseIcon(item.icon_id);
-  const groupLabel = item.primary_group ?? icon.label;
+  const rawGroup = item.primary_group ?? icon.label;
+  const groupLabel = localizeMeta(rawGroup, "group", language);
 
   return (
     <TouchableOpacity

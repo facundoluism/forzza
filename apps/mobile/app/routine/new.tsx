@@ -10,6 +10,7 @@ import {
   Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import type { Json } from "@forzza/db-types";
 import { useAuth } from "@/providers/AuthProvider";
@@ -40,12 +41,6 @@ type Step = "info" | "exercises" | "review";
 
 const STEP_ORDER: Step[] = ["info", "exercises", "review"];
 
-const STEP_LABELS: Record<Step, string> = {
-  info: "Información",
-  exercises: "Ejercicios",
-  review: "Revisar",
-};
-
 const DEFAULT_EXERCISE: RoutineExerciseUI = {
   name: "",
   sets: 3,
@@ -63,6 +58,15 @@ interface ExerciseEditorProps {
   onChange: (updated: RoutineExerciseUI) => void;
   onRemove: () => void;
   onPickFromLibrary: () => void;
+  removeLabel: string;
+  tapToSwapLabel: string;
+  pickFromLibraryLabel: string;
+  setsLabel: string;
+  restLabel: string;
+  repsLabel: string;
+  repsPlaceholder: string;
+  notesLabel: string;
+  notesPlaceholder: string;
 }
 
 function ExerciseEditor({
@@ -71,6 +75,15 @@ function ExerciseEditor({
   onChange,
   onRemove,
   onPickFromLibrary,
+  removeLabel,
+  tapToSwapLabel,
+  pickFromLibraryLabel,
+  setsLabel,
+  restLabel,
+  repsLabel,
+  repsPlaceholder,
+  notesLabel,
+  notesPlaceholder,
 }: ExerciseEditorProps): React.JSX.Element {
   const hasExercise = exercise.name.trim().length > 0;
   const icon = getExerciseIcon(exercise._icon_id ?? null);
@@ -86,7 +99,7 @@ function ExerciseEditor({
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           style={styles.removeButton}
         >
-          <Text style={styles.removeButtonText}>Quitar</Text>
+          <Text style={styles.removeButtonText}>{removeLabel}</Text>
         </TouchableOpacity>
       </View>
 
@@ -100,7 +113,7 @@ function ExerciseEditor({
           <Text style={styles.exerciseSelectedEmoji}>{icon.emoji}</Text>
           <View style={styles.exerciseSelectedInfo}>
             <Text style={styles.exerciseSelectedName}>{exercise.name}</Text>
-            <Text style={styles.exerciseSelectedHint}>Tocá para cambiar ejercicio</Text>
+            <Text style={styles.exerciseSelectedHint}>{tapToSwapLabel}</Text>
           </View>
           <Text style={styles.exerciseSelectedChevron}>›</Text>
         </TouchableOpacity>
@@ -110,14 +123,14 @@ function ExerciseEditor({
           onPress={onPickFromLibrary}
           activeOpacity={0.7}
         >
-          <Text style={styles.pickExerciseButtonText}>Elegí de la biblioteca</Text>
+          <Text style={styles.pickExerciseButtonText}>{pickFromLibraryLabel}</Text>
         </TouchableOpacity>
       )}
 
       <View style={styles.exerciseStepperRow}>
         <View style={styles.stepperItem}>
           <NumInput
-            label="Series"
+            label={setsLabel}
             value={exercise.sets}
             onChange={(v) => onChange({ ...exercise, sets: v })}
             min={1}
@@ -126,7 +139,7 @@ function ExerciseEditor({
         </View>
         <View style={styles.stepperItem}>
           <NumInput
-            label="Descanso (s)"
+            label={restLabel}
             value={exercise.rest_seconds}
             onChange={(v) => onChange({ ...exercise, rest_seconds: v })}
             min={0}
@@ -137,9 +150,9 @@ function ExerciseEditor({
       </View>
 
       <View style={styles.repsField}>
-        <Text style={styles.inputLabel}>Repeticiones</Text>
+        <Text style={styles.inputLabel}>{repsLabel}</Text>
         <Input
-          placeholder="ej: 10 u 8-12"
+          placeholder={repsPlaceholder}
           value={exercise.reps}
           onChangeText={(v) => onChange({ ...exercise, reps: v })}
           keyboardType="default"
@@ -148,8 +161,8 @@ function ExerciseEditor({
       </View>
 
       <Input
-        label="Notas (opcional)"
-        placeholder="ej: Con mancuernas, codo a 90°"
+        label={notesLabel}
+        placeholder={notesPlaceholder}
         value={exercise.notes ?? ""}
         onChangeText={(v) => {
           // exactOptionalPropertyTypes: spread condicional para campos opcionales
@@ -173,7 +186,7 @@ function ExerciseEditor({
 
 // ─── Step indicators ──────────────────────────────────────────────────────────
 
-function StepBar({ current }: { current: Step }): React.JSX.Element {
+function StepBar({ current, stepLabels }: { current: Step; stepLabels: Record<Step, string> }): React.JSX.Element {
   return (
     <View style={styles.stepBar}>
       {STEP_ORDER.map((s, i) => {
@@ -198,7 +211,7 @@ function StepBar({ current }: { current: Step }): React.JSX.Element {
               )}
             </View>
             <Text style={[styles.stepLabel, isActive && styles.stepLabelActive]}>
-              {STEP_LABELS[s]}
+              {stepLabels[s]}
             </Text>
             {i < STEP_ORDER.length - 1 && <View style={[styles.stepLine, isPast && styles.stepLinePast]} />}
           </View>
@@ -214,19 +227,25 @@ function ReviewPanel({
   title,
   description,
   exercises,
+  summaryLine,
+  exerciseCountLabel,
+  untitledLabel,
 }: {
   title: string;
   description: string;
   exercises: RoutineExerciseUI[];
+  summaryLine: (ex: RoutineExerciseUI) => string;
+  exerciseCountLabel: string;
+  untitledLabel: string;
 }): React.JSX.Element {
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.reviewContent}>
-      <Text style={styles.reviewTitle}>{title || "Sin título"}</Text>
+      <Text style={styles.reviewTitle}>{title || untitledLabel}</Text>
       {description ? (
         <Text style={styles.reviewDescription}>{description}</Text>
       ) : null}
       <Text style={styles.reviewSectionLabel}>
-        {exercises.length} {exercises.length === 1 ? "ejercicio" : "ejercicios"}
+        {exerciseCountLabel}
       </Text>
       {exercises.map((ex, idx) => {
         const icon = getExerciseIcon(ex._icon_id ?? null);
@@ -237,7 +256,7 @@ function ReviewPanel({
               <View style={styles.reviewExerciseInfo}>
                 <Text style={styles.reviewExerciseName}>{ex.name}</Text>
                 <Text style={styles.reviewExerciseMeta}>
-                  {ex.sets} series × {ex.reps} reps · {ex.rest_seconds}s descanso
+                  {summaryLine(ex)}
                 </Text>
                 {ex.notes ? (
                   <Text style={styles.reviewExerciseNotes}>{ex.notes}</Text>
@@ -255,8 +274,15 @@ function ReviewPanel({
 
 export default function NewRoutineScreen(): React.JSX.Element {
   const router = useRouter();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+
+  const STEP_LABELS: Record<Step, string> = {
+    info: t('routineNew.stepInfo'),
+    exercises: t('routineNew.stepExercises'),
+    review: t('routineNew.stepReview'),
+  };
 
   const [step, setStep] = useState<Step>("info");
   const [title, setTitle] = useState("");
@@ -302,12 +328,12 @@ export default function NewRoutineScreen(): React.JSX.Element {
   const handleRemoveExercise = useCallback((index: number): void => {
     setExercises((prev) => {
       if (prev.length <= 1) {
-        Alert.alert("Mínimo un ejercicio", "La rutina debe tener al menos un ejercicio.");
+        Alert.alert(t('routineNew.alertMinExercise'), t('routineNew.errorMinExercise'));
         return prev;
       }
       return prev.filter((_, i) => i !== index);
     });
-  }, []);
+  }, [t]);
 
   const handleOpenPicker = useCallback((index: number): void => {
     setPickerTargetIndex(index);
@@ -418,7 +444,7 @@ export default function NewRoutineScreen(): React.JSX.Element {
       router.back();
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : "Ocurrió un error al guardar la rutina.";
+        err instanceof Error ? err.message : t('routineNew.errorSave');
       setSaveError(message);
     } finally {
       setIsSaving(false);
@@ -433,29 +459,26 @@ export default function NewRoutineScreen(): React.JSX.Element {
       contentContainerStyle={styles.stepContent}
       keyboardShouldPersistTaps="handled"
     >
-      <Text style={styles.stepHeading}>Información básica</Text>
-      <Text style={styles.stepSubheading}>
-        Dale un nombre a tu rutina y una descripción opcional.
-      </Text>
+      <Text style={styles.stepHeading}>{t('routineNew.basicInfo')}</Text>
 
       <View style={styles.fieldGap}>
         <Input
-          label="Nombre de la rutina *"
-          placeholder="ej: Torso / Empuje"
+          label={t('routineNew.routineNameLabel')}
+          placeholder={t('routineNew.routineNameExample')}
           value={title}
           onChangeText={setTitle}
           autoCapitalize="sentences"
           returnKeyType="next"
           {...(title.length > 0 && title.trim().length < 2
-            ? { error: "El nombre es demasiado corto." }
+            ? { error: t('routineNew.errorNameRequired') }
             : {})}
         />
       </View>
 
       <View style={styles.fieldGap}>
         <Input
-          label="Descripción (opcional)"
-          placeholder="ej: Rutina de pecho, hombros y tríceps"
+          label={t('routineNew.descriptionLabel')}
+          placeholder={t('routineNew.descriptionPlaceholder')}
           value={description}
           onChangeText={setDescription}
           autoCapitalize="sentences"
@@ -473,9 +496,9 @@ export default function NewRoutineScreen(): React.JSX.Element {
       contentContainerStyle={styles.stepContent}
       keyboardShouldPersistTaps="handled"
     >
-      <Text style={styles.stepHeading}>Ejercicios</Text>
+      <Text style={styles.stepHeading}>{t('routineNew.stepExercises')}</Text>
       <Text style={styles.stepSubheading}>
-        Elegí los ejercicios de la biblioteca y ajustá series, reps y descanso.
+        {t('routineNew.pickExercisesHint')}
       </Text>
 
       <View style={styles.exercisesList}>
@@ -487,6 +510,15 @@ export default function NewRoutineScreen(): React.JSX.Element {
             onChange={(updated) => handleUpdateExercise(idx, updated)}
             onRemove={() => handleRemoveExercise(idx)}
             onPickFromLibrary={() => handleOpenPicker(idx)}
+            removeLabel={t('routineNew.remove')}
+            tapToSwapLabel={t('routineNew.tapToSwap')}
+            pickFromLibraryLabel={t('routineNew.pickFromLibrary')}
+            setsLabel={t('routineNew.sets')}
+            restLabel={t('routineNew.restSeconds')}
+            repsLabel={t('routineNew.reps')}
+            repsPlaceholder={t('routineNew.repsPlaceholder')}
+            notesLabel={t('routineNew.notes')}
+            notesPlaceholder={t('routineNew.notesPlaceholder')}
           />
         ))}
       </View>
@@ -496,20 +528,27 @@ export default function NewRoutineScreen(): React.JSX.Element {
         onPress={handleAddExerciseFromLibrary}
         activeOpacity={0.7}
       >
-        <Text style={styles.addExerciseButtonText}>+ Agregar ejercicio</Text>
+        <Text style={styles.addExerciseButtonText}>{t('routineNew.addExercise')}</Text>
       </TouchableOpacity>
 
       {exercises.length > 0 &&
         exercises.some((ex) => ex.name.trim().length === 0) && (
           <Text style={styles.validationHint}>
-            Cada ejercicio necesita al menos un nombre. Elegilo de la biblioteca.
+            {t('routineNew.errorMinExercise')}
           </Text>
         )}
     </ScrollView>
   );
 
   const renderReviewStep = (): React.JSX.Element => (
-    <ReviewPanel title={title} description={description} exercises={exercises} />
+    <ReviewPanel
+      title={title}
+      description={description}
+      exercises={exercises}
+      summaryLine={(ex) => t('routineNew.summaryLine', { sets: ex.sets, reps: ex.reps, rest: ex.rest_seconds })}
+      exerciseCountLabel={t('routineNew.exercise', { count: exercises.length })}
+      untitledLabel={t('routineNew.untitled')}
+    />
   );
 
   // ── Layout ──
@@ -527,15 +566,15 @@ export default function NewRoutineScreen(): React.JSX.Element {
           style={styles.backButton}
         >
           <Text style={styles.backButtonText}>
-            {currentIdx === 0 ? "Cancelar" : "‹ Atrás"}
+            {currentIdx === 0 ? t('routineNew.cancel') : t('routineNew.back')}
           </Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Nueva Rutina</Text>
+        <Text style={styles.headerTitle}>{t('routineNew.screenTitle')}</Text>
         <View style={styles.headerSpacer} />
       </View>
 
       {/* Step indicator */}
-      <StepBar current={step} />
+      <StepBar current={step} stepLabels={STEP_LABELS} />
 
       {/* Step body */}
       <View style={styles.body}>
@@ -552,7 +591,7 @@ export default function NewRoutineScreen(): React.JSX.Element {
 
         {step === "review" ? (
           <Button
-            label={isSaving ? "Guardando..." : "Guardar rutina"}
+            label={isSaving ? t('routineNew.saving') : t('routineNew.save')}
             onPress={() => { void handleSave(); }}
             loading={isSaving}
             disabled={isSaving}
@@ -561,7 +600,7 @@ export default function NewRoutineScreen(): React.JSX.Element {
           />
         ) : (
           <Button
-            label="Siguiente"
+            label={t('routineNew.next')}
             onPress={handleNext}
             disabled={!canAdvance}
             fullWidth

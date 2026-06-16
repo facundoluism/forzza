@@ -1,6 +1,6 @@
 // Nota: el parámetro de ruta "conversationId" representa el assignment_id
 // (el chat es 1:1 por assignment, no existe tabla conversations)
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useLayoutEffect } from "react";
 import {
   View,
   Text,
@@ -12,7 +12,8 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
 import { colors, spacing, radius, typography } from "@forzza/ui/tokens";
@@ -27,19 +28,14 @@ interface Message {
   created_at: string;
 }
 
-function formatTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString("es-AR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
 function MessageBubble({
   message,
   isOwn,
+  timeStr,
 }: {
   message: Message;
   isOwn: boolean;
+  timeStr: string;
 }): React.JSX.Element {
   return (
     <View
@@ -56,7 +52,7 @@ function MessageBubble({
         </Text>
       </View>
       <Text style={[styles.bubbleTime, isOwn && styles.bubbleTimeOwn]}>
-        {formatTime(message.created_at)}
+        {timeStr}
       </Text>
     </View>
   );
@@ -69,6 +65,8 @@ const PAGE_SIZE = 50;
 const db = supabase as any;
 
 export default function ConversationScreen(): React.JSX.Element {
+  const { t } = useTranslation();
+  const navigation = useNavigation();
   // El parámetro "conversationId" es en realidad el assignment_id
   const { conversationId: assignmentId } = useLocalSearchParams<{
     conversationId: string;
@@ -83,6 +81,17 @@ export default function ConversationScreen(): React.JSX.Element {
   const [hasMore, setHasMore] = useState(true);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({ title: t('conversation.screenTitle') });
+  }, [t, navigation]);
+
+  function formatTime(iso: string): string {
+    return new Date(iso).toLocaleTimeString(undefined, {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
 
   const markRead = useCallback(
     async (msgIds: string[]) => {
@@ -228,7 +237,11 @@ export default function ConversationScreen(): React.JSX.Element {
         data={messages}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <MessageBubble message={item} isOwn={item.sender_id === user?.id} />
+          <MessageBubble
+            message={item}
+            isOwn={item.sender_id === user?.id}
+            timeStr={formatTime(item.created_at)}
+          />
         )}
         contentContainerStyle={styles.messageList}
         onEndReachedThreshold={0.1}
@@ -237,7 +250,7 @@ export default function ConversationScreen(): React.JSX.Element {
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>
-              Escribí el primer mensaje para empezar la conversación.
+              {t('conversation.emptyHint')}
             </Text>
           </View>
         }
@@ -248,7 +261,7 @@ export default function ConversationScreen(): React.JSX.Element {
           style={styles.input}
           value={text}
           onChangeText={setText}
-          placeholder="Escribí un mensaje..."
+          placeholder={t('conversation.inputPlaceholder')}
           placeholderTextColor={colors.gray500}
           multiline
           maxLength={2000}
@@ -266,7 +279,7 @@ export default function ConversationScreen(): React.JSX.Element {
           {sending ? (
             <ActivityIndicator size="small" color={colors.black} />
           ) : (
-            <Text style={styles.sendButtonText}>Enviar</Text>
+            <Text style={styles.sendButtonText}>{t('conversation.send')}</Text>
           )}
         </TouchableOpacity>
       </View>

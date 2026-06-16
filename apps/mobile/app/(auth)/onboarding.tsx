@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import { isMinor, TRACKED_EVENTS } from "@forzza/core";
 import { track } from "@/lib/analytics";
@@ -16,22 +17,24 @@ import type { TablesInsert } from "@forzza/db-types";
 
 type Step = 1 | 2 | 3;
 
-const GOALS = [
-  "Perder peso",
-  "Ganar músculo",
-  "Mejorar resistencia",
-  "Tonificar",
-  "Rehabilitación",
-  "Deporte específico",
-];
-
-const LEVELS = [
-  { value: "principiante", label: "Principiante", description: "Empiezo de cero o casi" },
-  { value: "intermedio", label: "Intermedio", description: "Entreno hace algunos meses" },
-  { value: "avanzado", label: "Avanzado", description: "Llevo años entrenando" },
-] as const;
-
 export default function OnboardingScreen() {
+  const { t } = useTranslation();
+
+  // Arrays defined inside component so they react to language changes
+  const GOALS = [
+    t('auth.onboarding.goalLoseWeight'),
+    t('auth.onboarding.goalGainMuscle'),
+    t('auth.onboarding.goalImproveEndurance'),
+    t('auth.onboarding.goalStayActive'),
+    t('auth.onboarding.goalSport'),
+  ];
+
+  const LEVELS = [
+    { value: "principiante" as const, label: t('auth.onboarding.levelBeginner'), description: t('auth.onboarding.levelBeginnerDesc') },
+    { value: "intermedio" as const, label: t('auth.onboarding.levelIntermediate'), description: t('auth.onboarding.levelIntermediateDesc') },
+    { value: "avanzado" as const, label: t('auth.onboarding.levelAdvanced'), description: t('auth.onboarding.levelAdvancedDesc') },
+  ];
+
   const [step, setStep] = useState<Step>(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,11 +57,11 @@ export default function OnboardingScreen() {
 
   function validateStep1() {
     if (!displayName.trim() || displayName.length < 2) {
-      setError("El nombre debe tener al menos 2 caracteres");
+      setError(t('auth.onboarding.errorRequired'));
       return false;
     }
     if (!birthDate.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
-      setError("Ingresá la fecha en formato DD/MM/AAAA");
+      setError(t('auth.onboarding.errorAge'));
       return false;
     }
     return true;
@@ -79,15 +82,15 @@ export default function OnboardingScreen() {
 
   async function handleFinish() {
     if (selectedGoals.length === 0) {
-      setError("Elegí al menos un objetivo");
+      setError(t('auth.onboarding.errorRequired'));
       return;
     }
     if (!level) {
-      setError("Seleccioná tu nivel");
+      setError(t('auth.onboarding.errorRequired'));
       return;
     }
     if (needsParentalConsent && !parentalConsent) {
-      setError("El adulto responsable debe aceptar los términos");
+      setError(t('auth.onboarding.errorParental'));
       return;
     }
 
@@ -96,7 +99,7 @@ export default function OnboardingScreen() {
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      setError("Sesión expirada");
+      setError(t('auth.onboarding.errorSave'));
       setLoading(false);
       return;
     }
@@ -119,7 +122,7 @@ export default function OnboardingScreen() {
       .insert(profileData);
 
     if (profileError) {
-      setError("No se pudo guardar tu perfil. Intentá de nuevo.");
+      setError(t('auth.onboarding.errorSave'));
       setLoading(false);
       return;
     }
@@ -144,22 +147,22 @@ export default function OnboardingScreen() {
         {/* Paso 1: Datos básicos */}
         {step === 1 && (
           <View>
-            <Text style={styles.title}>¡Bienvenido/a a Forzza!</Text>
-            <Text style={styles.subtitle}>Contanos un poco sobre vos</Text>
+            <Text style={styles.title}>{t('auth.onboarding.titleAge')}</Text>
+            <Text style={styles.subtitle}>{t('auth.onboarding.labelName')}</Text>
 
-            <Text style={styles.label}>¿Cómo te llamás?</Text>
+            <Text style={styles.label}>{t('auth.onboarding.labelName')}</Text>
             <TextInput
               style={styles.input}
-              placeholder="Tu nombre"
+              placeholder={t('auth.onboarding.placeholderName')}
               placeholderTextColor="#6A6A6A"
               value={displayName}
               onChangeText={setDisplayName}
             />
 
-            <Text style={styles.label}>Fecha de nacimiento</Text>
+            <Text style={styles.label}>{t('auth.onboarding.labelAge')}</Text>
             <TextInput
               style={styles.input}
-              placeholder="DD/MM/AAAA"
+              placeholder={t('auth.onboarding.placeholderBirthDate')}
               placeholderTextColor="#6A6A6A"
               value={birthDate}
               onChangeText={setBirthDate}
@@ -170,7 +173,7 @@ export default function OnboardingScreen() {
             {error && <Text style={styles.error}>{error}</Text>}
 
             <TouchableOpacity style={styles.button} onPress={goToStep2}>
-              <Text style={styles.buttonText}>Siguiente →</Text>
+              <Text style={styles.buttonText}>{t('auth.onboarding.btnNext')} →</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -178,8 +181,7 @@ export default function OnboardingScreen() {
         {/* Paso 2: Objetivos y nivel */}
         {step === 2 && (
           <View>
-            <Text style={styles.title}>¿Cuáles son tus objetivos?</Text>
-            <Text style={styles.subtitle}>Podés elegir más de uno</Text>
+            <Text style={styles.title}>{t('auth.onboarding.titleGoal')}</Text>
 
             <View style={styles.chipsContainer}>
               {GOALS.map((goal) => (
@@ -207,14 +209,14 @@ export default function OnboardingScreen() {
               style={styles.button}
               onPress={() => {
                 if (selectedGoals.length === 0) {
-                  setError("Elegí al menos un objetivo");
+                  setError(t('auth.onboarding.errorRequired'));
                   return;
                 }
                 setError(null);
                 setStep(3);
               }}
             >
-              <Text style={styles.buttonText}>Siguiente →</Text>
+              <Text style={styles.buttonText}>{t('auth.onboarding.btnNext')} →</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -222,8 +224,7 @@ export default function OnboardingScreen() {
         {/* Paso 3: Nivel + consentimiento parental si aplica */}
         {step === 3 && (
           <View>
-            <Text style={styles.title}>¿Cuál es tu nivel?</Text>
-            <Text style={styles.subtitle}>Para darte el contenido más apropiado</Text>
+            <Text style={styles.title}>{t('auth.onboarding.titleLevel')}</Text>
 
             {LEVELS.map((lvl) => (
               <TouchableOpacity
@@ -246,13 +247,13 @@ export default function OnboardingScreen() {
             {/* Consentimiento parental */}
             {needsParentalConsent && (
               <View style={styles.parentalBox}>
-                <Text style={styles.parentalTitle}>⚠️ Consentimiento parental requerido</Text>
+                <Text style={styles.parentalTitle}>⚠️ {t('auth.onboarding.titleParental')}</Text>
                 <Text style={styles.parentalText}>
-                  Al ser menor de 18 años, necesitamos el email y el consentimiento de un adulto responsable.
+                  {t('auth.onboarding.parentalDesc')}
                 </Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Email del adulto responsable"
+                  placeholder={t('auth.onboarding.placeholderParentalEmail')}
                   placeholderTextColor="#6A6A6A"
                   value={parentalEmail}
                   onChangeText={setParentalEmail}
@@ -265,7 +266,7 @@ export default function OnboardingScreen() {
                 >
                   <View style={[styles.checkbox, parentalConsent && styles.checkboxChecked]} />
                   <Text style={styles.checkboxLabel}>
-                    El adulto responsable acepta los términos y condiciones
+                    {t('auth.onboarding.parentalConsent')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -280,7 +281,7 @@ export default function OnboardingScreen() {
             >
               {loading
                 ? <ActivityIndicator color="#0A0A0A" />
-                : <Text style={styles.buttonText}>¡Empezar!</Text>
+                : <Text style={styles.buttonText}>{t('auth.onboarding.btnFinish')}</Text>
               }
             </TouchableOpacity>
           </View>

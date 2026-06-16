@@ -8,12 +8,14 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import { forgotPasswordSchema } from "@forzza/core";
 
 type PageState = "idle" | "loading" | "success" | "error";
 
 export default function ForgotPasswordScreen() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [state, setState] = useState<PageState>("idle");
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +23,7 @@ export default function ForgotPasswordScreen() {
   async function handleReset() {
     const result = forgotPasswordSchema.safeParse({ email });
     if (!result.success) {
-      setError(result.error.errors[0]?.message ?? "Email inválido");
+      setError(result.error.errors[0]?.message ?? t('auth.forgotPassword.error'));
       return;
     }
 
@@ -30,7 +32,7 @@ export default function ForgotPasswordScreen() {
 
     if (authError) {
       setState("error");
-      setError("No se pudo enviar el email. Intentá de nuevo.");
+      setError(t('auth.forgotPassword.error'));
       return;
     }
 
@@ -42,13 +44,13 @@ export default function ForgotPasswordScreen() {
       <View style={[styles.container, { justifyContent: "center", alignItems: "center", padding: 24 }]}>
         <Text style={{ fontSize: 64, marginBottom: 24 }}>✅</Text>
         <Text style={{ color: "#FAFAFA", fontSize: 22, fontWeight: "bold", marginBottom: 12, textAlign: "center" }}>
-          Email enviado
+          {t('auth.forgotPassword.successTitle')}
         </Text>
         <Text style={{ color: "#AAAAAA", textAlign: "center" }}>
-          Revisá tu bandeja de entrada y seguí las instrucciones.
+          {t('auth.forgotPassword.successDesc')}
         </Text>
         <TouchableOpacity onPress={() => router.back()} style={[styles.button, { marginTop: 32 }]}>
-          <Text style={styles.buttonText}>Volver</Text>
+          <Text style={styles.buttonText}>{t('auth.forgotPassword.back')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -58,15 +60,15 @@ export default function ForgotPasswordScreen() {
     <View style={styles.container}>
       <View style={styles.content}>
         <Text style={{ fontSize: 32, color: "#FAFAFA", fontWeight: "bold", marginBottom: 8 }}>
-          Recuperar contraseña
+          {t('auth.forgotPassword.title')}
         </Text>
         <Text style={{ color: "#AAAAAA", marginBottom: 32 }}>
-          Ingresá tu email y te mandamos un link.
+          {t('auth.forgotPassword.placeholder')}
         </Text>
 
         <TextInput
           style={styles.input}
-          placeholder="tu@email.com"
+          placeholder={t('auth.forgotPassword.emailPlaceholder')}
           placeholderTextColor="#6A6A6A"
           value={email}
           onChangeText={setEmail}
@@ -83,12 +85,12 @@ export default function ForgotPasswordScreen() {
         >
           {state === "loading"
             ? <ActivityIndicator color="#0A0A0A" />
-            : <Text style={styles.buttonText}>Enviar link</Text>
+            : <Text style={styles.buttonText}>{t('auth.forgotPassword.submit')}</Text>
           }
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => router.back()} style={{ alignItems: "center", paddingTop: 16 }}>
-          <Text style={{ color: "#6A6A6A", fontSize: 14 }}>← Volver</Text>
+          <Text style={{ color: "#6A6A6A", fontSize: 14 }}>{t('auth.forgotPassword.back')}</Text>
         </TouchableOpacity>
       </View>
     </View>

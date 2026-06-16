@@ -10,6 +10,7 @@ import {
   Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useWorkoutStore } from "@/stores/workoutStore";
 import { syncPendingItems } from "@/services/sync";
@@ -48,7 +49,7 @@ function NumberInput({ label, value, onChangeText, placeholder = "0" }: NumberIn
   );
 }
 
-function RestTimer({ seconds, onDone }: { seconds: number; onDone: () => void }): React.JSX.Element {
+function RestTimer({ seconds, onDone, restingLabel, skipLabel }: { seconds: number; onDone: () => void; restingLabel: string; skipLabel: string }): React.JSX.Element {
   const [remaining, setRemaining] = useState(seconds);
   const glowAnim = useRef(new Animated.Value(0)).current;
 
@@ -82,21 +83,21 @@ function RestTimer({ seconds, onDone }: { seconds: number; onDone: () => void })
     <View style={styles.restTimerWrapper}>
       <Animated.View style={[styles.restGlowBg, { opacity: glowOpacity }]} />
       <Card style={styles.restTimerCard}>
-        <Text style={styles.restTimerTitle}>Descansando</Text>
+        <Text style={styles.restTimerTitle}>{restingLabel}</Text>
         <Text style={styles.restTimerCount}>{remaining}s</Text>
         <Pressable
           style={styles.restSkipBtn}
           onPress={onDone}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Text style={styles.restSkipText}>Saltar descanso</Text>
+          <Text style={styles.restSkipText}>{skipLabel}</Text>
         </Pressable>
       </Card>
     </View>
   );
 }
 
-function LogSetButton({ onPress }: { onPress: () => void }): React.JSX.Element {
+function LogSetButton({ onPress, label }: { onPress: () => void; label: string }): React.JSX.Element {
   const scale = useRef(new Animated.Value(1)).current;
 
   const onPressIn = () =>
@@ -114,7 +115,7 @@ function LogSetButton({ onPress }: { onPress: () => void }): React.JSX.Element {
       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
     >
       <Animated.View style={[styles.logSetBtn, { transform: [{ scale }] }]}>
-        <Text style={styles.logSetBtnText}>Registrar serie</Text>
+        <Text style={styles.logSetBtnText}>{label}</Text>
       </Animated.View>
     </Pressable>
   );
@@ -122,6 +123,7 @@ function LogSetButton({ onPress }: { onPress: () => void }): React.JSX.Element {
 
 export default function SessionScreen(): React.JSX.Element | null {
   const router = useRouter();
+  const { t } = useTranslation();
   const {
     activeSession,
     logSet,
@@ -204,14 +206,17 @@ export default function SessionScreen(): React.JSX.Element | null {
 
   // Para la navegación usamos la longitud de la definición de rutina como referencia
   // y complementamos con los logs reales registrados durante la sesión
-  const exerciseIds = activeSession.exercises.map((e) => e.exercise_id);
-  const currentExerciseLog = activeSession.exercises[currentExerciseIndex];
+  const currentExerciseKey =
+    currentRoutineExercise?.exercise_id ?? `exercise_${currentExerciseIndex + 1}`;
+  const currentExerciseLog = activeSession.exercises.find(
+    (e) => e.exercise_id === currentExerciseKey
+  );
   const currentSetsLogged = currentExerciseLog?.sets.length ?? 0;
 
   // Total: el mayor entre los ejercicios definidos en la rutina y los ya navegados
   const totalExercises = Math.max(
     routineExercises.length,
-    exerciseIds.length,
+    routineExercises.length || activeSession.exercises.length,
     currentExerciseIndex + 1
   );
   const progressPercent = totalExercises > 0 ? currentExerciseIndex / totalExercises : 0;
@@ -220,7 +225,7 @@ export default function SessionScreen(): React.JSX.Element | null {
   const currentExerciseName =
     currentRoutineExercise?.name ??
     currentExerciseLog?.exercise_id ??
-    `Ejercicio ${currentExerciseIndex + 1}`;
+    t('session.exerciseFallback', { n: currentExerciseIndex + 1 });
 
   // Segundos de descanso: del ejercicio de la rutina o 90s por defecto
   const currentRestSeconds =
@@ -238,15 +243,11 @@ export default function SessionScreen(): React.JSX.Element | null {
 
     // Need at least one value
     if (parsedReps === null && parsedDuration === null) {
-      Alert.alert("Faltan datos", "Ingresá las reps o la duración del set.");
+      Alert.alert(t('session.errorMissingData'), t('session.errorMissingDataDesc'));
       return;
     }
 
-    const exerciseId =
-      currentExerciseLog?.exercise_id ??
-      `exercise_${currentExerciseIndex + 1}`;
-
-    logSet(exerciseId, {
+    logSet(currentExerciseKey, {
       reps: parsedReps,
       weight_kg: parsedWeight,
       duration_seconds: parsedDuration,
@@ -261,12 +262,12 @@ export default function SessionScreen(): React.JSX.Element | null {
 
   const handleFinish = (): void => {
     Alert.alert(
-      "Finalizar entreno",
-      "¿Terminaste el entreno de hoy?",
+      t('session.finishTitle'),
+      t('session.finishConfirm'),
       [
-        { text: "Cancelar", style: "cancel" },
+        { text: t('session.cancel'), style: "cancel" },
         {
-          text: "Finalizar",
+          text: t('session.finish'),
           style: "default",
           onPress: async () => {
             setIsSyncing(true);
@@ -308,12 +309,12 @@ export default function SessionScreen(): React.JSX.Element | null {
         <View style={styles.headerContent}>
           <Text style={styles.sessionTitle}>{activeSession.routine_name}</Text>
           <Text style={styles.sessionStatus}>
-            {isPaused ? "En pausa" : "Activo"}
+            {isPaused ? t('session.statusPaused') : t('session.statusActive')}
             {" · "}
             <Text style={styles.sessionStatusMono}>
               {activeSession.exercises.reduce((acc, ex) => acc + ex.sets.length, 0)}
             </Text>
-            {" series totales"}
+            {" "}{t('session.totalSets')}
           </Text>
         </View>
         <Pressable
@@ -321,7 +322,7 @@ export default function SessionScreen(): React.JSX.Element | null {
           onPress={isPaused ? resumeSession : pauseSession}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Text style={styles.pauseBtnText}>{isPaused ? "Continuar" : "Pausar"}</Text>
+          <Text style={styles.pauseBtnText}>{isPaused ? t('session.btnResume') : t('session.btnPause')}</Text>
         </Pressable>
       </View>
 
@@ -334,7 +335,7 @@ export default function SessionScreen(): React.JSX.Element | null {
         <Card style={styles.exerciseCard} featured>
           <View style={styles.exerciseCardInner}>
             <Text style={styles.exerciseIndexLabel}>
-              EJERCICIO ACTUAL{" "}
+              {t('session.currentExercise')}{" "}
               <Text style={styles.exerciseIndexMono}>{currentExerciseIndex + 1}</Text>
               {" / "}
               <Text style={styles.exerciseIndexMono}>{totalExercises}</Text>
@@ -349,23 +350,23 @@ export default function SessionScreen(): React.JSX.Element | null {
                   onPress={() => setShowExerciseSheet(true)}
                   hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 >
-                  <Text style={styles.fichaBtnText}>Ver ficha</Text>
+                  <Text style={styles.fichaBtnText}>{t('session.viewCard')}</Text>
                 </Pressable>
               )}
             </View>
 
             <Text style={styles.setsLogged}>
               <Text style={styles.setsLoggedMono}>{currentSetsLogged}</Text>
-              {" "}{currentSetsLogged === 1 ? "serie registrada" : "series registradas"}
+              {" "}{t('session.setLogged', { count: currentSetsLogged })}
             </Text>
 
             {/* Sets logged */}
             {currentExerciseLog && currentExerciseLog.sets.length > 0 && (
               <View style={styles.setsTable}>
                 <View style={styles.setsTableHeader}>
-                  <Text style={styles.setsTableHeaderText}>SERIE</Text>
-                  <Text style={styles.setsTableHeaderText}>REPS</Text>
-                  <Text style={styles.setsTableHeaderText}>PESO (kg)</Text>
+                  <Text style={styles.setsTableHeaderText}>{t('session.set')}</Text>
+                  <Text style={styles.setsTableHeaderText}>{t('session.reps')}</Text>
+                  <Text style={styles.setsTableHeaderText}>{t('session.weightKg')}</Text>
                 </View>
                 {currentExerciseLog.sets.map((s) => (
                   <View key={s.set_number} style={styles.setsTableRow}>
@@ -381,23 +382,28 @@ export default function SessionScreen(): React.JSX.Element | null {
 
         {/* Rest timer — usa segundos definidos en la rutina, o 90s por defecto */}
         {showRestTimer && (
-          <RestTimer seconds={currentRestSeconds} onDone={handleRestDone} />
+          <RestTimer
+            seconds={currentRestSeconds}
+            onDone={handleRestDone}
+            restingLabel={t('session.resting')}
+            skipLabel={t('session.skipRest')}
+          />
         )}
 
         {/* Input section */}
         {!showRestTimer && !isPaused && (
           <Card style={styles.inputCard}>
             <Text style={styles.inputCardTitle}>
-              SERIE{" "}
+              {t('session.set')}{" "}
               <Text style={styles.inputCardTitleMono}>{currentSetsLogged + 1}</Text>
             </Text>
             <View style={styles.inputRow}>
               <View style={styles.inputCell}>
-                <NumberInput label="Reps" value={reps} onChangeText={setReps} />
+                <NumberInput label={t('session.reps')} value={reps} onChangeText={setReps} />
               </View>
               <View style={styles.inputCell}>
                 <NumberInput
-                  label="Peso (kg)"
+                  label={t('session.weightKg')}
                   value={weightKg}
                   onChangeText={setWeightKg}
                   placeholder="0.0"
@@ -405,12 +411,12 @@ export default function SessionScreen(): React.JSX.Element | null {
               </View>
             </View>
             <NumberInput
-              label="Duración (s)"
+              label={t('session.durationS')}
               value={durationSeconds}
               onChangeText={setDurationSeconds}
             />
             <View style={styles.logBtnWrapper}>
-              <LogSetButton onPress={handleLogSet} />
+              <LogSetButton onPress={handleLogSet} label={t('session.logSet')} />
             </View>
           </Card>
         )}
@@ -418,7 +424,7 @@ export default function SessionScreen(): React.JSX.Element | null {
         {isPaused && (
           <Card style={styles.pausedCard}>
             <Text style={styles.pausedText}>
-              El entreno está en pausa. Tocá "Continuar" para seguir.
+              {t('session.pausedHint')}
             </Text>
           </Card>
         )}
@@ -426,22 +432,20 @@ export default function SessionScreen(): React.JSX.Element | null {
         {/* Exercise navigation buttons */}
         <View style={styles.exerciseNav}>
           <Button
-            label="‹ Anterior"
+            label={t('session.prevExercise')}
             variant="secondary"
             onPress={() => setCurrentExerciseIndex((i) => Math.max(0, i - 1))}
             disabled={currentExerciseIndex === 0}
           />
           <Button
-            label="Siguiente ›"
+            label={t('session.nextExercise')}
             variant="secondary"
             onPress={() =>
               setCurrentExerciseIndex((i) =>
-                Math.min(
-                  Math.max(exerciseIds.length - 1, currentExerciseIndex),
-                  i + 1
-                )
+                Math.min(totalExercises - 1, i + 1)
               )
             }
+            disabled={currentExerciseIndex >= totalExercises - 1}
           />
         </View>
       </ScrollView>
@@ -449,7 +453,7 @@ export default function SessionScreen(): React.JSX.Element | null {
       {/* Footer */}
       <View style={styles.footer}>
         <Button
-          label={isSyncing ? "Guardando..." : "Finalizar entreno"}
+          label={isSyncing ? t('session.saving') : t('session.finishTitle')}
           variant="danger"
           onPress={handleFinish}
           fullWidth
