@@ -1,0 +1,127 @@
+{
+  "metadata": {
+    "defaultTitle": "Forzza — Tu plataforma de entrenamiento personalizado",
+    "titleTemplate": "%s — Forzza",
+    "description": "Entrená con el coach correcto. Rutinas, seguimiento y resultados reales."
+  },
+  "landing": {
+    "metadata": {
+      "title": "Forzza — Entrenamiento con coach que funciona",
+      "description": "Conectamos alumnos con coaches certificados. Rutinas personalizadas, check-ins, progreso y pagos en un solo lugar."
+    },
+    "nav": {
+      "coaches": "Coaches",
+      "login": "Ingresar",
+      "cta": "Empezar gratis"
+    },
+    "hero": {
+      "badge": "NUEVO",
+      "badgeLabel": "Beta · Argentina 🇦🇷",
+      "headline": "FORZZA",
+      "subheadline": "Entrenamiento con coach que realmente funciona.",
+      "body": "Conectamos alumnos con coaches certificados. Rutinas, check-ins, progreso y pagos en un solo lugar.",
+      "ctaPrimary": "Empezar gratis →",
+      "ctaSecondary": "Ver coaches",
+      "disclaimer": "Sin tarjeta · Plan Free para siempre"
+    },
+    "stats": {
+      "guarantee": "Garantía de devolución",
+      "commission": "Comisión plataforma",
+      "verified": "Coaches verificados"
+    },
+    "features": {
+      "headline": "Todo lo que necesitás para entrenar mejor",
+      "subheadline": "Una plataforma. Alumnos, coaches y dueños.",
+      "items": {
+        "routines": {
+          "title": "Rutinas personalizadas",
+          "desc": "Tu coach arma tu plan según tus objetivos y nivel. Vos lo seguís con guía paso a paso.",
+          "tag": "CORE"
+        },
+        "progress": {
+          "title": "Progreso medible",
+          "desc": "Registrá sesiones, peso y fotos. Ves la evolución real semana a semana.",
+          "tag": "TRACKING"
+        },
+        "chat": {
+          "title": "Chat directo",
+          "desc": "Feedback de tu coach en tiempo real. Corregís técnica, ajustás plan.",
+          "tag": "REALTIME"
+        },
+        "payments": {
+          "title": "Pagos seguros",
+          "desc": "Mercado Pago con 72h de garantía. El coach cobra cuando cumple.",
+          "tag": "PAGOS"
+        },
+        "offline": {
+          "title": "Offline-first",
+          "desc": "Entrená sin conexión. Sync automático cuando volvés a tener internet.",
+          "tag": "MOBILE"
+        },
+        "trust": {
+          "title": "Coaches verificados",
+          "desc": "Proceso de validación real. Constancia del ejercicio profesional incluida.",
+          "tag": "TRUST"
+        }
+      }
+    },
+    "howItWorks": {
+      "headline": "Tres pasos para empezar",
+      "steps": {
+        "step1": {
+          "title": "Elegís tu coach",
+          "desc": "Explorás el marketplace, ves perfiles, precios y especialidades."
+        },
+        "step2": {
+          "title": "Empezás a entrenar",
+          "desc": "Tu coach te arma la rutina y te da seguimiento personalizado."
+        },
+        "step3": {
+          "title": "Medís tu progreso",
+          "desc": "Check-ins semanales, fotos corporales y métricas. Sin excusas."
+        }
+      }
+    },
+    "pricing": {
+      "headline": "Planes para alumnos",
+      "subheadline": "Empezás gratis. Subís cuando querés más.",
+      "free": {
+        "label": "// FREE",
+        "price": "$0",
+        "period": "Para siempre",
+        "features": [
+          "3 rutinas activas",
+          "Historial 10 días",
+          "Registro de sesiones",
+          "Marketplace de coaches"
+        ],
+        "cta": "Empezar gratis"
+      },
+      "pro": {
+        "label": "// PRO",
+        "badge": "⚡ RECOMENDADO",
+        "period": "por mes · cancelás cuando querés",
+        "cta": "Activar PRO →"
+      }
+    },
+    "coachCta": {
+      "headline": "¿Sos coach?",
+      "body": "Creá tu perfil, publicá tus paquetes y manejá tus alumnos desde un solo lugar.\nSin suscripción fija. Comisión solo cuando vendés.",
+      "cta": "Registrarme como coach →"
+    },
+    "footer": {
+      "links": {
+        "coaches": "Coaches",
+        "plans": "Planes",
+        "terms": "Términos",
+        "privacy": "Privacidad"
+      },
+      "copy": "© 2026 Forzza · Argentina"
+    }
+  },
+  "languageSwitcher": {
+    "label": "Idioma",
+    "es": "ES",
+    "en": "EN"
+  }
+}

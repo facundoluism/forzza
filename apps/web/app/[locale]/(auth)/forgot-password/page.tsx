@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { forgotPasswordSchema } from "@forzza/core";
 
@@ -55,9 +56,9 @@ export default function ForgotPasswordPage() {
         <p style={{ color: "var(--color-muted)" }}>
           Revisá tu bandeja de entrada y seguí las instrucciones para restablecer tu contraseña.
         </p>
-        <a href="/login" style={{ color: "#C8FF00", display: "block", marginTop: "24px" }}>
+        <Link href="/login" style={{ color: "#C8FF00", display: "block", marginTop: "24px" }}>
           Volver al inicio de sesión
-        </a>
+        </Link>
       </div>
     );
   }
@@ -104,9 +105,9 @@ export default function ForgotPasswordPage() {
           {state === "loading" ? "Enviando..." : "Enviar link de recuperación"}
         </button>
 
-        <a href="/login" style={{ display: "block", textAlign: "center", marginTop: "16px", color: "var(--color-muted)", fontSize: "14px" }}>
+        <Link href="/login" style={{ display: "block", textAlign: "center", marginTop: "16px", color: "var(--color-muted)", fontSize: "14px" }}>
           Volver al inicio de sesión
-        </a>
+        </Link>
       </form>
     </div>
   );

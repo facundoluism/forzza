@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireAdmin } from "@/lib/auth/admin";
 import type { Metadata } from "next";
 import { TicketResolveButton } from "./TicketResolveButton";
@@ -85,7 +86,7 @@ export default async function AdminTicketsPage({ searchParams }: PageProps) {
       {/* Status filter — single row with horizontal scroll, scrollbar hidden */}
       <div className="overflow-x-auto scrollbar-none mb-6">
         <div className="flex flex-nowrap gap-2 min-w-max">
-          <a
+          <Link
             href="/admin/tickets"
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
               !filterStatus
@@ -94,9 +95,9 @@ export default async function AdminTicketsPage({ searchParams }: PageProps) {
             }`}
           >
             Todos
-          </a>
+          </Link>
           {ALL_STATUSES.map((s) => (
-            <a
+            <Link
               key={s}
               href={`/admin/tickets?status=${s}`}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
@@ -106,7 +107,7 @@ export default async function AdminTicketsPage({ searchParams }: PageProps) {
               }`}
             >
               {statusLabel[s]}
-            </a>
+            </Link>
           ))}
         </div>
       </div>

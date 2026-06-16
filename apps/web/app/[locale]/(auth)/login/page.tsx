@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { loginSchema } from "@forzza/core";
 
@@ -40,7 +41,7 @@ export default function LoginPage() {
     // Production: real Supabase auth
     const { createClient } = await import("@/lib/supabase/client");
     const supabase = createClient();
-    const { error: authError } = await supabase.auth.signInWithPassword({
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -55,7 +56,20 @@ export default function LoginPage() {
       return;
     }
 
-    window.location.href = "/coach";
+    if (!authData.user) {
+      setError("No se pudo obtener el usuario autenticado. Intentá de nuevo.");
+      setLoading(false);
+      return;
+    }
+
+    const { data: userRow } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", authData.user.id)
+      .single();
+
+    window.location.href =
+      userRow?.role === "owner" ? "/admin/dashboard" : "/coach";
   }
 
   const inputStyle: React.CSSProperties = {
@@ -148,12 +162,12 @@ export default function LoginPage() {
           </button>
 
           <div style={{ marginTop: "16px", textAlign: "center" }}>
-            <a
+            <Link
               href="/forgot-password"
               style={{ color: "var(--color-muted)", fontSize: "14px" }}
             >
               ¿Olvidaste tu contraseña?
-            </a>
+            </Link>
           </div>
         </form>
       </div>

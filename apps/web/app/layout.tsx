@@ -1,8 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { InstallPrompt } from "../components/InstallPrompt";
 
-export const dynamic = "force-dynamic";
+// Root layout — provides the HTML document structure.
+// Locale-specific wiring (NextIntlClientProvider) lives in app/[locale]/layout.tsx.
+// The lang attribute is set here to "es" as a default; next-intl injects the
+// correct locale into the <html> tag via generateStaticParams + setRequestLocale
+// in the [locale]/layout.tsx. suppressHydrationWarning prevents React from
+// complaining when the lang attribute is patched client-side.
 
 export const metadata: Metadata = {
   title: {
@@ -33,7 +37,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es">
+    <html suppressHydrationWarning>
       <head>
         {process.env.NEXT_PUBLIC_SUPABASE_URL && (
           <link
@@ -42,10 +46,7 @@ export default function RootLayout({
           />
         )}
       </head>
-      <body>
-        {children}
-        <InstallPrompt />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

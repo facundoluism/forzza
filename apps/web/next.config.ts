@@ -14,6 +14,11 @@ const withPWA = require("next-pwa")({
 });
 
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+
+// next-intl plugin — points to our request config so the plugin can inject
+// the locale into RSC context without prop drilling.
+const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 // Content-Security-Policy — tighten per-environment as real origins are known.
 // Kept as a single string for readability; Next.js joins multi-value headers.
@@ -86,6 +91,6 @@ const nextConfig: NextConfig = {
   },
 };
 
-// next-pwa wraps nextConfig and injects SW generation into the build pipeline.
-// The type cast is required because next-pwa's CJS export has no @types package.
-export default withPWA(nextConfig) as NextConfig;
+// Compose plugins: next-intl → next-pwa → nextConfig
+// Order matters: withPWA must be outermost so it wraps the webpack config last.
+export default withPWA(withNextIntl(nextConfig)) as NextConfig;

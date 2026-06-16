@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { resetPasswordSchema } from "@forzza/core";
 
@@ -64,9 +65,9 @@ export default function ResetPasswordPage() {
         <p style={{ color: "var(--color-muted)" }}>
           Ya podés iniciar sesión con tu nueva contraseña.
         </p>
-        <a href="/login" style={{ color: "#C8FF00", display: "block", marginTop: "24px" }}>
+        <Link href="/login" style={{ color: "#C8FF00", display: "block", marginTop: "24px" }}>
           Ir a iniciar sesión
-        </a>
+        </Link>
       </div>
     );
   }
@@ -125,7 +126,7 @@ export default function ResetPasswordPage() {
           {state === "loading" ? "Guardando..." : "Guardar contraseña"}
         </button>
 
-        <a
+        <Link
           href="/login"
           style={{
             display: "block",
@@ -136,7 +137,7 @@ export default function ResetPasswordPage() {
           }}
         >
           Volver al inicio de sesión
-        </a>
+        </Link>
       </form>
     </div>
   );

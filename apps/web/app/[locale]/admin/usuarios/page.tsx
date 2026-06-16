@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireAdmin } from "@/lib/auth/admin";
 import type { Metadata } from "next";
 
@@ -107,12 +108,12 @@ export default async function AdminUsuariosPage({ searchParams }: PageProps) {
             Buscar
           </button>
           {search && (
-            <a
+            <Link
               href="/admin/usuarios"
               className="px-4 py-2.5 bg-surface-2 text-muted text-sm rounded-lg hover:text-text transition-colors"
             >
               Limpiar
-            </a>
+            </Link>
           )}
         </div>
       </form>
