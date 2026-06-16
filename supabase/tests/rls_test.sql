@@ -6,7 +6,7 @@
 
 BEGIN;
 
-SELECT plan(23);
+SELECT plan(27);
 
 -- Datos de test (se revierten al final)
 DO $$
@@ -39,6 +39,56 @@ SELECT ok(
 SELECT ok(
   NOT student_has_pro_or_elite_package(gen_random_uuid(), gen_random_uuid()),
   'student_has_pro_or_elite_package retorna false para IDs inexistentes'
+);
+
+-- Test 3b: auth_coach_profile_id resuelve coach_profiles.id desde auth.uid()
+SELECT is(
+  (
+    WITH _ AS (
+      SELECT set_config(
+        'request.jwt.claim.sub',
+        '10000000-0000-4000-8000-000000000002',
+        true
+      )
+    )
+    SELECT auth_coach_profile_id()
+  ),
+  '20000000-0000-4000-8000-000000000002'::uuid,
+  'auth_coach_profile_id resuelve el profile id del coach autenticado'
+);
+
+DO $$
+BEGIN
+  PERFORM set_config('request.jwt.claim.sub', '', true);
+END $$;
+
+-- Test 3c: helper de assignment usa coach_profiles.id, no auth.users.id
+SELECT ok(
+  coach_has_active_assignment(
+    '20000000-0000-4000-8000-000000000002'::uuid,
+    '10000000-0000-4000-8000-000000000003'::uuid
+  ),
+  'coach_has_active_assignment acepta coach_profiles.id del fixture smoke'
+);
+
+-- Test 3d: fotos sensibles requieren paquete pro/elite activo con coach_profiles.id
+SELECT ok(
+  student_has_pro_or_elite_package(
+    '10000000-0000-4000-8000-000000000003'::uuid,
+    '20000000-0000-4000-8000-000000000002'::uuid
+  ),
+  'student_has_pro_or_elite_package acepta coach_profiles.id del fixture smoke'
+);
+
+-- Test 3e: assignment activo queda vinculado a la rutina asignada por el coach
+SELECT is(
+  (
+    SELECT routine_id
+    FROM coach_assignments
+    WHERE id = '40000000-0000-4000-8000-000000000001'::uuid
+  ),
+  '60000000-0000-4000-8000-000000000001'::uuid,
+  'coach_assignments.routine_id apunta a la rutina smoke asignada'
 );
 
 -- Test 4: country_config tiene comisión 20% para AR

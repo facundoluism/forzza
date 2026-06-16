@@ -207,6 +207,7 @@ export type Database = {
           package_id: string
           payment_id: string | null
           refunded_at: string | null
+          routine_id: string | null
           started_at: string | null
           status: Database["public"]["Enums"]["assignment_status"]
           student_id: string
@@ -220,6 +221,7 @@ export type Database = {
           package_id: string
           payment_id?: string | null
           refunded_at?: string | null
+          routine_id?: string | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["assignment_status"]
           student_id: string
@@ -233,6 +235,7 @@ export type Database = {
           package_id?: string
           payment_id?: string | null
           refunded_at?: string | null
+          routine_id?: string | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["assignment_status"]
           student_id?: string
@@ -258,6 +261,13 @@ export type Database = {
             columns: ["payment_id"]
             isOneToOne: false
             referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coach_assignments_routine_id_fkey"
+            columns: ["routine_id"]
+            isOneToOne: false
+            referencedRelation: "routines"
             referencedColumns: ["id"]
           },
           {
