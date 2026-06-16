@@ -1,64 +1,74 @@
 appId: com.forzza.app
 # Preconditions:
 # - Run `supabase db reset` from the repo root so smoke-flow.sql is loaded.
-# - Start the mobile app with EXPO_PUBLIC_SUPABASE_URL / ANON_KEY pointing to
-#   the same Supabase instance. Android emulator usually needs 10.0.2.2
-#   instead of 127.0.0.1.
+# - Start Metro with `pnpm --filter mobile dev -- --host localhost --dev-client`.
+# - Run `adb reverse tcp:8081 tcp:8081` and `adb reverse tcp:54321 tcp:54321`.
+#   The dev-client link below uses 127.0.0.1 because adb reverse maps it from
+#   the emulator back to the host Metro server.
 ---
 - launchApp:
     clearState: true
+- openLink: "forzza://expo-development-client/?url=http%3A%2F%2F127.0.0.1%3A8081"
 - assertVisible:
     id: "email-input"
-- inputText:
+- tapOn:
     id: "email-input"
-    text: "alumno.smoke@forzza.app"
-- inputText:
+- inputText: "alumno.smoke@forzza.app"
+- tapOn:
     id: "password-input"
-    text: "ForzzaSmoke123!"
+- inputText: "ForzzaSmoke123!"
 - tapOn:
     id: "login-submit"
+    waitToSettleTimeoutMs: 500
 - assertVisible:
     id: "today-routine-card"
 - tapOn:
     id: "today-routine-card"
+    waitToSettleTimeoutMs: 500
 - assertVisible:
     id: "start-workout-button"
 - tapOn:
     id: "routine-exercise-0"
+    waitToSettleTimeoutMs: 500
 - assertVisible:
     id: "exercise-preview-sheet"
 - back
 - tapOn:
     id: "start-workout-button"
+    waitToSettleTimeoutMs: 500
 - assertVisible:
     id: "reps-input"
-- inputText:
+- tapOn:
     id: "reps-input"
-    text: "10"
-- inputText:
+- inputText: "10"
+- tapOn:
     id: "weight-input"
-    text: "40"
+- inputText: "40"
 - tapOn:
     id: "log-set-button"
+    waitToSettleTimeoutMs: 500
 - assertVisible:
     id: "skip-rest-button"
 - tapOn:
     id: "skip-rest-button"
 - tapOn:
     id: "next-exercise-button"
+    waitToSettleTimeoutMs: 500
 - assertVisible:
     id: "reps-input"
-- inputText:
+- tapOn:
     id: "reps-input"
-    text: "12"
+- inputText: "12"
 - tapOn:
     id: "log-set-button"
+    waitToSettleTimeoutMs: 500
 - assertVisible:
     id: "skip-rest-button"
 - tapOn:
     id: "skip-rest-button"
 - tapOn:
     id: "finish-workout-button"
+    waitToSettleTimeoutMs: 500
 - tapOn: "Finalizar"
 - assertVisible:
     id: "today-routine-card"
