@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/server";
+import { isMinorWithoutConsent } from "@forzza/core";
 import { CheckoutClient } from "./CheckoutClient";
 import type { Locale } from "@/i18n/routing";
 
@@ -87,8 +88,9 @@ export default async function CoachCheckoutPage({
   // user is guaranteed non-null from here.
   const safeUser = user;
 
-  // Verificar menor de edad sin consentimiento paternal (Regla #7)
-  let isMinorWithoutConsent = false;
+  // Verificar menor de edad sin consentimiento paternal (Regla #7).
+  // Lógica canónica en packages/core (testeada). La compuerta REAL es server-side
+  // en la Edge Function coach-checkout (403 minor_no_consent); esto solo gatea la UI.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: studentProfile } = await (supabase as any)
     .from("student_profiles")
@@ -96,13 +98,10 @@ export default async function CoachCheckoutPage({
     .eq("user_id", safeUser.id)
     .single();
 
-  if (studentProfile?.birth_date) {
-    const ageMs = Date.now() - new Date(studentProfile.birth_date as string).getTime();
-    const age = Math.floor(ageMs / (365.25 * 24 * 60 * 60 * 1000));
-    if (age < 18 && !studentProfile.parental_consent_at) {
-      isMinorWithoutConsent = true;
-    }
-  }
+  const minorWithoutConsent = isMinorWithoutConsent({
+    birthDate: studentProfile?.birth_date ?? null,
+    parentalConsentAt: studentProfile?.parental_consent_at ?? null,
+  });
 
   // Obtener datos del coach y el paquete
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -185,7 +184,7 @@ export default async function CoachCheckoutPage({
       packagePrice={pkg.price}
       currency={currency}
       currencySymbol={currencySymbol}
-      isMinorWithoutConsent={isMinorWithoutConsent}
+      isMinorWithoutConsent={minorWithoutConsent}
       errorMessage={null}
     />
   );

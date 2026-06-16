@@ -72,8 +72,16 @@ serve(async (req) => {
     .single();
 
   if (studentProfile?.birth_date) {
-    const ageMs = Date.now() - new Date(studentProfile.birth_date).getTime();
-    const age = Math.floor(ageMs / (365.25 * 24 * 60 * 60 * 1000));
+    // Cálculo de edad preciso por año/mes/día (espejo de isMinorWithoutConsent
+    // en packages/core; Deno no puede importar el workspace). Evita el error de
+    // ~1 día de la aproximación 365.25 en una compuerta de seguridad (Regla #7).
+    const today = new Date();
+    const birth = new Date(studentProfile.birth_date);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age -= 1;
+    }
     if (age < 18 && !studentProfile.parental_consent_at) {
       return new Response(
         JSON.stringify({ error: "minor_no_consent" }),
