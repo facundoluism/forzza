@@ -5,10 +5,16 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       exclude: [
+        // Barrels / entrypoints sin lógica propia
         "src/index.ts",
         "src/schemas/index.ts",
         "src/supabase/**",
         "vitest.config.ts",
+        // Los archivos de test no son código de producción —
+        // v8 los incluye por defecto y baja el % de funciones
+        // (los callbacks de it/describe cuentan como funciones no cubiertas)
+        "src/**/__tests__/**",
+        "src/**/*.test.ts",
       ],
       thresholds: {
         lines: 80,
