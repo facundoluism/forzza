@@ -1,5 +1,8 @@
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 
-export default function AdminRootPage() {
-  redirect("/admin/dashboard");
+type Props = { params: Promise<{ locale: string }> };
+
+export default async function AdminRootPage({ params }: Props) {
+  const { locale } = await params;
+  redirect({ href: "/admin/dashboard", locale });
 }

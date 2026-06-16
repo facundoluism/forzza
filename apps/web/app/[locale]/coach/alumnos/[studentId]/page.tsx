@@ -1,12 +1,17 @@
 import { requireCoach } from "@/lib/auth/coach";
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
 import { LineChart } from "@forzza/ui/web";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Detalle de alumno — Forzza Coach",
-};
+type Props = { params: Promise<{ locale: string; studentId: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "coach" });
+  return { title: t("alumnos.metaTitle") };
+}
 
 type WorkoutStatus = "in_progress" | "completed" | "abandoned";
 
@@ -25,12 +30,6 @@ interface CheckinResponse {
   checkin_templates: { title: string } | null;
 }
 
-const workoutStatusLabel: Record<WorkoutStatus, string> = {
-  in_progress: "En progreso",
-  completed: "Completado",
-  abandoned: "Abandonado",
-};
-
 const workoutStatusColor: Record<WorkoutStatus, string> = {
   in_progress: "text-yellow-400",
   completed: "text-green-400",
@@ -48,12 +47,11 @@ function formatDate(dateStr: string | null): string {
   });
 }
 
-export default async function StudentDetailPage({
-  params,
-}: {
-  params: Promise<{ studentId: string }>;
-}) {
-  const { studentId } = await params;
+export default async function StudentDetailPage({ params }: Props) {
+  const { locale, studentId } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "coach" });
+
   const { supabase, coachProfileId } = await requireCoach();
 
   // Verify coach has an assignment with this student
@@ -146,6 +144,12 @@ export default async function StudentDetailPage({
     routines: { title: string } | null;
   };
 
+  const workoutStatusLabel: Record<WorkoutStatus, string> = {
+    in_progress: t("alumnos.statusPaused"),
+    completed: t("alumnos.statusActive"),
+    abandoned: t("alumnos.statusCancelled"),
+  };
+
   return (
     <div className="max-w-4xl space-y-6">
       {/* Header */}
@@ -155,14 +159,14 @@ export default async function StudentDetailPage({
             href="/coach/alumnos"
             className="text-muted hover:text-muted text-sm transition-colors"
           >
-            ← Volver a alumnos
+            ← {t("alumnos.title")}
           </Link>
           <h1 className="text-2xl font-bold text-text mt-2">
-            {studentProfile?.display_name ?? "Sin nombre"}
+            {studentProfile?.display_name ?? t("alumnos.detail.notFound")}
           </h1>
           {studentProfile?.level && (
             <p className="text-muted text-sm mt-1">
-              Nivel: {studentProfile.level}
+              {studentProfile.level}
             </p>
           )}
         </div>
@@ -172,7 +176,7 @@ export default async function StudentDetailPage({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="rounded-xl border border-border bg-surface p-5">
           <h2 className="text-xs uppercase tracking-wider text-muted mb-3">
-            Objetivos
+            {t("alumnos.detail.goals")}
           </h2>
           {studentProfile?.goals && studentProfile.goals.length > 0 ? (
             <div className="flex flex-wrap gap-2">
@@ -186,13 +190,13 @@ export default async function StudentDetailPage({
               ))}
             </div>
           ) : (
-            <p className="text-muted text-sm opacity-50">Sin objetivos registrados</p>
+            <p className="text-muted text-sm opacity-50">{t("alumnos.detail.noGoals")}</p>
           )}
         </div>
 
         <div className="rounded-xl border border-border bg-surface p-5">
           <h2 className="text-xs uppercase tracking-wider text-muted mb-3">
-            Rutina asignada
+            {t("alumnos.detail.assignedRoutine")}
           </h2>
           {assignmentData.routines ? (
             <div className="flex items-center justify-between">
@@ -203,17 +207,17 @@ export default async function StudentDetailPage({
                 href="/coach/rutinas"
                 className="text-lime hover:text-[#AADD00] text-xs transition-colors"
               >
-                Cambiar rutina →
+                {t("alumnos.detail.viewRoutine")} →
               </Link>
             </div>
           ) : (
             <div className="flex items-center justify-between">
-              <span className="text-muted text-sm opacity-50">Sin rutina asignada</span>
+              <span className="text-muted text-sm opacity-50">{t("alumnos.detail.noRoutine")}</span>
               <Link
                 href="/coach/rutinas/nueva"
                 className="text-lime hover:text-[#AADD00] text-xs transition-colors"
               >
-                Asignar rutina →
+                {t("alumnos.detail.viewRoutine")} →
               </Link>
             </div>
           )}
@@ -223,7 +227,7 @@ export default async function StudentDetailPage({
       {/* Last check-in */}
       <div className="rounded-xl border border-border bg-surface p-5">
         <h2 className="text-xs uppercase tracking-wider text-muted mb-3">
-          Último check-in
+          {t("alumnos.detail.lastCheckin")}
         </h2>
         {checkin ? (
           <div>
@@ -247,17 +251,17 @@ export default async function StudentDetailPage({
             </div>
           </div>
         ) : (
-          <p className="text-muted text-sm opacity-50">Sin respuestas de check-in</p>
+          <p className="text-muted text-sm opacity-50">{t("alumnos.detail.noCheckin")}</p>
         )}
       </div>
 
       {/* Last 5 workout sessions */}
       <div className="rounded-xl border border-border bg-surface p-5">
         <h2 className="text-xs uppercase tracking-wider text-muted mb-4">
-          Últimas sesiones de entrenamiento
+          {t("alumnos.detail.recentSessions")}
         </h2>
         {workoutSessions.length === 0 ? (
-          <p className="text-muted text-sm opacity-50">Sin sesiones registradas</p>
+          <p className="text-muted text-sm opacity-50">{t("alumnos.detail.noSessions")}</p>
         ) : (
           <div className="space-y-2">
             {workoutSessions.map((session) => (
@@ -288,7 +292,7 @@ export default async function StudentDetailPage({
       <div className="rounded-xl border border-border bg-surface p-5">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xs uppercase tracking-wider text-muted">
-            Sesiones por día (últimas 4 semanas)
+            {t("alumnos.detail.sessions28")}
           </h2>
         </div>
         {hasChartData ? (
@@ -308,7 +312,7 @@ export default async function StudentDetailPage({
         ) : (
           <div className="h-20 rounded-lg bg-surface-2 border border-border flex items-center justify-center">
             <p className="text-muted text-sm opacity-50">
-              Sin sesiones registradas en los últimos 28 días
+              {t("alumnos.detail.noSessions")}
             </p>
           </div>
         )}
@@ -318,7 +322,7 @@ export default async function StudentDetailPage({
       <div className="rounded-xl border border-border bg-surface p-5">
         <div className="flex items-center justify-between">
           <h2 className="text-xs uppercase tracking-wider text-muted">
-            Progreso general
+            {t("alumnos.detail.recentSessions")}
           </h2>
           <button
             type="button"

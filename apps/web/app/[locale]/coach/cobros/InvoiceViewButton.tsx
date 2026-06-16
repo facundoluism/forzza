@@ -1,10 +1,14 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 interface Props {
   signedUrl: string;
 }
 
 export function InvoiceViewButton({ signedUrl }: Props) {
+  const t = useTranslations("coach");
+
   return (
     <a
       href={signedUrl}
@@ -12,7 +16,7 @@ export function InvoiceViewButton({ signedUrl }: Props) {
       rel="noopener noreferrer"
       className="text-[#C8FF00] hover:text-[#AADD00] text-xs font-medium transition-colors"
     >
-      Ver factura
+      {t("cobros.btnViewInvoice")}
     </a>
   );
 }

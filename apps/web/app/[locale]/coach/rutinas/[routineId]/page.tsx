@@ -1,12 +1,17 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
 import { requireCoach } from "@/lib/auth/coach";
 import type { Tables } from "@forzza/db-types";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Detalle de rutina — Forzza Coach",
-};
+type Props = { params: Promise<{ locale: string; routineId: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "coach" });
+  return { title: t("rutinas.metaTitle") };
+}
 
 // ---------------------------------------------------------------------------
 // Tipos
@@ -53,15 +58,6 @@ function formatDate(dateStr: string): string {
   });
 }
 
-function difficultyLabel(d: string | null | undefined): string {
-  const map: Record<string, string> = {
-    beginner: "Principiante",
-    intermediate: "Intermedio",
-    advanced: "Avanzado",
-  };
-  return d ? (map[d] ?? d) : "";
-}
-
 function difficultyColor(d: string | null | undefined): string {
   const map: Record<string, string> = {
     beginner: "text-green-400",
@@ -75,12 +71,11 @@ function difficultyColor(d: string | null | undefined): string {
 // Page
 // ---------------------------------------------------------------------------
 
-interface PageProps {
-  params: Promise<{ routineId: string }>;
-}
+export default async function RutinaDetailPage({ params }: Props) {
+  const { locale, routineId } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "coach" });
 
-export default async function RutinaDetailPage({ params }: PageProps) {
-  const { routineId } = await params;
   const { supabase, coachProfileId } = await requireCoach();
 
   // --- Fetch rutina ---
@@ -158,6 +153,12 @@ export default async function RutinaDetailPage({ params }: PageProps) {
     routine as unknown as { student_profiles: { display_name: string | null } | null }
   ).student_profiles;
 
+  const difficultyLabel: Record<string, string> = {
+    beginner: t("rutinas.nueva.diffBeginner"),
+    intermediate: t("rutinas.nueva.diffIntermediate"),
+    advanced: t("rutinas.nueva.diffAdvanced"),
+  };
+
   // --- Render ---
   return (
     <div className="max-w-2xl">
@@ -167,14 +168,14 @@ export default async function RutinaDetailPage({ params }: PageProps) {
           href="/coach/rutinas"
           className="text-muted hover:text-muted text-sm transition-colors mb-2 block"
         >
-          ← Volver a rutinas
+          ← {t("rutinas.title")}
         </Link>
         <h1 className="text-2xl font-bold text-text">{routine.title}</h1>
         <p className="text-muted text-xs mt-1">
-          Creada el {formatDate(routine.created_at)}
+          {formatDate(routine.created_at)}
           {studentProfile?.display_name
-            ? ` · Asignada a ${studentProfile.display_name}`
-            : " · Sin alumno asignado"}
+            ? ` · ${studentProfile.display_name}`
+            : ""}
         </p>
         {routine.description && (
           <p className="text-muted text-sm mt-3">{routine.description}</p>
@@ -185,7 +186,7 @@ export default async function RutinaDetailPage({ params }: PageProps) {
       {enriched.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border p-12 text-center">
           <p className="text-muted text-sm opacity-60">
-            Esta rutina no tiene ejercicios cargados.
+            {t("rutinas.nueva.noExercises")}
           </p>
         </div>
       ) : (
@@ -222,7 +223,7 @@ export default async function RutinaDetailPage({ params }: PageProps) {
                         )}
                         {difficulty && (
                           <span className={`text-xs ${difficultyColor(difficulty)}`}>
-                            {difficultyLabel(difficulty)}
+                            {difficultyLabel[difficulty] ?? difficulty}
                           </span>
                         )}
                       </div>
@@ -235,7 +236,7 @@ export default async function RutinaDetailPage({ params }: PageProps) {
                   <div className="mb-3 space-y-1">
                     {primaryMuscles.length > 0 && (
                       <p className="text-muted text-xs">
-                        <span className="text-muted font-medium">Principal: </span>
+                        <span className="text-muted font-medium">{t("rutinas.detail.muscles")}: </span>
                         {primaryMuscles.join(", ")}
                       </p>
                     )}
@@ -251,7 +252,7 @@ export default async function RutinaDetailPage({ params }: PageProps) {
                 {/* Equipment */}
                 {equipment.length > 0 && (
                   <p className="text-muted text-xs mb-3 opacity-60">
-                    Equipamiento: {equipment.join(", ")}
+                    {t("rutinas.detail.equipment")}: {equipment.join(", ")}
                   </p>
                 )}
 
@@ -262,7 +263,7 @@ export default async function RutinaDetailPage({ params }: PageProps) {
                       <p className="text-lime font-bold text-lg leading-none">
                         {ex.sets}
                       </p>
-                      <p className="text-muted text-xs mt-0.5">series</p>
+                      <p className="text-muted text-xs mt-0.5">{t("rutinas.detail.sets")}</p>
                     </div>
                   )}
                   {ex.reps != null && (
@@ -270,7 +271,7 @@ export default async function RutinaDetailPage({ params }: PageProps) {
                       <p className="text-lime font-bold text-lg leading-none">
                         {ex.reps}
                       </p>
-                      <p className="text-muted text-xs mt-0.5">reps</p>
+                      <p className="text-muted text-xs mt-0.5">{t("rutinas.detail.reps")}</p>
                     </div>
                   )}
                   {ex.duration_seconds != null && (
@@ -286,7 +287,7 @@ export default async function RutinaDetailPage({ params }: PageProps) {
                       <p className="text-muted font-bold text-lg leading-none">
                         {ex.rest_seconds}s
                       </p>
-                      <p className="text-muted text-xs mt-0.5">descanso</p>
+                      <p className="text-muted text-xs mt-0.5">{t("rutinas.detail.rest")}</p>
                     </div>
                   )}
                 </div>
@@ -305,7 +306,7 @@ export default async function RutinaDetailPage({ params }: PageProps) {
 
       {/* Footer */}
       <p className="text-muted text-xs text-center mt-8 opacity-30">
-        Última actualización: {formatDate(routine.updated_at)}
+        {formatDate(routine.updated_at)}
       </p>
     </div>
   );

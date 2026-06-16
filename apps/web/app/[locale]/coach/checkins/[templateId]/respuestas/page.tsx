@@ -1,11 +1,16 @@
 import { requireCoach } from "@/lib/auth/coach";
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Respuestas de check-in — Forzza Coach",
-};
+type Props = { params: Promise<{ locale: string; templateId: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "coach" });
+  return { title: t("checkins.metaTitle") };
+}
 
 interface QuestionJson {
   label: string;
@@ -44,12 +49,11 @@ function renderValue(val: unknown): string {
   return String(val);
 }
 
-export default async function RespuestasPage({
-  params,
-}: {
-  params: Promise<{ templateId: string }>;
-}) {
-  const { templateId } = await params;
+export default async function RespuestasPage({ params }: Props) {
+  const { locale, templateId } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "coach" });
+
   const { supabase, coachProfileId } = await requireCoach();
 
   // Verify template belongs to this coach
@@ -97,17 +101,17 @@ export default async function RespuestasPage({
           href="/coach/checkins"
           className="text-muted hover:text-muted text-sm transition-colors"
         >
-          ← Volver a check-ins
+          ← {t("checkins.title")}
         </Link>
         <h1 className="text-2xl font-bold text-text mt-2">{template.title}</h1>
         <p className="text-muted text-sm mt-1">
-          {rows.length} respuesta{rows.length !== 1 ? "s" : ""}
+          {t("checkins.respuestas.title", { count: rows.length })}
         </p>
       </div>
 
       {rows.length === 0 ? (
         <div className="rounded-xl border border-border bg-surface p-12 text-center">
-          <p className="text-muted text-lg">Todavía no hay respuestas para esta plantilla.</p>
+          <p className="text-muted text-lg">{t("checkins.respuestas.noResponses")}</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -144,7 +148,7 @@ export default async function RespuestasPage({
                     )
                   )
                 ) : (
-                  <p className="text-muted text-sm opacity-50">Sin respuestas</p>
+                  <p className="text-muted text-sm opacity-50">{t("checkins.respuestas.noResponses")}</p>
                 )}
               </div>
             </details>

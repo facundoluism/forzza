@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 type TicketStatus = "open" | "in_progress" | "resolved" | "closed";
 
@@ -15,6 +16,7 @@ export function TicketResolveButton({
   currentStatus,
 }: TicketResolveButtonProps) {
   const router = useRouter();
+  const t = useTranslations("admin");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,21 +31,29 @@ export function TicketResolveButton({
       });
       if (!res.ok) {
         const data = (await res.json()) as { error?: string };
-        setError(data.error ?? "Error al actualizar");
+        setError(data.error ?? t("tickets.errorUpdate"));
       } else {
         router.refresh();
       }
     } catch {
-      setError("Error de red");
+      setError(t("tickets.errorNetwork"));
     } finally {
       setLoading(false);
     }
   }
 
-  if (currentStatus === "resolved" || currentStatus === "closed") {
+  if (currentStatus === "resolved") {
     return (
       <span className="text-[#444444] text-xs">
-        {currentStatus === "resolved" ? "Resuelto" : "Cerrado"}
+        {t("tickets.terminalResolved")}
+      </span>
+    );
+  }
+
+  if (currentStatus === "closed") {
+    return (
+      <span className="text-[#444444] text-xs">
+        {t("tickets.terminalClosed")}
       </span>
     );
   }
@@ -59,7 +69,7 @@ export function TicketResolveButton({
             disabled={loading}
             className="px-3 py-1.5 rounded-lg bg-[#1A1A1A] text-blue-400 text-xs font-semibold border border-blue-500/20 hover:bg-blue-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? "…" : "En progreso"}
+            {loading ? "…" : t("tickets.btnInProgress")}
           </button>
         )}
 
@@ -68,7 +78,7 @@ export function TicketResolveButton({
           disabled={loading}
           className="px-3 py-1.5 rounded-lg bg-[#C8FF00] text-[#0A0A0A] text-xs font-semibold hover:bg-[#AADD00] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? "…" : "Marcar resuelto"}
+          {loading ? "…" : t("tickets.btnResolve")}
         </button>
       </div>
     </div>

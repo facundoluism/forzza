@@ -1,10 +1,14 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { requireAdmin } from "@/lib/auth/admin";
-import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Usuarios — Forzza Admin",
-};
+type Props = { params: Promise<{ locale: string }>; searchParams: Promise<{ q?: string }> };
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "admin" });
+  return { title: t("usuarios.metaTitle") };
+}
 
 interface UserRow {
   id: string;
@@ -17,10 +21,6 @@ interface UserRow {
   }[];
 }
 
-interface PageProps {
-  searchParams: Promise<{ q?: string }>;
-}
-
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("es-AR", {
     day: "numeric",
@@ -28,13 +28,6 @@ function formatDate(dateStr: string): string {
     year: "numeric",
   });
 }
-
-const roleLabel: Record<string, string> = {
-  student: "Alumno",
-  coach: "Coach",
-  owner: "Owner",
-  promoter: "Promotor",
-};
 
 const roleColors: Record<string, string> = {
   student: "bg-blue-500/10 text-blue-400 border border-blue-500/20",
@@ -49,10 +42,14 @@ const planColors: Record<string, string> = {
   elite: "text-purple-400",
 };
 
-export default async function AdminUsuariosPage({ searchParams }: PageProps) {
+export default async function AdminUsuariosPage({ params, searchParams }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "admin" });
+
   const { adminClient } = await requireAdmin();
-  const params = await searchParams;
-  const search = params.q?.trim() ?? "";
+  const sp = await searchParams;
+  const search = sp.q?.trim() ?? "";
 
   let query = adminClient
     .from("users")
@@ -82,12 +79,19 @@ export default async function AdminUsuariosPage({ searchParams }: PageProps) {
 
   const rows = (users ?? []) as unknown as UserRow[];
 
+  const roleLabel: Record<string, string> = {
+    student: t("dashboard.roleStudent"),
+    coach: t("dashboard.roleCoach"),
+    owner: t("dashboard.roleOwner"),
+    promoter: t("dashboard.rolePromoter"),
+  };
+
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-text">Usuarios</h1>
+        <h1 className="text-2xl font-bold text-text">{t("usuarios.title")}</h1>
         <p className="text-muted text-sm mt-1">
-          {rows.length} usuario{rows.length !== 1 ? "s" : ""} mostrados
+          {t("usuarios.subtitle", { count: rows.length })}
         </p>
       </div>
 
@@ -98,21 +102,21 @@ export default async function AdminUsuariosPage({ searchParams }: PageProps) {
             type="text"
             name="q"
             defaultValue={search}
-            placeholder="Buscar por ID de usuario…"
+            placeholder={t("usuarios.searchPlaceholder")}
             className="flex-1 max-w-sm bg-surface border border-border rounded-lg px-4 py-2.5 text-text text-sm placeholder-[var(--color-muted)] focus:outline-none focus:border-[#C8FF00]"
           />
           <button
             type="submit"
             className="px-4 py-2.5 bg-[#C8FF00] text-[#0A0A0A] text-sm font-semibold rounded-lg hover:bg-[#AADD00] transition-colors"
           >
-            Buscar
+            {t("usuarios.btnSearch")}
           </button>
           {search && (
             <Link
               href="/admin/usuarios"
               className="px-4 py-2.5 bg-surface-2 text-muted text-sm rounded-lg hover:text-text transition-colors"
             >
-              Limpiar
+              {t("usuarios.linkClear")}
             </Link>
           )}
         </div>
@@ -120,18 +124,18 @@ export default async function AdminUsuariosPage({ searchParams }: PageProps) {
 
       {rows.length === 0 ? (
         <div className="rounded-xl border border-border bg-surface p-12 text-center">
-          <p className="text-muted text-lg">No se encontraron usuarios.</p>
+          <p className="text-muted text-lg">{t("usuarios.emptyState")}</p>
         </div>
       ) : (
         <div className="rounded-xl border border-border bg-surface overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-muted text-xs uppercase tracking-wider border-b border-surface-2">
-                <th className="text-left px-6 py-3">ID</th>
-                <th className="text-left px-6 py-3 hidden sm:table-cell">País</th>
-                <th className="text-left px-6 py-3">Rol</th>
-                <th className="text-left px-6 py-3 hidden md:table-cell">Plan</th>
-                <th className="text-left px-6 py-3 hidden lg:table-cell">Registro</th>
+                <th className="text-left px-6 py-3">{t("usuarios.colId")}</th>
+                <th className="text-left px-6 py-3 hidden sm:table-cell">{t("usuarios.colCountry")}</th>
+                <th className="text-left px-6 py-3">{t("usuarios.colRole")}</th>
+                <th className="text-left px-6 py-3 hidden md:table-cell">{t("usuarios.colPlan")}</th>
+                <th className="text-left px-6 py-3 hidden lg:table-cell">{t("usuarios.colDate")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-2">

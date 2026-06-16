@@ -1,10 +1,14 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { requireAdmin } from "@/lib/auth/admin";
-import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Pagos — Forzza Admin",
-};
+type Props = { params: Promise<{ locale: string }>; searchParams: Promise<{ status?: string }> };
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "admin" });
+  return { title: t("pagos.metaTitle") };
+}
 
 type PaymentStatus = "pending" | "approved" | "rejected" | "refunded" | "in_process";
 
@@ -17,10 +21,6 @@ interface PaymentRow {
   status: PaymentStatus;
   gateway: string;
   created_at: string;
-}
-
-interface PageProps {
-  searchParams: Promise<{ status?: string }>;
 }
 
 function formatDate(dateStr: string): string {
@@ -38,14 +38,6 @@ function formatCents(cents: number, currency = "ARS"): string {
   })}`;
 }
 
-const statusLabel: Record<PaymentStatus, string> = {
-  pending: "Pendiente",
-  approved: "Aprobado",
-  rejected: "Rechazado",
-  refunded: "Reembolsado",
-  in_process: "En proceso",
-};
-
 const statusColors: Record<PaymentStatus, string> = {
   pending: "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20",
   approved: "bg-green-500/10 text-green-400 border border-green-500/20",
@@ -62,10 +54,14 @@ const ALL_STATUSES: PaymentStatus[] = [
   "in_process",
 ];
 
-export default async function AdminPagosPage({ searchParams }: PageProps) {
+export default async function AdminPagosPage({ params, searchParams }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "admin" });
+
   const { adminClient } = await requireAdmin();
-  const params = await searchParams;
-  const filterStatus = params.status as PaymentStatus | undefined;
+  const sp = await searchParams;
+  const filterStatus = sp.status as PaymentStatus | undefined;
 
   let query = adminClient
     .from("payments")
@@ -87,6 +83,14 @@ export default async function AdminPagosPage({ searchParams }: PageProps) {
 
   const rows = (payments ?? []) as PaymentRow[];
 
+  const statusLabel: Record<PaymentStatus, string> = {
+    pending: t("pagos.statusPending"),
+    approved: t("pagos.statusApproved"),
+    rejected: t("pagos.statusRejected"),
+    refunded: t("pagos.statusRefunded"),
+    in_process: t("pagos.statusInProcess"),
+  };
+
   // Calculate totals
   const approvedRows = rows.filter((p) => p.status === "approved");
   const totalApproved = approvedRows.reduce(
@@ -107,9 +111,9 @@ export default async function AdminPagosPage({ searchParams }: PageProps) {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-text">Pagos</h1>
+        <h1 className="text-2xl font-bold text-text">{t("pagos.title")}</h1>
         <p className="text-muted text-sm mt-1">
-          Historial de transacciones de la plataforma
+          {t("pagos.subtitle")}
         </p>
       </div>
 
@@ -117,29 +121,29 @@ export default async function AdminPagosPage({ searchParams }: PageProps) {
       <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-8">
         <div className="rounded-xl border border-border bg-surface p-3 sm:p-5">
           <p className="text-muted text-[10px] sm:text-xs uppercase tracking-wider mb-1 sm:mb-2 min-h-[2rem] sm:min-h-[2.5rem] flex items-start">
-            Revenue total
+            {t("pagos.totalRevenue")}
           </p>
           <p className="text-lime text-base sm:text-2xl font-bold font-mono">
             {formatCents(totalApproved)}
           </p>
-          <p className="text-muted text-[10px] sm:text-xs mt-1 hidden sm:block">pagos aprobados</p>
+          <p className="text-muted text-[10px] sm:text-xs mt-1 hidden sm:block">{t("pagos.approvedPayments")}</p>
         </div>
         <div className="rounded-xl border border-border bg-surface p-3 sm:p-5">
           <p className="text-muted text-[10px] sm:text-xs uppercase tracking-wider mb-1 sm:mb-2 min-h-[2rem] sm:min-h-[2.5rem] flex items-start">
-            Este mes
+            {t("pagos.thisMonth")}
           </p>
           <p className="text-text text-base sm:text-2xl font-bold font-mono">
             {formatCents(monthApproved)}
           </p>
-          <p className="text-muted text-[10px] sm:text-xs mt-1 hidden sm:block">pagos aprobados</p>
+          <p className="text-muted text-[10px] sm:text-xs mt-1 hidden sm:block">{t("pagos.approvedPayments")}</p>
         </div>
         <div className="rounded-xl border border-border bg-surface p-3 sm:p-5">
           <p className="text-muted text-[10px] sm:text-xs uppercase tracking-wider mb-1 sm:mb-2 min-h-[2rem] sm:min-h-[2.5rem] flex items-start">
-            Transacciones
+            {t("pagos.transactions")}
           </p>
           <p className="text-text text-base sm:text-2xl font-bold">{rows.length}</p>
           <p className="text-muted text-[10px] sm:text-xs mt-1 hidden sm:block">
-            {filterStatus ? statusLabel[filterStatus] : "todos los estados"}
+            {filterStatus ? statusLabel[filterStatus] : t("pagos.allStatuses")}
           </p>
         </div>
       </div>
@@ -155,7 +159,7 @@ export default async function AdminPagosPage({ searchParams }: PageProps) {
                 : "bg-surface border border-border text-muted hover:text-text"
             }`}
           >
-            Todos
+            {t("pagos.filterAll")}
           </Link>
           {ALL_STATUSES.map((s) => (
             <Link
@@ -176,21 +180,21 @@ export default async function AdminPagosPage({ searchParams }: PageProps) {
       {rows.length === 0 ? (
         <div className="rounded-xl border border-border bg-surface p-12 text-center">
           <p className="text-4xl mb-4">💳</p>
-          <p className="text-text text-lg font-semibold">No hay pagos para mostrar.</p>
-          <p className="text-muted text-sm mt-2">Las transacciones aparecerán acá una vez que se procesen.</p>
+          <p className="text-text text-lg font-semibold">{t("pagos.emptyState")}</p>
+          <p className="text-muted text-sm mt-2">{t("pagos.emptySubtitle")}</p>
         </div>
       ) : (
         <div className="rounded-xl border border-border bg-surface overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-muted text-xs uppercase tracking-wider border-b border-surface-2">
-                <th className="text-left px-6 py-3">ID</th>
-                <th className="text-left px-6 py-3 hidden md:table-cell">Pagador</th>
-                <th className="text-left px-6 py-3 hidden md:table-cell">Beneficiario</th>
-                <th className="text-right px-6 py-3">Monto</th>
-                <th className="text-left px-6 py-3">Estado</th>
-                <th className="text-left px-6 py-3 hidden sm:table-cell">Proveedor</th>
-                <th className="text-left px-6 py-3 hidden lg:table-cell">Fecha</th>
+                <th className="text-left px-6 py-3">{t("pagos.colId")}</th>
+                <th className="text-left px-6 py-3 hidden md:table-cell">{t("pagos.colPayer")}</th>
+                <th className="text-left px-6 py-3 hidden md:table-cell">{t("pagos.colBeneficiary")}</th>
+                <th className="text-right px-6 py-3">{t("pagos.colAmount")}</th>
+                <th className="text-left px-6 py-3">{t("pagos.colStatus")}</th>
+                <th className="text-left px-6 py-3 hidden sm:table-cell">{t("pagos.colProvider")}</th>
+                <th className="text-left px-6 py-3 hidden lg:table-cell">{t("pagos.colDate")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-2">

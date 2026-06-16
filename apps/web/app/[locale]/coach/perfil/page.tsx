@@ -1,12 +1,21 @@
 import { requireCoach } from "@/lib/auth/coach";
 import type { Metadata } from "next";
 import { PerfilForm } from "./PerfilForm";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Mi perfil — Forzza Coach",
-};
+type Props = { params: Promise<{ locale: string }> };
 
-export default async function PerfilPage() {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "coach" });
+  return { title: t("perfil.metaTitle") };
+}
+
+export default async function PerfilPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "coach" });
+
   const { supabase, coachProfileId } = await requireCoach();
 
   // Fetch coach profile
@@ -35,9 +44,9 @@ export default async function PerfilPage() {
   return (
     <div className="max-w-2xl">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-text">Mi perfil</h1>
+        <h1 className="text-2xl font-bold text-text">{t("perfil.title")}</h1>
         <p className="text-muted text-sm mt-1">
-          Editá tu perfil público y paquetes de servicio
+          {t("perfil.subtitle")}
         </p>
       </div>
 

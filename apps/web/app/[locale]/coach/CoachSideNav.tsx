@@ -1,25 +1,27 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link, usePathname } from "@/i18n/navigation";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Users, ClipboardList, ClipboardCheck, Wallet, User } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 interface NavItem {
   href: string;
-  label: string;
+  labelKey: string;
   Icon: LucideIcon;
 }
 
 const navItems: NavItem[] = [
-  { href: "/coach/alumnos", label: "Alumnos", Icon: Users },
-  { href: "/coach/rutinas", label: "Rutinas", Icon: ClipboardList },
-  { href: "/coach/checkins", label: "Check-ins", Icon: ClipboardCheck },
-  { href: "/coach/cobros", label: "Cobros", Icon: Wallet },
-  { href: "/coach/perfil", label: "Mi perfil", Icon: User },
+  { href: "/coach/alumnos", labelKey: "nav.alumnos", Icon: Users },
+  { href: "/coach/rutinas", labelKey: "nav.rutinas", Icon: ClipboardList },
+  { href: "/coach/checkins", labelKey: "nav.checkins", Icon: ClipboardCheck },
+  { href: "/coach/cobros", labelKey: "nav.cobros", Icon: Wallet },
+  { href: "/coach/perfil", labelKey: "nav.perfil", Icon: User },
 ];
 
 export function CoachSideNav() {
+  const t = useTranslations("coach");
   const pathname = usePathname();
 
   return (
@@ -30,10 +32,10 @@ export function CoachSideNav() {
           <span style={{ color: "#C8FF00", fontWeight: 800, fontSize: "20px", letterSpacing: "5px" }}>
             FORZZA
           </span>
-          <p className="text-muted text-xs mt-1 uppercase tracking-wider">Coach</p>
+          <p className="text-muted text-xs mt-1 uppercase tracking-wider">{t("nav.roleCoach")}</p>
         </div>
         <nav className="flex-1 p-4 space-y-1">
-          {navItems.map(({ href, label, Icon }) => {
+          {navItems.map(({ href, labelKey, Icon }) => {
             const isActive = pathname.startsWith(href);
             return (
               <Link
@@ -46,24 +48,25 @@ export function CoachSideNav() {
                 }`}
               >
                 <Icon size={20} aria-hidden="true" />
-                {label}
+                {t(labelKey)}
               </Link>
             );
           })}
         </nav>
-        <div className="p-4 border-t border-border">
+        <div className="p-4 border-t border-border space-y-3">
+          <LanguageSwitcher />
           <Link
             href="/"
             className="flex items-center gap-2 text-muted hover:text-muted text-xs transition-colors"
           >
-            ← Volver al inicio
+            ← {t("nav.backToHome")}
           </Link>
         </div>
       </aside>
 
       {/* Mobile bottom tabs */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-surface border-t border-border flex z-10">
-        {navItems.map(({ href, label, Icon }) => {
+        {navItems.map(({ href, labelKey, Icon }) => {
           const isActive = pathname.startsWith(href);
           return (
             <Link
@@ -74,7 +77,7 @@ export function CoachSideNav() {
               }`}
             >
               <Icon size={20} aria-hidden="true" />
-              <span className="text-[10px] font-medium">{label}</span>
+              <span className="text-[10px] font-medium">{t(labelKey)}</span>
             </Link>
           );
         })}

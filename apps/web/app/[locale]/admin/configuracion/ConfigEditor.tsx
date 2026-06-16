@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Globe } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface CountryConfig {
   country_code: string;
@@ -27,6 +28,8 @@ interface EditState {
 }
 
 export function ConfigEditor({ configs }: ConfigEditorProps) {
+  const t = useTranslations("admin");
+
   const [editStates, setEditStates] = useState<Record<string, EditState>>(
     Object.fromEntries(
       configs.map((c) => [
@@ -71,7 +74,7 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
     if (isNaN(commissionRate) || commissionRate < 0 || commissionRate > 1) {
       setMessages((prev) => ({
         ...prev,
-        [countryCode]: "La comisión debe estar entre 0% y 100%",
+        [countryCode]: t("configuracion.validationCommission"),
       }));
       setSaving((prev) => ({ ...prev, [countryCode]: false }));
       return;
@@ -81,7 +84,7 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
     if (isNaN(minCoachPrice) || minCoachPrice <= 0) {
       setMessages((prev) => ({
         ...prev,
-        [countryCode]: "El precio mínimo debe ser mayor a 0",
+        [countryCode]: t("configuracion.validationMinPrice"),
       }));
       setSaving((prev) => ({ ...prev, [countryCode]: false }));
       return;
@@ -91,7 +94,7 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
     if (isNaN(proPrice) || proPrice <= 0) {
       setMessages((prev) => ({
         ...prev,
-        [countryCode]: "El precio PRO debe ser mayor a 0",
+        [countryCode]: t("configuracion.validationProPrice"),
       }));
       setSaving((prev) => ({ ...prev, [countryCode]: false }));
       return;
@@ -116,12 +119,12 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
       if (!res.ok) {
         setMessages((prev) => ({
           ...prev,
-          [countryCode]: data.error ?? "Error al guardar",
+          [countryCode]: data.error ?? t("configuracion.errorSave"),
         }));
       } else {
         setMessages((prev) => ({
           ...prev,
-          [countryCode]: "Guardado correctamente",
+          [countryCode]: t("configuracion.successMessage"),
         }));
         setTimeout(() => {
           setMessages((prev) => ({ ...prev, [countryCode]: "" }));
@@ -130,7 +133,7 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
     } catch {
       setMessages((prev) => ({
         ...prev,
-        [countryCode]: "Error de red",
+        [countryCode]: t("configuracion.errorNetwork"),
       }));
     } finally {
       setSaving((prev) => ({ ...prev, [countryCode]: false }));
@@ -145,22 +148,23 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
         </div>
         <div>
           <p className="text-text text-lg font-semibold">
-            No hay países configurados
+            {t("configuracion.emptyState")}
           </p>
           <p className="text-muted text-sm mt-1 max-w-sm mx-auto leading-relaxed">
-            Todavía no se cargaron parámetros de países en la base de datos.
-            Revisá que la tabla <code className="text-lime text-xs">country_config</code> tenga registros activos.
+            {t("configuracion.emptySubtitle")}
           </p>
         </div>
         <a
           href="mailto:dev@forzza.com"
           className="px-4 py-2 rounded-lg border border-border text-muted text-sm hover:text-text hover:border-muted transition-colors"
         >
-          Contactar soporte técnico
+          {t("configuracion.contactSupport")}
         </a>
       </div>
     );
   }
+
+  const SUCCESS_KEY = t("configuracion.successMessage");
 
   return (
     <div className="space-y-6">
@@ -169,7 +173,7 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
         if (!state) return null;
         const isSaving = saving[config.country_code] ?? false;
         const message = messages[config.country_code] ?? "";
-        const isSuccess = message === "Guardado correctamente";
+        const isSuccess = message === SUCCESS_KEY;
 
         return (
           <div
@@ -188,7 +192,7 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
               </div>
               <label className="flex items-center gap-2 cursor-pointer">
                 <span className="text-muted text-xs">
-                  {state.active ? "Activo" : "Inactivo"}
+                  {state.active ? t("configuracion.toggleActive") : t("configuracion.toggleInactive")}
                 </span>
                 <div className="relative">
                   <input
@@ -221,7 +225,7 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
             <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               <div>
                 <label className="block text-muted text-xs uppercase tracking-wider mb-2">
-                  Comisión (%)
+                  {t("configuracion.fieldCommission")}
                 </label>
                 <div className="relative">
                   <input
@@ -247,7 +251,7 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
 
               <div>
                 <label className="block text-muted text-xs uppercase tracking-wider mb-2">
-                  Precio mínimo coach (centavos)
+                  {t("configuracion.fieldMinPrice")}
                 </label>
                 <input
                   type="number"
@@ -273,7 +277,7 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
 
               <div>
                 <label className="block text-muted text-xs uppercase tracking-wider mb-2">
-                  Precio PRO mensual (centavos)
+                  {t("configuracion.fieldProPrice")}
                 </label>
                 <input
                   type="number"
@@ -299,7 +303,7 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
 
               <div>
                 <label className="block text-muted text-xs uppercase tracking-wider mb-2">
-                  Símbolo de moneda
+                  {t("configuracion.fieldCurrencySymbol")}
                 </label>
                 <input
                   type="text"
@@ -333,7 +337,7 @@ export function ConfigEditor({ configs }: ConfigEditorProps) {
                 disabled={isSaving}
                 className="px-5 py-2 rounded-lg bg-[#C8FF00] text-[#0A0A0A] text-sm font-semibold hover:bg-[#AADD00] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSaving ? "Guardando…" : "Guardar cambios"}
+                {isSaving ? t("configuracion.btnSaving") : t("configuracion.btnSave")}
               </button>
             </div>
           </div>

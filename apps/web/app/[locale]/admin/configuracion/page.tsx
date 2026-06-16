@@ -1,13 +1,21 @@
 import { requireAdmin } from "@/lib/auth/admin";
-import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AlertTriangle } from "lucide-react";
 import { ConfigEditor } from "./ConfigEditor";
 
-export const metadata: Metadata = {
-  title: "Configuración — Forzza Admin",
-};
+type Props = { params: Promise<{ locale: string }> };
 
-export default async function AdminConfiguracionPage() {
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "admin" });
+  return { title: t("configuracion.metaTitle") };
+}
+
+export default async function AdminConfiguracionPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "admin" });
+
   const { adminClient } = await requireAdmin();
 
   const { data: configs, error } = await adminClient
@@ -26,9 +34,9 @@ export default async function AdminConfiguracionPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-text">Configuración</h1>
+        <h1 className="text-2xl font-bold text-text">{t("configuracion.title")}</h1>
         <p className="text-muted text-sm mt-1">
-          Parámetros por país: comisión, precios y moneda
+          {t("configuracion.subtitle")}
         </p>
       </div>
 
@@ -38,11 +46,10 @@ export default async function AdminConfiguracionPage() {
           <AlertTriangle className="text-error mt-0.5 shrink-0" size={20} />
           <div>
             <p className="text-error text-sm font-semibold">
-              Error al cargar la configuración
+              {t("configuracion.errorTitle")}
             </p>
             <p className="text-muted text-xs mt-1">
-              No se pudo conectar con la base de datos. Recargá la página o
-              revisá los logs.
+              {t("configuracion.errorBody")}
             </p>
           </div>
         </div>

@@ -1,10 +1,14 @@
 import { requireAdmin } from "@/lib/auth/admin";
-import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { SettlementActionButtons } from "./SettlementActionButtons";
 
-export const metadata: Metadata = {
-  title: "Liquidaciones - Forzza Admin",
-};
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "admin" });
+  return { title: t("liquidaciones.metaTitle") };
+}
 
 type SettlementStatus =
   | "pending"
@@ -31,15 +35,6 @@ interface SettlementRow {
   coach_profiles?: { display_name: string | null } | null;
 }
 
-const statusLabel: Record<SettlementStatus, string> = {
-  pending: "Pendiente",
-  pending_invoice: "Requiere factura",
-  invoiced: "Factura cargada",
-  approved: "Aprobada",
-  rejected: "Rechazada",
-  transferred: "Transferida",
-};
-
 const statusColors: Record<SettlementStatus, string> = {
   pending: "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20",
   pending_invoice: "bg-orange-500/10 text-orange-400 border border-orange-500/20",
@@ -64,7 +59,11 @@ function formatCents(cents: number, currency = "ARS"): string {
   })}`;
 }
 
-export default async function AdminLiquidacionesPage() {
+export default async function AdminLiquidacionesPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "admin" });
+
   const { adminClient } = await requireAdmin();
 
   // TODO: regenerate db-types after applying 20260616000001_settlement_approval_flow.sql.
@@ -88,31 +87,40 @@ export default async function AdminLiquidacionesPage() {
     .filter((s) => s.status === "invoiced" || s.status === "approved")
     .reduce((sum, s) => sum + s.net_amount, 0);
 
+  const statusLabel: Record<SettlementStatus, string> = {
+    pending: t("liquidaciones.statusPending"),
+    pending_invoice: t("liquidaciones.statusPendingInvoice"),
+    invoiced: t("liquidaciones.statusInvoiced"),
+    approved: t("liquidaciones.statusApproved"),
+    rejected: t("liquidaciones.statusRejected"),
+    transferred: t("liquidaciones.statusTransferred"),
+  };
+
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-text">Liquidaciones</h1>
+        <h1 className="text-2xl font-bold text-text">{t("liquidaciones.title")}</h1>
         <p className="mt-1 text-muted text-sm">
-          Facturas de coaches, aprobacion y transferencia manual.
+          {t("liquidaciones.subtitle")}
         </p>
       </div>
 
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-border bg-surface p-5">
           <p className="mb-2 text-muted text-xs uppercase tracking-wider">
-            Por aprobar
+            {t("liquidaciones.toApprove")}
           </p>
           <p className="text-2xl font-bold text-text">{pendingOwnerCount}</p>
         </div>
         <div className="rounded-xl border border-border bg-surface p-5">
           <p className="mb-2 text-muted text-xs uppercase tracking-wider">
-            Listas para transferir
+            {t("liquidaciones.readyToTransfer")}
           </p>
           <p className="text-2xl font-bold text-[#C8FF00]">{approvedCount}</p>
         </div>
         <div className="rounded-xl border border-border bg-surface p-5">
           <p className="mb-2 text-muted text-xs uppercase tracking-wider">
-            Neto pendiente
+            {t("liquidaciones.netPending")}
           </p>
           <p className="font-mono text-2xl font-bold text-[#C8FF00]">
             {formatCents(pendingAmount)}
@@ -124,10 +132,10 @@ export default async function AdminLiquidacionesPage() {
         <div className="rounded-xl border border-border bg-surface p-12 text-center">
           <p className="mb-4 text-4xl">$</p>
           <p className="text-text text-lg font-semibold">
-            No hay liquidaciones para revisar.
+            {t("liquidaciones.emptyState")}
           </p>
           <p className="mt-2 text-muted text-sm">
-            Cuando el sistema genere periodos de cobro, van a aparecer aca.
+            {t("liquidaciones.emptySubtitle")}
           </p>
         </div>
       ) : (
@@ -135,14 +143,14 @@ export default async function AdminLiquidacionesPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-surface-2 text-muted text-xs uppercase tracking-wider">
-                <th className="px-6 py-3 text-left">Coach</th>
-                <th className="hidden px-6 py-3 text-left md:table-cell">Periodo</th>
-                <th className="hidden px-6 py-3 text-right lg:table-cell">Bruto</th>
-                <th className="hidden px-6 py-3 text-right lg:table-cell">Comision</th>
-                <th className="px-6 py-3 text-right">Neto</th>
-                <th className="px-6 py-3 text-left">Factura</th>
-                <th className="px-6 py-3 text-left">Estado</th>
-                <th className="px-6 py-3 text-right">Accion</th>
+                <th className="px-6 py-3 text-left">{t("liquidaciones.colCoach")}</th>
+                <th className="hidden px-6 py-3 text-left md:table-cell">{t("liquidaciones.colPeriod")}</th>
+                <th className="hidden px-6 py-3 text-right lg:table-cell">{t("liquidaciones.colGross")}</th>
+                <th className="hidden px-6 py-3 text-right lg:table-cell">{t("liquidaciones.colCommission")}</th>
+                <th className="px-6 py-3 text-right">{t("liquidaciones.colNet")}</th>
+                <th className="px-6 py-3 text-left">{t("liquidaciones.colInvoice")}</th>
+                <th className="px-6 py-3 text-left">{t("liquidaciones.colStatus")}</th>
+                <th className="px-6 py-3 text-right">{t("liquidaciones.colAction")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-2">
@@ -156,12 +164,12 @@ export default async function AdminLiquidacionesPage() {
                       {settlement.coach_id.slice(0, 8)}...
                     </p>
                     <p className="mt-1 text-muted text-xs md:hidden">
-                      {formatDate(settlement.period_start)} al{" "}
+                      {formatDate(settlement.period_start)} {t("liquidaciones.periodTo")}{" "}
                       {formatDate(settlement.period_end)}
                     </p>
                   </td>
                   <td className="hidden px-6 py-4 text-muted text-xs md:table-cell">
-                    {formatDate(settlement.period_start)} al{" "}
+                    {formatDate(settlement.period_start)} {t("liquidaciones.periodTo")}{" "}
                     {formatDate(settlement.period_end)}
                   </td>
                   <td className="hidden px-6 py-4 text-right text-muted lg:table-cell">
@@ -180,11 +188,11 @@ export default async function AdminLiquidacionesPage() {
                           {settlement.invoice_number}
                         </p>
                         <p className="text-muted text-xs">
-                          {settlement.invoice_path ? "Archivo cargado" : "Sin archivo"}
+                          {settlement.invoice_path ? t("liquidaciones.invoiceUploaded") : t("liquidaciones.noFile")}
                         </p>
                       </div>
                     ) : (
-                      <span className="text-muted text-xs">Sin factura</span>
+                      <span className="text-muted text-xs">{t("liquidaciones.noInvoice")}</span>
                     )}
                     {settlement.invoice_rejection_reason && (
                       <p className="mt-1 max-w-48 text-red-400 text-xs">

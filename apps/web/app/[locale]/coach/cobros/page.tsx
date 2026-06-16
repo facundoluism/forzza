@@ -2,10 +2,15 @@ import { requireCoach } from "@/lib/auth/coach";
 import type { Metadata } from "next";
 import { InvoiceUploadButton } from "./InvoiceUploadButton";
 import { InvoiceViewButton } from "./InvoiceViewButton";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Cobros — Forzza Coach",
-};
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "coach" });
+  return { title: t("cobros.metaTitle") };
+}
 
 type SettlementStatus =
   | "pending"
@@ -27,15 +32,6 @@ interface Settlement {
   transferred_at: string | null;
   invoice_signed_url?: string | null;
 }
-
-const statusLabel: Record<SettlementStatus, string> = {
-  pending: "Pendiente",
-  pending_invoice: "Requiere factura",
-  invoiced: "Facturado",
-  approved: "Aprobado",
-  rejected: "Rechazado",
-  transferred: "Transferido",
-};
 
 const statusColors: Record<SettlementStatus, string> = {
   pending: "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20",
@@ -75,7 +71,11 @@ function getLastMonthRange() {
   return { start, end };
 }
 
-export default async function CobrosPage() {
+export default async function CobrosPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "coach" });
+
   const { supabase, coachProfileId } = await requireCoach();
 
   const { data: settlements, error } = await supabase
@@ -124,18 +124,27 @@ export default async function CobrosPage() {
     )
     .reduce((sum, s) => sum + s.net_amount, 0);
 
+  const statusLabel: Record<SettlementStatus, string> = {
+    pending: t("cobros.statusPending"),
+    pending_invoice: t("cobros.statusPendingInvoice"),
+    invoiced: t("cobros.statusInvoiced"),
+    approved: t("cobros.statusApproved"),
+    rejected: t("cobros.statusRejected"),
+    transferred: t("cobros.statusTransferred"),
+  };
+
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-text">Cobros</h1>
-        <p className="text-muted text-sm mt-1">Tus liquidaciones y ganancias</p>
+        <h1 className="text-2xl font-bold text-text">{t("cobros.title")}</h1>
+        <p className="text-muted text-sm mt-1">{t("cobros.subtitle")}</p>
       </div>
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
         <div className="rounded-xl border border-border bg-surface p-5">
           <p className="text-muted text-xs uppercase tracking-wider mb-2">
-            Este mes
+            {t("cobros.thisMonth")}
           </p>
           <p className="text-lime text-2xl font-bold">
             {formatCents(thisMonthTotal)}
@@ -144,7 +153,7 @@ export default async function CobrosPage() {
         </div>
         <div className="rounded-xl border border-border bg-surface p-5">
           <p className="text-muted text-xs uppercase tracking-wider mb-2">
-            Mes anterior
+            {t("cobros.lastMonth")}
           </p>
           <p className="text-text text-2xl font-bold">
             {formatCents(lastMonthTotal)}
@@ -157,9 +166,9 @@ export default async function CobrosPage() {
       {rows.length === 0 ? (
         <div className="rounded-xl border border-border bg-surface p-12 text-center">
           <p className="text-4xl mb-4">💰</p>
-          <p className="text-text text-lg font-semibold">Todavía no hay liquidaciones.</p>
+          <p className="text-text text-lg font-semibold">{t("cobros.emptyState")}</p>
           <p className="text-muted text-sm mt-2">
-            Tus cobros aparecerán acá una vez que se procesen.
+            {t("cobros.emptySubtitle")}
           </p>
         </div>
       ) : (
@@ -167,11 +176,11 @@ export default async function CobrosPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-muted text-xs uppercase tracking-wider">
-                <th className="text-left px-6 py-3">Período</th>
-                <th className="text-right px-6 py-3 hidden md:table-cell">Bruto</th>
-                <th className="text-right px-6 py-3 hidden md:table-cell">Comisión</th>
-                <th className="text-right px-6 py-3">Neto</th>
-                <th className="text-left px-6 py-3">Estado</th>
+                <th className="text-left px-6 py-3">{t("cobros.colPeriod")}</th>
+                <th className="text-right px-6 py-3 hidden md:table-cell">{t("cobros.colGross")}</th>
+                <th className="text-right px-6 py-3 hidden md:table-cell">{t("cobros.colCommission")}</th>
+                <th className="text-right px-6 py-3">{t("cobros.colNet")}</th>
+                <th className="text-left px-6 py-3">{t("cobros.colStatus")}</th>
                 <th className="text-right px-6 py-3"></th>
               </tr>
             </thead>
@@ -183,7 +192,7 @@ export default async function CobrosPage() {
                       {formatDate(s.period_start)}
                     </p>
                     <p className="text-muted text-xs opacity-60">
-                      al {formatDate(s.period_end)}
+                      {t("cobros.periodTo")} {formatDate(s.period_end)}
                     </p>
                   </td>
                   <td className="px-6 py-4 text-right text-muted hidden md:table-cell">
@@ -210,11 +219,11 @@ export default async function CobrosPage() {
                       <InvoiceViewButton signedUrl={s.invoice_signed_url} />
                     )}
                     {(s.status === "invoiced" || s.status === "approved" || s.status === "rejected" || s.status === "transferred") && !s.invoice_signed_url && (
-                      <span className="text-muted text-xs opacity-60">Factura pendiente</span>
+                      <span className="text-muted text-xs opacity-60">{t("cobros.pending")}</span>
                     )}
                     {s.status === "transferred" && s.transferred_at && (
                       <p className="text-muted text-xs mt-1 opacity-60">
-                        Transferido el {formatDate(s.transferred_at)}
+                        {formatDate(s.transferred_at)}
                       </p>
                     )}
                   </td>

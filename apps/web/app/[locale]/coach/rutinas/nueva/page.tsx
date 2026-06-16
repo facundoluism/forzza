@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import type { Tables } from "@forzza/db-types";
 
@@ -31,6 +32,7 @@ interface RoutineExerciseEntry {
 
 export default function NuevaRutinaPage() {
   const router = useRouter();
+  const t = useTranslations("coach");
   const [name, setName] = useState("");
   const [exercises, setExercises] = useState<RoutineExerciseEntry[]>([]);
   const [allExercises, setAllExercises] = useState<ExerciseRow[]>([]);
@@ -133,11 +135,11 @@ export default function NuevaRutinaPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) {
-      setError("El nombre de la rutina es obligatorio.");
+      setError(t("rutinas.nueva.errorSave"));
       return;
     }
     if (exercises.length === 0) {
-      setError("Agregá al menos un ejercicio.");
+      setError(t("rutinas.nueva.noExercises"));
       return;
     }
     setError(null);
@@ -156,14 +158,14 @@ export default function NuevaRutinaPage() {
 
       if (!res.ok) {
         const data = (await res.json()) as { error?: string };
-        setError(data.error ?? "Error al guardar la rutina.");
+        setError(data.error ?? t("rutinas.nueva.errorSave"));
         setLoading(false);
         return;
       }
 
       router.push("/coach/rutinas");
     } catch {
-      setError("Error inesperado. Intentá de nuevo.");
+      setError(t("rutinas.nueva.errorNetwork"));
       setLoading(false);
     }
   }
@@ -176,16 +178,16 @@ export default function NuevaRutinaPage() {
           onClick={() => router.back()}
           className="text-muted hover:text-muted text-sm transition-colors mb-2 block"
         >
-          ← Volver
+          ← {t("rutinas.nueva.cancel")}
         </button>
-        <h1 className="text-2xl font-bold text-text">Nueva rutina</h1>
+        <h1 className="text-2xl font-bold text-text">{t("rutinas.nueva.title")}</h1>
       </div>
 
       <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">
         {/* Nombre */}
         <div>
           <label className="block text-sm font-medium text-text mb-2">
-            Nombre de la rutina <span className="text-red-400">*</span>
+            {t("rutinas.nueva.fieldName")} <span className="text-red-400">*</span>
           </label>
           <input
             type="text"
@@ -221,14 +223,14 @@ export default function NuevaRutinaPage() {
         <div>
           <div className="flex items-center justify-between mb-3">
             <label className="text-sm font-medium text-text">
-              Ejercicios <span className="text-red-400">*</span>
+              {t("rutinas.exercises")} <span className="text-red-400">*</span>
             </label>
             <button
               type="button"
               onClick={() => setShowExercisePicker(true)}
               className="text-lime hover:text-[#AADD00] text-sm font-medium transition-colors"
             >
-              + Agregar ejercicio
+              {t("rutinas.nueva.addExercise")}
             </button>
           </div>
 
@@ -239,14 +241,14 @@ export default function NuevaRutinaPage() {
                 type="text"
                 value={exerciseSearch}
                 onChange={(e) => setExerciseSearch(e.target.value)}
-                placeholder="Buscar ejercicio..."
+                placeholder={t("rutinas.nueva.searchExercise")}
                 autoFocus
                 className="w-full px-3 py-2 bg-surface-2 border border-border rounded-lg text-text placeholder-[#444444] focus:outline-none focus:border-[#C8FF00] text-sm transition-colors mb-3"
               />
               <div className="max-h-48 overflow-y-auto space-y-1">
                 {filteredExercises.length === 0 ? (
                   <p className="text-muted text-sm text-center py-4 opacity-60">
-                    No se encontraron ejercicios
+                    {t("rutinas.nueva.loadingExercises")}
                   </p>
                 ) : (
                   filteredExercises.map((ex) => {
@@ -287,7 +289,7 @@ export default function NuevaRutinaPage() {
                 }}
                 className="mt-3 text-muted hover:text-muted text-xs transition-colors"
               >
-                Cancelar
+                {t("rutinas.nueva.cancel")}
               </button>
             </div>
           )}
@@ -296,7 +298,7 @@ export default function NuevaRutinaPage() {
           {exercises.length === 0 ? (
             <div className="rounded-lg border border-dashed border-border p-8 text-center">
               <p className="text-muted text-sm opacity-60">
-                Agregá ejercicios a la rutina
+                {t("rutinas.nueva.noExercises")}
               </p>
             </div>
           ) : (
@@ -320,13 +322,13 @@ export default function NuevaRutinaPage() {
                       onClick={() => removeExercise(index)}
                       className="text-muted hover:text-red-400 text-xs transition-colors"
                     >
-                      Quitar
+                      {t("rutinas.nueva.removeExercise")}
                     </button>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <div>
                       <label className="block text-muted text-xs mb-1">
-                        Series
+                        {t("rutinas.nueva.sets")}
                       </label>
                       <input
                         type="number"
@@ -344,7 +346,7 @@ export default function NuevaRutinaPage() {
                     </div>
                     <div>
                       <label className="block text-muted text-xs mb-1">
-                        Reps (ej: 10 o 8-12)
+                        {t("rutinas.nueva.reps")}
                       </label>
                       <input
                         type="text"
@@ -376,7 +378,7 @@ export default function NuevaRutinaPage() {
                     </div>
                     <div>
                       <label className="block text-muted text-xs mb-1">
-                        Descanso (seg)
+                        {t("rutinas.nueva.rest")}
                       </label>
                       <input
                         type="number"
@@ -410,7 +412,7 @@ export default function NuevaRutinaPage() {
           disabled={loading}
           className="w-full py-3 bg-[#C8FF00] text-[#0A0A0A] rounded-lg font-semibold hover:bg-[#AADD00] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          {loading ? "Guardando..." : "Guardar rutina"}
+          {loading ? t("rutinas.nueva.btnSaving") : t("rutinas.nueva.btnSave")}
         </button>
       </form>
     </div>

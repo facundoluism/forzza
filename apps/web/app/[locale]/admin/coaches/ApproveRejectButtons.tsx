@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 interface ApproveRejectButtonsProps {
   coachId: string;
@@ -13,6 +14,7 @@ export function ApproveRejectButtons({
   currentStatus,
 }: ApproveRejectButtonsProps) {
   const router = useRouter();
+  const t = useTranslations("admin");
   const [loading, setLoading] = useState(false);
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
@@ -29,12 +31,12 @@ export function ApproveRejectButtons({
       });
       if (!res.ok) {
         const data = (await res.json()) as { error?: string };
-        setError(data.error ?? "Error al aprobar");
+        setError(data.error ?? t("coaches.errorApprove"));
       } else {
         router.refresh();
       }
     } catch {
-      setError("Error de red");
+      setError(t("coaches.errorNetwork"));
     } finally {
       setLoading(false);
     }
@@ -42,7 +44,7 @@ export function ApproveRejectButtons({
 
   async function handleReject() {
     if (!rejectionReason.trim()) {
-      setError("El motivo de rechazo es obligatorio");
+      setError(t("coaches.errorReasonRequired"));
       return;
     }
     setLoading(true);
@@ -58,14 +60,14 @@ export function ApproveRejectButtons({
       });
       if (!res.ok) {
         const data = (await res.json()) as { error?: string };
-        setError(data.error ?? "Error al rechazar");
+        setError(data.error ?? t("coaches.errorReject"));
       } else {
         setShowRejectDialog(false);
         setRejectionReason("");
         router.refresh();
       }
     } catch {
-      setError("Error de red");
+      setError(t("coaches.errorNetwork"));
     } finally {
       setLoading(false);
     }
@@ -74,7 +76,7 @@ export function ApproveRejectButtons({
   if (currentStatus === "approved") {
     return (
       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
-        Aprobado
+        {t("coaches.statusApproved")}
       </span>
     );
   }
@@ -82,7 +84,7 @@ export function ApproveRejectButtons({
   if (currentStatus === "rejected") {
     return (
       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20">
-        Rechazado
+        {t("coaches.statusRejected")}
       </span>
     );
   }
@@ -96,7 +98,7 @@ export function ApproveRejectButtons({
         disabled={loading}
         className="px-3 py-1.5 rounded-lg bg-[#C8FF00] text-[#0A0A0A] text-xs font-semibold hover:bg-[#AADD00] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {loading ? "…" : "Aprobar"}
+        {loading ? t("coaches.loadingApproving") : t("coaches.btnApprove")}
       </button>
 
       <button
@@ -104,7 +106,7 @@ export function ApproveRejectButtons({
         disabled={loading}
         className="px-3 py-1.5 rounded-lg bg-[#1A1A1A] text-red-400 text-xs font-semibold border border-red-500/20 hover:bg-red-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Rechazar
+        {t("coaches.btnReject")}
       </button>
 
       {/* Rejection dialog */}
@@ -112,15 +114,15 @@ export function ApproveRejectButtons({
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
           <div className="bg-[#111111] border border-[#2A2A2A] rounded-xl p-6 w-full max-w-md shadow-2xl">
             <h3 className="text-[#FAFAFA] font-semibold mb-2">
-              Rechazar coach
+              {t("coaches.dialogTitle")}
             </h3>
             <p className="text-[#666666] text-sm mb-4">
-              Ingresá el motivo del rechazo. El coach lo verá en su perfil.
+              {t("coaches.dialogBody")}
             </p>
             <textarea
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
-              placeholder="Ej: La documentación no cumple los requisitos..."
+              placeholder={t("coaches.dialogPlaceholder")}
               rows={3}
               className="w-full bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg px-3 py-2.5 text-[#FAFAFA] text-sm placeholder-[#444444] focus:outline-none focus:border-[#C8FF00] resize-none mb-4"
             />
@@ -135,14 +137,14 @@ export function ApproveRejectButtons({
                 disabled={loading}
                 className="px-4 py-2 rounded-lg bg-[#1A1A1A] text-[#888888] text-sm hover:text-[#FAFAFA] transition-colors"
               >
-                Cancelar
+                {t("coaches.btnCancel")}
               </button>
               <button
                 onClick={handleReject}
                 disabled={loading || !rejectionReason.trim()}
                 className="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 text-sm font-semibold border border-red-500/20 hover:bg-red-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Rechazando…" : "Confirmar rechazo"}
+                {loading ? t("coaches.loadingRejecting") : t("coaches.btnConfirmReject")}
               </button>
             </div>
           </div>

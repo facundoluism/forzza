@@ -1,9 +1,13 @@
 import { requireAdmin } from "@/lib/auth/admin";
-import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Dashboard — Forzza Admin",
-};
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "admin" });
+  return { title: t("dashboard.metaTitle") };
+}
 
 function formatCents(cents: number, symbol = "$"): string {
   return `${symbol} ${(cents / 100).toLocaleString("es-AR", {
@@ -48,7 +52,11 @@ interface RecentUser {
   created_at: string;
 }
 
-export default async function AdminDashboardPage() {
+export default async function AdminDashboardPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "admin" });
+
   const { adminClient } = await requireAdmin();
 
   // Fetch metrics in parallel
@@ -94,43 +102,43 @@ export default async function AdminDashboardPage() {
   const recentUsers = (recentUsersResult.data ?? []) as RecentUser[];
 
   const roleLabel: Record<string, string> = {
-    student: "Alumno",
-    coach: "Coach",
-    owner: "Owner",
-    promoter: "Promotor",
+    student: t("dashboard.roleStudent"),
+    coach: t("dashboard.roleCoach"),
+    owner: t("dashboard.roleOwner"),
+    promoter: t("dashboard.rolePromoter"),
   };
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-text">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-text">{t("dashboard.title")}</h1>
         <p className="text-muted text-sm mt-1">
-          Métricas generales de la plataforma
+          {t("dashboard.subtitle")}
         </p>
       </div>
 
       {/* Metric cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <MetricCard
-          label="Usuarios activos"
+          label={t("dashboard.activeUsers")}
           value={totalUsers}
-          sub="registrados totales"
+          sub={t("dashboard.registeredTotal")}
         />
         <MetricCard
-          label="Coaches aprobados"
+          label={t("dashboard.approvedCoaches")}
           value={approvedCoaches}
-          sub="en la plataforma"
+          sub={t("dashboard.onPlatform")}
           accent
         />
         <MetricCard
-          label="Coaches pendientes"
+          label={t("dashboard.pendingCoaches")}
           value={pendingCoaches}
-          sub="esperando revisión"
+          sub={t("dashboard.awaitingReview")}
         />
         <MetricCard
-          label="Revenue del mes"
+          label={t("dashboard.monthRevenue")}
           value={formatCents(revenueMonth)}
-          sub="pagos aprobados"
+          sub={t("dashboard.approvedPayments")}
           accent
         />
       </div>
@@ -139,22 +147,22 @@ export default async function AdminDashboardPage() {
       <div className="rounded-xl border border-border bg-surface overflow-hidden">
         <div className="px-6 py-4 border-b border-border">
           <h2 className="text-sm font-semibold text-text">
-            Últimos registros
+            {t("dashboard.latestRegistrations")}
           </h2>
         </div>
         {recentUsers.length === 0 ? (
           <div className="p-12 text-center">
             <p className="text-3xl mb-3">👥</p>
-            <p className="text-muted">No hay usuarios registrados aún.</p>
+            <p className="text-muted">{t("dashboard.noUsers")}</p>
           </div>
         ) : (
           <table className="w-full text-sm">
             <thead>
               <tr className="text-muted text-xs uppercase tracking-wider border-b border-surface-2">
-                <th className="text-left px-6 py-3">ID</th>
-                <th className="text-left px-6 py-3 hidden sm:table-cell">País</th>
-                <th className="text-left px-6 py-3">Rol</th>
-                <th className="text-left px-6 py-3 hidden md:table-cell">Registro</th>
+                <th className="text-left px-6 py-3">{t("dashboard.colId")}</th>
+                <th className="text-left px-6 py-3 hidden sm:table-cell">{t("dashboard.colCountry")}</th>
+                <th className="text-left px-6 py-3">{t("dashboard.colRole")}</th>
+                <th className="text-left px-6 py-3 hidden md:table-cell">{t("dashboard.colDate")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-2">

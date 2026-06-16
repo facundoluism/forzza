@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface PackageEntry {
   id?: string;
@@ -33,6 +34,7 @@ export function PerfilForm({
   minCoachPrice,
   currencySymbol,
 }: Props) {
+  const t = useTranslations("coach");
   const [profile, setProfile] = useState<ProfileData>(initialProfile);
   const [packages, setPackages] = useState<PackageEntry[]>(initialPackages);
   const [specialtyInput, setSpecialtyInput] = useState("");
@@ -120,13 +122,13 @@ export function PerfilForm({
     const activePackages = packages.filter((p) => !p._deleted);
     for (const pkg of activePackages) {
       if (!pkg.name.trim()) {
-        setError("Todos los paquetes deben tener un nombre.");
+        setError(t("perfil.errorSave"));
         return;
       }
       if (pkg.price_cents < minCoachPrice) {
         const minDisplay = (minCoachPrice / 100).toLocaleString("es-AR");
         setError(
-          `El precio mínimo por paquete es ${currencySymbol} ${minDisplay}.`
+          t("perfil.validationPrice", { symbol: currencySymbol, min: minDisplay })
         );
         return;
       }
@@ -161,7 +163,7 @@ export function PerfilForm({
 
       if (!res.ok) {
         const data = (await res.json()) as { error?: string };
-        setError(data.error ?? "Error al guardar el perfil.");
+        setError(data.error ?? t("perfil.errorSave"));
         setLoading(false);
         return;
       }
@@ -170,7 +172,7 @@ export function PerfilForm({
       setLoading(false);
       setTimeout(() => setSuccess(false), 3000);
     } catch {
-      setError("Error inesperado. Intentá de nuevo.");
+      setError(t("perfil.errorNetwork"));
       setLoading(false);
     }
   }
@@ -182,12 +184,12 @@ export function PerfilForm({
       {/* Profile section */}
       <section className="rounded-xl border border-border bg-surface p-6 space-y-5">
         <h2 className="text-sm font-semibold text-text uppercase tracking-wider">
-          Datos del perfil
+          {t("perfil.title")}
         </h2>
 
         <div>
           <label className="block text-sm font-medium text-text mb-2">
-            Biografía
+            {t("perfil.fieldBio")}
           </label>
           <textarea
             value={profile.bio}
@@ -200,7 +202,7 @@ export function PerfilForm({
 
         <div>
           <label className="block text-sm font-medium text-text mb-2">
-            Años de experiencia
+            {t("perfil.fieldExperience")}
           </label>
           <input
             type="number"
@@ -222,7 +224,7 @@ export function PerfilForm({
 
         <div>
           <label className="block text-sm font-medium text-text mb-2">
-            Especialidades
+            {t("perfil.fieldSpecialties")}
           </label>
           <div className="flex gap-2 mb-3">
             <input
@@ -243,7 +245,7 @@ export function PerfilForm({
               onClick={addSpecialty}
               className="px-3 py-2 bg-surface-2 border border-border rounded-lg text-lime hover:border-[#C8FF00] transition-colors text-sm"
             >
-              +
+              {t("perfil.addSpecialty")}
             </button>
           </div>
           {profile.specialties.length > 0 && (
@@ -272,25 +274,26 @@ export function PerfilForm({
       <section className="rounded-xl border border-border bg-surface p-6">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-sm font-semibold text-text uppercase tracking-wider">
-            Paquetes
+            {t("perfil.packages")}
           </h2>
           <button
             type="button"
             onClick={addPackage}
             className="text-lime hover:text-[#AADD00] text-sm font-medium transition-colors"
           >
-            + Agregar paquete
+            {t("perfil.addPackage")}
           </button>
         </div>
 
         {visiblePackages.length === 0 ? (
           <div className="rounded-lg border border-dashed border-border p-8 text-center">
-            <p className="text-muted text-sm opacity-60">Sin paquetes. Agregá tu primer paquete.</p>
+            <p className="text-muted text-sm opacity-60">{t("perfil.addPackage")}</p>
           </div>
         ) : (
           <div className="space-y-4">
             {packages.map((pkg, index) => {
               if (pkg._deleted) return null;
+              const isPriceInvalid = pkg.price_cents < minCoachPrice;
               return (
                 <div
                   key={index}
@@ -298,7 +301,7 @@ export function PerfilForm({
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-muted text-xs font-mono">
-                      Paquete {index + 1}
+                      {t("perfil.packages")} {index + 1}
                     </span>
                     <div className="flex items-center gap-3">
                       <label className="flex items-center gap-1.5 cursor-pointer">
@@ -310,14 +313,14 @@ export function PerfilForm({
                           }
                           className="w-3.5 h-3.5 accent-[#C8FF00]"
                         />
-                        <span className="text-muted text-xs">Activo</span>
+                        <span className="text-muted text-xs">{t("perfil.packageActive")}</span>
                       </label>
                       <button
                         type="button"
                         onClick={() => removePackage(index)}
                         className="text-muted hover:text-red-400 text-xs transition-colors"
                       >
-                        Eliminar
+                        {t("perfil.removePackage")}
                       </button>
                     </div>
                   </div>
@@ -325,7 +328,7 @@ export function PerfilForm({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-muted text-xs mb-1">
-                        Nombre
+                        {t("perfil.packageName")}
                       </label>
                       <input
                         type="text"
@@ -339,7 +342,7 @@ export function PerfilForm({
                     </div>
                     <div>
                       <label className="block text-muted text-xs mb-1">
-                        Tipo de facturación
+                        {t("perfil.packageBilling")}
                       </label>
                       <select
                         value={pkg.billing_type}
@@ -352,15 +355,15 @@ export function PerfilForm({
                         }
                         className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-text text-sm focus:outline-none focus:border-[#C8FF00] transition-colors"
                       >
-                        <option value="mensual">Mensual</option>
-                        <option value="paquete">Paquete</option>
+                        <option value="mensual">{t("perfil.billingMonthly")}</option>
+                        <option value="paquete">{t("perfil.billingPerSession")}</option>
                       </select>
                     </div>
                   </div>
 
                   <div>
                     <label className="block text-muted text-xs mb-1">
-                      Precio ({currencySymbol}) — mínimo{" "}
+                      {t("perfil.packagePrice")} ({currencySymbol}) — {t("perfil.errorPriceMin")}{" "}
                       {currencySymbol} {(minCoachPrice / 100).toLocaleString("es-AR")}
                     </label>
                     <input
@@ -375,13 +378,25 @@ export function PerfilForm({
                           Math.round(parseFloat(e.target.value || "0") * 100)
                         )
                       }
-                      className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-text text-sm focus:outline-none focus:border-[#C8FF00] transition-colors"
+                      className={`w-full px-3 py-2 bg-surface rounded-lg text-text text-sm focus:outline-none transition-colors ${
+                        isPriceInvalid
+                          ? "border-2 border-red-500 focus:border-red-500"
+                          : "border border-border focus:border-[#C8FF00]"
+                      }`}
                     />
+                    {isPriceInvalid && (
+                      <p className="text-red-400 text-xs mt-1">
+                        {t("perfil.validationPrice", {
+                          symbol: currencySymbol,
+                          min: (minCoachPrice / 100).toLocaleString("es-AR"),
+                        })}
+                      </p>
+                    )}
                   </div>
 
                   <div>
                     <label className="block text-muted text-xs mb-1">
-                      Descripción
+                      {t("perfil.packageDescription")}
                     </label>
                     <textarea
                       value={pkg.description}
@@ -397,7 +412,7 @@ export function PerfilForm({
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <label className="text-muted text-xs">
-                        Características
+                        {t("perfil.packageFeatures")}
                       </label>
                       <button
                         type="button"
@@ -442,7 +457,7 @@ export function PerfilForm({
 
       {success && (
         <p className="text-green-400 text-sm bg-green-500/10 border border-green-500/20 rounded-lg px-4 py-3">
-          Perfil guardado correctamente.
+          {t("perfil.successSaved")}
         </p>
       )}
 
@@ -451,7 +466,7 @@ export function PerfilForm({
         disabled={loading}
         className="w-full py-3 bg-[#C8FF00] text-[#0A0A0A] rounded-lg font-semibold hover:bg-[#AADD00] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
-        {loading ? "Guardando..." : "Guardar cambios"}
+        {loading ? t("perfil.btnSaving") : t("perfil.btnSave")}
       </button>
     </form>
   );

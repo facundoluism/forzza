@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 type QuestionType = "text" | "number" | "boolean" | "photo";
 
@@ -12,19 +13,20 @@ interface QuestionEntry {
   order: number;
 }
 
-const questionTypeLabels: Record<QuestionType, string> = {
-  text: "Texto",
-  number: "Número",
-  boolean: "Sí / No",
-  photo: "Foto",
-};
-
 export default function NuevaPlantillaPage() {
   const router = useRouter();
+  const t = useTranslations("coach");
   const [name, setName] = useState("");
   const [questions, setQuestions] = useState<QuestionEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const questionTypeLabels: Record<QuestionType, string> = {
+    text: t("checkins.nueva.questionText"),
+    number: t("checkins.nueva.questionNumber"),
+    boolean: t("checkins.nueva.questionBool"),
+    photo: t("checkins.nueva.questionPhoto"),
+  };
 
   function addQuestion() {
     setQuestions((prev) => [
@@ -59,16 +61,16 @@ export default function NuevaPlantillaPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) {
-      setError("El nombre de la plantilla es obligatorio.");
+      setError(t("checkins.nueva.errorSave"));
       return;
     }
     if (questions.length === 0) {
-      setError("Agregá al menos una pregunta.");
+      setError(t("checkins.nueva.noQuestions"));
       return;
     }
     const emptyLabel = questions.some((q) => !q.label.trim());
     if (emptyLabel) {
-      setError("Todas las preguntas deben tener un texto.");
+      setError(t("checkins.nueva.errorSave"));
       return;
     }
 
@@ -84,14 +86,14 @@ export default function NuevaPlantillaPage() {
 
       if (!res.ok) {
         const data = (await res.json()) as { error?: string };
-        setError(data.error ?? "Error al guardar la plantilla.");
+        setError(data.error ?? t("checkins.nueva.errorSave"));
         setLoading(false);
         return;
       }
 
       router.push("/coach/checkins");
     } catch {
-      setError("Error inesperado. Intentá de nuevo.");
+      setError(t("checkins.nueva.errorNetwork"));
       setLoading(false);
     }
   }
@@ -104,16 +106,16 @@ export default function NuevaPlantillaPage() {
           onClick={() => router.back()}
           className="text-muted hover:text-muted text-sm transition-colors mb-2 block"
         >
-          ← Volver
+          ← {t("checkins.nueva.cancel")}
         </button>
-        <h1 className="text-2xl font-bold text-text">Nueva plantilla de check-in</h1>
+        <h1 className="text-2xl font-bold text-text">{t("checkins.nueva.title")}</h1>
       </div>
 
       <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">
         {/* Nombre */}
         <div>
           <label className="block text-sm font-medium text-text mb-2">
-            Nombre de la plantilla <span className="text-red-400">*</span>
+            {t("checkins.nueva.fieldName")} <span className="text-red-400">*</span>
           </label>
           <input
             type="text"
@@ -128,21 +130,21 @@ export default function NuevaPlantillaPage() {
         <div>
           <div className="flex items-center justify-between mb-3">
             <label className="text-sm font-medium text-text">
-              Preguntas <span className="text-red-400">*</span>
+              {t("checkins.colQuestions")} <span className="text-red-400">*</span>
             </label>
             <button
               type="button"
               onClick={addQuestion}
               className="text-lime hover:text-[#AADD00] text-sm font-medium transition-colors"
             >
-              + Agregar pregunta
+              {t("checkins.nueva.addQuestion")}
             </button>
           </div>
 
           {questions.length === 0 ? (
             <div className="rounded-lg border border-dashed border-border p-8 text-center">
               <p className="text-muted text-sm opacity-60">
-                Agregá preguntas a la plantilla
+                {t("checkins.nueva.noQuestions")}
               </p>
             </div>
           ) : (
@@ -154,14 +156,14 @@ export default function NuevaPlantillaPage() {
                 >
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-muted text-xs font-mono">
-                      Pregunta {index + 1}
+                      {t("checkins.nueva.questionNumber", { n: index + 1 })}
                     </span>
                     <button
                       type="button"
                       onClick={() => removeQuestion(index)}
                       className="text-muted hover:text-red-400 text-xs transition-colors"
                     >
-                      Quitar
+                      {t("checkins.nueva.removeQuestion")}
                     </button>
                   </div>
                   <div className="space-y-3">
@@ -171,7 +173,7 @@ export default function NuevaPlantillaPage() {
                       onChange={(e) =>
                         updateQuestion(index, "label", e.target.value)
                       }
-                      placeholder="Texto de la pregunta"
+                      placeholder={t("checkins.nueva.questionPlaceholder")}
                       className="w-full px-3 py-2 bg-surface-2 border border-border rounded-lg text-text placeholder-[#444444] focus:outline-none focus:border-[#C8FF00] text-sm transition-colors"
                     />
                     <div className="flex items-center gap-4">
@@ -234,7 +236,7 @@ export default function NuevaPlantillaPage() {
           disabled={loading}
           className="w-full py-3 bg-[#C8FF00] text-[#0A0A0A] rounded-lg font-semibold hover:bg-[#AADD00] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          {loading ? "Guardando..." : "Guardar plantilla"}
+          {loading ? t("checkins.nueva.btnSaving") : t("checkins.nueva.btnSave")}
         </button>
       </form>
     </div>

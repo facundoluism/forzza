@@ -1,10 +1,15 @@
 import { requireCoach } from "@/lib/auth/coach";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Alumnos — Forzza Coach",
-};
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "coach" });
+  return { title: t("alumnos.metaTitle") };
+}
 
 type AssignmentStatus = "pending" | "active" | "completed" | "refunded" | "canceled";
 
@@ -20,14 +25,6 @@ interface StudentAssignment {
     title: string;
   } | null;
 }
-
-const statusLabel: Record<AssignmentStatus, string> = {
-  pending: "Pendiente",
-  active: "Activo",
-  completed: "Completado",
-  refunded: "Reembolsado",
-  canceled: "Cancelado",
-};
 
 const statusColors: Record<AssignmentStatus, string> = {
   pending: "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20",
@@ -46,7 +43,11 @@ function formatDate(dateStr: string | null): string {
   });
 }
 
-export default async function AlumnosPage() {
+export default async function AlumnosPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "coach" });
+
   const { supabase, coachProfileId } = await requireCoach();
 
   const { data: assignments, error } = await supabase
@@ -70,21 +71,29 @@ export default async function AlumnosPage() {
 
   const rows = (assignments ?? []) as unknown as StudentAssignment[];
 
+  const statusLabel: Record<AssignmentStatus, string> = {
+    pending: t("alumnos.statusPaused"),
+    active: t("alumnos.statusActive"),
+    completed: t("alumnos.statusCancelled"),
+    refunded: t("alumnos.statusCancelled"),
+    canceled: t("alumnos.statusCancelled"),
+  };
+
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-text">Alumnos</h1>
+        <h1 className="text-2xl font-bold text-text">{t("alumnos.title")}</h1>
         <p className="text-muted text-sm mt-1">
-          {rows.length} alumno{rows.length !== 1 ? "s" : ""} en total
+          {t("alumnos.subtitle", { count: rows.length })}
         </p>
       </div>
 
       {rows.length === 0 ? (
         <div className="rounded-xl border border-border bg-surface p-12 text-center">
           <p className="text-4xl mb-4">👥</p>
-          <p className="text-text text-lg font-semibold">Todavía no tenés alumnos asignados.</p>
+          <p className="text-text text-lg font-semibold">{t("alumnos.emptyState")}</p>
           <p className="text-muted text-sm mt-2">
-            Cuando un alumno te seleccione, aparecerá acá.
+            {t("alumnos.emptySubtitle")}
           </p>
         </div>
       ) : (
@@ -92,10 +101,10 @@ export default async function AlumnosPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-muted text-xs uppercase tracking-wider">
-                <th className="text-left px-6 py-3">Alumno</th>
-                <th className="text-left px-6 py-3 hidden md:table-cell">Paquete</th>
-                <th className="text-left px-6 py-3 hidden sm:table-cell">Inicio</th>
-                <th className="text-left px-6 py-3">Estado</th>
+                <th className="text-left px-6 py-3">{t("alumnos.colStudent")}</th>
+                <th className="text-left px-6 py-3 hidden md:table-cell">{t("alumnos.colStatus")}</th>
+                <th className="text-left px-6 py-3 hidden sm:table-cell">{t("alumnos.colSince")}</th>
+                <th className="text-left px-6 py-3">{t("alumnos.colStatus")}</th>
                 <th className="text-right px-6 py-3"></th>
               </tr>
             </thead>
@@ -125,7 +134,7 @@ export default async function AlumnosPage() {
                       href={`/coach/alumnos/${row.student_profiles?.user_id ?? ""}`}
                       className="text-lime hover:text-[#AADD00] text-xs font-medium transition-colors"
                     >
-                      Ver detalle →
+                      {t("alumnos.viewDetail")} →
                     </Link>
                   </td>
                 </tr>

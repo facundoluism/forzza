@@ -89,6 +89,7 @@ export async function POST(request: Request) {
       .select("id")
       .eq("coach_id", coachProfileId)
       .eq("student_id", student_id)
+      .eq("status", "active")
       .single();
 
     if (!assignment) {
@@ -126,6 +127,22 @@ export async function POST(request: Request) {
       console.error("Error creating routine:", routineError);
       return NextResponse.json(
         { error: "Error al crear la rutina" },
+        { status: 500 }
+      );
+    }
+
+    const { error: assignmentUpdateError } = await supabase
+      .from("coach_assignments")
+      .update({ routine_id: routine.id })
+      .eq("id", assignment.id)
+      .eq("coach_id", coachProfileId)
+      .eq("student_id", student_id)
+      .eq("status", "active");
+
+    if (assignmentUpdateError) {
+      console.error("Error linking routine to assignment:", assignmentUpdateError);
+      return NextResponse.json(
+        { error: "La rutina se creo, pero no se pudo asignar al alumno" },
         { status: 500 }
       );
     }

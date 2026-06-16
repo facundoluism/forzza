@@ -1,10 +1,14 @@
 import { requireAdmin } from "@/lib/auth/admin";
-import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ApproveRejectButtons } from "./ApproveRejectButtons";
 
-export const metadata: Metadata = {
-  title: "Coaches — Forzza Admin",
-};
+type Props = { params: Promise<{ locale: string }>; searchParams: Promise<{ tab?: string }> };
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "admin" });
+  return { title: t("coaches.metaTitle") };
+}
 
 type CoachStatus = "pending" | "approved" | "rejected" | "suspended";
 
@@ -31,13 +35,6 @@ function formatDate(dateStr: string): string {
   });
 }
 
-const statusLabel: Record<CoachStatus, string> = {
-  pending: "Pendiente",
-  approved: "Aprobado",
-  rejected: "Rechazado",
-  suspended: "Suspendido",
-};
-
 const statusColors: Record<CoachStatus, string> = {
   pending: "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20",
   approved: "bg-green-500/10 text-green-400 border border-green-500/20",
@@ -45,14 +42,14 @@ const statusColors: Record<CoachStatus, string> = {
   suspended: "bg-orange-500/10 text-orange-400 border border-orange-500/20",
 };
 
-interface PageProps {
-  searchParams: Promise<{ tab?: string }>;
-}
+export default async function AdminCoachesPage({ params, searchParams }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "admin" });
 
-export default async function AdminCoachesPage({ searchParams }: PageProps) {
   const { adminClient } = await requireAdmin();
-  const params = await searchParams;
-  const tab = (params.tab ?? "pending") as CoachStatus;
+  const sp = await searchParams;
+  const tab = (sp.tab ?? "pending") as CoachStatus;
 
   const { data: coaches, error } = await adminClient
     .from("coach_profiles")
@@ -69,7 +66,6 @@ export default async function AdminCoachesPage({ searchParams }: PageProps) {
   const rawRows = (coaches ?? []) as CoachRow[];
 
   // Generate signed URLs (TTL 1h) for coaches with constancia_path.
-  // Running in parallel is acceptable for admin backoffice (few pending coaches).
   const rows: CoachRowWithSignedUrl[] = await Promise.all(
     rawRows.map(async (coach) => {
       if (!coach.constancia_path) return { ...coach, constanciaSignedUrl: null };
@@ -80,35 +76,42 @@ export default async function AdminCoachesPage({ searchParams }: PageProps) {
     })
   );
 
+  const statusLabel: Record<CoachStatus, string> = {
+    pending: t("coaches.statusPending"),
+    approved: t("coaches.statusApproved"),
+    rejected: t("coaches.statusRejected"),
+    suspended: t("coaches.statusSuspended"),
+  };
+
   const tabs: { key: CoachStatus; label: string }[] = [
-    { key: "pending", label: "Pendientes" },
-    { key: "approved", label: "Aprobados" },
-    { key: "rejected", label: "Rechazados" },
-    { key: "suspended", label: "Suspendidos" },
+    { key: "pending", label: t("coaches.tabPending") },
+    { key: "approved", label: t("coaches.tabApproved") },
+    { key: "rejected", label: t("coaches.tabRejected") },
+    { key: "suspended", label: t("coaches.tabSuspended") },
   ];
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-text">Coaches</h1>
+        <h1 className="text-2xl font-bold text-text">{t("coaches.title")}</h1>
         <p className="text-muted text-sm mt-1">
-          Gestioná las solicitudes y el estado de los coaches
+          {t("coaches.subtitle")}
         </p>
       </div>
 
       {/* Tabs */}
       <div className="grid grid-cols-4 gap-1 mb-6 bg-surface border border-border rounded-xl p-1">
-        {tabs.map((t) => (
+        {tabs.map((tabItem) => (
           <a
-            key={t.key}
-            href={`/admin/coaches?tab=${t.key}`}
+            key={tabItem.key}
+            href={`/admin/coaches?tab=${tabItem.key}`}
             className={`px-2 sm:px-4 py-2 rounded-lg text-[11px] sm:text-sm font-medium transition-colors text-center truncate ${
-              tab === t.key
+              tab === tabItem.key
                 ? "bg-[#C8FF00] text-[#0A0A0A]"
                 : "text-muted hover:text-text"
             }`}
           >
-            {t.label}
+            {tabItem.label}
           </a>
         ))}
       </div>
@@ -117,10 +120,10 @@ export default async function AdminCoachesPage({ searchParams }: PageProps) {
         <div className="rounded-xl border border-border bg-surface p-12 text-center">
           <p className="text-4xl mb-4">🏋️</p>
           <p className="text-text text-lg font-semibold">
-            No hay coaches {statusLabel[tab].toLowerCase()} por ahora.
+            {t("coaches.emptyState")}
           </p>
           <p className="text-muted text-sm mt-2">
-            Los coaches aparecerán acá según su estado.
+            {t("coaches.emptySubtitle")}
           </p>
         </div>
       ) : (
@@ -146,10 +149,10 @@ export default async function AdminCoachesPage({ searchParams }: PageProps) {
               <div className="flex items-center justify-between pt-1 border-t border-surface-2">
                 {coach.constanciaSignedUrl ? (
                   <a href={coach.constanciaSignedUrl} target="_blank" rel="noopener noreferrer" className="text-[#C8FF00] hover:text-[#AADD00] text-xs transition-colors">
-                    Ver doc →
+                    {t("coaches.viewDoc")}
                   </a>
                 ) : (
-                  <span className="text-muted text-xs">Sin doc</span>
+                  <span className="text-muted text-xs">{t("coaches.noDoc")}</span>
                 )}
                 <ApproveRejectButtons coachId={coach.id} currentStatus={coach.status} />
               </div>
@@ -162,13 +165,13 @@ export default async function AdminCoachesPage({ searchParams }: PageProps) {
           <table className="w-full text-sm">
             <thead>
               <tr className="text-muted text-xs uppercase tracking-wider border-b border-surface-2">
-                <th className="text-left px-6 py-3">Coach</th>
-                <th className="text-left px-6 py-3">País</th>
-                <th className="text-left px-6 py-3 hidden lg:table-cell">Modelo</th>
-                <th className="text-left px-6 py-3">Registro</th>
-                <th className="text-left px-6 py-3">Estado</th>
-                <th className="text-left px-6 py-3">Docs</th>
-                <th className="text-right px-6 py-3">Acción</th>
+                <th className="text-left px-6 py-3">{t("coaches.colCoach")}</th>
+                <th className="text-left px-6 py-3">{t("coaches.colCountry")}</th>
+                <th className="text-left px-6 py-3 hidden lg:table-cell">{t("coaches.colModel")}</th>
+                <th className="text-left px-6 py-3">{t("coaches.colDate")}</th>
+                <th className="text-left px-6 py-3">{t("coaches.colStatus")}</th>
+                <th className="text-left px-6 py-3">{t("coaches.colDocs")}</th>
+                <th className="text-right px-6 py-3">{t("coaches.colAction")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-2">
@@ -189,10 +192,10 @@ export default async function AdminCoachesPage({ searchParams }: PageProps) {
                   <td className="px-6 py-4">
                     {coach.constanciaSignedUrl ? (
                       <a href={coach.constanciaSignedUrl} target="_blank" rel="noopener noreferrer" className="text-[#C8FF00] hover:text-[#AADD00] text-xs transition-colors">
-                        Ver doc →
+                        {t("coaches.viewDoc")}
                       </a>
                     ) : (
-                      <span className="text-muted text-xs">Sin doc</span>
+                      <span className="text-muted text-xs">{t("coaches.noDoc")}</span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-right">

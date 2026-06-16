@@ -1,10 +1,15 @@
 import { requireCoach } from "@/lib/auth/coach";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Rutinas — Forzza Coach",
-};
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "coach" });
+  return { title: t("rutinas.metaTitle") };
+}
 
 interface Routine {
   id: string;
@@ -22,7 +27,11 @@ function formatDate(dateStr: string): string {
   });
 }
 
-export default async function RutinasPage() {
+export default async function RutinasPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "coach" });
+
   const { supabase, coachProfileId } = await requireCoach();
 
   const { data: routines, error } = await supabase
@@ -49,31 +58,31 @@ export default async function RutinasPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-text">Rutinas</h1>
+          <h1 className="text-2xl font-bold text-text">{t("rutinas.title")}</h1>
           <p className="text-muted text-sm mt-1">
-            {rows.length} rutina{rows.length !== 1 ? "s" : ""} creadas
+            {t("rutinas.subtitle", { count: rows.length })}
           </p>
         </div>
         <Link
           href="/coach/rutinas/nueva"
           className="px-4 py-2 bg-[#C8FF00] text-[#0A0A0A] rounded-lg text-sm font-semibold hover:bg-[#AADD00] transition-colors"
         >
-          + Nueva rutina
+          {t("rutinas.btnCreate")}
         </Link>
       </div>
 
       {rows.length === 0 ? (
         <div className="rounded-xl border border-border bg-surface p-12 text-center">
           <p className="text-4xl mb-4">📋</p>
-          <p className="text-text text-lg font-semibold">Todavía no creaste ninguna rutina.</p>
+          <p className="text-text text-lg font-semibold">{t("rutinas.emptyState")}</p>
           <p className="text-muted text-sm mt-2 mb-6">
-            Creá rutinas y asignálas a tus alumnos.
+            {t("rutinas.emptySubtitle")}
           </p>
           <Link
             href="/coach/rutinas/nueva"
             className="px-6 py-3 bg-[#C8FF00] text-[#0A0A0A] rounded-lg text-sm font-semibold hover:bg-[#AADD00] transition-colors"
           >
-            Crear primera rutina
+            {t("rutinas.btnCreate")}
           </Link>
         </div>
       ) : (
@@ -87,11 +96,11 @@ export default async function RutinasPage() {
                 {routine.title}
               </h3>
               <p className="text-muted text-xs mb-3">
-                Creada el {formatDate(routine.created_at)}
+                {formatDate(routine.created_at)}
               </p>
               {routine.student_profiles?.display_name && (
                 <p className="text-muted text-xs mb-3">
-                  Asignada a: {routine.student_profiles.display_name}
+                  {routine.student_profiles.display_name}
                 </p>
               )}
               {!routine.student_id && (
@@ -104,7 +113,7 @@ export default async function RutinasPage() {
                   href={`/coach/rutinas/${routine.id}`}
                   className="text-lime hover:text-[#AADD00] text-xs font-medium transition-colors"
                 >
-                  Ver rutina →
+                  {t("rutinas.viewDetail")} →
                 </Link>
               </div>
             </div>

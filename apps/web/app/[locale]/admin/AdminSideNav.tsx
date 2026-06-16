@@ -1,7 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import {
   LayoutDashboard,
   Dumbbell,
@@ -15,22 +17,23 @@ import {
 
 interface NavItem {
   href: string;
-  label: string;
+  labelKey: string;
   Icon: LucideIcon;
 }
 
 const navItems: NavItem[] = [
-  { href: "/admin/dashboard", label: "Dashboard", Icon: LayoutDashboard },
-  { href: "/admin/coaches", label: "Coaches", Icon: Dumbbell },
-  { href: "/admin/usuarios", label: "Usuarios", Icon: Users },
-  { href: "/admin/pagos", label: "Pagos", Icon: CreditCard },
-  { href: "/admin/liquidaciones", label: "Liquidaciones", Icon: HandCoins },
-  { href: "/admin/configuracion", label: "Configuración", Icon: Settings },
-  { href: "/admin/tickets", label: "Tickets", Icon: Ticket },
+  { href: "/admin/dashboard", labelKey: "nav.dashboard", Icon: LayoutDashboard },
+  { href: "/admin/coaches", labelKey: "nav.coaches", Icon: Dumbbell },
+  { href: "/admin/usuarios", labelKey: "nav.usuarios", Icon: Users },
+  { href: "/admin/pagos", labelKey: "nav.pagos", Icon: CreditCard },
+  { href: "/admin/liquidaciones", labelKey: "nav.liquidaciones", Icon: HandCoins },
+  { href: "/admin/configuracion", labelKey: "nav.configuracion", Icon: Settings },
+  { href: "/admin/tickets", labelKey: "nav.tickets", Icon: Ticket },
 ];
 
 export function AdminSideNav() {
   const pathname = usePathname();
+  const t = useTranslations("admin");
 
   return (
     <>
@@ -41,11 +44,11 @@ export function AdminSideNav() {
             FORZZA
           </span>
           <p className="text-muted text-xs mt-1 uppercase tracking-wider">
-            OWNER
+            {t("nav.roleOwner")}
           </p>
         </div>
         <nav className="flex-1 p-4 space-y-0.5">
-          {navItems.map(({ href, label, Icon }) => {
+          {navItems.map(({ href, labelKey, Icon }) => {
             const isActive = pathname.startsWith(href);
             return (
               <Link
@@ -58,7 +61,7 @@ export function AdminSideNav() {
                 }`}
               >
                 <Icon size={20} className="shrink-0" />
-                {label}
+                {t(labelKey)}
               </Link>
             );
           })}
@@ -66,20 +69,23 @@ export function AdminSideNav() {
         <div className="p-4 border-t border-border space-y-2">
           <div className="flex items-center gap-2 px-3 py-1.5">
             <span className="w-2 h-2 rounded-full bg-[#C8FF00]" />
-            <span className="text-muted text-xs">Owner</span>
+            <span className="text-muted text-xs">{t("nav.roleOwner")}</span>
           </div>
           <Link
             href="/"
             className="flex items-center gap-2 text-muted hover:text-text text-xs transition-colors px-3 py-1"
           >
-            ← Volver al inicio
+            ← {t("nav.backToHome")}
           </Link>
+          <div className="px-3 pt-1">
+            <LanguageSwitcher />
+          </div>
         </div>
       </aside>
 
       {/* Mobile bottom tabs */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-surface border-t border-border flex z-10 pb-[env(safe-area-inset-bottom)]">
-        {navItems.map(({ href, label, Icon }) => {
+        {navItems.map(({ href, labelKey, Icon }) => {
           const isActive = pathname.startsWith(href);
           return (
             <Link
@@ -91,7 +97,7 @@ export function AdminSideNav() {
             >
               <Icon size={20} />
               <span className="text-[9px] font-medium leading-tight text-center px-0.5">
-                {label}
+                {t(labelKey)}
               </span>
             </Link>
           );

@@ -1,10 +1,15 @@
 import { requireCoach } from "@/lib/auth/coach";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Check-ins — Forzza Coach",
-};
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "coach" });
+  return { title: t("checkins.metaTitle") };
+}
 
 interface CheckinTemplate {
   id: string;
@@ -23,7 +28,11 @@ function formatDate(dateStr: string | null): string {
   });
 }
 
-export default async function CheckinsPage() {
+export default async function CheckinsPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "coach" });
+
   const { supabase, coachProfileId } = await requireCoach();
 
   const { data: templates, error } = await supabase
@@ -62,31 +71,31 @@ export default async function CheckinsPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-text">Check-ins</h1>
+          <h1 className="text-2xl font-bold text-text">{t("checkins.title")}</h1>
           <p className="text-muted text-sm mt-1">
-            {enriched.length} plantilla{enriched.length !== 1 ? "s" : ""} creadas
+            {t("checkins.subtitle", { count: enriched.length })}
           </p>
         </div>
         <Link
           href="/coach/checkins/nueva"
           className="px-4 py-2 bg-[#C8FF00] text-[#0A0A0A] rounded-lg text-sm font-semibold hover:bg-[#AADD00] transition-colors"
         >
-          + Nueva plantilla
+          {t("checkins.btnCreate")}
         </Link>
       </div>
 
       {enriched.length === 0 ? (
         <div className="rounded-xl border border-border bg-surface p-12 text-center">
           <p className="text-4xl mb-4">✅</p>
-          <p className="text-text text-lg font-semibold">Todavía no creaste plantillas de check-in.</p>
+          <p className="text-text text-lg font-semibold">{t("checkins.emptyState")}</p>
           <p className="text-muted text-sm mt-2 mb-6">
-            Creá plantillas para hacer seguimiento de tus alumnos.
+            {t("checkins.emptySubtitle")}
           </p>
           <Link
             href="/coach/checkins/nueva"
             className="px-6 py-3 bg-[#C8FF00] text-[#0A0A0A] rounded-lg text-sm font-semibold hover:bg-[#AADD00] transition-colors"
           >
-            Crear primera plantilla
+            {t("checkins.btnCreate")}
           </Link>
         </div>
       ) : (
@@ -94,9 +103,9 @@ export default async function CheckinsPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-muted text-xs uppercase tracking-wider">
-                <th className="text-left px-6 py-3">Plantilla</th>
-                <th className="text-left px-6 py-3 hidden sm:table-cell">Preguntas</th>
-                <th className="text-left px-6 py-3 hidden md:table-cell">Última respuesta</th>
+                <th className="text-left px-6 py-3">{t("checkins.colTemplate")}</th>
+                <th className="text-left px-6 py-3 hidden sm:table-cell">{t("checkins.colQuestions")}</th>
+                <th className="text-left px-6 py-3 hidden md:table-cell">{t("checkins.colLastResponse")}</th>
                 <th className="text-right px-6 py-3"></th>
               </tr>
             </thead>
@@ -106,21 +115,21 @@ export default async function CheckinsPage() {
                   <td className="px-6 py-4">
                     <span className="font-medium text-text">{tmpl.title}</span>
                     <p className="text-muted text-xs mt-0.5 opacity-60">
-                      Creada el {formatDate(tmpl.created_at)}
+                      {formatDate(tmpl.created_at)}
                     </p>
                   </td>
                   <td className="px-6 py-4 text-muted hidden sm:table-cell">
-                    {tmpl.question_count} pregunta{tmpl.question_count !== 1 ? "s" : ""}
+                    {tmpl.question_count}
                   </td>
                   <td className="px-6 py-4 text-muted hidden md:table-cell">
-                    {formatDate(tmpl.last_response_at)}
+                    {tmpl.last_response_at ? formatDate(tmpl.last_response_at) : t("checkins.noResponses")}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <Link
                       href={`/coach/checkins/${tmpl.id}/respuestas`}
                       className="text-lime hover:text-[#AADD00] text-xs font-medium transition-colors"
                     >
-                      Ver respuestas →
+                      {t("checkins.viewResponses")} →
                     </Link>
                   </td>
                 </tr>

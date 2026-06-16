@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface Props {
   settlementId: string;
@@ -9,6 +10,7 @@ interface Props {
 
 export function InvoiceUploadButton({ settlementId }: Props) {
   const router = useRouter();
+  const t = useTranslations("coach");
   const inputRef = useRef<HTMLInputElement>(null);
   const [invoiceNumber, setInvoiceNumber] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -20,7 +22,7 @@ export function InvoiceUploadButton({ settlementId }: Props) {
 
     const normalizedInvoiceNumber = invoiceNumber.trim();
     if (!normalizedInvoiceNumber) {
-      setError("Ingresá el número de factura antes de subir el archivo.");
+      setError(t("cobros.upload.errorRequired"));
       if (inputRef.current) inputRef.current.value = "";
       return;
     }
@@ -28,13 +30,13 @@ export function InvoiceUploadButton({ settlementId }: Props) {
     // Validate file type
     const allowed = ["application/pdf", "image/jpeg", "image/png"];
     if (!allowed.includes(file.type)) {
-      setError("Solo se permiten PDF, JPG o PNG.");
+      setError(t("cobros.upload.errorFileType"));
       return;
     }
 
     // Validate file size (max 10 MB)
     if (file.size > 10 * 1024 * 1024) {
-      setError("El archivo no puede superar los 10 MB.");
+      setError(t("cobros.upload.errorFileSize"));
       return;
     }
 
@@ -56,13 +58,13 @@ export function InvoiceUploadButton({ settlementId }: Props) {
 
       if (!res.ok) {
         const data = (await res.json()) as { error?: string };
-        setError(data.error ?? "Error al subir la factura.");
+        setError(data.error ?? t("cobros.upload.errorUpload"));
       } else {
         setInvoiceNumber("");
         router.refresh();
       }
     } catch {
-      setError("Error inesperado.");
+      setError(t("cobros.upload.errorNetwork"));
     } finally {
       setUploading(false);
       if (inputRef.current) inputRef.current.value = "";
@@ -74,7 +76,7 @@ export function InvoiceUploadButton({ settlementId }: Props) {
       <input
         value={invoiceNumber}
         onChange={(e) => setInvoiceNumber(e.target.value)}
-        placeholder="Nro factura"
+        placeholder={t("cobros.upload.invoicePlaceholder")}
         className="w-32 rounded-lg border border-border bg-bg px-2 py-1.5 text-right text-xs text-text placeholder:text-muted focus:border-[#C8FF00] focus:outline-none"
       />
       <button
@@ -83,7 +85,7 @@ export function InvoiceUploadButton({ settlementId }: Props) {
         disabled={uploading || invoiceNumber.trim().length === 0}
         className="text-[#C8FF00] hover:text-[#AADD00] text-xs font-medium transition-colors disabled:opacity-50"
       >
-        {uploading ? "Subiendo..." : "Subir factura"}
+        {uploading ? t("cobros.upload.btnUploading") : t("cobros.btnUploadInvoice")}
       </button>
       {error && (
         <p className="text-red-400 text-xs">{error}</p>
