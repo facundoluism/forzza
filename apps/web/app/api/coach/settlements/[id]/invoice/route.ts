@@ -28,12 +28,25 @@ export async function POST(
       return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
     }
 
+    const { data: coachProfile } = await supabase
+      .from("coach_profiles")
+      .select("id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!coachProfile) {
+      return NextResponse.json(
+        { error: "Perfil de coach no encontrado" },
+        { status: 403 }
+      );
+    }
+
     // Verify settlement belongs to this coach and is in pending/pending_invoice status
     const { data: settlement } = await supabase
       .from("settlements")
       .select("id, status")
       .eq("id", settlementId)
-      .eq("coach_id", user.id)
+      .eq("coach_id", coachProfile.id)
       .single();
 
     if (!settlement) {
@@ -56,10 +69,18 @@ export async function POST(
     // Parse multipart form data
     const formData = await request.formData();
     const file = formData.get("file");
+    const invoiceNumber = formData.get("invoice_number");
 
     if (!file || !(file instanceof Blob)) {
       return NextResponse.json(
         { error: "Archivo no proporcionado" },
+        { status: 400 }
+      );
+    }
+
+    if (typeof invoiceNumber !== "string" || !invoiceNumber.trim()) {
+      return NextResponse.json(
+        { error: "Número de factura requerido" },
         { status: 400 }
       );
     }
@@ -101,11 +122,18 @@ export async function POST(
     }
 
     // Update settlement: set invoice_path and change status to 'invoiced'
-    const { error: updateError } = await supabase
+    // TODO: regenerar db-types para invoice_rejection_reason.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: updateError } = await (supabase as any)
       .from("settlements")
-      .update({ invoice_path: fileName, status: "invoiced" as const })
+      .update({
+        invoice_number: invoiceNumber.trim(),
+        invoice_path: fileName,
+        status: "invoiced" as const,
+        invoice_rejection_reason: null,
+      })
       .eq("id", settlementId)
-      .eq("coach_id", user.id)
+      .eq("coach_id", coachProfile.id)
       .in("status", ["pending", "pending_invoice"]);
 
     if (updateError) {

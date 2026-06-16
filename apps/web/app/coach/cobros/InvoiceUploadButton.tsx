@@ -10,12 +10,20 @@ interface Props {
 export function InvoiceUploadButton({ settlementId }: Props) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
+  const [invoiceNumber, setInvoiceNumber] = useState("");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const normalizedInvoiceNumber = invoiceNumber.trim();
+    if (!normalizedInvoiceNumber) {
+      setError("Ingresá el número de factura antes de subir el archivo.");
+      if (inputRef.current) inputRef.current.value = "";
+      return;
+    }
 
     // Validate file type
     const allowed = ["application/pdf", "image/jpeg", "image/png"];
@@ -36,6 +44,7 @@ export function InvoiceUploadButton({ settlementId }: Props) {
     try {
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("invoice_number", normalizedInvoiceNumber);
 
       const res = await fetch(
         `/api/coach/settlements/${settlementId}/invoice`,
@@ -49,6 +58,7 @@ export function InvoiceUploadButton({ settlementId }: Props) {
         const data = (await res.json()) as { error?: string };
         setError(data.error ?? "Error al subir la factura.");
       } else {
+        setInvoiceNumber("");
         router.refresh();
       }
     } catch {
@@ -60,11 +70,17 @@ export function InvoiceUploadButton({ settlementId }: Props) {
   }
 
   return (
-    <div className="flex flex-col items-end gap-1">
+    <div className="flex flex-col items-end gap-2">
+      <input
+        value={invoiceNumber}
+        onChange={(e) => setInvoiceNumber(e.target.value)}
+        placeholder="Nro factura"
+        className="w-32 rounded-lg border border-border bg-bg px-2 py-1.5 text-right text-xs text-text placeholder:text-muted focus:border-[#C8FF00] focus:outline-none"
+      />
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        disabled={uploading}
+        disabled={uploading || invoiceNumber.trim().length === 0}
         className="text-[#C8FF00] hover:text-[#AADD00] text-xs font-medium transition-colors disabled:opacity-50"
       >
         {uploading ? "Subiendo..." : "Subir factura"}

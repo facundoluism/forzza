@@ -7,7 +7,13 @@ export const metadata: Metadata = {
   title: "Cobros — Forzza Coach",
 };
 
-type SettlementStatus = "pending" | "pending_invoice" | "invoiced" | "transferred";
+type SettlementStatus =
+  | "pending"
+  | "pending_invoice"
+  | "invoiced"
+  | "approved"
+  | "rejected"
+  | "transferred";
 
 interface Settlement {
   id: string;
@@ -26,6 +32,8 @@ const statusLabel: Record<SettlementStatus, string> = {
   pending: "Pendiente",
   pending_invoice: "Requiere factura",
   invoiced: "Facturado",
+  approved: "Aprobado",
+  rejected: "Rechazado",
   transferred: "Transferido",
 };
 
@@ -33,6 +41,8 @@ const statusColors: Record<SettlementStatus, string> = {
   pending: "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20",
   pending_invoice: "bg-orange-500/10 text-orange-400 border border-orange-500/20",
   invoiced: "bg-blue-500/10 text-blue-400 border border-blue-500/20",
+  approved: "bg-[#C8FF00]/10 text-[#C8FF00] border border-[#C8FF00]/20",
+  rejected: "bg-red-500/10 text-red-400 border border-red-500/20",
   transferred: "bg-green-500/10 text-green-400 border border-green-500/20",
 };
 
@@ -196,10 +206,10 @@ export default async function CobrosPage() {
                     {(s.status === "pending" || s.status === "pending_invoice") && (
                       <InvoiceUploadButton settlementId={s.id} />
                     )}
-                    {(s.status === "invoiced" || s.status === "transferred") && s.invoice_signed_url && (
+                    {(s.status === "invoiced" || s.status === "approved" || s.status === "rejected" || s.status === "transferred") && s.invoice_signed_url && (
                       <InvoiceViewButton signedUrl={s.invoice_signed_url} />
                     )}
-                    {(s.status === "invoiced" || s.status === "transferred") && !s.invoice_signed_url && (
+                    {(s.status === "invoiced" || s.status === "approved" || s.status === "rejected" || s.status === "transferred") && !s.invoice_signed_url && (
                       <span className="text-muted text-xs opacity-60">Factura pendiente</span>
                     )}
                     {s.status === "transferred" && s.transferred_at && (
