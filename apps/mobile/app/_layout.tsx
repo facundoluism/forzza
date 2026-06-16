@@ -15,6 +15,16 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AuthProvider, useAuth } from "@/providers/AuthProvider";
 import { initSentry } from "@/lib/sentry";
 import { colors } from "@forzza/ui/tokens";
+// i18n — inicializar el singleton ANTES de cualquier render que use useTranslation().
+// Lee el idioma persistido del store; si no hay, usa el locale del dispositivo.
+import { initI18n } from "@/lib/i18n";
+import { useLanguageStore } from "@/stores/languageStore";
+
+// Leer idioma persistido SINCRÓNICAMENTE antes del primer render.
+// useLanguageStore.getState() está disponible sin montar el store porque
+// Zustand crea el store en el módulo (singleton).
+const persistedLanguage = useLanguageStore.getState().language;
+initI18n(persistedLanguage);
 
 // Evitar que el splash se oculte antes de que las fuentes carguen
 void SplashScreen.preventAutoHideAsync();

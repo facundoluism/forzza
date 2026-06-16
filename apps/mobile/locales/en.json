@@ -1,0 +1,116 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "close": "Close",
+    "retry": "Retry",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "noConnection": "Check your connection and try again.",
+    "comingSoon": "Coming soon"
+  },
+  "tabs": {
+    "home": "Home",
+    "routines": "Routines",
+    "progress": "Progress",
+    "chat": "Chat",
+    "profile": "Profile"
+  },
+  "home": {
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "todayRoutine": "Today's routine",
+    "startWorkout": "Start workout",
+    "lastSessions": "Recent sessions",
+    "touchToSeeExercises": "Tap to see exercises",
+    "noCoachNoRoutine_title": "You don't have a coach yet",
+    "noCoachNoRoutine_desc": "Find a coach that fits your goals.",
+    "noCoachNoRoutine_action": "Find a coach",
+    "coachNoRoutine_title": "Your coach hasn't assigned a routine yet",
+    "coachNoRoutine_desc": "Wait for your coach to set up a personalized routine for you.",
+    "noSessions": "You haven't completed any workouts yet. Start today!",
+    "series_one": "set",
+    "series_other": "sets",
+    "error_title": "Couldn't load your home",
+    "error_desc": "Check your connection and try again."
+  },
+  "routines": {
+    "title": "My Routines",
+    "freeLimit": "Free plan limit: {{count}} routines",
+    "empty_title": "No routines yet",
+    "empty_desc": "Create your first routine by tapping «+» or wait for your coach to assign one.",
+    "error_title": "Couldn't load routines",
+    "error_desc": "Check your connection and try again.",
+    "exercise_one": "exercise",
+    "exercise_other": "exercises",
+    "createdOn": "Created on {{date}}",
+    "upgradeFeature": "create more than 3 routines"
+  },
+  "progress": {
+    "title": "Your Progress",
+    "thisWeek": "This week",
+    "streakDay_one": "Day streak",
+    "streakDay_other": "Day streak",
+    "last5Workouts": "Last 5 workouts",
+    "empty_title": "No workouts completed yet",
+    "empty_desc": "Once you finish your first workout, you'll see your stats here.",
+    "historyBanner_title": "See full history",
+    "historyBanner_sub": "Your free history shows the last 10 days. Upgrade to PRO to access everything.",
+    "historyBanner_cta": "See plans →",
+    "proFeatures": "Pro features",
+    "bodyMetrics": "Body metrics",
+    "progressPhotos": "Progress photos",
+    "proGated_desc": "Feature available on the Pro plan. Coming soon.",
+    "upgradeFeature": "full session history",
+    "series_one": "set",
+    "series_other": "sets"
+  },
+  "chat": {
+    "title": "Messages",
+    "noMessages": "No messages yet",
+    "empty_title": "No conversations",
+    "empty_desc": "Chats with your coach appear here when you hire a package.",
+    "error_title": "Couldn't load your chats",
+    "error_desc": "Check your connection and try again."
+  },
+  "profile": {
+    "title": "Profile",
+    "placeholder": "TODO: complete in Phase 3 with full profile",
+    "language_section": "Language",
+    "signOut": "Sign out",
+    "deleteAccount": "Delete account",
+    "deleteAccount_confirm_title": "Delete account",
+    "deleteAccount_confirm_msg": "Are you sure? This action cannot be undone. All your subscriptions will be cancelled.",
+    "deleteAccount_confirm_btn": "Delete"
+  },
+  "exercisePicker": {
+    "title": "Exercise Library",
+    "searchPlaceholder": "Search for an exercise...",
+    "close": "Close",
+    "count_one": "{{count}} exercise",
+    "count_other": "{{count}} exercises",
+    "empty_title": "No results",
+    "empty_desc": "No exercises found for that search. Try a different term or filter.",
+    "error_title": "Couldn't load the library",
+    "error_desc": "Check your connection and try again."
+  },
+  "exercisePreview": {
+    "tabs": {
+      "execution": "Execution",
+      "muscles": "Muscles",
+      "info": "Info"
+    },
+    "primaryMuscles": "Primary muscles",
+    "secondaryMuscles": "Secondary muscles",
+    "noDescription": "No description available.",
+    "equipment": "Equipment",
+    "movementPattern": "Movement pattern",
+    "difficulty": "Difficulty",
+    "tags": "Tags",
+    "noEquipment": "No equipment",
+    "error_title": "Couldn't load the exercise",
+    "error_desc": "Check your connection and try again."
+  }
+}

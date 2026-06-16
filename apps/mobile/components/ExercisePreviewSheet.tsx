@@ -7,10 +7,12 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import type { Database } from "@forzza/db-types";
 import { Sheet, Tabs, Pill, ErrorState } from "@forzza/ui/native";
 import { colors, spacing, fontSize, typography } from "@forzza/ui/tokens";
 import { supabase } from "@/lib/supabase";
+import { useLanguageStore } from "@/stores/languageStore";
 import { getExerciseIcon } from "@/constants/exerciseIcons";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
@@ -35,16 +37,6 @@ async function fetchExerciseDetail(id: string): Promise<ExerciseLibraryRow> {
   return data;
 }
 
-// ─── Definición de tabs ───────────────────────────────────────────────────────
-
-const DETAIL_TABS = [
-  { key: "ejecucion", label: "Ejecución" },
-  { key: "musculos", label: "Músculos" },
-  { key: "info", label: "Info" },
-] as const;
-
-type DetailTabKey = (typeof DETAIL_TABS)[number]["key"];
-
 // ─── Tab: Ejecución ───────────────────────────────────────────────────────────
 
 function EjecucionTab({
@@ -52,13 +44,15 @@ function EjecucionTab({
 }: {
   description: string | null;
 }): React.JSX.Element {
+  const { t } = useTranslation();
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.tabContent}
     >
       <Text style={styles.descriptionText}>
-        {description ?? "Sin descripción disponible."}
+        {/* TODO i18n Fase 3: description_es/en + label maps */}
+        {description ?? t("exercisePreview.noDescription")}
       </Text>
     </ScrollView>
   );
@@ -73,12 +67,14 @@ function MusculosTab({
   primaryMuscles: string[];
   secondaryMuscles: string[];
 }): React.JSX.Element {
+  const { t } = useTranslation();
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.tabContent}
     >
-      <Text style={styles.muscleGroupTitle}>Músculos principales</Text>
+      {/* TODO i18n Fase 3: description_es/en + label maps — músculo names remain as-is from DB */}
+      <Text style={styles.muscleGroupTitle}>{t("exercisePreview.primaryMuscles")}</Text>
       {primaryMuscles.length > 0 ? (
         <View style={styles.pillRow}>
           {primaryMuscles.map((m) => (
@@ -90,7 +86,7 @@ function MusculosTab({
       )}
 
       <Text style={[styles.muscleGroupTitle, styles.muscleGroupTitleSecondary]}>
-        Músculos secundarios
+        {t("exercisePreview.secondaryMuscles")}
       </Text>
       {secondaryMuscles.length > 0 ? (
         <View style={styles.pillRow}>
@@ -108,20 +104,24 @@ function MusculosTab({
 // ─── Tab: Info ────────────────────────────────────────────────────────────────
 
 function InfoTab({ exercise }: { exercise: ExerciseLibraryRow }): React.JSX.Element {
+  const { t } = useTranslation();
+
   const infoRows: { label: string; value: string }[] = [
     {
-      label: "Equipamiento",
+      label: t("exercisePreview.equipment"),
       value:
         exercise.equipment && exercise.equipment.length > 0
           ? exercise.equipment.join(", ")
-          : "Sin equipamiento",
+          : t("exercisePreview.noEquipment"),
     },
     {
-      label: "Patrón de movimiento",
+      // TODO i18n Fase 3: description_es/en + label maps — movement_pattern value from DB
+      label: t("exercisePreview.movementPattern"),
       value: exercise.movement_pattern ?? "—",
     },
     {
-      label: "Dificultad",
+      // TODO i18n Fase 3: description_es/en + label maps — difficulty value from DB
+      label: t("exercisePreview.difficulty"),
       value: exercise.difficulty ?? "—",
     },
   ];
@@ -140,7 +140,8 @@ function InfoTab({ exercise }: { exercise: ExerciseLibraryRow }): React.JSX.Elem
 
       {exercise.tags && exercise.tags.length > 0 && (
         <View style={styles.tagsSection}>
-          <Text style={styles.infoLabel}>Etiquetas</Text>
+          {/* TODO i18n Fase 3: description_es/en + label maps — tag values from DB */}
+          <Text style={styles.infoLabel}>{t("exercisePreview.tags")}</Text>
           <View style={styles.pillRow}>
             {exercise.tags.map((tag) => (
               <Pill key={tag} label={tag} variant="default" />
@@ -159,17 +160,36 @@ function ExerciseDetailContent({
 }: {
   exercise: ExerciseLibraryRow;
 }): React.JSX.Element {
+  const { t } = useTranslation();
+  // Tabs dinámicos para que las etiquetas respondan al cambio de idioma
+  const DETAIL_TABS = [
+    { key: "ejecucion", label: t("exercisePreview.tabs.execution") },
+    { key: "musculos", label: t("exercisePreview.tabs.muscles") },
+    { key: "info", label: t("exercisePreview.tabs.info") },
+  ] as const;
+
+  type DetailTabKey = (typeof DETAIL_TABS)[number]["key"];
   const [activeTab, setActiveTab] = useState<DetailTabKey>("ejecucion");
+
   const icon = getExerciseIcon(exercise.icon_id);
+
+  // Nombre según idioma: name_en cuando EN, fallback a name si null.
+  // TODO i18n Fase 3: description_es/en + label maps
+  const language = useLanguageStore((s) => s.language);
+  const displayName =
+    language === "en" && exercise.name_en ? exercise.name_en : exercise.name;
 
   return (
     <>
       {/* Header */}
       <View style={styles.detailHeader}>
         <Text style={styles.detailEmoji}>{icon.emoji}</Text>
-        <Text style={styles.detailName}>{exercise.name}</Text>
-        {exercise.name_en ? (
-          <Text style={styles.detailNameEn}>{exercise.name_en}</Text>
+        <Text style={styles.detailName}>{displayName}</Text>
+        {/* Mostrar el nombre en el otro idioma como subtítulo si existe */}
+        {language === "es" && exercise.name_en ? (
+          <Text style={styles.detailNameAlt}>{exercise.name_en}</Text>
+        ) : language === "en" && exercise.name !== displayName ? (
+          <Text style={styles.detailNameAlt}>{exercise.name}</Text>
         ) : null}
         <View style={styles.detailPillRow}>
           <Pill label={icon.label} variant="active" />
@@ -206,6 +226,7 @@ export function ExercisePreviewSheet({
   exerciseId,
   onClose,
 }: ExercisePreviewSheetProps): React.JSX.Element {
+  const { t } = useTranslation();
   const {
     data: exercise,
     isLoading,
@@ -230,8 +251,8 @@ export function ExercisePreviewSheet({
     if (isError || !exercise) {
       return (
         <ErrorState
-          title="No se pudo cargar el ejercicio"
-          description="Verificá tu conexión e intentá de nuevo."
+          title={t("exercisePreview.error_title")}
+          description={t("exercisePreview.error_desc")}
           onRetry={() => {
             void refetch();
           }}
@@ -279,7 +300,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: spacing[1],
   },
-  detailNameEn: {
+  detailNameAlt: {
     fontFamily: typography.body,
     color: colors.muted,
     fontSize: fontSize.sm,

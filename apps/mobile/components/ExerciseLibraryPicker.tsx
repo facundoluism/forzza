@@ -12,10 +12,12 @@ import {
   Pressable,
 } from "react-native";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import type { Database } from "@forzza/db-types";
 import { Skeleton, ErrorState, EmptyState } from "@forzza/ui/native";
 import { colors, spacing, radius, fontSize, typography } from "@forzza/ui/tokens";
 import { supabase } from "@/lib/supabase";
+import { useLanguageStore } from "@/stores/languageStore";
 import {
   getExerciseIcon,
   type ExerciseIconId,
@@ -90,6 +92,12 @@ function ExerciseRow({
   item: ExerciseListItem;
   onSelect: () => void;
 }): React.JSX.Element {
+  // Nombre según idioma activo: name_en cuando EN, fallback a name si null.
+  // TODO i18n Fase 3: description_es/en + label maps
+  const language = useLanguageStore((s) => s.language);
+  const displayName =
+    language === "en" && item.name_en ? item.name_en : item.name;
+
   const icon = getExerciseIcon(item.icon_id);
   const groupLabel = item.primary_group ?? icon.label;
 
@@ -103,7 +111,7 @@ function ExerciseRow({
         <Text style={styles.exerciseRowEmojiText}>{icon.emoji}</Text>
       </View>
       <View style={styles.exerciseRowInfo}>
-        <Text style={styles.exerciseRowName}>{item.name}</Text>
+        <Text style={styles.exerciseRowName}>{displayName}</Text>
         <Text style={styles.exerciseRowGroup}>{groupLabel}</Text>
       </View>
       <Text style={styles.exerciseRowChevron}>›</Text>
@@ -137,6 +145,7 @@ export function ExerciseLibraryPicker({
   onClose,
   onSelect,
 }: ExerciseLibraryPickerProps): React.JSX.Element {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [filterIconId, setFilterIconId] = useState<ExerciseIconId | null>(null);
 
@@ -183,8 +192,8 @@ export function ExerciseLibraryPicker({
     if (isError) {
       return (
         <ErrorState
-          title="No se pudo cargar la biblioteca"
-          description="Verificá tu conexión e intentá de nuevo."
+          title={t("exercisePicker.error_title")}
+          description={t("exercisePicker.error_desc")}
           onRetry={() => { void refetch(); }}
         />
       );
@@ -194,8 +203,8 @@ export function ExerciseLibraryPicker({
       return (
         <EmptyState
           icon="🔍"
-          title="Sin resultados"
-          description="No encontramos ejercicios con esa búsqueda. Probá con otro término o filtro."
+          title={t("exercisePicker.empty_title")}
+          description={t("exercisePicker.empty_desc")}
         />
       );
     }
@@ -239,12 +248,12 @@ export function ExerciseLibraryPicker({
 
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>Biblioteca de ejercicios</Text>
+            <Text style={styles.headerTitle}>{t("exercisePicker.title")}</Text>
             <TouchableOpacity
               onPress={handleClose}
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
-              <Text style={styles.closeButton}>Cerrar</Text>
+              <Text style={styles.closeButton}>{t("exercisePicker.close")}</Text>
             </TouchableOpacity>
           </View>
 
@@ -253,7 +262,7 @@ export function ExerciseLibraryPicker({
             <Text style={styles.searchIcon}>🔍</Text>
             <TextInput
               style={styles.searchInput}
-              placeholder="Buscá un ejercicio..."
+              placeholder={t("exercisePicker.searchPlaceholder")}
               placeholderTextColor={colors.muted}
               value={query}
               onChangeText={setQuery}
@@ -297,10 +306,10 @@ export function ExerciseLibraryPicker({
             />
           </View>
 
-          {/* Contador de resultados */}
+          {/* Contador de resultados con pluralización i18next */}
           {!isLoading && !isError && exercises && exercises.length > 0 && (
             <Text style={styles.resultCount}>
-              {exercises.length} {exercises.length === 1 ? "ejercicio" : "ejercicios"}
+              {t("exercisePicker.count", { count: exercises.length })}
             </Text>
           )}
 

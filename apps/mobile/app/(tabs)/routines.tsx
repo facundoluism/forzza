@@ -9,6 +9,7 @@ import {
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
 import { useEntitlements } from "@/hooks/useEntitlements";
@@ -48,6 +49,7 @@ function SkeletonRoutineCard(): React.JSX.Element {
 
 const RoutineCard = memo(function RoutineCard({ routine }: { routine: Routine }): React.JSX.Element {
   const router = useRouter();
+  const { t } = useTranslation();
   const exerciseCount = routine.exercises?.length ?? 0;
   const createdDate = new Date(routine.created_at).toLocaleDateString("es-AR", {
     day: "numeric",
@@ -64,10 +66,10 @@ const RoutineCard = memo(function RoutineCard({ routine }: { routine: Routine })
       <View style={styles.meta}>
         <Text style={styles.metaText}>
           <Text style={styles.metaMono}>{exerciseCount}</Text>
-          {" "}{exerciseCount === 1 ? "ejercicio" : "ejercicios"}
+          {" "}{t("routines.exercise", { count: exerciseCount })}
         </Text>
         <Text style={styles.metaDot}>·</Text>
-        <Text style={styles.metaText}>Creada el {createdDate}</Text>
+        <Text style={styles.metaText}>{t("routines.createdOn", { date: createdDate })}</Text>
       </View>
       <View style={styles.arrow}>
         <Text style={styles.arrowText}>›</Text>
@@ -77,6 +79,7 @@ const RoutineCard = memo(function RoutineCard({ routine }: { routine: Routine })
 });
 
 export default function RoutinesTab(): React.JSX.Element {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { isPro } = useEntitlements();
   const router = useRouter();
@@ -115,7 +118,7 @@ export default function RoutinesTab(): React.JSX.Element {
     return (
       <View style={containerStyle}>
         <View style={styles.titleRow}>
-          <Text style={styles.screenTitle}>Mis Rutinas</Text>
+          <Text style={styles.screenTitle}>{t("routines.title")}</Text>
         </View>
         <SkeletonRoutineCard />
         <View style={{ height: spacing[3] }} />
@@ -130,11 +133,11 @@ export default function RoutinesTab(): React.JSX.Element {
     return (
       <View style={containerStyle}>
         <View style={styles.titleRow}>
-          <Text style={styles.screenTitle}>Mis Rutinas</Text>
+          <Text style={styles.screenTitle}>{t("routines.title")}</Text>
         </View>
         <EmptyState
-          title="No se pudieron cargar las rutinas"
-          description="Revisá tu conexión e intentá de nuevo."
+          title={t("routines.error_title")}
+          description={t("routines.error_desc")}
           icon="⚠️"
         />
       </View>
@@ -146,7 +149,7 @@ export default function RoutinesTab(): React.JSX.Element {
   return (
     <View style={containerStyle}>
       <View style={styles.titleRow}>
-        <Text style={styles.screenTitle}>Mis Rutinas</Text>
+        <Text style={styles.screenTitle}>{t("routines.title")}</Text>
         <Pressable
           style={[styles.addButton, atLimit && styles.addButtonLimited]}
           onPress={handleCreateRoutine}
@@ -159,7 +162,7 @@ export default function RoutinesTab(): React.JSX.Element {
       {atLimit && (
         <View style={styles.limitBanner}>
           <Text style={styles.limitBannerText}>
-            Límite del plan gratuito: {FREE_ROUTINE_LIMIT} rutinas
+            {t("routines.freeLimit", { count: FREE_ROUTINE_LIMIT })}
           </Text>
         </View>
       )}
@@ -173,8 +176,8 @@ export default function RoutinesTab(): React.JSX.Element {
         keyboardShouldPersistTaps="handled"
         ListEmptyComponent={
           <EmptyState
-            title="No tenés rutinas todavía"
-            description="Creá tu primera rutina tocando el botón «+» o esperá a que tu coach te asigne una."
+            title={t("routines.empty_title")}
+            description={t("routines.empty_desc")}
             icon="📋"
           />
         }
@@ -187,7 +190,7 @@ export default function RoutinesTab(): React.JSX.Element {
           setShowUpgradeModal(false);
           // TODO: deep-link to upgrade page when mobile linking is set up
         }}
-        feature="crear más de 3 rutinas"
+        feature={t("routines.upgradeFeature")}
       />
     </View>
   );

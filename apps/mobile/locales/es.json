@@ -1,0 +1,116 @@
+{
+  "common": {
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "retry": "Reintentá",
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "noConnection": "Revisá tu conexión e intentá de nuevo.",
+    "comingSoon": "Próximamente"
+  },
+  "tabs": {
+    "home": "Inicio",
+    "routines": "Rutinas",
+    "progress": "Progreso",
+    "chat": "Chat",
+    "profile": "Perfil"
+  },
+  "home": {
+    "greeting": {
+      "morning": "Buenos días",
+      "afternoon": "Buenas tardes",
+      "evening": "Buenas noches"
+    },
+    "todayRoutine": "Rutina de hoy",
+    "startWorkout": "Empezar entreno",
+    "lastSessions": "Últimas sesiones",
+    "touchToSeeExercises": "Tocá para ver los ejercicios",
+    "noCoachNoRoutine_title": "No tenés un coach asignado",
+    "noCoachNoRoutine_desc": "Encontrá un coach que se adapte a tus objetivos.",
+    "noCoachNoRoutine_action": "¿Querés un coach?",
+    "coachNoRoutine_title": "Tu coach todavía no asignó una rutina",
+    "coachNoRoutine_desc": "Esperá a que tu coach te configure una rutina personalizada.",
+    "noSessions": "Todavía no completaste ningún entreno. ¡Arrancá hoy!",
+    "series_one": "serie",
+    "series_other": "series",
+    "error_title": "No pudimos cargar tu inicio",
+    "error_desc": "Revisá tu conexión e intentá de nuevo."
+  },
+  "routines": {
+    "title": "Mis Rutinas",
+    "freeLimit": "Límite del plan gratuito: {{count}} rutinas",
+    "empty_title": "No tenés rutinas todavía",
+    "empty_desc": "Creá tu primera rutina tocando el botón «+» o esperá a que tu coach te asigne una.",
+    "error_title": "No se pudieron cargar las rutinas",
+    "error_desc": "Revisá tu conexión e intentá de nuevo.",
+    "exercise_one": "ejercicio",
+    "exercise_other": "ejercicios",
+    "createdOn": "Creada el {{date}}",
+    "upgradeFeature": "crear más de 3 rutinas"
+  },
+  "progress": {
+    "title": "Tu Progreso",
+    "thisWeek": "Esta semana",
+    "streakDay_one": "Día seguido",
+    "streakDay_other": "Días seguidos",
+    "last5Workouts": "Últimos 5 entrenos",
+    "empty_title": "Todavía no completaste ningún entreno",
+    "empty_desc": "Cuando termines tu primer entreno, vas a ver tus estadísticas acá.",
+    "historyBanner_title": "Ver historial completo",
+    "historyBanner_sub": "Tu historial gratis muestra los últimos 10 días. Actualizá al plan PRO para acceder a todo.",
+    "historyBanner_cta": "Ver planes →",
+    "proFeatures": "Funciones Pro",
+    "bodyMetrics": "Métricas corporales",
+    "progressPhotos": "Fotos de progreso",
+    "proGated_desc": "Función disponible en el plan Pro. Próximamente.",
+    "upgradeFeature": "historial completo de sesiones",
+    "series_one": "serie",
+    "series_other": "series"
+  },
+  "chat": {
+    "title": "Mensajes",
+    "noMessages": "Sin mensajes aún",
+    "empty_title": "Sin conversaciones",
+    "empty_desc": "Los chats con tu coach aparecen acá cuando contratás un paquete.",
+    "error_title": "No pudimos cargar tus chats",
+    "error_desc": "Revisá tu conexión e intentá de nuevo."
+  },
+  "profile": {
+    "title": "Perfil",
+    "placeholder": "TODO: completar en Fase 3 con perfil completo",
+    "language_section": "Idioma",
+    "signOut": "Cerrá sesión",
+    "deleteAccount": "Eliminá tu cuenta",
+    "deleteAccount_confirm_title": "Eliminar cuenta",
+    "deleteAccount_confirm_msg": "¿Estás seguro? Esta acción no se puede deshacer. Se cancelarán todas tus suscripciones.",
+    "deleteAccount_confirm_btn": "Eliminar"
+  },
+  "exercisePicker": {
+    "title": "Biblioteca de ejercicios",
+    "searchPlaceholder": "Buscá un ejercicio...",
+    "close": "Cerrar",
+    "count_one": "{{count}} ejercicio",
+    "count_other": "{{count}} ejercicios",
+    "empty_title": "Sin resultados",
+    "empty_desc": "No encontramos ejercicios con esa búsqueda. Probá con otro término o filtro.",
+    "error_title": "No se pudo cargar la biblioteca",
+    "error_desc": "Verificá tu conexión e intentá de nuevo."
+  },
+  "exercisePreview": {
+    "tabs": {
+      "execution": "Ejecución",
+      "muscles": "Músculos",
+      "info": "Info"
+    },
+    "primaryMuscles": "Músculos principales",
+    "secondaryMuscles": "Músculos secundarios",
+    "noDescription": "Sin descripción disponible.",
+    "equipment": "Equipamiento",
+    "movementPattern": "Patrón de movimiento",
+    "difficulty": "Dificultad",
+    "tags": "Etiquetas",
+    "noEquipment": "Sin equipamiento",
+    "error_title": "No se pudo cargar el ejercicio",
+    "error_desc": "Verificá tu conexión e intentá de nuevo."
+  }
+}

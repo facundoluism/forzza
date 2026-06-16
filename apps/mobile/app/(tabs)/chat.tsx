@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
 import { EmptyState, ErrorState } from "@forzza/ui/native";
@@ -60,6 +61,7 @@ function AssignmentItem({
   item: AssignmentChat;
   onPress: () => void;
 }): React.JSX.Element {
+  const { t } = useTranslation();
   return (
     <TouchableOpacity
       style={styles.item}
@@ -80,7 +82,7 @@ function AssignmentItem({
         </View>
         <View style={styles.itemFooter}>
           <Text style={styles.itemPreview} numberOfLines={1}>
-            {item.lastMessage ?? "Sin mensajes aún"}
+            {item.lastMessage ?? t("chat.noMessages")}
           </Text>
           {item.unreadCount > 0 && (
             <View style={styles.badge}>
@@ -96,6 +98,7 @@ function AssignmentItem({
 }
 
 export default function ChatTab(): React.JSX.Element {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const router = useRouter();
   const [chats, setChats] = useState<AssignmentChat[]>([]);
@@ -185,11 +188,11 @@ export default function ChatTab(): React.JSX.Element {
     return (
       <View style={styles.container}>
         <View style={[styles.header, { paddingTop: insets.top + spacing[2] }]}>
-          <Text style={styles.headerTitle}>Mensajes</Text>
+          <Text style={styles.headerTitle}>{t("chat.title")}</Text>
         </View>
         <ErrorState
-          title="No pudimos cargar tus chats"
-          description="Revisá tu conexión e intentá de nuevo."
+          title={t("chat.error_title")}
+          description={t("chat.error_desc")}
           onRetry={() => {
             setHasError(false);
             setLoading(true);
@@ -203,12 +206,12 @@ export default function ChatTab(): React.JSX.Element {
   return (
     <View style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + spacing[2] }]}>
-        <Text style={styles.headerTitle}>Mensajes</Text>
+        <Text style={styles.headerTitle}>{t("chat.title")}</Text>
       </View>
       {chats.length === 0 ? (
         <EmptyState
-          title="Sin conversaciones"
-          description="Los chats con tu coach aparecen acá cuando contratás un paquete."
+          title={t("chat.empty_title")}
+          description={t("chat.empty_desc")}
           icon="💬"
         />
       ) : (

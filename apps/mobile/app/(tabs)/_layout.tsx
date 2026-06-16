@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { Tabs } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/providers/AuthProvider";
 import { colors, spacing, typography } from "@forzza/ui/tokens";
@@ -122,6 +123,7 @@ function HomeTabIcon({ focused }: { focused: boolean }): React.JSX.Element {
 }
 
 export default function TabsLayout() {
+  const { t } = useTranslation();
   return (
     <Tabs
       screenOptions={{
@@ -135,35 +137,35 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Inicio",
+          title: t("tabs.home"),
           tabBarIcon: ({ focused }) => <HomeTabIcon focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="routines"
         options={{
-          title: "Rutinas",
+          title: t("tabs.routines"),
           tabBarIcon: ({ focused }) => <TabIcon label="📋" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="progress"
         options={{
-          title: "Progreso",
+          title: t("tabs.progress"),
           tabBarIcon: ({ focused }) => <TabIcon label="📈" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="chat"
         options={{
-          title: "Chat",
+          title: t("tabs.chat"),
           tabBarIcon: ({ focused }) => <TabIcon label="💬" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Perfil",
+          title: t("tabs.profile"),
           tabBarIcon: ({ focused }) => <TabIcon label="👤" focused={focused} />,
         }}
       />

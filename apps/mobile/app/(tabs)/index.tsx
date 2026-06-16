@@ -10,6 +10,7 @@ import { useRef } from "react";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
 import { useWorkoutStore } from "@/stores/workoutStore";
@@ -70,6 +71,7 @@ function RecentSessionCard({
     sets_data: Array<{ sets: unknown[] }>;
   };
 }): React.JSX.Element {
+  const { t } = useTranslation();
   const date = new Date(session.started_at);
   const formatted = date.toLocaleDateString("es-AR", {
     weekday: "short",
@@ -88,7 +90,8 @@ function RecentSessionCard({
         <Text style={styles.sessionMetaText}>{formatted}</Text>
         <Text style={styles.sessionMetaDot}>·</Text>
         <Text style={styles.sessionMetaText}>
-          <Text style={styles.sessionMetaMono}>{totalSets}</Text> series
+          <Text style={styles.sessionMetaMono}>{totalSets}</Text>
+          {" "}{t("home.series", { count: totalSets })}
         </Text>
       </View>
     </Card>
@@ -96,6 +99,7 @@ function RecentSessionCard({
 }
 
 function QuickStartButton({ onPress }: { onPress: () => void }): React.JSX.Element {
+  const { t } = useTranslation();
   const scale = useRef(new Animated.Value(1)).current;
 
   const onPressIn = () =>
@@ -112,13 +116,14 @@ function QuickStartButton({ onPress }: { onPress: () => void }): React.JSX.Eleme
       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
     >
       <Animated.View style={[styles.quickStartBtn, { transform: [{ scale }] }]}>
-        <Text style={styles.quickStartText}>Empezar entreno</Text>
+        <Text style={styles.quickStartText}>{t("home.startWorkout")}</Text>
       </Animated.View>
     </Pressable>
   );
 }
 
 export default function HomeTab(): React.JSX.Element {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const router = useRouter();
   const syncQueue = useWorkoutStore((s) => s.syncQueue);
@@ -189,11 +194,10 @@ export default function HomeTab(): React.JSX.Element {
   const displayName =
     profile?.display_name ?? user?.email?.split("@")[0] ?? "atleta";
   const hour = new Date().getHours();
-  const greeting =
-    hour < 12 ? "Buenos días" : hour < 19 ? "Buenas tardes" : "Buenas noches";
+  const greetingKey =
+    hour < 12 ? "home.greeting.morning" : hour < 19 ? "home.greeting.afternoon" : "home.greeting.evening";
 
   // Last 3 completed sessions — free users: only from last 10 days
-  // sets_data es el campo correcto en la store para sesiones completadas
   const allRecentSessions = syncQueue
     .filter((item) => item.payload?.status === "completed")
     .slice(-3)
@@ -216,8 +220,8 @@ export default function HomeTab(): React.JSX.Element {
     return (
       <View style={[styles.scroll, styles.errorContainer, { paddingTop: insets.top + spacing[2] }]}>
         <ErrorState
-          title="No pudimos cargar tu inicio"
-          description="Revisá tu conexión e intentá de nuevo."
+          title={t("home.error_title")}
+          description={t("home.error_desc")}
         />
       </View>
     );
@@ -227,13 +231,13 @@ export default function HomeTab(): React.JSX.Element {
     <ScrollView style={styles.scroll} contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing[2] }]}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.greeting}>{greeting},</Text>
+        <Text style={styles.greeting}>{t(greetingKey)},</Text>
         <Text style={styles.displayName}>{displayName}</Text>
       </View>
 
       {/* Rutina de hoy */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Rutina de hoy</Text>
+        <Text style={styles.sectionTitle}>{t("home.todayRoutine")}</Text>
         {isLoading ? (
           <SkeletonCard />
         ) : routine ? (
@@ -243,20 +247,20 @@ export default function HomeTab(): React.JSX.Element {
             onPress={() => router.push(`/routine/${routine.id}`)}
           >
             <Text style={styles.routineName}>{routine.title}</Text>
-            <Text style={styles.routineHint}>Tocá para ver los ejercicios</Text>
+            <Text style={styles.routineHint}>{t("home.touchToSeeExercises")}</Text>
           </Card>
         ) : hasCoach ? (
           <EmptyState
-            title="Tu coach todavía no asignó una rutina"
-            description="Esperá a que tu coach te configure una rutina personalizada."
+            title={t("home.coachNoRoutine_title")}
+            description={t("home.coachNoRoutine_desc")}
             icon="🏋️"
           />
         ) : (
           <EmptyState
-            title="No tenés un coach asignado"
-            description="Encontrá un coach que se adapte a tus objetivos."
+            title={t("home.noCoachNoRoutine_title")}
+            description={t("home.noCoachNoRoutine_desc")}
             icon="🔍"
-            actionLabel="¿Querés un coach?"
+            actionLabel={t("home.noCoachNoRoutine_action")}
             onAction={() => router.push("/marketplace/index" as never)}
           />
         )}
@@ -269,7 +273,7 @@ export default function HomeTab(): React.JSX.Element {
 
       {/* Últimas sesiones */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Últimas sesiones</Text>
+        <Text style={styles.sectionTitle}>{t("home.lastSessions")}</Text>
         {recentSessions.length > 0 ? (
           recentSessions.map((session, idx) => (
             <RecentSessionCard key={idx} session={session} />
@@ -277,7 +281,7 @@ export default function HomeTab(): React.JSX.Element {
         ) : (
           <Card style={styles.emptySessionsCard}>
             <Text style={styles.emptySessionsText}>
-              Todavía no completaste ningún entreno. ¡Arrancá hoy!
+              {t("home.noSessions")}
             </Text>
           </Card>
         )}

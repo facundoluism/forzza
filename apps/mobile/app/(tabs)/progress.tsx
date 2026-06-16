@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { View, Text, ScrollView, StyleSheet, Pressable, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/providers/AuthProvider";
 import { useWorkoutStore } from "@/stores/workoutStore";
 import { useEntitlements } from "@/hooks/useEntitlements";
@@ -64,6 +65,7 @@ function formatDuration(startedAt: string, completedAt: string): string {
 }
 
 function SessionItem({ session }: { session: CompletedSessionEntry }): React.JSX.Element {
+  const { t } = useTranslation();
   const date = new Date(session.started_at).toLocaleDateString("es-AR", {
     weekday: "short",
     day: "numeric",
@@ -83,7 +85,7 @@ function SessionItem({ session }: { session: CompletedSessionEntry }): React.JSX
         <Text style={styles.sessionMetaDot}>·</Text>
         <Text style={styles.sessionMetaItem}>
           <Text style={styles.sessionMetaMono}>{session.total_sets}</Text>
-          {" "}{session.total_sets === 1 ? "serie" : "series"}
+          {" "}{t("progress.series", { count: session.total_sets })}
         </Text>
       </View>
     </Card>
@@ -100,18 +102,20 @@ function StatCard({ label, value, featured = false }: { label: string; value: st
 }
 
 function ProGatedCard({ title }: { title: string }): React.JSX.Element {
+  const { t } = useTranslation();
   return (
     <Card style={styles.proCard}>
       <Text style={styles.proLockIcon}>🔒</Text>
       <Text style={styles.proTitle}>{title}</Text>
       <Text style={styles.proDescription}>
-        Función disponible en el plan Pro. Próximamente.
+        {t("progress.proGated_desc")}
       </Text>
     </Card>
   );
 }
 
 export default function ProgressTab(): React.JSX.Element {
+  const { t } = useTranslation();
   useAuth(); // ensure auth context is available
   const syncQueue = useWorkoutStore((s) => s.syncQueue);
   const { isPro } = useEntitlements();
@@ -169,16 +173,16 @@ export default function ProgressTab(): React.JSX.Element {
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing[2] }]}>
-      <Text style={styles.screenTitle}>Tu Progreso</Text>
+      <Text style={styles.screenTitle}>{t("progress.title")}</Text>
 
       {/* Stats row */}
       <View style={styles.statsRow}>
         <View style={styles.statCell}>
-          <StatCard label="Esta semana" value={weekCount} featured={weekCount > 0} />
+          <StatCard label={t("progress.thisWeek")} value={weekCount} featured={weekCount > 0} />
         </View>
         <View style={styles.statCell}>
           <StatCard
-            label={streak === 1 ? "Día seguido" : "Días seguidos"}
+            label={t("progress.streakDay", { count: streak })}
             value={streak}
             featured={streak > 1}
           />
@@ -187,11 +191,11 @@ export default function ProgressTab(): React.JSX.Element {
 
       {/* Last sessions */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Últimos 5 entrenos</Text>
+        <Text style={styles.sectionTitle}>{t("progress.last5Workouts")}</Text>
         {lastFive.length === 0 ? (
           <EmptyState
-            title="Todavía no completaste ningún entreno"
-            description="Cuando termines tu primer entreno, vas a ver tus estadísticas acá."
+            title={t("progress.empty_title")}
+            description={t("progress.empty_desc")}
             icon="📊"
           />
         ) : (
@@ -207,21 +211,21 @@ export default function ProgressTab(): React.JSX.Element {
             onPress={() => setShowUpgradeModal(true)}
             hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
           >
-            <Text style={styles.historyBannerTitle}>Ver historial completo</Text>
+            <Text style={styles.historyBannerTitle}>{t("progress.historyBanner_title")}</Text>
             <Text style={styles.historyBannerSub}>
-              Tu historial gratis muestra los últimos 10 días. Actualizá al plan PRO para acceder a todo.
+              {t("progress.historyBanner_sub")}
             </Text>
-            <Text style={styles.historyBannerCta}>Ver planes →</Text>
+            <Text style={styles.historyBannerCta}>{t("progress.historyBanner_cta")}</Text>
           </Pressable>
         )}
       </View>
 
       {/* PRO gated features */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Funciones Pro</Text>
-        <ProGatedCard title="Métricas corporales" />
+        <Text style={styles.sectionTitle}>{t("progress.proFeatures")}</Text>
+        <ProGatedCard title={t("progress.bodyMetrics")} />
         <View style={styles.sectionGap} />
-        <ProGatedCard title="Fotos de progreso" />
+        <ProGatedCard title={t("progress.progressPhotos")} />
       </View>
 
       <UpgradeModal
@@ -231,7 +235,7 @@ export default function ProgressTab(): React.JSX.Element {
           setShowUpgradeModal(false);
           // TODO: deep-link to upgrade page when mobile linking is set up
         }}
-        feature="historial completo de sesiones"
+        feature={t("progress.upgradeFeature")}
       />
     </ScrollView>
   );
