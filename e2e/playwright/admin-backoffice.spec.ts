@@ -14,6 +14,7 @@
  *   /admin/coaches     — coaches management with status tabs
  *   /admin/usuarios    — users list
  *   /admin/pagos       — payments section
+ *   /admin/liquidaciones — settlement approvals and transfers
  *   /admin/configuracion — configuration
  *   /admin/tickets     — support tickets
  */
@@ -48,7 +49,7 @@ test.describe('Admin backoffice — sidebar navigation', () => {
     }
     const sidebar = page.locator('aside');
     await expect(sidebar.getByText('Forzza')).toBeVisible();
-    await expect(sidebar.getByText(/admin panel/i)).toBeVisible();
+    await expect(sidebar.getByText(/^owner$/i).first()).toBeVisible();
   });
 
   test('sidebar has Dashboard nav link', async ({ page }) => {
@@ -93,6 +94,16 @@ test.describe('Admin backoffice — sidebar navigation', () => {
     await expect(link).toHaveAttribute('href', '/admin/pagos');
   });
 
+  test('sidebar has Liquidaciones nav link', async ({ page }) => {
+    if (!(await isDevMode(page))) {
+      test.skip();
+      return;
+    }
+    const link = page.locator('aside').getByRole('link', { name: /liquidaciones/i });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute('href', '/admin/liquidaciones');
+  });
+
   test('sidebar has Configuración nav link', async ({ page }) => {
     if (!(await isDevMode(page))) {
       test.skip();
@@ -118,7 +129,7 @@ test.describe('Admin backoffice — sidebar navigation', () => {
       test.skip();
       return;
     }
-    await expect(page.locator('aside').getByText('Owner')).toBeVisible();
+    await expect(page.locator('aside').getByText(/^owner$/i).first()).toBeVisible();
   });
 
   test('sidebar has back-to-home link', async ({ page }) => {
@@ -307,6 +318,7 @@ test.describe('Admin backoffice — coaches management page', () => {
 for (const route of [
   '/admin/usuarios',
   '/admin/pagos',
+  '/admin/liquidaciones',
   '/admin/configuracion',
   '/admin/tickets',
 ]) {

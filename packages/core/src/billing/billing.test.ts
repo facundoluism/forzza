@@ -82,7 +82,7 @@ describe("isEligibleForCommissionModel", () => {
 describe("canTransferSettlement", () => {
   it("sin invoice_number → no se puede transferir", () => {
     expect(canTransferSettlement({
-      status: "invoiced",
+      status: "approved",
       invoiceNumber: null,
       invoicePath: "/invoices/coach/inv-001.pdf",
     })).toBe(false);
@@ -90,23 +90,31 @@ describe("canTransferSettlement", () => {
 
   it("sin invoice_path → no se puede transferir", () => {
     expect(canTransferSettlement({
-      status: "invoiced",
+      status: "approved",
       invoiceNumber: "INV-001",
       invoicePath: null,
     })).toBe(false);
   });
 
-  it("con invoice_number e invoice_path → puede transferirse", () => {
+  it("con invoice_number, invoice_path y estado approved → puede transferirse", () => {
     expect(canTransferSettlement({
-      status: "invoiced",
+      status: "approved",
       invoiceNumber: "INV-001",
       invoicePath: "/invoices/coach/inv-001.pdf",
     })).toBe(true);
   });
 
-  it("invoice_number vacío → no se puede transferir", () => {
+  it("con factura cargada pero no aprobada → no se puede transferir", () => {
     expect(canTransferSettlement({
       status: "invoiced",
+      invoiceNumber: "INV-001",
+      invoicePath: "/invoices/coach/inv-001.pdf",
+    })).toBe(false);
+  });
+
+  it("invoice_number vacío → no se puede transferir", () => {
+    expect(canTransferSettlement({
+      status: "approved",
       invoiceNumber: "  ",
       invoicePath: "/invoices/coach/inv-001.pdf",
     })).toBe(false);
@@ -114,7 +122,7 @@ describe("canTransferSettlement", () => {
 
   it("invoice_path vacío → no se puede transferir", () => {
     expect(canTransferSettlement({
-      status: "invoiced",
+      status: "approved",
       invoiceNumber: "INV-001",
       invoicePath: "",
     })).toBe(false);

@@ -77,10 +77,11 @@ export interface SettlementTransferCheck {
 
 /**
  * Regla: sin factura aprobada NO existe estado "transferido".
- * Tanto invoice_number como invoice_path deben estar presentes.
+ * Debe estar aprobada por owner y tener invoice_number + invoice_path.
  */
 export function canTransferSettlement(settlement: SettlementTransferCheck): boolean {
   return (
+    settlement.status === "approved" &&
     settlement.invoiceNumber !== null &&
     settlement.invoiceNumber.trim().length > 0 &&
     settlement.invoicePath !== null &&

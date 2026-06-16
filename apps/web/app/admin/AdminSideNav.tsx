@@ -7,6 +7,7 @@ import {
   Dumbbell,
   Users,
   CreditCard,
+  HandCoins,
   Settings,
   Ticket,
   type LucideIcon,
@@ -23,6 +24,7 @@ const navItems: NavItem[] = [
   { href: "/admin/coaches", label: "Coaches", Icon: Dumbbell },
   { href: "/admin/usuarios", label: "Usuarios", Icon: Users },
   { href: "/admin/pagos", label: "Pagos", Icon: CreditCard },
+  { href: "/admin/liquidaciones", label: "Liquidaciones", Icon: HandCoins },
   { href: "/admin/configuracion", label: "Configuración", Icon: Settings },
   { href: "/admin/tickets", label: "Tickets", Icon: Ticket },
 ];
