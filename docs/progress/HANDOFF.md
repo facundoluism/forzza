@@ -29,6 +29,11 @@ Smoke integral y cierre de brechas V1 entre mobile, web coach/admin, Supabase y 
 - `apps/mobile` agrega IDs/accesibilidad para login, rutina de hoy, detalle de rutina y sesion de entrenamiento.
 - `packages/ui/native` propaga `testID` en `Card` clickeable y `Sheet`, para que Maestro pueda tocar tarjetas y validar fichas.
 - `package.json` agrega `pnpm smoke-test:mobile`.
+- Android local quedo instalado: Java 17, Maestro 2.6.1, Android SDK, AVD `forzza_pixel`, app debug instalada y Metro sirviendo bundle.
+- `e2e/flows/03-workout-session.yaml` ahora abre Expo dev-client con deep link `forzza://expo-development-client/?url=http%3A%2F%2F127.0.0.1%3A8081`.
+- `apps/mobile/metro.config.js` fue ajustado para Windows/pnpm: watch folders acotados, blocklist de `android/build` y fallback de imports `.js`.
+- `apps/mobile/app/_layout.tsx` y `providers/AuthProvider.tsx` tienen guardas para no quedarse en splash/pantalla negra durante bootstrap.
+- `apps/mobile/app/routine/[id].tsx` usa `routine.student_id` como fallback para iniciar entrenamiento si `AuthContext.user` todavia no hidrato.
 
 ## Validacion ejecutada
 
@@ -47,25 +52,33 @@ Smoke integral y cierre de brechas V1 entre mobile, web coach/admin, Supabase y 
 - `pnpm --filter mobile typecheck`: PASS despues de IDs mobile.
 - `pnpm --filter @forzza/ui typecheck`: PASS.
 - `package.json` parse: PASS.
+- `pnpm --filter mobile typecheck`: PASS despues de fixes de bootstrap/routine.
+- `maestro check-syntax e2e/flows/03-workout-session.yaml`: PASS.
+- `git diff --check`: PASS.
+- `pnpm smoke-test:mobile`: PARTIAL/BLOCKED_ENV. Maestro llego a pasar login, rutina de hoy, detalle de rutina y ficha de ejercicio. La ejecucion completa queda bloqueada por inestabilidad local de Maestro (`gRPC UNAVAILABLE`/lock en `C:\Users\Facu\.maestro\sessions`) y por corrida posterior que volvio a fallar al primer render cuando el lock reaparecio.
 
 ## A medias / pendiente
 
-- No se ejecuto `pnpm smoke-test:mobile`: Maestro no esta instalado en esta maquina y falta simulador/dispositivo Expo.
+- `pnpm smoke-test:mobile` no queda verde aun por ENTORNO, no por la app. Verificado por el orquestador (Opus):
+  - La cadena login → rutina de hoy → detalle de rutina → ficha de ejercicio → iniciar entreno PASA de verdad contra Supabase local (Metro con env override a http://localhost:54321 via `adb reverse tcp:54321`).
+  - Bug REAL del flow encontrado y corregido: los `inputText` no tapeaban el campo destino → email+password caian ambos en el campo email (login "Invalido"). Fix: `tapOn` explícito por campo en `e2e/flows/03-workout-session.yaml`.
+  - Causa raíz de la intermitencia: el HOST queda con ~1-2 GB libres (qemu + Docker/WSL + Metro + Edge + tooling) y el emulador llega a ANR ("Pixel Launcher isn't responding"), tirando el driver de Maestro (gRPC UNAVAILABLE / lock en `.maestro/sessions`). Para pase verde estable: liberar RAM del host o dar más RAM al AVD, luego repetir.
+  - Pendiente puntual: tras "iniciar entreno" el assert `reps-input` no se pudo aislar por la inestabilidad del emulador (revisar autopromo/entitlements en `session.tsx` en una corrida estable).
 - Mercado Pago sandbox end-to-end y RevenueCat sandbox siguen fuera del entorno local automatizado.
-- No se hizo commit WIP porque el worktree tiene cambios mezclados y algunos parecen previos/no relacionados.
+- BLOQUEANTE PUBLICACION (§3): `apps/mobile/app/upgrade.tsx` activa PRO abriendo el checkout web de Mercado Pago (`mp-create-preapproval` + `Linking.openURL`) en vez de IAP RevenueCat. `services/revenuecat.ts` es un stub (SDK no instalado). Apple/Google rechazan apps que cobran suscripciones digitales fuera de su IAP. Debe migrarse a RevenueCat antes de subir a tiendas.
 
 ## Proximos 3 pasos exactos
 
-1. Instalar Maestro y ejecutar `pnpm smoke-test:mobile` con Expo apuntando al Supabase local seed.
+1. Reiniciar emulador/host Maestro, verificar que no haya locks en `C:\Users\Facu\.maestro\sessions`, calentar Metro y repetir `pnpm smoke-test:mobile`.
 2. Probar Mercado Pago sandbox end-to-end con credenciales y webhook tunnel.
 3. Probar RevenueCat restore purchases con productos sandbox App Store/Play.
 
 ## HUMAN_REQUIRED
 
 - Credenciales sandbox Mercado Pago y webhook tunnel para checkout real.
-- Entorno Expo/simulador o dispositivo para smoke mobile interactivo.
+- Estabilizar entorno Maestro local: el AVD y app ya estan, pero el driver queda con lock/gRPC unavailable tras corridas largas.
 - Productos sandbox App Store/Play para RevenueCat.
 
 ## Prompt para retomar
 
-Continuar el objetivo activo de Forzza desde `docs/progress/HANDOFF.md`: cerrar smoke mobile interactivo, Mercado Pago sandbox y RevenueCat sandbox; smoke web/fixture/RLS local ya estan verdes.
+Continuar el objetivo activo de Forzza desde `docs/progress/HANDOFF.md`: estabilizar y cerrar `pnpm smoke-test:mobile` (Maestro/AVD ya instalado; revisar lock `C:\Users\Facu\.maestro\sessions`), luego Mercado Pago sandbox y RevenueCat sandbox; smoke web/fixture/RLS local ya estan verdes.

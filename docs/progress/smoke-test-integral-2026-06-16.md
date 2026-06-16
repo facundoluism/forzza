@@ -50,6 +50,11 @@ Validacion enfocada en el flujo de negocio V1:
 - Se actualizo el smoke mobile Maestro `e2e/flows/03-workout-session.yaml` para usar el alumno fixture: login, rutina asignada, ficha del ejercicio, carga de series, descanso y finalizacion.
 - Se agregaron `testID`/labels estables en mobile y UI native para que el flujo no dependa de textos visuales fragiles.
 - `package.json` agrega `pnpm smoke-test:mobile`.
+- El smoke mobile Maestro ahora abre Expo dev-client por deep link local despues de limpiar estado, porque `launchApp` directo no carga el bundle Metro.
+- `apps/mobile/metro.config.js` acota `watchFolders`, bloquea builds Android generados y resuelve imports `.js` hacia source TS para evitar OOM/resolution errors en Windows.
+- `apps/mobile/app/_layout.tsx` ya no puede quedar congelado en splash si fallan fuentes/Sentry; libera el splash con fallback de timeout.
+- `apps/mobile/providers/AuthProvider.tsx` tiene timeout/catch al leer sesion inicial para que un Supabase local lento no deje la app negra.
+- `apps/mobile/app/routine/[id].tsx` usa `routine.student_id` como fallback al iniciar sesion, evitando que el CTA sea no-op si `AuthContext.user` llega tarde.
 
 ## Evidencia
 
@@ -78,7 +83,8 @@ Validacion enfocada en el flujo de negocio V1:
 | `node --check scripts/smoke-test.js` | PASS | Browser smoke autenticado tiene sintaxis valida |
 | `pnpm --filter mobile typecheck` | PASS | 0 TypeScript errors despues de IDs/accessibility mobile |
 | `pnpm --filter @forzza/ui typecheck` | PASS | 0 TypeScript errors despues de `Card`/`Sheet` testID |
-| `pnpm smoke-test:mobile` | PENDING_ENV | Maestro no esta instalado en esta maquina; requiere simulador/dispositivo Expo |
+| `maestro check-syntax e2e/flows/03-workout-session.yaml` | PASS | Sintaxis OK con deep link dev-client, inputs por foco y timeouts de settle |
+| `pnpm smoke-test:mobile` | BLOCKED_ENV | Maestro/AVD ejecuta login, home, detalle y ficha; queda intermitente por lock de `C:\Users\Facu\.maestro\sessions`/driver gRPC y no completa estable |
 
 ## Smoke narrativo
 
@@ -99,7 +105,7 @@ MANUAL_REQUIRED:
 
 - Mercado Pago sandbox end-to-end: requiere credenciales MP y webhook tunnel.
 - RevenueCat restore purchases: requiere productos sandbox App Store/Play.
-- Mobile device smoke: requiere Expo instalado en simulador/dispositivo para Maestro.
+- Mobile device smoke: Maestro/AVD instalado y app corre; queda pendiente estabilizar el driver local para completar la sesion sin locks de `sessions`.
 
 ## Notas
 
