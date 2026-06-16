@@ -232,6 +232,8 @@ export default function SessionScreen(): React.JSX.Element | null {
     (currentRoutineExercise?.rest_seconds ?? 0) > 0
       ? (currentRoutineExercise?.rest_seconds ?? 90)
       : 90;
+  const targetSets = currentRoutineExercise?.sets ?? null;
+  const targetReached = targetSets !== null && currentSetsLogged >= targetSets;
 
   // El botón "Ver ficha" solo aparece si el ejercicio actual tiene exercise_id en la biblioteca
   const currentExerciseLibraryId = currentRoutineExercise?.exercise_id ?? null;
@@ -359,6 +361,30 @@ export default function SessionScreen(): React.JSX.Element | null {
               <Text style={styles.setsLoggedMono}>{currentSetsLogged}</Text>
               {" "}{t('session.setLogged', { count: currentSetsLogged })}
             </Text>
+
+            {currentRoutineExercise && (
+              <View style={styles.planBox}>
+                <Text style={styles.planBoxLabel}>{t('session.plannedWork')}</Text>
+                <Text style={styles.planBoxText}>
+                  {t('session.planLine', {
+                    sets: currentRoutineExercise.sets,
+                    reps: currentRoutineExercise.reps,
+                    rest: currentRestSeconds,
+                  })}
+                </Text>
+                {currentRoutineExercise.notes ? (
+                  <Text style={styles.planBoxNote}>{currentRoutineExercise.notes}</Text>
+                ) : null}
+              </View>
+            )}
+
+            {targetReached && (
+              <View style={styles.targetReachedBox}>
+                <Text style={styles.targetReachedText}>
+                  {t('session.targetReached')}
+                </Text>
+              </View>
+            )}
 
             {/* Sets logged */}
             {currentExerciseLog && currentExerciseLog.sets.length > 0 && (
@@ -605,6 +631,51 @@ const styles = StyleSheet.create({
     fontFamily: typography.mono,
     color: colors.lime,
     fontSize: 13,
+  },
+  planBox: {
+    marginTop: spacing[2],
+    backgroundColor: colors.surface2,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing[3],
+    gap: spacing[1],
+  },
+  planBoxLabel: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: 10,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    fontWeight: "700",
+  },
+  planBoxText: {
+    fontFamily: typography.body,
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  planBoxNote: {
+    fontFamily: typography.body,
+    color: colors.gray500,
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  targetReachedBox: {
+    marginTop: spacing[2],
+    backgroundColor: colors.limeGlow,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.lime,
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[2],
+  },
+  targetReachedText: {
+    fontFamily: typography.body,
+    color: colors.lime,
+    fontSize: 13,
+    fontWeight: "700",
+    textAlign: "center",
   },
   setsTable: {
     marginTop: spacing[3],

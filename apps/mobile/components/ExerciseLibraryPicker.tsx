@@ -24,6 +24,7 @@ import {
   EXERCISE_ICON_MAP,
 } from "@/constants/exerciseIcons";
 import { localizeMeta } from "@/constants/exerciseI18n";
+import { ExercisePreviewSheet } from "@/components/ExercisePreviewSheet";
 
 // ─── Tipos ───────────────────────────────────────────────────────────────────
 
@@ -89,10 +90,13 @@ async function fetchExercises(
 function ExerciseRow({
   item,
   onSelect,
+  onPreview,
 }: {
   item: ExerciseListItem;
   onSelect: () => void;
+  onPreview: () => void;
 }): React.JSX.Element {
+  const { t } = useTranslation();
   // Nombre según idioma activo: name_en cuando EN, fallback a name si null.
   const language = useLanguageStore((s) => s.language);
   const displayName =
@@ -101,22 +105,42 @@ function ExerciseRow({
   const icon = getExerciseIcon(item.icon_id);
   const rawGroup = item.primary_group ?? icon.label;
   const groupLabel = localizeMeta(rawGroup, "group", language);
+  const difficultyLabel = item.difficulty
+    ? localizeMeta(item.difficulty, "difficulty", language)
+    : null;
 
   return (
-    <TouchableOpacity
-      style={styles.exerciseRow}
-      onPress={onSelect}
-      activeOpacity={0.7}
-    >
+    <View style={styles.exerciseRow}>
       <View style={styles.exerciseRowEmoji}>
         <Text style={styles.exerciseRowEmojiText}>{icon.emoji}</Text>
       </View>
-      <View style={styles.exerciseRowInfo}>
+      <Pressable
+        style={styles.exerciseRowInfo}
+        onPress={onPreview}
+        hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+      >
         <Text style={styles.exerciseRowName}>{displayName}</Text>
-        <Text style={styles.exerciseRowGroup}>{groupLabel}</Text>
+        <Text style={styles.exerciseRowGroup}>
+          {difficultyLabel ? `${groupLabel} · ${difficultyLabel}` : groupLabel}
+        </Text>
+      </Pressable>
+      <View style={styles.exerciseRowActions}>
+        <TouchableOpacity
+          style={styles.previewButton}
+          onPress={onPreview}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.previewButtonText}>{t("exercisePicker.preview")}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={onSelect}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.addButtonText}>{t("exercisePicker.add")}</Text>
+        </TouchableOpacity>
       </View>
-      <Text style={styles.exerciseRowChevron}>›</Text>
-    </TouchableOpacity>
+    </View>
   );
 }
 
@@ -149,6 +173,7 @@ export function ExerciseLibraryPicker({
   const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [filterIconId, setFilterIconId] = useState<ExerciseIconId | null>(null);
+  const [previewExerciseId, setPreviewExerciseId] = useState<string | null>(null);
 
   const {
     data: exercises,
@@ -180,6 +205,7 @@ export function ExerciseLibraryPicker({
   const handleClose = useCallback((): void => {
     setQuery("");
     setFilterIconId(null);
+    setPreviewExerciseId(null);
     onClose();
   }, [onClose]);
 
@@ -215,7 +241,11 @@ export function ExerciseLibraryPicker({
         data={exercises}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <ExerciseRow item={item} onSelect={() => handleSelect(item)} />
+          <ExerciseRow
+            item={item}
+            onSelect={() => handleSelect(item)}
+            onPreview={() => setPreviewExerciseId(item.id)}
+          />
         )}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
@@ -318,6 +348,10 @@ export function ExerciseLibraryPicker({
           <View style={styles.listContainer}>{renderContent()}</View>
         </View>
       </KeyboardAvoidingView>
+      <ExercisePreviewSheet
+        exerciseId={previewExerciseId}
+        onClose={() => setPreviewExerciseId(null)}
+      />
     </Modal>
   );
 }
@@ -502,8 +536,37 @@ const styles = StyleSheet.create({
     color: colors.muted,
     fontSize: fontSize.sm,
   },
-  exerciseRowChevron: {
+  exerciseRowActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing[2],
+  },
+  previewButton: {
+    minHeight: 40,
+    justifyContent: "center",
+    paddingHorizontal: spacing[2],
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface3,
+  },
+  previewButtonText: {
+    fontFamily: typography.body,
     color: colors.muted,
-    fontSize: 20,
+    fontSize: fontSize.sm,
+    fontWeight: "600",
+  },
+  addButton: {
+    minHeight: 40,
+    justifyContent: "center",
+    paddingHorizontal: spacing[3],
+    borderRadius: radius.md,
+    backgroundColor: colors.lime,
+  },
+  addButtonText: {
+    fontFamily: typography.body,
+    color: colors.black,
+    fontSize: fontSize.sm,
+    fontWeight: "800",
   },
 });
