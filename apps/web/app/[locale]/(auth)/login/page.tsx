@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link, useRouter } from "@/i18n/navigation";
 import { loginSchema } from "@forzza/core";
 
 const SUPABASE_URL = process.env["NEXT_PUBLIC_SUPABASE_URL"] ?? "";
 const IS_DEV_MODE = !SUPABASE_URL || SUPABASE_URL.includes("placeholder");
 
 export default function LoginPage() {
+  const t = useTranslations("auth.login");
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,7 +22,7 @@ export default function LoginPage() {
 
     const result = loginSchema.safeParse({ email, password });
     if (!result.success) {
-      setError(result.error.errors[0]?.message ?? "Datos inválidos");
+      setError(result.error.errors[0]?.message ?? t("errorInvalid"));
       return;
     }
 
@@ -49,15 +50,15 @@ export default function LoginPage() {
     if (authError) {
       setError(
         authError.message === "Invalid login credentials"
-          ? "Email o contraseña incorrectos"
-          : "Error al iniciar sesión. Intentá de nuevo."
+          ? t("errorCredentials")
+          : t("errorGeneric")
       );
       setLoading(false);
       return;
     }
 
     if (!authData.user) {
-      setError("No se pudo obtener el usuario autenticado. Intentá de nuevo.");
+      setError(t("errorNoUser"));
       setLoading(false);
       return;
     }
@@ -91,16 +92,16 @@ export default function LoginPage() {
           FORZZA
         </h1>
         <p style={{ color: "var(--color-muted)", marginBottom: "32px" }}>
-          Iniciá sesión en tu cuenta
+          {t("title")}
         </p>
 
         {IS_DEV_MODE && (
           <div style={{ background: 'rgba(200,255,0,0.08)', border: '1px solid rgba(200,255,0,0.2)', borderRadius: '8px', padding: '12px', marginBottom: '24px', fontSize: '13px', fontFamily: 'var(--font-mono)' }}>
-            <span style={{ color: '#C8FF00', fontWeight: 700 }}>DEV MODE</span>
-            <span style={{ color: '#9898C0' }}> — Cualquier email/password funciona.</span>
+            <span style={{ color: '#C8FF00', fontWeight: 700 }}>{t("devBannerTitle")}</span>
+            <span style={{ color: '#9898C0' }}> — </span>
             <br />
             <span style={{ color: '#6868A0', fontSize: '12px' }}>
-              Usá &quot;admin@test.com&quot; → /admin | cualquier otro → /coach
+              {t("devBannerBody")}
             </span>
           </div>
         )}
@@ -108,13 +109,13 @@ export default function LoginPage() {
         <form onSubmit={(e) => { void handleSubmit(e); }}>
           <div style={{ marginBottom: "16px" }}>
             <label style={{ display: "block", color: "var(--color-text)", marginBottom: "8px", fontSize: '14px' }}>
-              Email
+              {t("emailLabel")}
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="tu@email.com"
+              placeholder={t("emailPlaceholder")}
               required
               disabled={loading}
               style={inputStyle}
@@ -123,13 +124,13 @@ export default function LoginPage() {
 
           <div style={{ marginBottom: "16px" }}>
             <label style={{ display: "block", color: "var(--color-text)", marginBottom: "8px", fontSize: '14px' }}>
-              Contraseña
+              {t("passwordLabel")}
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder={t("passwordPlaceholder")}
               required
               disabled={loading}
               style={inputStyle}
@@ -158,7 +159,7 @@ export default function LoginPage() {
               transition: 'background-color 200ms',
             }}
           >
-            {loading ? "Iniciando sesión..." : "Iniciar sesión"}
+            {loading ? t("submitLoading") : t("submit")}
           </button>
 
           <div style={{ marginTop: "16px", textAlign: "center" }}>
@@ -166,7 +167,7 @@ export default function LoginPage() {
               href="/forgot-password"
               style={{ color: "var(--color-muted)", fontSize: "14px" }}
             >
-              ¿Olvidaste tu contraseña?
+              {t("forgotPassword")}
             </Link>
           </div>
         </form>

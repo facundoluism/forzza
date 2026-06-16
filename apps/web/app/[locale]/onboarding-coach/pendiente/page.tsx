@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link, useRouter } from "@/i18n/navigation";
 
 export default function PendientePage() {
+  const t = useTranslations("onboardingCoach");
   const router = useRouter();
   const [seconds, setSeconds] = useState(5);
 
@@ -36,7 +37,7 @@ export default function PendientePage() {
           FORZZA
         </Link>
         <Link href="/" style={{ color: "#9898C0", fontSize: "14px", textDecoration: "none" }}>
-          Volver al inicio
+          {t("pendiente.backToHome")}
         </Link>
       </nav>
 
@@ -61,15 +62,16 @@ export default function PendientePage() {
           </div>
 
           <h1 style={{ color: "#F0F0FF", fontSize: "28px", fontWeight: 700, marginBottom: "16px", fontFamily: "var(--font-display)", letterSpacing: "0.5px" }}>
-            Solicitud enviada
+            {t("pendiente.heading")}
           </h1>
 
           <p style={{ color: "#9898C0", lineHeight: 1.6, marginBottom: "8px", fontSize: "16px" }}>
-            Recibimos tu solicitud. Nuestro equipo la va a revisar en las próximas{" "}
-            <strong style={{ color: "#F0F0FF" }}>48 horas hábiles</strong>.
+            {t("pendiente.body1Start")}{" "}
+            <strong style={{ color: "#F0F0FF" }}>{t("pendiente.body1Bold")}</strong>
+            {t("pendiente.body1End")}
           </p>
           <p style={{ color: "#9898C0", lineHeight: 1.6, marginBottom: "32px", fontSize: "16px" }}>
-            Te avisamos por email cuando esté aprobada y podés empezar a publicar tus paquetes.
+            {t("pendiente.body2")}
           </p>
 
           {/* Countdown */}
@@ -83,7 +85,7 @@ export default function PendientePage() {
             padding: "12px 20px",
             marginBottom: "16px",
           }}>
-            <span style={{ color: "#6868A0", fontSize: "14px" }}>Redirigiendo al inicio en</span>
+            <span style={{ color: "#6868A0", fontSize: "14px" }}>{t("pendiente.redirectLabel")}</span>
             <span style={{
               color: "#C8FF00",
               fontSize: "20px",
@@ -106,7 +108,7 @@ export default function PendientePage() {
                 textUnderlineOffset: "3px",
               }}
             >
-              Ir ahora →
+              {t("pendiente.goNow")}
             </Link>
           </div>
         </div>
@@ -116,10 +118,10 @@ export default function PendientePage() {
       <footer style={{ borderTop: "1px solid #242436", padding: "24px 32px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
         <span style={{ color: "#C8FF00", fontSize: "16px", fontWeight: 800, letterSpacing: "6px", fontFamily: "var(--font-display)" }}>FORZZA</span>
         <div style={{ display: "flex", gap: "24px" }}>
-          <Link href="/legales/terminos" style={{ color: "#6868A0", fontSize: "13px", textDecoration: "none" }}>Términos</Link>
-          <Link href="/legales/privacidad" style={{ color: "#6868A0", fontSize: "13px", textDecoration: "none" }}>Privacidad</Link>
+          <Link href="/legales/terminos" style={{ color: "#6868A0", fontSize: "13px", textDecoration: "none" }}>{t("pendiente.footerTerms")}</Link>
+          <Link href="/legales/privacidad" style={{ color: "#6868A0", fontSize: "13px", textDecoration: "none" }}>{t("pendiente.footerPrivacy")}</Link>
         </div>
-        <p style={{ color: "#242436", fontSize: "12px", fontFamily: "var(--font-mono)", margin: 0 }}>© 2026 Forzza · Argentina</p>
+        <p style={{ color: "#242436", fontSize: "12px", fontFamily: "var(--font-mono)", margin: 0 }}>{t("pendiente.footerCopy")}</p>
       </footer>
     </div>
   );

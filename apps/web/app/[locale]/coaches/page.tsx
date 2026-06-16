@@ -1,14 +1,23 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/server";
+import { Link } from "@/i18n/navigation";
+import type { Locale } from "@/i18n/routing";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Coaches — Forzza",
-  description:
-    "Encontrá al coach ideal para tus objetivos. Coaches certificados y verificados, con paquetes desde ARS 0.",
-};
+interface PageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "marketplace" });
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  };
+}
 
 interface CoachPackage {
   id: string;
@@ -63,7 +72,14 @@ async function getCoaches(): Promise<Coach[]> {
   }
 }
 
-function CoachCard({ coach }: { coach: Coach }) {
+interface CoachCardProps {
+  coach: Coach;
+  tViewProfile: string;
+  tPriceFrom: (price: string) => string;
+  tExperience: (count: number) => string;
+}
+
+function CoachCard({ coach, tViewProfile, tPriceFrom, tExperience }: CoachCardProps) {
   const minPrice = cheapestPrice(coach.packages);
   const bioSnippet = coach.bio
     ? coach.bio.length > 120
@@ -94,8 +110,7 @@ function CoachCard({ coach }: { coach: Coach }) {
             </h3>
             {coach.years_experience !== null && (
               <p className="text-muted text-[13px] m-0">
-                {coach.years_experience}{" "}
-                {coach.years_experience === 1 ? "año" : "años"} de experiencia
+                {tExperience(coach.years_experience)}
               </p>
             )}
           </div>
@@ -125,24 +140,26 @@ function CoachCard({ coach }: { coach: Coach }) {
         {/* Price */}
         {minPrice !== null && (
           <p className="text-muted text-[13px] m-0">
-            Desde{" "}
             <span className="text-[#C8FF00] font-bold font-mono text-base">
-              ${(minPrice / 100).toLocaleString("es-AR")}
+              {tPriceFrom((minPrice / 100).toLocaleString("es-AR"))}
             </span>
-            {"/mes"}
           </p>
         )}
 
         {/* CTA */}
         <div className="inline-block bg-[#C8FF00] text-black rounded-lg px-4 py-2 font-bold text-sm text-center">
-          Ver perfil
+          {tViewProfile}
         </div>
       </div>
     </Link>
   );
 }
 
-export default async function CoachesPage() {
+export default async function CoachesPage({ params }: PageProps) {
+  const { locale } = await params;
+  setRequestLocale(locale as Locale);
+
+  const t = await getTranslations({ locale, namespace: "marketplace" });
   const coachList = await getCoaches();
 
   return (
@@ -150,13 +167,13 @@ export default async function CoachesPage() {
       {/* Header */}
       <section className="px-6 pt-16 pb-8 max-w-[1200px] mx-auto">
         <Link href="/" className="text-muted text-sm hover:text-[#FAFAFA] transition-colors">
-          {"← Volver al inicio"}
+          {t("backToHome")}
         </Link>
         <h1 className="text-[clamp(36px,5vw,64px)] font-black text-[#FAFAFA] mt-4 mb-2 tracking-tight">
-          Coaches verificados
+          {t("heading")}
         </h1>
         <p className="text-muted text-lg max-w-[600px]">
-          Todos nuestros coaches pasan por un proceso de validación. Encontrá al que mejor se adapte a tus objetivos.
+          {t("subheading")}
         </p>
       </section>
 
@@ -165,16 +182,22 @@ export default async function CoachesPage() {
         {coachList.length === 0 ? (
           <div className="text-center py-24">
             <p className="text-6xl mb-4">🏋️</p>
-            <h2 className="text-2xl font-bold text-[#FAFAFA] mb-3">Coaches próximamente</h2>
-            <p className="text-muted">Estamos incorporando los primeros coaches verificados.</p>
+            <h2 className="text-2xl font-bold text-[#FAFAFA] mb-3">{t("emptyTitle")}</h2>
+            <p className="text-muted">{t("emptyDescription")}</p>
             <Link href="/" className="mt-6 inline-block px-6 py-3 bg-[#C8FF00] text-black font-bold rounded-xl hover:bg-[#b8ef00] transition-colors">
-              Volver al inicio
+              {t("emptyBackHome")}
             </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {coachList.map((coach) => (
-              <CoachCard key={coach.id} coach={coach} />
+              <CoachCard
+                key={coach.id}
+                coach={coach}
+                tViewProfile={t("viewProfile")}
+                tPriceFrom={(price) => t("priceFrom", { price })}
+                tExperience={(count) => t("experience", { count })}
+              />
             ))}
           </div>
         )}

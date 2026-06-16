@@ -1,6 +1,10 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 export default function OfflinePage() {
+  const t = useTranslations("offline");
+
   return (
     <div
       style={{
@@ -40,7 +44,7 @@ export default function OfflinePage() {
           color: "#FFFFFF",
         }}
       >
-        Sin conexión
+        {t("title")}
       </h1>
       <p
         style={{
@@ -51,7 +55,7 @@ export default function OfflinePage() {
           lineHeight: 1.5,
         }}
       >
-        Revisá tu conexión a internet y volvé a intentarlo.
+        {t("description")}
       </p>
       <button
         onClick={() => window.location.reload()}
@@ -67,7 +71,7 @@ export default function OfflinePage() {
           cursor: "pointer",
         }}
       >
-        Reintentar
+        {t("retry")}
       </button>
     </div>
   );

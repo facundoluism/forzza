@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link, useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 type Step = 1 | 2 | 3 | 4;
@@ -20,6 +21,8 @@ interface CoachData {
 }
 
 export default function OnboardingCoachPage() {
+  const t = useTranslations("onboardingCoach");
+  const router = useRouter();
   const [step, setStep] = useState<Step>(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,10 +38,10 @@ export default function OnboardingCoachPage() {
   });
 
   const steps = [
-    "Cuenta",
-    "Fiscal",
-    "Bancario",
-    "Perfil público",
+    t("steps.account"),
+    t("steps.fiscal"),
+    t("steps.banking"),
+    t("steps.profile"),
   ];
 
   function updateData(partial: Partial<CoachData>) {
@@ -55,14 +58,14 @@ export default function OnboardingCoachPage() {
     // Dev bypass: skip Supabase, go straight to pendiente
     if (isDevMode) {
       await new Promise((r) => setTimeout(r, 500));
-      window.location.href = "/onboarding-coach/pendiente";
+      router.push("/onboarding-coach/pendiente");
       return;
     }
 
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      setError("Sesión expirada. Iniciá sesión de nuevo.");
+      setError(t("errorSession"));
       setLoading(false);
       return;
     }
@@ -106,9 +109,9 @@ export default function OnboardingCoachPage() {
         .update({ role: "coach" })
         .eq("id", user.id);
 
-      window.location.href = "/onboarding-coach/pendiente";
+      router.push("/onboarding-coach/pendiente");
     } catch (err) {
-      setError("Hubo un error al guardar tu perfil. Intentá de nuevo.");
+      setError(t("errorSave"));
       console.error(err);
     } finally {
       setLoading(false);
@@ -126,7 +129,7 @@ export default function OnboardingCoachPage() {
         </div>
         {/* Header */}
         <h1 style={{ color: "var(--color-lime)", fontSize: "28px", fontWeight: "bold", marginBottom: "8px", fontFamily: "var(--font-display)", letterSpacing: "1px" }}>
-          Registrarse como coach
+          {t("heading")}
         </h1>
 
         {/* Progress */}
@@ -149,36 +152,36 @@ export default function OnboardingCoachPage() {
         {/* Paso 1: Cuenta básica */}
         {step === 1 && (
           <div>
-            <h2 style={{ color: "#FAFAFA", marginBottom: "24px" }}>Tu cuenta</h2>
+            <h2 style={{ color: "#FAFAFA", marginBottom: "24px" }}>{t("step1.heading")}</h2>
             <div style={{ marginBottom: "16px" }}>
               <label style={{ display: "block", color: "var(--color-muted)", marginBottom: "8px", fontSize: "14px" }}>
-                Nombre público *
+                {t("step1.nameLabel")}
               </label>
               <input
                 type="text"
                 value={data.display_name}
                 onChange={(e) => updateData({ display_name: e.target.value })}
-                placeholder="Cómo te vas a ver en Forzza"
+                placeholder={t("step1.namePlaceholder")}
                 style={inputStyle}
               />
             </div>
             <div style={{ marginBottom: "24px" }}>
               <label style={{ display: "block", color: "var(--color-muted)", marginBottom: "8px", fontSize: "14px" }}>
-                País
+                {t("step1.countryLabel")}
               </label>
               <select
                 value={data.country}
                 onChange={(e) => updateData({ country: e.target.value as "AR" | "CL" })}
                 style={inputStyle}
               >
-                <option value="AR">Argentina</option>
-                <option value="CL" disabled>Chile (próximamente)</option>
+                <option value="AR">{t("step1.countryAR")}</option>
+                <option value="CL" disabled>{t("step1.countryCL")}</option>
               </select>
             </div>
             <button
               onClick={() => {
                 if (!data.display_name.trim()) {
-                  setError("El nombre es obligatorio");
+                  setError(t("step1.errorNameRequired"));
                   return;
                 }
                 setError(null);
@@ -186,7 +189,7 @@ export default function OnboardingCoachPage() {
               }}
               style={buttonStyle}
             >
-              Siguiente →
+              {t("next")}
             </button>
           </div>
         )}
@@ -194,37 +197,37 @@ export default function OnboardingCoachPage() {
         {/* Paso 2: Fiscal */}
         {step === 2 && (
           <div>
-            <h2 style={{ color: "#FAFAFA", marginBottom: "8px" }}>Datos fiscales</h2>
+            <h2 style={{ color: "#FAFAFA", marginBottom: "8px" }}>{t("step2.heading")}</h2>
             <p style={{ color: "var(--color-muted)", marginBottom: "24px", fontSize: "14px" }}>
-              Necesitamos estos datos para poder liquidarte los pagos.
+              {t("step2.subheading")}
             </p>
 
             <div style={{ marginBottom: "16px" }}>
               <label style={{ display: "block", color: "var(--color-muted)", marginBottom: "8px", fontSize: "14px" }}>
-                Figura impositiva *
+                {t("step2.figuraLabel")}
               </label>
               <select
                 value={data.legal_entity_type}
                 onChange={(e) => updateData({ legal_entity_type: e.target.value })}
                 style={inputStyle}
               >
-                <option value="">Seleccioná una opción</option>
-                <option value="monotributo">Monotributista</option>
-                <option value="responsable_inscripto">Responsable inscripto</option>
-                <option value="empresa">Empresa/Sociedad</option>
-                <option value="otro">Otro</option>
+                <option value="">{t("step2.figuraPlaceholder")}</option>
+                <option value="monotributo">{t("step2.figuraMonotributista")}</option>
+                <option value="responsable_inscripto">{t("step2.figuraRI")}</option>
+                <option value="empresa">{t("step2.figuraEmpresa")}</option>
+                <option value="otro">{t("step2.figuraOtro")}</option>
               </select>
             </div>
 
             <div style={{ marginBottom: "16px" }}>
               <label style={{ display: "block", color: "var(--color-muted)", marginBottom: "8px", fontSize: "14px" }}>
-                {data.country === "AR" ? "CUIT *" : "RUT *"}
+                {data.country === "AR" ? t("step2.cuitLabelAR") : t("step2.cuitLabelCL")}
               </label>
               <input
                 type="text"
                 value={data.fiscal_id}
                 onChange={(e) => updateData({ fiscal_id: e.target.value })}
-                placeholder={data.country === "AR" ? "20-12345678-9" : "12.345.678-9"}
+                placeholder={data.country === "AR" ? t("step2.cuitPlaceholderAR") : t("step2.cuitPlaceholderCL")}
                 style={inputStyle}
               />
             </div>
@@ -238,11 +241,11 @@ export default function OnboardingCoachPage() {
             {error && <p style={{ color: "#FF4466", marginBottom: "16px", fontSize: "14px" }}>{error}</p>}
 
             <div style={{ display: "flex", gap: "12px" }}>
-              <button onClick={() => setStep(1)} style={secondaryButtonStyle}>← Atrás</button>
+              <button onClick={() => setStep(1)} style={secondaryButtonStyle}>{t("back")}</button>
               <button
                 onClick={() => {
                   if (!data.legal_entity_type || !data.fiscal_id) {
-                    setError("Completá los campos obligatorios");
+                    setError(t("errorRequiredFields"));
                     return;
                   }
                   setError(null);
@@ -250,7 +253,7 @@ export default function OnboardingCoachPage() {
                 }}
                 style={{ ...buttonStyle, flex: 1 }}
               >
-                Siguiente →
+                {t("next")}
               </button>
             </div>
           </div>
@@ -259,22 +262,22 @@ export default function OnboardingCoachPage() {
         {/* Paso 3: Bancario */}
         {step === 3 && (
           <div>
-            <h2 style={{ color: "#FAFAFA", marginBottom: "8px" }}>Datos bancarios</h2>
+            <h2 style={{ color: "#FAFAFA", marginBottom: "8px" }}>{t("step3.heading")}</h2>
             <p style={{ color: "var(--color-muted)", marginBottom: "24px", fontSize: "14px" }}>
               {data.country === "AR"
-                ? "Ingresá tu CBU (22 dígitos) y/o alias bancario."
-                : "Ingresá tu número de cuenta y RUT."}
+                ? t("step3.descriptionAR")
+                : t("step3.descriptionCL")}
             </p>
 
             <div style={{ marginBottom: "16px" }}>
               <label style={{ display: "block", color: "var(--color-muted)", marginBottom: "8px", fontSize: "14px" }}>
-                {data.country === "AR" ? "CBU (22 dígitos) *" : "Cuenta bancaria + RUT *"}
+                {data.country === "AR" ? t("step3.cbuLabelAR") : t("step3.cbuLabelCL")}
               </label>
               <input
                 type="text"
                 value={data.cbu}
                 onChange={(e) => updateData({ cbu: e.target.value })}
-                placeholder={data.country === "AR" ? "0000003100012345678901" : "12345678-9 / Banco XX"}
+                placeholder={data.country === "AR" ? t("step3.cbuPlaceholderAR") : t("step3.cbuPlaceholderCL")}
                 style={inputStyle}
               />
             </div>
@@ -282,13 +285,13 @@ export default function OnboardingCoachPage() {
             {data.country === "AR" && (
               <div style={{ marginBottom: "24px" }}>
                 <label style={{ display: "block", color: "var(--color-muted)", marginBottom: "8px", fontSize: "14px" }}>
-                  Alias bancario (opcional)
+                  {t("step3.aliasLabel")}
                 </label>
                 <input
                   type="text"
                   value={data.alias_cbu}
                   onChange={(e) => updateData({ alias_cbu: e.target.value })}
-                  placeholder="mi.alias.banco"
+                  placeholder={t("step3.aliasPlaceholder")}
                   style={inputStyle}
                 />
               </div>
@@ -297,11 +300,11 @@ export default function OnboardingCoachPage() {
             {error && <p style={{ color: "#FF4466", marginBottom: "16px", fontSize: "14px" }}>{error}</p>}
 
             <div style={{ display: "flex", gap: "12px" }}>
-              <button onClick={() => setStep(2)} style={secondaryButtonStyle}>← Atrás</button>
+              <button onClick={() => setStep(2)} style={secondaryButtonStyle}>{t("back")}</button>
               <button
                 onClick={() => {
                   if (!data.cbu.trim()) {
-                    setError("El CBU es obligatorio");
+                    setError(t("step3.errorCbuRequired"));
                     return;
                   }
                   setError(null);
@@ -309,7 +312,7 @@ export default function OnboardingCoachPage() {
                 }}
                 style={{ ...buttonStyle, flex: 1 }}
               >
-                Siguiente →
+                {t("next")}
               </button>
             </div>
           </div>
@@ -318,19 +321,19 @@ export default function OnboardingCoachPage() {
         {/* Paso 4: Perfil público */}
         {step === 4 && (
           <div>
-            <h2 style={{ color: "#FAFAFA", marginBottom: "8px" }}>Tu perfil público</h2>
+            <h2 style={{ color: "#FAFAFA", marginBottom: "8px" }}>{t("step4.heading")}</h2>
             <p style={{ color: "var(--color-muted)", marginBottom: "24px", fontSize: "14px" }}>
-              Esto es lo que van a ver los alumnos en el marketplace.
+              {t("step4.subheading")}
             </p>
 
             <div style={{ marginBottom: "24px" }}>
               <label style={{ display: "block", color: "var(--color-muted)", marginBottom: "8px", fontSize: "14px" }}>
-                Descripción (opcional)
+                {t("step4.descriptionLabel")}
               </label>
               <textarea
                 value={data.bio}
                 onChange={(e) => updateData({ bio: e.target.value })}
-                placeholder="Contá quién sos, qué te diferencia como coach..."
+                placeholder={t("step4.descriptionPlaceholder")}
                 rows={4}
                 style={{ ...inputStyle, resize: "vertical" }}
               />
@@ -339,13 +342,13 @@ export default function OnboardingCoachPage() {
             {error && <p style={{ color: "#FF4466", marginBottom: "16px", fontSize: "14px" }}>{error}</p>}
 
             <div style={{ display: "flex", gap: "12px" }}>
-              <button onClick={() => setStep(3)} style={secondaryButtonStyle}>← Atrás</button>
+              <button onClick={() => setStep(3)} style={secondaryButtonStyle}>{t("back")}</button>
               <button
                 onClick={() => { void handleFinish(); }}
                 disabled={loading}
                 style={{ ...buttonStyle, flex: 1, backgroundColor: loading ? "#4A4A4A" : "#C8FF00" }}
               >
-                {loading ? "Guardando..." : "Enviar solicitud"}
+                {loading ? t("step4.submitLoading") : t("step4.submit")}
               </button>
             </div>
           </div>
@@ -366,23 +369,24 @@ function PdfDropzone({
   onFile: (f: File | null) => void;
   onError: (msg: string | null) => void;
 }) {
+  const t = useTranslations("onboardingCoach");
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
 
   const handleFile = useCallback(
     (f: File) => {
       if (f.type !== "application/pdf") {
-        onError("Solo se aceptan archivos PDF.");
+        onError(t("dropzone.errorPdfOnly"));
         return;
       }
       if (f.size > MAX_FILE_SIZE) {
-        onError(`El archivo supera el límite de 5 MB (${(f.size / 1024 / 1024).toFixed(1)} MB).`);
+        onError(t("dropzone.errorSizeLimit", { size: (f.size / 1024 / 1024).toFixed(1) }));
         return;
       }
       onError(null);
       onFile(f);
     },
-    [onFile, onError],
+    [onFile, onError, t],
   );
 
   function handleDrop(e: React.DragEvent) {
@@ -401,7 +405,7 @@ function PdfDropzone({
     return (
       <div style={{ marginBottom: "24px" }}>
         <label style={{ display: "block", color: "var(--color-muted)", marginBottom: "8px", fontSize: "14px" }}>
-          Constancia de inscripción
+          {t("dropzone.labelOptional")}
         </label>
         <div
           style={{
@@ -456,7 +460,7 @@ function PdfDropzone({
               fontSize: "18px",
               lineHeight: 1,
             }}
-            title="Quitar archivo"
+            title={t("dropzone.removeFile")}
           >
             ✕
           </button>
@@ -468,7 +472,7 @@ function PdfDropzone({
   return (
     <div style={{ marginBottom: "24px" }}>
       <label style={{ display: "block", color: "#9898C0", marginBottom: "8px", fontSize: "14px" }}>
-        Constancia de inscripción *
+        {t("dropzone.labelRequired")}
       </label>
       <div
         role="button"
@@ -497,10 +501,11 @@ function PdfDropzone({
           </svg>
         </div>
         <p style={{ color: "#F0F0FF", fontSize: "15px", margin: "0 0 4px", fontWeight: 600 }}>
-          Arrastrá tu archivo o <span style={{ color: "#C8FF00" }}>buscá en tu dispositivo</span>
+          {t("dropzone.uploadPromptPre")}{" "}
+          <span style={{ color: "#C8FF00" }}>{t("dropzone.uploadPromptLink")}</span>
         </p>
         <p style={{ color: "#6868A0", fontSize: "12px", margin: 0, fontFamily: "var(--font-mono)" }}>
-          Solo PDF · Máx. 5 MB
+          {t("dropzone.hint")}
         </p>
       </div>
       <input

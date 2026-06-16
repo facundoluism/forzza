@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { forgotPasswordSchema } from "@forzza/core";
 
@@ -19,6 +20,7 @@ const inputStyle: React.CSSProperties = {
 };
 
 export default function ForgotPasswordPage() {
+  const t = useTranslations("auth.forgotPassword");
   const [email, setEmail] = useState("");
   const [state, setState] = useState<PageState>("idle");
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +29,7 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
     const result = forgotPasswordSchema.safeParse({ email });
     if (!result.success) {
-      setError(result.error.errors[0]?.message ?? "Email inválido");
+      setError(result.error.errors[0]?.message ?? t("errorInvalid"));
       return;
     }
 
@@ -39,7 +41,7 @@ export default function ForgotPasswordPage() {
 
     if (authError) {
       setState("error");
-      setError("No se pudo enviar el email. Intentá de nuevo.");
+      setError(t("errorGeneric"));
       return;
     }
 
@@ -51,13 +53,13 @@ export default function ForgotPasswordPage() {
       <div style={{ textAlign: "center" }}>
         <p style={{ fontSize: "48px", marginBottom: "16px" }}>✅</p>
         <h2 style={{ color: "#FAFAFA", marginBottom: "8px" }}>
-          Email enviado
+          {t("successTitle")}
         </h2>
         <p style={{ color: "var(--color-muted)" }}>
-          Revisá tu bandeja de entrada y seguí las instrucciones para restablecer tu contraseña.
+          {t("successDescription")}
         </p>
         <Link href="/login" style={{ color: "#C8FF00", display: "block", marginTop: "24px" }}>
-          Volver al inicio de sesión
+          {t("backToLogin")}
         </Link>
       </div>
     );
@@ -65,9 +67,9 @@ export default function ForgotPasswordPage() {
 
   return (
     <div>
-      <h2 style={{ color: "#FAFAFA", marginBottom: "8px" }}>Recuperar contraseña</h2>
+      <h2 style={{ color: "#FAFAFA", marginBottom: "8px" }}>{t("title")}</h2>
       <p style={{ color: "var(--color-muted)", marginBottom: "24px" }}>
-        Ingresá tu email y te enviamos un link para restablecer tu contraseña.
+        {t("description")}
       </p>
 
       <form onSubmit={(e) => { void handleSubmit(e); }}>
@@ -76,7 +78,7 @@ export default function ForgotPasswordPage() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="tu@email.com"
+            placeholder={t("emailPlaceholder")}
             required
             disabled={state === "loading"}
             style={inputStyle}
@@ -102,11 +104,11 @@ export default function ForgotPasswordPage() {
             cursor: state === "loading" ? "not-allowed" : "pointer",
           }}
         >
-          {state === "loading" ? "Enviando..." : "Enviar link de recuperación"}
+          {state === "loading" ? t("submitLoading") : t("submit")}
         </button>
 
         <Link href="/login" style={{ display: "block", textAlign: "center", marginTop: "16px", color: "var(--color-muted)", fontSize: "14px" }}>
-          Volver al inicio de sesión
+          {t("backToLogin")}
         </Link>
       </form>
     </div>

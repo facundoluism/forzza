@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { createBrowserClient } from "@supabase/ssr";
 
 interface CheckoutClientProps {
@@ -36,6 +37,7 @@ export function CheckoutClient({
   isMinorWithoutConsent,
   errorMessage,
 }: CheckoutClientProps) {
+  const t = useTranslations("checkout");
   const [state, setState] = useState<CheckoutState>("idle");
   const [clientError, setClientError] = useState<string | null>(null);
 
@@ -78,15 +80,13 @@ export function CheckoutClient({
 
       if (!res.ok || !data.init_point) {
         const errorMap: Record<string, string> = {
-          minor_no_consent:
-            "Necesitás consentimiento de tus padres para contratar un coach.",
-          invalid_package: "El paquete ya no está disponible.",
-          unauthorized: "Necesitás iniciar sesión.",
-          mp_error: "Error al procesar el pago. Intentá de nuevo.",
+          minor_no_consent: t("errorParentalConsent"),
+          invalid_package: t("errorPackageUnavailable"),
+          unauthorized: t("errorLoginRequired"),
+          mp_error: t("errorPayment"),
         };
         setClientError(
-          errorMap[data.error ?? ""] ??
-            "Ocurrió un error al iniciar el pago. Intentá de nuevo."
+          errorMap[data.error ?? ""] ?? t("errorInit")
         );
         setState("error");
         return;
@@ -95,7 +95,7 @@ export function CheckoutClient({
       // Redirigir a Mercado Pago
       window.location.href = data.init_point;
     } catch {
-      setClientError("Error de red. Verificá tu conexión e intentá de nuevo.");
+      setClientError(t("errorNetwork"));
       setState("error");
     }
   }
@@ -109,13 +109,13 @@ export function CheckoutClient({
             href={`/coaches/${coachId}`}
             className="text-[#6A6A6A] text-sm hover:text-[#FAFAFA] transition-colors"
           >
-            {"← Volver al coach"}
+            {t("backToCoach")}
           </Link>
           <h1 className="text-[#FAFAFA] text-2xl font-black mt-4 tracking-tight">
-            Contratar coach
+            {t("heading")}
           </h1>
           <p className="text-[#6A6A6A] text-sm mt-1">
-            Revisá los detalles antes de continuar al pago.
+            {t("subheading")}
           </p>
         </div>
 
@@ -129,7 +129,7 @@ export function CheckoutClient({
               href="/coaches"
               className="text-red-300 underline text-xs mt-2 inline-block"
             >
-              Ver otros coaches
+              {t("viewOtherCoaches")}
             </Link>
           </div>
         )}
@@ -138,12 +138,10 @@ export function CheckoutClient({
         {isMinorWithoutConsent && !hasInitialError && (
           <div className="rounded-xl border border-orange-500/20 bg-orange-500/10 px-4 py-4">
             <p className="text-orange-400 text-sm font-semibold">
-              Necesitás autorización de un adulto
+              {t("minorConsentTitle")}
             </p>
             <p className="text-orange-300 text-xs mt-1 leading-relaxed">
-              Sos menor de 18 años y todavía no tenemos el consentimiento de
-              tus padres o tutores. Pediles que contacten a soporte para
-              habilitar tu cuenta.
+              {t("minorConsentBody")}
             </p>
           </div>
         )}
@@ -155,28 +153,27 @@ export function CheckoutClient({
               <div className="flex justify-between items-start">
                 <div>
                   <p className="text-[#6A6A6A] text-xs uppercase tracking-wider mb-1">
-                    Coach
+                    {t("labelCoach")}
                   </p>
                   <p className="text-[#FAFAFA] font-semibold">{coachName}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-[#6A6A6A] text-xs uppercase tracking-wider mb-1">
-                    Paquete
+                    {t("labelPackage")}
                   </p>
                   <p className="text-[#FAFAFA] font-semibold">{packageTitle}</p>
                 </div>
               </div>
 
               <div className="border-t border-[#2A2A2A] pt-3 flex justify-between items-center">
-                <p className="text-[#6A6A6A] text-sm">Total</p>
+                <p className="text-[#6A6A6A] text-sm">{t("labelTotal")}</p>
                 <p className="text-[#C8FF00] text-xl font-black font-mono">
                   {formatPrice(packagePrice, currencySymbol)}
                 </p>
               </div>
 
               <p className="text-[#444444] text-xs">
-                Pago procesado por Mercado Pago ({currency}). El cargo
-                aparecerá en tu resumen de cuenta.
+                {t("paymentNote", { currency })}
               </p>
             </div>
 
@@ -195,18 +192,16 @@ export function CheckoutClient({
                 disabled={state === "loading"}
                 className="w-full bg-[#C8FF00] hover:bg-[#b8ef00] disabled:opacity-60 disabled:cursor-not-allowed text-black font-bold text-base rounded-xl py-4 transition-colors"
               >
-                {state === "loading"
-                  ? "Redirigiendo a Mercado Pago..."
-                  : "Pagar con Mercado Pago"}
+                {state === "loading" ? t("submitLoading") : t("submit")}
               </button>
             )}
 
             <p className="text-[#444444] text-xs text-center">
-              Al confirmar, aceptás los{" "}
-              <Link href="/terminos" className="underline hover:text-[#6A6A6A]">
-                Términos y Condiciones
-              </Link>{" "}
-              de Forzza.
+              {t("termsNotePre")}{" "}
+              <Link href="/legales/terminos" className="underline hover:text-[#6A6A6A]">
+                {t("termsLinkText")}
+              </Link>
+              {t("termsNotePost") ? ` ${t("termsNotePost")}` : ""}
             </p>
           </>
         )}

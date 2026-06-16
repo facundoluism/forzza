@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/server";
 
 interface CountryConfig {
@@ -16,7 +17,7 @@ async function getProPrice(): Promise<ProPriceResult> {
   if (!isSupabaseConfigured()) {
     return {
       formatted: "$ 9.999",
-      note: "por mes en ARS · cancelá cuando quieras",
+      note: "fallback",
     };
   }
   try {
@@ -31,7 +32,7 @@ async function getProPrice(): Promise<ProPriceResult> {
     if (error || !data) {
       return {
         formatted: "$ 9.999",
-        note: "por mes en ARS · cancelá cuando quieras",
+        note: "fallback",
         error: true,
       };
     }
@@ -42,12 +43,12 @@ async function getProPrice(): Promise<ProPriceResult> {
     const formatted = `${symbol}${amount.toLocaleString("es-AR")}`;
     return {
       formatted,
-      note: `por mes en ${config.currency_code} · cancelá cuando quieras`,
+      note: config.currency_code,
     };
   } catch {
     return {
       formatted: "$ 9.999",
-      note: "por mes en ARS · cancelá cuando quieras",
+      note: "fallback",
       error: true,
     };
   }
@@ -58,17 +59,20 @@ async function getProPrice(): Promise<ProPriceResult> {
  * en upgrade/page.tsx para mostrar skeleton mientras resuelve.
  */
 export async function PriceBlock(): Promise<React.JSX.Element> {
-  const proPrice = await getProPrice();
+  const [proPrice, t] = await Promise.all([
+    getProPrice(),
+    getTranslations("upgrade"),
+  ]);
 
   return (
     <>
       <div className="text-text text-4xl font-black leading-none">
         {proPrice.formatted}
       </div>
-      <div className="text-muted text-sm mt-1">{proPrice.note}</div>
+      <div className="text-muted text-sm mt-1">{t("proPriceNote")}</div>
       {proPrice.error && (
         <p className="text-warning text-xs mt-1">
-          Precio de referencia — verificá al confirmar
+          {t("proPriceError")}
         </p>
       )}
     </>

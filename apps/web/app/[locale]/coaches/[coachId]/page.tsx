@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/server";
+import { Link } from "@/i18n/navigation";
+import type { Locale } from "@/i18n/routing";
 
 export const dynamic = "force-dynamic";
 
@@ -27,14 +29,15 @@ interface CoachProfile {
 }
 
 interface PageProps {
-  params: Promise<{ coachId: string }>;
+  params: Promise<{ locale: string; coachId: string }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { coachId } = await params;
+  const { locale, coachId } = await params;
+  const t = await getTranslations({ locale, namespace: "marketplace" });
 
   if (!isSupabaseConfigured()) {
-    return { title: "Coach — Forzza" };
+    return { title: t("coachMetaTitle") };
   }
 
   try {
@@ -47,15 +50,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       .single();
 
     if (!data) {
-      return { title: "Coach no encontrado — Forzza" };
+      return { title: t("coachMetaNotFound") };
     }
 
     return {
-      title: `${data.display_name} — Coach en Forzza`,
-      description: data.bio ?? `Contratá a ${data.display_name} como tu coach personal en Forzza.`,
+      title: t("coachMetaTitleNamed", { name: data.display_name }),
+      description: data.bio ?? t("coachMetaDescription", { name: data.display_name }),
     };
   } catch {
-    return { title: "Coach — Forzza" };
+    return { title: t("coachMetaTitle") };
   }
 }
 
@@ -68,7 +71,10 @@ function getInitials(name: string): string {
 }
 
 export default async function CoachProfilePage({ params }: PageProps) {
-  const { coachId } = await params;
+  const { locale, coachId } = await params;
+  setRequestLocale(locale as Locale);
+
+  const t = await getTranslations({ locale, namespace: "marketplace" });
 
   if (!isSupabaseConfigured()) {
     notFound();
@@ -104,7 +110,7 @@ export default async function CoachProfilePage({ params }: PageProps) {
       <div className="max-w-[800px] mx-auto px-6 py-16">
         {/* Back link */}
         <Link href="/coaches" className="text-muted text-sm hover:text-[#FAFAFA] transition-colors">
-          {"← Todos los coaches"}
+          {t("backToCoaches")}
         </Link>
 
         {/* Hero */}
@@ -128,8 +134,7 @@ export default async function CoachProfilePage({ params }: PageProps) {
 
           {coachData.years_experience !== null && (
             <p className="text-muted text-[15px] m-0">
-              {coachData.years_experience}{" "}
-              {coachData.years_experience === 1 ? "año" : "años"} de experiencia
+              {t("experience", { count: coachData.years_experience })}
             </p>
           )}
 
@@ -151,7 +156,7 @@ export default async function CoachProfilePage({ params }: PageProps) {
         {coachData.bio && (
           <section className="mb-10">
             <h2 className="text-muted text-xs font-bold uppercase tracking-[2px] mb-3">
-              Sobre el coach
+              {t("aboutCoach")}
             </h2>
             <p className="text-muted text-base leading-[1.7] m-0">
               {coachData.bio}
@@ -162,12 +167,12 @@ export default async function CoachProfilePage({ params }: PageProps) {
         {/* Packages */}
         <section>
           <h2 className="text-muted text-xs font-bold uppercase tracking-[2px] mb-4">
-            Paquetes disponibles
+            {t("packages")}
           </h2>
 
           {activePackages.length === 0 ? (
             <div className="bg-[#111111] rounded-xl border border-[#2A2A2A] p-6 text-center text-muted text-[15px]">
-              Este coach no tiene paquetes publicados todavía.
+              {t("noPackages")}
             </div>
           ) : (
             <div className="flex flex-col gap-4">
@@ -188,7 +193,7 @@ export default async function CoachProfilePage({ params }: PageProps) {
                           ${price}
                         </span>
                         <span className="text-muted text-[13px]">
-                          {"/mes"}
+                          {"/" + t("pricePerMonth", { price: "" }).split("/")[1]}
                         </span>
                       </div>
                     </div>
@@ -204,7 +209,7 @@ export default async function CoachProfilePage({ params }: PageProps) {
                         href={`/coaches/${coachData.id}/checkout?package_id=${pkg.id}`}
                         className="inline-block bg-[#C8FF00] text-black rounded-lg px-6 py-3 font-bold text-[15px] hover:bg-[#b8ef00] transition-colors"
                       >
-                        Contratar
+                        {t("hire")}
                       </Link>
                     </div>
                   </div>

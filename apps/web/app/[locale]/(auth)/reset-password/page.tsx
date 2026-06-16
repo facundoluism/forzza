@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { resetPasswordSchema } from "@forzza/core";
 
@@ -19,6 +20,7 @@ const inputStyle: React.CSSProperties = {
 };
 
 export default function ResetPasswordPage() {
+  const t = useTranslations("auth.resetPassword");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [state, setState] = useState<PageState>("idle");
@@ -37,7 +39,7 @@ export default function ResetPasswordPage() {
     e.preventDefault();
     const result = resetPasswordSchema.safeParse({ password, confirmPassword });
     if (!result.success) {
-      setError(result.error.errors[0]?.message ?? "Datos inválidos");
+      setError(result.error.errors[0]?.message ?? t("errorInvalid"));
       return;
     }
 
@@ -48,9 +50,7 @@ export default function ResetPasswordPage() {
 
     if (authError) {
       setState("error");
-      setError(
-        "No se pudo actualizar la contraseña. Reabrí el link del email e intentá de nuevo."
-      );
+      setError(t("errorGeneric"));
       return;
     }
 
@@ -61,12 +61,12 @@ export default function ResetPasswordPage() {
     return (
       <div style={{ textAlign: "center" }}>
         <p style={{ fontSize: "48px", marginBottom: "16px" }}>✅</p>
-        <h2 style={{ color: "#FAFAFA", marginBottom: "8px" }}>Contraseña actualizada</h2>
+        <h2 style={{ color: "#FAFAFA", marginBottom: "8px" }}>{t("successTitle")}</h2>
         <p style={{ color: "var(--color-muted)" }}>
-          Ya podés iniciar sesión con tu nueva contraseña.
+          {t("successDescription")}
         </p>
         <Link href="/login" style={{ color: "#C8FF00", display: "block", marginTop: "24px" }}>
-          Ir a iniciar sesión
+          {t("successLink")}
         </Link>
       </div>
     );
@@ -74,9 +74,9 @@ export default function ResetPasswordPage() {
 
   return (
     <div>
-      <h2 style={{ color: "#FAFAFA", marginBottom: "8px" }}>Nueva contraseña</h2>
+      <h2 style={{ color: "#FAFAFA", marginBottom: "8px" }}>{t("title")}</h2>
       <p style={{ color: "#9898C0", marginBottom: "24px" }}>
-        Elegí una contraseña nueva para tu cuenta.
+        {t("description")}
       </p>
 
       <form onSubmit={(e) => { void handleSubmit(e); }}>
@@ -85,7 +85,7 @@ export default function ResetPasswordPage() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Nueva contraseña"
+            placeholder={t("newPasswordPlaceholder")}
             required
             disabled={state === "loading"}
             style={inputStyle}
@@ -97,7 +97,7 @@ export default function ResetPasswordPage() {
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="Repetí la contraseña"
+            placeholder={t("confirmPasswordPlaceholder")}
             required
             disabled={state === "loading"}
             style={inputStyle}
@@ -123,7 +123,7 @@ export default function ResetPasswordPage() {
             cursor: state === "loading" ? "not-allowed" : "pointer",
           }}
         >
-          {state === "loading" ? "Guardando..." : "Guardar contraseña"}
+          {state === "loading" ? t("submitLoading") : t("submit")}
         </button>
 
         <Link
@@ -136,7 +136,7 @@ export default function ResetPasswordPage() {
             fontSize: "14px",
           }}
         >
-          Volver al inicio de sesión
+          {t("backToLogin")}
         </Link>
       </form>
     </div>

@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { TRACKED_EVENTS } from "@forzza/core";
 import { track } from "@/lib/analytics";
 
 export function ActivateProButton() {
+  const t = useTranslations("upgrade");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,17 +22,17 @@ export function ActivateProButton() {
       }
       if (!res.ok) {
         const body = (await res.json()) as { error?: string };
-        setError(body.error ?? "Error al iniciar el pago");
+        setError(body.error ?? t("proErrorGeneric"));
         return;
       }
       const data = (await res.json()) as { init_point?: string };
       if (data.init_point) {
         window.location.href = data.init_point;
       } else {
-        setError("Respuesta inesperada del servidor");
+        setError(t("proErrorUnexpected"));
       }
     } catch {
-      setError("No se pudo conectar con el servidor");
+      setError(t("proErrorNetwork"));
     } finally {
       setLoading(false);
     }
@@ -47,7 +49,7 @@ export function ActivateProButton() {
             : "bg-[#C8FF00] text-black hover:bg-[#b8ef00]"
         }`}
       >
-        {loading ? "Procesando..." : "Activar PRO"}
+        {loading ? t("proCtaLoading") : t("proCta")}
       </button>
       {error && (
         <p className="text-[#FF4466] text-[13px] m-0 text-center">

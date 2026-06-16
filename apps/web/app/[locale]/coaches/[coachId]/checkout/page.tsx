@@ -1,17 +1,14 @@
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/server";
 import { CheckoutClient } from "./CheckoutClient";
+import type { Locale } from "@/i18n/routing";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Checkout — Forzza",
-  description: "Completá la contratación de tu coach en Forzza.",
-};
-
 interface PageProps {
-  params: Promise<{ coachId: string }>;
+  params: Promise<{ locale: string; coachId: string }>;
   searchParams: Promise<{ package_id?: string }>;
 }
 
@@ -30,11 +27,23 @@ interface CoachProfileData {
   status: string;
 }
 
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "checkout" });
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  };
+}
+
 export default async function CoachCheckoutPage({
   params,
   searchParams,
 }: PageProps) {
-  const { coachId } = await params;
+  const { locale, coachId } = await params;
+  setRequestLocale(locale as Locale);
+
+  const t = await getTranslations({ locale, namespace: "checkout" });
   const { package_id: packageId } = await searchParams;
 
   // Si no hay package_id, redirigir al perfil del coach
@@ -49,11 +58,11 @@ export default async function CoachCheckoutPage({
         coachId={coachId}
         packageId={packageId}
         coachName="Coach"
-        packageTitle="Paquete seleccionado"
+        packageTitle={t("selectedPackageFallback")}
         packagePrice={0}
         currency="ARS"
         isMinorWithoutConsent={false}
-        errorMessage="Servicio no disponible en modo desarrollo."
+        errorMessage={t("errorDevMode")}
       />
     );
   }
@@ -106,7 +115,7 @@ export default async function CoachCheckoutPage({
         packagePrice={0}
         currency="ARS"
         isMinorWithoutConsent={false}
-        errorMessage="El coach no está disponible o no fue aprobado."
+        errorMessage={t("errorCoachUnavailable")}
       />
     );
   }
@@ -132,7 +141,7 @@ export default async function CoachCheckoutPage({
         packagePrice={0}
         currency="ARS"
         isMinorWithoutConsent={false}
-        errorMessage="El paquete seleccionado no está disponible."
+        errorMessage={t("errorPackageNotAvailable")}
       />
     );
   }
