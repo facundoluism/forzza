@@ -169,7 +169,9 @@ export default function RoutineDetailScreen() {
   }
 
   const handleStartSession = () => {
-    if (!routine || !user) return;
+    if (!routine) return;
+
+    const studentId = user?.id ?? routine.student_id;
 
     const exerciseDefinitions: RoutineExerciseDefinition[] = exercises.map((ex) => {
       const def: RoutineExerciseDefinition = {
@@ -184,7 +186,7 @@ export default function RoutineDetailScreen() {
       return def;
     });
 
-    startSession(routine.id, routine.title, user.id, exerciseDefinitions);
+    startSession(routine.id, routine.title, studentId, exerciseDefinitions);
     router.push("/session");
   };
 

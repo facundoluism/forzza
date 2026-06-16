@@ -168,27 +168,34 @@ function RootLayoutNav() {
 }
 
 export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     BebasNeue_400Regular,
     DMSans_400Regular,
     DMSans_500Medium,
     DMSans_700Bold,
     SpaceMono_400Regular,
   });
-  const [sentryReady, setSentryReady] = useState(false);
+  const [bootTimedOut, setBootTimedOut] = useState(false);
+  const readyToRender = fontsLoaded || Boolean(fontError) || bootTimedOut;
 
   useEffect(() => {
-    void initSentry().then(() => setSentryReady(true));
+    void initSentry();
   }, []);
 
   useEffect(() => {
-    if (fontsLoaded && sentryReady) {
+    const timeout = setTimeout(() => setBootTimedOut(true), 2500);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  useEffect(() => {
+    if (readyToRender) {
       void SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, sentryReady]);
+  }, [readyToRender]);
 
   // No renderizar hasta que las fuentes estén listas
-  if (!fontsLoaded) return null;
+  if (!readyToRender) return null;
 
   return (
     <SafeAreaProvider>

@@ -15,15 +15,25 @@ const monorepoRoot = path.resolve(projectRoot, '../..');
 
 const config = getDefaultConfig(projectRoot);
 
-// watchFolders: le decimos a Metro que observe todo el monorepo, no solo apps/mobile.
-// Así puede resolver packages/ui, packages/core, etc. a través de los symlinks de pnpm.
-config.watchFolders = [monorepoRoot];
+// watchFolders: observar solo los paquetes workspace que importa mobile.
+// Evita que Metro camine node_modules/android builds completos en Windows.
+config.watchFolders = [
+  path.resolve(monorepoRoot, 'packages/config'),
+  path.resolve(monorepoRoot, 'packages/core'),
+  path.resolve(monorepoRoot, 'packages/db-types'),
+  path.resolve(monorepoRoot, 'packages/ui'),
+];
 
 // nodeModulesPaths: orden de búsqueda de node_modules.
 // Primero node_modules LOCAL de la app, luego los de la raíz del monorepo.
 config.resolver.nodeModulesPaths = [
   path.resolve(projectRoot, 'node_modules'),
   path.resolve(monorepoRoot, 'node_modules'),
+];
+
+config.resolver.blockList = [
+  /.*[/\\]android[/\\]app[/\\]build[/\\].*/,
+  /.*[/\\]android[/\\]build[/\\].*/,
 ];
 
 // IMPORTANTE: NO usamos disableHierarchicalLookup en pnpm.
@@ -44,14 +54,25 @@ const reactSingletons = {
 };
 
 const defaultResolveRequest = config.resolver.resolveRequest;
+const resolveWithDefault = (context, moduleName, platform) =>
+  defaultResolveRequest
+    ? defaultResolveRequest(context, moduleName, platform)
+    : context.resolveRequest(context, moduleName, platform);
+
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   const forced = reactSingletons[moduleName];
   if (forced) {
     return { type: 'sourceFile', filePath: forced };
   }
-  return defaultResolveRequest
-    ? defaultResolveRequest(context, moduleName, platform)
-    : context.resolveRequest(context, moduleName, platform);
+
+  try {
+    return resolveWithDefault(context, moduleName, platform);
+  } catch (error) {
+    if (moduleName.endsWith('.js')) {
+      return resolveWithDefault(context, moduleName.slice(0, -3), platform);
+    }
+    throw error;
+  }
 };
 
 // Nota: unstable_enableSymlinks está activado por defecto en SDK 54.

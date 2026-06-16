@@ -2,6 +2,8 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 
+const SESSION_BOOT_TIMEOUT_MS = 5000;
+
 interface AuthContextValue {
   session: Session | null;
   user: User | null;
@@ -21,18 +23,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     // Obtener sesión inicial
-    void supabase.auth.getSession().then(({ data: { session: s } }) => {
-      setSession(s);
-      setLoading(false);
-    });
+    const loadInitialSession = async () => {
+      try {
+        const result = await Promise.race([
+          supabase.auth.getSession(),
+          new Promise<{ data: { session: Session | null } }>((resolve) => {
+            setTimeout(() => resolve({ data: { session: null } }), SESSION_BOOT_TIMEOUT_MS);
+          }),
+        ]);
+
+        if (mounted) {
+          setSession(result.data.session);
+        }
+      } catch {
+        if (mounted) {
+          setSession(null);
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadInitialSession();
 
     // Suscribir a cambios de auth
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => {
       setSession(s);
+      setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   async function signOut() {
