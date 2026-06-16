@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/server";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Coaches — Forzza",
   description:

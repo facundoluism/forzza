@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/server";
 import { CheckoutClient } from "./CheckoutClient";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Checkout — Forzza",
   description: "Completá la contratación de tu coach en Forzza.",

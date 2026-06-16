@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/server";
 
+export const dynamic = "force-dynamic";
+
 interface CoachPackage {
   id: string;
   /** title is the real column in coach_packages */

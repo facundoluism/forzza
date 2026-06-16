@@ -37,9 +37,15 @@ const CSP = [
   "worker-src 'self'",
 ].join("; ");
 
+const standaloneOutput =
+  process.env["NEXT_STANDALONE"] === "true"
+    ? ({ output: "standalone" } satisfies Pick<NextConfig, "output">)
+    : {};
+
 const nextConfig: NextConfig = {
-  // Standalone output enables minimal Docker images and Vercel edge deployments.
-  output: "standalone",
+  // Standalone output creates symlinks and can require Developer Mode/admin on Windows.
+  // Enable it explicitly for Docker-style deploys; Vercel/local builds do not need it.
+  ...standaloneOutput,
 
   transpilePackages: ["@forzza/ui", "@forzza/core", "@forzza/config"],
 
