@@ -25,6 +25,31 @@ serve(async (req) => {
       status: 401,
     });
 
+  // Regla §7 extendida a PRO (aprobado por el owner — ver docs/open-questions.md):
+  // menor de 18 sin consentimiento parental no puede comprar PRO. Cálculo de edad
+  // preciso por año/mes/día (espejo de isMinorWithoutConsent en packages/core;
+  // Deno no puede importar el workspace).
+  const { data: studentProfile } = await supabase
+    .from("student_profiles")
+    .select("birth_date, parental_consent_at")
+    .eq("user_id", user.id)
+    .single();
+
+  if (studentProfile?.birth_date) {
+    const today = new Date();
+    const birth = new Date(studentProfile.birth_date);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age -= 1;
+    }
+    if (age < 18 && !studentProfile.parental_consent_at) {
+      return new Response(JSON.stringify({ error: "minor_no_consent" }), {
+        status: 403,
+      });
+    }
+  }
+
   // El email está en auth.users (user.email); solo buscamos country en users pública
   // La columna es 'country', no 'email' ni 'country_code'
   const { data: profile } = await supabase
