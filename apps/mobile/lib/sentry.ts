@@ -55,6 +55,6 @@ export async function captureError(error: Error, context?: Record<string, unknow
 }
 
 function scrubForSentry(obj: Record<string, unknown>): Record<string, unknown> {
-  const BLOCKED = ['email', 'password', 'full_name', 'birthdate', 'cbu', 'payment_id']
+  const BLOCKED = ['email', 'password', 'full_name', 'birthdate', 'cbu', 'payment_id', 'access_token', 'refresh_token', 'token', 'session']
   return Object.fromEntries(Object.entries(obj).filter(([k]) => !BLOCKED.includes(k)))
 }

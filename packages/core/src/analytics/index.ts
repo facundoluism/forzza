@@ -51,6 +51,10 @@ export function scrubPII(props: Record<string, unknown>): Record<string, unknown
     'constancia_url',
     'avatar_url',
     'invoice_url',
+    'access_token',
+    'refresh_token',
+    'token',
+    'session',
   ]
   return Object.fromEntries(
     Object.entries(props).filter(([key]) => !BLOCKED_KEYS.includes(key))
