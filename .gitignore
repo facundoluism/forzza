@@ -59,3 +59,6 @@ forzza-kit/
 # Audit artifacts (UI/UX screenshots & logs)
 .audit/
 .audit-web-dev.log
+
+# Scratch / logs locales (no son fuente)
+.tmp/
