@@ -16,11 +16,14 @@ serve(async (req) => {
 
   // Check active PRO subscription
   // Columnas reales: plan, status, current_period_end (no expires_at)
+  // 'canceled' con current_period_end futuro SIGUE dando acceso: regla AC3
+  // (al cancelar, el entitlement vive hasta el fin del ciclo pago). El .gte
+  // de abajo descarta las canceladas ya vencidas.
   const { data: sub } = await supabase
     .from("subscriptions")
     .select("plan, status, current_period_end")
     .eq("user_id", user.id)
-    .eq("status", "active")
+    .in("status", ["active", "canceled"])
     .gte("current_period_end", new Date().toISOString())
     .order("current_period_end", { ascending: false })
     .limit(1)

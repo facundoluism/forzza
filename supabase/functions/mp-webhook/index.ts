@@ -207,6 +207,12 @@ serve(async (req) => {
       preapproval.next_payment_date ??
       new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
+    // When MP status is 'cancelled', record the cancellation timestamp.
+    // The entitlement remains active until current_period_end (access-until-end-of-cycle rule).
+    // check-entitlements must check canceled_at + current_period_end, not only status.
+    const now = new Date().toISOString();
+    const canceledAt = preapproval.status === "cancelled" ? now : null;
+
     // ── Matching robusto ──────────────────────────────────────────────────────
     //
     // Al crear la suscripción (mp-create-preapproval) guardamos el plan id como
@@ -229,6 +235,7 @@ serve(async (req) => {
           status: newStatus,
           current_period_start: preapproval.date_created,
           current_period_end: periodEnd,
+          canceled_at: canceledAt,
           // Promover el gateway_subscription_id al preapproval id real
           // para que los eventos futuros ya matcheen sin necesidad del plan id.
           gateway_subscription_id: preapprovalId,
@@ -248,6 +255,7 @@ serve(async (req) => {
           status: newStatus,
           current_period_start: preapproval.date_created,
           current_period_end: periodEnd,
+          canceled_at: canceledAt,
         })
         .eq("gateway_subscription_id", preapprovalId);
     }
