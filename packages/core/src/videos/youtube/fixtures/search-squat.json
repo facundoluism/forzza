@@ -1,0 +1,67 @@
+{
+  "search": {
+    "kind": "youtube#searchListResponse",
+    "regionCode": "AR",
+    "pageInfo": { "totalResults": 2, "resultsPerPage": 2 },
+    "items": [
+      {
+        "kind": "youtube#searchResult",
+        "id": { "kind": "youtube#video", "videoId": "sqtBackS101" }
+      },
+      {
+        "kind": "youtube#searchResult",
+        "id": { "kind": "youtube#video", "videoId": "sqtBackS102" }
+      }
+    ]
+  },
+  "videos": {
+    "kind": "youtube#videoListResponse",
+    "pageInfo": { "totalResults": 2, "resultsPerPage": 2 },
+    "items": [
+      {
+        "kind": "youtube#video",
+        "id": "sqtBackS101",
+        "snippet": {
+          "title": "Sentadilla con barra: guía definitiva",
+          "description": "Profundidad, posición de pies y respiración en la sentadilla.",
+          "channelId": "UCfakeChannelAR10",
+          "channelTitle": "Fuerza Argentina",
+          "defaultAudioLanguage": "es-419"
+        },
+        "statistics": {
+          "viewCount": "3200000",
+          "likeCount": "150000",
+          "commentCount": "5400"
+        },
+        "contentDetails": {
+          "duration": "PT8M12S",
+          "caption": "true"
+        },
+        "status": {
+          "embeddable": true
+        }
+      },
+      {
+        "kind": "youtube#video",
+        "id": "sqtBackS102",
+        "snippet": {
+          "title": "Squat mistakes everyone makes",
+          "description": "Common squat errors and how to fix them.",
+          "channelId": "UCfakeChannelEN11",
+          "channelTitle": "Strength Lab"
+        },
+        "statistics": {
+          "viewCount": "980000",
+          "likeCount": "41000"
+        },
+        "contentDetails": {
+          "duration": "PT1H1M5S",
+          "caption": "false"
+        },
+        "status": {
+          "embeddable": false
+        }
+      }
+    ]
+  }
+}

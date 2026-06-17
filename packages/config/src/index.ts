@@ -37,3 +37,43 @@ export const BUSINESS_RULES = {
   QUIET_HOURS_END: 8,   // 08:00 local
   CHAT_COLLAPSE_MINUTES: 5,
 } as const;
+
+// ─── Videos demostrativos de ejercicios (Paso B — ranking) ───────────────────
+
+/**
+ * Allowlist de canales fitness reconocidos para la señal `channel` del scoring.
+ * Son NOMBRES DE CANAL NORMALIZADOS: lowercase, sin acentos. El scoring compara
+ * tanto channelId como channelTitle (normalizados) contra esta lista. Mezcla
+ * canales EN y ES de técnica de ejercicio bien valorados.
+ */
+export const EXERCISE_VIDEO_CHANNEL_ALLOWLIST: readonly string[] = [
+  // EN
+  "athleanx",
+  "jeff nippard",
+  "scott herman fitness",
+  "fitnessblender",
+  "jeremy ethier",
+  "renaissance periodization",
+  "buff dudes",
+  "calisthenicmovement",
+  "the bioneer",
+  "squat university",
+  // ES
+  "powerexplosive",
+  "gymvirtual",
+  "sergio peinado",
+  "fitness real",
+  "entrena con sergio",
+  "patry jordan",
+  "ictiofitness",
+  "fersfit",
+  "mmigueltraining",
+  "saludablemente",
+] as const;
+
+/**
+ * Umbral de confianza del gate de autopublicación (§4.2): si el score del mejor
+ * candidato es ≥ este valor, el video se puede autopublicar; si no, queda para
+ * revisión manual.
+ */
+export const EXERCISE_VIDEO_AUTOPUBLISH_THRESHOLD = 0.7;

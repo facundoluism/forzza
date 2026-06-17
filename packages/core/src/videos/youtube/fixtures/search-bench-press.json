@@ -1,0 +1,94 @@
+{
+  "search": {
+    "kind": "youtube#searchListResponse",
+    "regionCode": "AR",
+    "pageInfo": { "totalResults": 3, "resultsPerPage": 3 },
+    "items": [
+      {
+        "kind": "youtube#searchResult",
+        "id": { "kind": "youtube#video", "videoId": "bnchPrsA001" }
+      },
+      {
+        "kind": "youtube#searchResult",
+        "id": { "kind": "youtube#video", "videoId": "bnchPrsB002" }
+      },
+      {
+        "kind": "youtube#searchResult",
+        "id": { "kind": "youtube#video", "videoId": "bnchPrsC003" }
+      }
+    ]
+  },
+  "videos": {
+    "kind": "youtube#videoListResponse",
+    "pageInfo": { "totalResults": 3, "resultsPerPage": 3 },
+    "items": [
+      {
+        "kind": "youtube#video",
+        "id": "bnchPrsA001",
+        "snippet": {
+          "title": "Press de banca: técnica correcta paso a paso",
+          "description": "Tutorial completo de press de banca con barra. Postura, recorrido y errores comunes.",
+          "channelId": "UCfakeChannelAR01",
+          "channelTitle": "Fuerza Argentina",
+          "defaultAudioLanguage": "es"
+        },
+        "statistics": {
+          "viewCount": "1850000",
+          "likeCount": "92000",
+          "commentCount": "3100"
+        },
+        "contentDetails": {
+          "duration": "PT5M30S",
+          "caption": "true"
+        },
+        "status": {
+          "embeddable": true
+        }
+      },
+      {
+        "kind": "youtube#video",
+        "id": "bnchPrsB002",
+        "snippet": {
+          "title": "How to Bench Press with Perfect Form",
+          "description": "Full bench press breakdown for beginners and intermediates.",
+          "channelId": "UCfakeChannelEN02",
+          "channelTitle": "Strength Lab",
+          "defaultAudioLanguage": "en"
+        },
+        "statistics": {
+          "viewCount": "12400000",
+          "commentCount": "8800"
+        },
+        "contentDetails": {
+          "duration": "PT12M3S",
+          "caption": "false"
+        },
+        "status": {
+          "embeddable": false
+        }
+      },
+      {
+        "kind": "youtube#video",
+        "id": "bnchPrsC003",
+        "snippet": {
+          "title": "Press banca rápido — solo lo esencial",
+          "description": "Versión corta sin relleno.",
+          "channelId": "UCfakeChannelAR03",
+          "channelTitle": "Gym Express"
+        },
+        "statistics": {
+          "viewCount": "47200",
+          "likeCount": "1200",
+          "commentCount": "63"
+        },
+        "contentDetails": {
+          "duration": "PT58S",
+          "caption": "false"
+        },
+        "status": {
+          "embeddable": true
+        }
+      }
+    ]
+  }
+}
