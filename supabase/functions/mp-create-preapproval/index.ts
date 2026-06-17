@@ -115,11 +115,20 @@ serve(async (req) => {
 
   const mpData = await mpResponse.json() as { id: string; init_point: string };
 
+  // Las escrituras de subscriptions son operación de servidor de confianza (ya
+  // validamos auth + §7 arriba). Se usan con SERVICE ROLE porque la RLS de
+  // subscriptions solo permite escribir al rol 'owner' — con el JWT del alumno
+  // el INSERT se bloquea silenciosamente y la suscripción nunca se crea.
+  const admin = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+  );
+
   // Remove any stale trialing rows before creating a new one.
   // Each MP preapproval generates a unique plan ID, so onConflict("gateway_subscription_id")
   // would silently insert duplicates for the same user. Deleting trialing rows first
   // keeps one pending row per user; the webhook promotes it to "active" on payment.
-  await supabase
+  await admin
     .from("subscriptions")
     .delete()
     .eq("user_id", user.id)
@@ -128,7 +137,7 @@ serve(async (req) => {
   const now = new Date();
   const periodEnd = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
-  await supabase.from("subscriptions").insert({
+  const { error: subInsertError } = await admin.from("subscriptions").insert({
     user_id: user.id,
     plan: "pro",
     status: "trialing",
@@ -138,6 +147,14 @@ serve(async (req) => {
     current_period_start: now.toISOString(),
     current_period_end: periodEnd.toISOString(),
   });
+
+  if (subInsertError) {
+    console.error("[mp-create-preapproval] subscription insert error:", subInsertError);
+    return new Response(
+      JSON.stringify({ error: "subscription_insert_failed", details: subInsertError.message }),
+      { status: 500 }
+    );
+  }
 
   return new Response(
     JSON.stringify({
