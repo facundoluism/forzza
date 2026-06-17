@@ -1,6 +1,7 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
+import { loginRevenueCat, logoutRevenueCat } from "@/services/revenuecat";
 
 const SESSION_BOOT_TIMEOUT_MS = 5000;
 
@@ -21,6 +22,7 @@ const AuthContext = createContext<AuthContextValue>({
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const revenueCatUserId = useRef<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -62,6 +64,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    const userId = session?.user.id ?? null;
+
+    if (userId && revenueCatUserId.current !== userId) {
+      revenueCatUserId.current = userId;
+      void loginRevenueCat(userId);
+      return;
+    }
+
+    if (!userId && revenueCatUserId.current) {
+      revenueCatUserId.current = null;
+      void logoutRevenueCat();
+    }
+  }, [session?.user.id]);
 
   async function signOut() {
     await supabase.auth.signOut();

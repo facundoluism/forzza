@@ -2,23 +2,22 @@ import { useState, useEffect } from "react";
 import { View, Text, ScrollView, StyleSheet, Pressable, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/providers/AuthProvider";
 import { useWorkoutStore } from "@/stores/workoutStore";
 import { useEntitlements } from "@/hooks/useEntitlements";
+import {
+  completedSessionsFromQueue,
+  fetchCompletedWorkoutSessions,
+  mergeCompletedWorkoutSessions,
+  type CompletedWorkoutSession,
+} from "@/services/workoutHistory";
 import { EmptyState, Card, UpgradeModal } from "@forzza/ui/native";
 import { colors, fontSize, spacing, radius, typography } from "@forzza/ui/tokens";
 
 const TEN_DAYS_MS = 10 * 24 * 60 * 60 * 1000;
 
-interface CompletedSessionEntry {
-  client_uuid: string;
-  routine_name: string;
-  started_at: string;
-  completed_at: string; // columna real: completed_at (no finished_at)
-  total_sets: number;
-}
-
-function calcStreak(sessions: CompletedSessionEntry[]): number {
+function calcStreak(sessions: CompletedWorkoutSession[]): number {
   if (sessions.length === 0) return 0;
 
   const sortedDates = sessions
@@ -46,7 +45,7 @@ function calcStreak(sessions: CompletedSessionEntry[]): number {
   return streak;
 }
 
-function sessionsThisWeek(sessions: CompletedSessionEntry[]): number {
+function sessionsThisWeek(sessions: CompletedWorkoutSession[]): number {
   const now = new Date();
   const startOfWeek = new Date(now);
   startOfWeek.setDate(now.getDate() - now.getDay());
@@ -64,7 +63,7 @@ function formatDuration(startedAt: string, completedAt: string): string {
   return `${hours}h ${remaining}min`;
 }
 
-function SessionItem({ session }: { session: CompletedSessionEntry }): React.JSX.Element {
+function SessionItem({ session }: { session: CompletedWorkoutSession }): React.JSX.Element {
   const { t } = useTranslation();
   const date = new Date(session.started_at).toLocaleDateString("es-AR", {
     weekday: "short",
@@ -116,7 +115,7 @@ function ProGatedCard({ title }: { title: string }): React.JSX.Element {
 
 export default function ProgressTab(): React.JSX.Element {
   const { t } = useTranslation();
-  useAuth(); // ensure auth context is available
+  const { user } = useAuth();
   const syncQueue = useWorkoutStore((s) => s.syncQueue);
   const { isPro } = useEntitlements();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -132,25 +131,19 @@ export default function ProgressTab(): React.JSX.Element {
     });
   }, [storeHydrated]);
 
-  const tenDaysAgo = new Date(Date.now() - TEN_DAYS_MS);
+  const { data: remoteCompletedSessions = [] } = useQuery({
+    queryKey: ["completed-workout-sessions", user?.id, isPro ? "pro" : "free"],
+    queryFn: () => fetchCompletedWorkoutSessions(user!.id, isPro ? 365 : 30),
+    enabled: !!user?.id,
+    staleTime: 60 * 1000,
+  });
 
-  // Build list of completed sessions from local sync queue
-  const allCompletedSessions: CompletedSessionEntry[] = syncQueue
-    .filter((item) => item.payload?.status === "completed")
-    .map((item) => ({
-      client_uuid: item.client_uuid,
-      routine_name: item.payload?.routine_name ?? "Entreno",
-      started_at: item.payload?.started_at ?? new Date().toISOString(),
-      completed_at: item.payload?.completed_at ?? new Date().toISOString(), // columna real
-      total_sets: (item.payload?.sets_data ?? []).reduce( // columna real: sets_data
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (acc: number, ex: any) => acc + (ex.sets?.length ?? 0),
-        0
-      ),
-    }))
-    .sort(
-      (a, b) => new Date(b.started_at).getTime() - new Date(a.started_at).getTime()
-    );
+  const tenDaysAgo = new Date(Date.now() - TEN_DAYS_MS);
+  const localCompletedSessions = completedSessionsFromQueue(syncQueue, user?.id);
+  const allCompletedSessions = mergeCompletedWorkoutSessions(
+    remoteCompletedSessions,
+    localCompletedSessions
+  );
 
   // Free users: only show sessions from last 10 days (NEVER delete — filter only)
   const completedSessions = isPro

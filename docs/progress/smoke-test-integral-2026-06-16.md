@@ -56,6 +56,8 @@ Validacion enfocada en el flujo de negocio V1:
 - `apps/mobile/app/_layout.tsx` silencia el warning conocido de Legacy Architecture en dev-client para que LogBox no tape botones durante smoke.
 - `apps/mobile/providers/AuthProvider.tsx` tiene timeout/catch al leer sesion inicial para que un Supabase local lento no deje la app negra.
 - `apps/mobile/app/routine/[id].tsx` usa `routine.student_id` como fallback al iniciar sesion, evitando que el CTA sea no-op si `AuthContext.user` llega tarde.
+- RevenueCat mobile queda vinculado al usuario Supabase con `Purchases.logIn/logOut`; el servicio corta sin invocar el SDK cuando falta la API key de la plataforma actual, y `EXPO_PUBLIC_ENABLE_REVENUECAT_IAP=true` permite QA sandbox/tienda sin cambiar codigo.
+- `apps/mobile/app/(tabs)/profile.tsx` y `progress.tsx` leen historial real desde `workout_sessions` y lo combinan con la cola offline local, manteniendo contador, racha y ultimos entrenos despues de sincronizar.
 
 ## Evidencia
 

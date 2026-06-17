@@ -14,6 +14,11 @@ import { router } from "expo-router";
 import { useLanguage, type AppLanguage } from "@/stores/languageStore";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { useWorkoutStore } from "@/stores/workoutStore";
+import {
+  completedSessionsFromQueue,
+  fetchCompletedWorkoutSessions,
+  mergeCompletedWorkoutSessions,
+} from "@/services/workoutHistory";
 import { supabase } from "@/lib/supabase";
 import { Pill, Skeleton } from "@forzza/ui/native";
 import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
@@ -31,8 +36,20 @@ export default function ProfileTab() {
   const { plan, hasCoach, coachId, isLoading: entitlementsLoading } = useEntitlements();
   const syncQueue = useWorkoutStore((s) => s.syncQueue);
 
-  // Completed sessions count from local sync queue (source of truth until F3 history query)
-  const completedSessions = syncQueue.length;
+  const localCompletedSessions = completedSessionsFromQueue(syncQueue, user?.id);
+  const { data: remoteCompletedSessions = [], isLoading: sessionsLoading } = useQuery({
+    queryKey: ["completed-workout-sessions", user?.id, "profile"],
+    queryFn: () => fetchCompletedWorkoutSessions(user!.id, 365),
+    enabled: !!user?.id,
+    staleTime: 60 * 1000,
+  });
+  const completedSessions = mergeCompletedWorkoutSessions(
+    remoteCompletedSessions,
+    localCompletedSessions
+  ).length;
+  const completedSessionsLabel = sessionsLoading && completedSessions === 0
+    ? "—"
+    : completedSessions;
 
   // Coach display name — only fetched if coachId is known
   const { data: coachName, isLoading: coachLoading } = useQuery<string | null>({
@@ -75,10 +92,9 @@ export default function ProfileTab() {
         {
           text: t("profile.deleteAccount_confirm_btn"),
           style: "destructive",
-          onPress: async () => {
+          onPress: () => {
             // TODO: Edge Function delete-account (Fase 3 completa)
-            await signOut();
-            router.replace("/(auth)/login");
+            void handleSignOut();
           },
         },
       ]
@@ -107,7 +123,7 @@ export default function ProfileTab() {
       {/* ── Stats básicas ── */}
       <View style={styles.statsRow}>
         <View style={styles.statCard}>
-          <Text style={styles.statValue}>{completedSessions}</Text>
+          <Text style={styles.statValue}>{completedSessionsLabel}</Text>
           <Text style={styles.statLabel}>{t("profile.statSessions")}</Text>
         </View>
         {/* Streak: sin fuente de datos aún — TODO Fase 3 */}

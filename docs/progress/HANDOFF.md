@@ -5,6 +5,8 @@
 - `pnpm smoke-test:mobile`: PASS en `forzza_pixel` / `emulator-5554`.
 - Cobertura mobile validada: login alumno fixture, rutina de hoy, detalle, ficha de ejercicio, inicio de entreno, carga de 2 sets, descanso, cambio de ejercicio, confirmacion final y regreso a home.
 - Ajustes relevantes: `e2e/flows/03-workout-session.yaml` espera dev-client frio, reentra a rutina despues de validar ficha, cierra teclado antes de loguear sets y usa `FINISH` para el confirm nativo; `_layout.tsx` silencia el warning conocido de Legacy Architecture para que LogBox no tape botones.
+- RevenueCat mobile: `AuthProvider` ya vincula/desvincula el usuario Supabase con `Purchases.logIn/logOut`, el servicio corta limpio si falta la API key de la plataforma actual, y `EXPO_PUBLIC_ENABLE_REVENUECAT_IAP=true` permite QA sandbox/tienda sin cambiar codigo.
+- Historial mobile: `Profile` y `Progress` ahora leen entrenos completados desde `workout_sessions` en Supabase y los mezclan con la cola local, evitando que el alumno pierda contador/racha/historial cuando un entreno ya sincronizo.
 - Nota operativa: antes de repetir Maestro, limpiar `C:\Users\Facu\.maestro\sessions`, asegurar `adb reverse tcp:8081/54321`, Metro caliente y device `emulator-5554` activo.
 - El bloque viejo que marca Maestro como `PARTIAL/BLOCKED_ENV` queda superado por esta actualizacion.
 

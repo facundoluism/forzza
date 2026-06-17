@@ -31,6 +31,8 @@ export interface PurchaseResult {
 const IOS_API_KEY = process.env["EXPO_PUBLIC_REVENUECAT_IOS_API_KEY"] ?? "";
 const ANDROID_API_KEY =
   process.env["EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY"] ?? "";
+const ENABLE_REVENUECAT_IAP =
+  process.env["EXPO_PUBLIC_ENABLE_REVENUECAT_IAP"] === "true";
 
 /** Entitlement identifier configured in the RevenueCat dashboard. */
 const ENTITLEMENT_PRO = "pro";
@@ -44,15 +46,19 @@ const PACKAGE_MONTHLY_ID = "$rc_monthly";
 
 let _configured = false;
 
+function getRevenueCatApiKey(): string {
+  return Platform.OS === "ios" ? IOS_API_KEY : ANDROID_API_KEY;
+}
+
 /**
  * Configure the RevenueCat SDK once per app session.
  * Safe to call multiple times — subsequent calls are no-ops.
  * Must be called before any purchase or restore operation.
  */
-function ensureConfigured(): void {
-  if (_configured) return;
+function ensureConfigured(): boolean {
+  if (_configured) return true;
 
-  const apiKey = Platform.OS === "ios" ? IOS_API_KEY : ANDROID_API_KEY;
+  const apiKey = getRevenueCatApiKey();
 
   if (!apiKey) {
     // Warn loudly in dev so the developer knows to set the env var.
@@ -61,11 +67,12 @@ function ensureConfigured(): void {
       "[RevenueCat] EXPO_PUBLIC_REVENUECAT_IOS_API_KEY / EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY " +
         "no configuradas. Revisá .env y .env.example."
     );
-    return;
+    return false;
   }
 
   Purchases.configure({ apiKey });
   _configured = true;
+  return true;
 }
 
 /**
@@ -73,6 +80,7 @@ function ensureConfigured(): void {
  * Both flags off → payments go through Mercado Pago web (V1 behaviour).
  */
 function isIapEnabled(): boolean {
+  if (ENABLE_REVENUECAT_IAP) return true;
   return Platform.OS === "ios"
     ? FEATURE_FLAGS.APPLE_PAYMENTS
     : FEATURE_FLAGS.GOOGLE_PAYMENTS;
@@ -85,12 +93,26 @@ function isIapEnabled(): boolean {
  */
 export async function loginRevenueCat(supabaseUserId: string): Promise<void> {
   if (!isIapEnabled()) return;
-  ensureConfigured();
+  if (!ensureConfigured()) return;
   try {
     await Purchases.logIn(supabaseUserId);
   } catch (e) {
     // Non-fatal: purchases still work with the anonymous ID
     console.warn("[RevenueCat] logIn failed", e);
+  }
+}
+
+/**
+ * Clear the RevenueCat app user when the Supabase session closes.
+ * Non-fatal because auth must never be blocked by store billing state.
+ */
+export async function logoutRevenueCat(): Promise<void> {
+  if (!isIapEnabled()) return;
+  if (!ensureConfigured()) return;
+  try {
+    await Purchases.logOut();
+  } catch (e) {
+    console.warn("[RevenueCat] logOut failed", e);
   }
 }
 
@@ -114,9 +136,7 @@ export async function purchasePro(): Promise<PurchaseResult> {
     };
   }
 
-  ensureConfigured();
-
-  if (!IOS_API_KEY && !ANDROID_API_KEY) {
+  if (!ensureConfigured()) {
     return {
       success: false,
       error: "Configuración de pagos incompleta. Contactá soporte.",
@@ -215,9 +235,7 @@ export async function restorePurchases(): Promise<PurchaseResult> {
     };
   }
 
-  ensureConfigured();
-
-  if (!IOS_API_KEY && !ANDROID_API_KEY) {
+  if (!ensureConfigured()) {
     return {
       success: false,
       error: "Configuración de pagos incompleta. Contactá soporte.",
@@ -289,6 +307,7 @@ export async function restorePurchases(): Promise<PurchaseResult> {
  * 4. Variables de entorno (.env local y dashboards de CI/EAS):
  *    EXPO_PUBLIC_REVENUECAT_IOS_API_KEY=appl_xxxxxx
  *    EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY=goog_xxxxxx
+ *    EXPO_PUBLIC_ENABLE_REVENUECAT_IAP=true
  *
  * 5. EAS Build: estas variables deben estar en eas.json bajo "env" o en los secretos
  *    del proyecto en expo.dev (Settings → Secrets).
