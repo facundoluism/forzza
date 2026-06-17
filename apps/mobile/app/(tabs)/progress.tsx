@@ -1,18 +1,29 @@
 import { useState, useEffect } from "react";
-import { View, Text, ScrollView, StyleSheet, Pressable, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Pressable,
+  ActivityIndicator,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/providers/AuthProvider";
 import { useWorkoutStore } from "@/stores/workoutStore";
 import { useEntitlements } from "@/hooks/useEntitlements";
+import { router } from "expo-router";
+import { supabase } from "@/lib/supabase";
 import {
   completedSessionsFromQueue,
   fetchCompletedWorkoutSessions,
   mergeCompletedWorkoutSessions,
   type CompletedWorkoutSession,
 } from "@/services/workoutHistory";
-import { EmptyState, Card, UpgradeModal } from "@forzza/ui/native";
+import { EmptyState, ErrorState, Card, UpgradeModal, LineChart } from "@forzza/ui/native";
 import { colors, fontSize, spacing, radius, typography } from "@forzza/ui/tokens";
 
 const TEN_DAYS_MS = 10 * 24 * 60 * 60 * 1000;
@@ -112,6 +123,240 @@ function ProGatedCard({ title }: { title: string }): React.JSX.Element {
     </Card>
   );
 }
+
+interface BodyMetric {
+  id: string;
+  weight_g: number;
+  body_fat_pct: number | null;
+  recorded_at: string;
+}
+
+function BodyMetricsCard({ userId, isPro: userIsPro }: { userId: string; isPro: boolean }): React.JSX.Element {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  const [weightKg, setWeightKg] = useState("");
+  const [bodyFatPct, setBodyFatPct] = useState("");
+  const [savingMetrics, setSavingMetrics] = useState(false);
+
+  const tenDaysAgo = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000);
+
+  const {
+    data: metrics = [],
+    isLoading: metricsLoading,
+    isError: metricsError,
+  } = useQuery<BodyMetric[]>({
+    queryKey: ["body-metrics", userId, userIsPro ? "pro" : "free"],
+    queryFn: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let query = (supabase as any)
+        .from("body_metrics")
+        .select("id, weight_g, body_fat_pct, recorded_at")
+        .eq("student_id", userId)
+        .order("recorded_at", { ascending: false })
+        .limit(10);
+
+      if (!userIsPro) {
+        query = query.gte("recorded_at", tenDaysAgo.toISOString());
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return (data ?? []) as BodyMetric[];
+    },
+    enabled: !!userId,
+    staleTime: 30 * 1000,
+  });
+
+  async function handleSaveMetric() {
+    if (!weightKg.trim()) return;
+    const kg = parseFloat(weightKg);
+    if (isNaN(kg) || kg <= 0) return;
+
+    setSavingMetrics(true);
+    try {
+      const fat = bodyFatPct.trim() ? parseFloat(bodyFatPct) : null;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (supabase as any)
+        .from("body_metrics")
+        .insert({
+          student_id: userId,
+          weight_g: Math.round(kg * 1000),
+          body_fat_pct: fat !== null && !isNaN(fat) ? Math.round(fat * 10) : null,
+          recorded_at: new Date().toISOString(),
+        });
+      if (error) throw error;
+      setWeightKg("");
+      setBodyFatPct("");
+      void queryClient.invalidateQueries({ queryKey: ["body-metrics", userId] });
+    } catch {
+      // silent — user can retry
+    } finally {
+      setSavingMetrics(false);
+    }
+  }
+
+  const chartData = metrics
+    .slice()
+    .reverse()
+    .map((m) => m.weight_g / 1000);
+
+  return (
+    <Card style={metricsStyles.card}>
+      <Text style={metricsStyles.sectionTitle}>{t("bodyMetrics.sectionTitle")}</Text>
+
+      {metricsLoading && (
+        <ActivityIndicator color={colors.lime} style={metricsStyles.loader} />
+      )}
+
+      {metricsError && !metricsLoading && (
+        <ErrorState
+          title={t("bodyMetrics.error_title")}
+          description={t("bodyMetrics.error_desc")}
+        />
+      )}
+
+      {!metricsLoading && !metricsError && chartData.length === 0 && (
+        <Text style={metricsStyles.emptyText}>{t("bodyMetrics.empty_desc")}</Text>
+      )}
+
+      {!metricsLoading && !metricsError && chartData.length > 0 && (
+        <>
+          <Text style={metricsStyles.chartTitle}>{t("bodyMetrics.chartTitle")}</Text>
+          <LineChart
+            data={chartData}
+            height={100}
+            color={colors.lime}
+            showDots
+            style={metricsStyles.chart}
+          />
+        </>
+      )}
+
+      {/* Input form */}
+      <View style={metricsStyles.inputRow}>
+        <View style={metricsStyles.inputGroup}>
+          <Text style={metricsStyles.inputLabel}>{t("bodyMetrics.weightKg")}</Text>
+          <TextInput
+            style={metricsStyles.input}
+            value={weightKg}
+            onChangeText={setWeightKg}
+            keyboardType="decimal-pad"
+            returnKeyType="done"
+            placeholder="70.5"
+            placeholderTextColor={colors.gray600}
+            testID="body-metrics-weight-input"
+          />
+        </View>
+        <View style={metricsStyles.inputGroup}>
+          <Text style={metricsStyles.inputLabel}>{t("bodyMetrics.bodyFatPct")}</Text>
+          <TextInput
+            style={metricsStyles.input}
+            value={bodyFatPct}
+            onChangeText={setBodyFatPct}
+            keyboardType="decimal-pad"
+            returnKeyType="done"
+            placeholder="15.4"
+            placeholderTextColor={colors.gray600}
+            testID="body-metrics-fat-input"
+          />
+        </View>
+      </View>
+
+      <TouchableOpacity
+        style={[metricsStyles.saveBtn, savingMetrics && metricsStyles.saveBtnDisabled]}
+        onPress={() => { void handleSaveMetric(); }}
+        disabled={savingMetrics || !weightKg.trim()}
+        testID="body-metrics-save-btn"
+      >
+        {savingMetrics
+          ? <ActivityIndicator color={colors.bg} size="small" />
+          : <Text style={metricsStyles.saveBtnText}>
+              {savingMetrics ? t("bodyMetrics.saving") : t("bodyMetrics.save")}
+            </Text>
+        }
+      </TouchableOpacity>
+    </Card>
+  );
+}
+
+const metricsStyles = StyleSheet.create({
+  card: {
+    padding: spacing[4],
+  },
+  sectionTitle: {
+    fontFamily: typography.body,
+    color: colors.text,
+    fontSize: fontSize.base,
+    fontWeight: "700",
+    marginBottom: spacing[3],
+  },
+  chartTitle: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: 11,
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: 1.5,
+    marginBottom: spacing[2],
+  },
+  chart: {
+    marginBottom: spacing[4],
+  },
+  loader: {
+    marginVertical: spacing[4],
+  },
+  emptyText: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.sm,
+    marginBottom: spacing[3],
+  },
+  inputRow: {
+    flexDirection: "row",
+    gap: spacing[3],
+    marginBottom: spacing[3],
+  },
+  inputGroup: {
+    flex: 1,
+  },
+  inputLabel: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.xs,
+    marginBottom: spacing[1],
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  input: {
+    backgroundColor: colors.surface3,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing[3],
+    color: colors.text,
+    fontFamily: typography.mono,
+    fontSize: fontSize.base,
+    textAlign: "center",
+    minHeight: 44,
+  },
+  saveBtn: {
+    backgroundColor: colors.lime,
+    borderRadius: radius.md,
+    paddingVertical: spacing[3],
+    alignItems: "center",
+    minHeight: 44,
+    justifyContent: "center",
+  },
+  saveBtnDisabled: {
+    opacity: 0.5,
+  },
+  saveBtnText: {
+    fontFamily: typography.body,
+    color: colors.bg,
+    fontSize: fontSize.base,
+    fontWeight: "700",
+  },
+});
 
 export default function ProgressTab(): React.JSX.Element {
   const { t } = useTranslation();
@@ -213,12 +458,34 @@ export default function ProgressTab(): React.JSX.Element {
         )}
       </View>
 
-      {/* PRO gated features */}
+      {/* Body metrics — FREE users can also log metrics */}
+      {user?.id && (
+        <View style={styles.section}>
+          <BodyMetricsCard userId={user.id} isPro={isPro} />
+        </View>
+      )}
+
+      {/* Progress photos — PRO only */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t("progress.proFeatures")}</Text>
-        <ProGatedCard title={t("progress.bodyMetrics")} />
-        <View style={styles.sectionGap} />
-        <ProGatedCard title={t("progress.progressPhotos")} />
+        <Text style={styles.sectionTitle}>{t("progress.progressPhotos")}</Text>
+        {isPro ? (
+          <Pressable
+            style={styles.photosCard}
+            onPress={() => router.push("/progress-photos")}
+            testID="progress-photos-link"
+          >
+            <Text style={styles.photosCardText}>{t("progress.progressPhotos")}</Text>
+            <Text style={styles.photosCardArrow}>›</Text>
+          </Pressable>
+        ) : (
+          <Pressable
+            style={styles.proCard}
+            onPress={() => setShowUpgradeModal(true)}
+            testID="progress-photos-upgrade"
+          >
+            <ProGatedCard title={t("progress.progressPhotos")} />
+          </Pressable>
+        )}
       </View>
 
       <UpgradeModal
@@ -368,6 +635,27 @@ const styles = StyleSheet.create({
     color: colors.lime,
     fontSize: 14,
     fontWeight: "700",
+  },
+  photosCard: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.lime,
+    padding: spacing[4],
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  photosCardText: {
+    fontFamily: typography.body,
+    color: colors.lime,
+    fontSize: fontSize.base,
+    fontWeight: "600",
+  },
+  photosCardArrow: {
+    fontFamily: typography.body,
+    color: colors.lime,
+    fontSize: 20,
   },
   proCard: {
     alignItems: "center",

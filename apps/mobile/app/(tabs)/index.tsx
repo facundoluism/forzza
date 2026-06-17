@@ -514,7 +514,6 @@ export default function HomeTab(): React.JSX.Element {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t("home.quickActions")}</Text>
         <View style={styles.quickGrid}>
-          {/* TODO Fase 3: ruta /tabata no existe aún */}
           <TouchableOpacity
             style={styles.quickTile}
             onPress={() => router.push("/tabata" as never)}
@@ -524,7 +523,6 @@ export default function HomeTab(): React.JSX.Element {
             <Text style={styles.quickLabel}>{t("home.quickTabata")}</Text>
             <Text style={styles.quickSub}>{t("home.quickTabataSub")}</Text>
           </TouchableOpacity>
-          {/* TODO Fase 3: ruta /register-workout no existe aún */}
           <TouchableOpacity
             style={styles.quickTile}
             onPress={() => router.push("/register-workout" as never)}
