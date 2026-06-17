@@ -42,7 +42,28 @@
     "series_one": "set",
     "series_other": "sets",
     "error_title": "Couldn't load your home",
-    "error_desc": "Check your connection and try again."
+    "error_desc": "Check your connection and try again.",
+    "weeklyStreak": "Weekly streak",
+    "days": "days",
+    "bannerCoachLabel": "YOUR COACH",
+    "bannerProTitle": "Hire a coach",
+    "bannerProSub": "Access the marketplace and find your ideal coach",
+    "bannerFreeTitle": "Upgrade to PRO",
+    "bannerFreeSub": "Unlimited routines, full history and more",
+    "quoteOfTheDay": "Quote of the day",
+    "monthlyGoal": "Monthly goal",
+    "monthlyGoalSub": "{{done}} of {{total}} sessions this month",
+    "quickActions": "Quick actions",
+    "quickTabata": "Tabata",
+    "quickTabataSub": "HIIT 20/10",
+    "quickRegister": "Log workout",
+    "quickRegisterSub": "Record what you did",
+    "quickNewRoutine": "New routine",
+    "quickNewRoutineSub": "Design your workout",
+    "quickProgress": "My progress",
+    "quickProgressSub": "View stats",
+    "coachMessage": "Coach message",
+    "coachMessageReply": "Reply"
   },
   "routines": {
     "title": "My Routines",
@@ -176,7 +197,12 @@
       "noAccount": "Don't have an account? Sign up",
       "forgotPassword": "Forgot my password",
       "errorInvalidCredentials": "Incorrect email or password",
-      "errorInvalidData": "Invalid data"
+      "errorInvalidData": "Invalid data",
+      "orContinueWith": "or continue with",
+      "continueWithApple": "Continue with Apple",
+      "continueWithGoogle": "Continue with Google",
+      "ssoErrorTitle": "Authentication error",
+      "ssoErrorDesc": "Could not connect to the provider. Please try again."
     },
     "signup": {
       "title": "Create your free account",
