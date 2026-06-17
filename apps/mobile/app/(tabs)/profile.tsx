@@ -512,6 +512,15 @@ export default function ProfileTab() {
               )
             }
           </View>
+          {/* Sesiones en vivo */}
+          <TouchableOpacity
+            style={styles.liveSessionsButton}
+            onPress={() => router.push("/live-sessions" as never)}
+            testID="profile-live-sessions-btn"
+          >
+            <Text style={styles.liveSessionsText}>{t("liveSessions.screenTitle")}</Text>
+          </TouchableOpacity>
+
           {/* Cancelar plan del coach */}
           <TouchableOpacity
             style={[styles.cancelCoachButton, cancelingCoach && styles.buttonDisabled]}
@@ -727,6 +736,22 @@ const styles = StyleSheet.create({
   },
   langNativeActive: {
     color: colors.lime,
+  },
+  liveSessionsButton: {
+    marginTop: spacing[3],
+    padding: spacing[3],
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.info,
+    alignItems: "center",
+    minHeight: 44,
+    justifyContent: "center",
+  },
+  liveSessionsText: {
+    fontFamily: typography.body,
+    color: colors.info,
+    fontSize: fontSize.md,
+    fontWeight: "700",
   },
   cancelCoachButton: {
     marginTop: spacing[3],

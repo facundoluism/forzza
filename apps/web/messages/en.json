@@ -619,7 +619,46 @@
         "noSessions": "No sessions recorded.",
         "sessionDate": "Date",
         "sessionDuration": "Duration",
-        "sessionNotes": "Notes"
+        "sessionNotes": "Notes",
+        "bodyMetrics": "Body metrics",
+        "noMetrics": "No metrics recorded.",
+        "progressPhotos": "Progress photos",
+        "noPhotos": "No progress photos.",
+        "photoAlt": "Progress photo from {date}",
+        "photoUnavailable": "Photo unavailable",
+        "feedback": {
+          "commentOn": "Comment on: {label}",
+          "placeholder": "Write your feedback for this student…",
+          "save": "Save comment",
+          "saving": "Saving…",
+          "saved": "Comment saved",
+          "errorSave": "Error saving the comment",
+          "errorNetwork": "Network error",
+          "proOnly": "Metrics and photo feedback is only available for PRO or elite packages."
+        },
+        "liveSessions": {
+          "title": "Live sessions",
+          "newSession": "Schedule new session",
+          "scheduled": "Scheduled sessions",
+          "empty": "No sessions scheduled.",
+          "fieldTitle": "Session title",
+          "titlePlaceholder": "E.g. Squat technique review",
+          "fieldDate": "Date and time",
+          "fieldRoomUrl": "Room link (Zoom, Meet, etc.)",
+          "roomUrlPlaceholder": "https://meet.google.com/...",
+          "schedule": "Schedule session",
+          "saving": "Scheduling…",
+          "saved": "Session scheduled",
+          "markCompleted": "Mark completed",
+          "markCanceled": "Cancel",
+          "statusScheduled": "Scheduled",
+          "statusCompleted": "Completed",
+          "statusCanceled": "Canceled",
+          "errorRequired": "Please fill in all fields.",
+          "errorInvalidUrl": "The room link is not a valid URL.",
+          "errorSave": "Error saving the session",
+          "errorNetwork": "Network error"
+        }
       }
     },
     "rutinas": {

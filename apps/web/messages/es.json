@@ -619,7 +619,46 @@
         "noSessions": "Sin sesiones registradas.",
         "sessionDate": "Fecha",
         "sessionDuration": "Duración",
-        "sessionNotes": "Notas"
+        "sessionNotes": "Notas",
+        "bodyMetrics": "Métricas corporales",
+        "noMetrics": "Sin métricas registradas.",
+        "progressPhotos": "Fotos de progreso",
+        "noPhotos": "Sin fotos de progreso.",
+        "photoAlt": "Foto de progreso del {date}",
+        "photoUnavailable": "Foto no disponible",
+        "feedback": {
+          "commentOn": "Comentario sobre: {label}",
+          "placeholder": "Escribí tu feedback para este alumno…",
+          "save": "Guardar comentario",
+          "saving": "Guardando…",
+          "saved": "Comentario guardado",
+          "errorSave": "Error al guardar el comentario",
+          "errorNetwork": "Error de red",
+          "proOnly": "El feedback de métricas y fotos está disponible solo para paquetes PRO o elite."
+        },
+        "liveSessions": {
+          "title": "Sesiones en vivo",
+          "newSession": "Agendar nueva sesión",
+          "scheduled": "Sesiones agendadas",
+          "empty": "No hay sesiones agendadas.",
+          "fieldTitle": "Título de la sesión",
+          "titlePlaceholder": "Ej: Revisión técnica de sentadilla",
+          "fieldDate": "Fecha y hora",
+          "fieldRoomUrl": "Link de sala (Zoom, Meet, etc.)",
+          "roomUrlPlaceholder": "https://meet.google.com/...",
+          "schedule": "Agendar sesión",
+          "saving": "Agendando…",
+          "saved": "Sesión agendada",
+          "markCompleted": "Marcar completada",
+          "markCanceled": "Cancelar",
+          "statusScheduled": "Agendada",
+          "statusCompleted": "Completada",
+          "statusCanceled": "Cancelada",
+          "errorRequired": "Completá todos los campos.",
+          "errorInvalidUrl": "El link de sala no es una URL válida.",
+          "errorSave": "Error al guardar la sesión",
+          "errorNetwork": "Error de red"
+        }
       }
     },
     "rutinas": {

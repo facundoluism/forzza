@@ -550,6 +550,17 @@ export default function HomeTab(): React.JSX.Element {
             <Text style={styles.quickLabel}>{t("home.quickProgress")}</Text>
             <Text style={styles.quickSub}>{t("home.quickProgressSub")}</Text>
           </TouchableOpacity>
+          {hasCoach && (
+            <TouchableOpacity
+              style={styles.quickTile}
+              onPress={() => router.push("/live-sessions" as never)}
+              testID="quick-live-sessions"
+            >
+              <Text style={styles.quickIcon}>📹</Text>
+              <Text style={styles.quickLabel}>{t("home.quickLiveSessions")}</Text>
+              <Text style={styles.quickSub}>{t("home.quickLiveSessionsSub")}</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 

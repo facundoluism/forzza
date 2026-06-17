@@ -4,6 +4,9 @@ import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
 import { LineChart } from "@forzza/ui/web";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { FeedbackForm } from "./FeedbackForm";
+import { LiveSessionForm } from "./LiveSessionForm";
+import { LiveSessionStatusButton } from "./LiveSessionStatusButton";
 
 type Props = { params: Promise<{ locale: string; studentId: string }> };
 
@@ -14,6 +17,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 type WorkoutStatus = "in_progress" | "completed" | "abandoned";
+type LiveSessionStatus = "scheduled" | "completed" | "canceled";
+type PackageTier = "starter" | "pro" | "elite";
 
 interface WorkoutSession {
   id: string;
@@ -30,10 +35,48 @@ interface CheckinResponse {
   checkin_templates: { title: string } | null;
 }
 
+interface BodyMetric {
+  id: string;
+  recorded_at: string;
+  weight_g: number | null;
+  body_fat_pct: number | null;
+}
+
+interface ProgressPhoto {
+  id: string;
+  recorded_at: string;
+  storage_path: string;
+  notes: string | null;
+  signedUrl?: string | null;
+}
+
+interface FeedbackItem {
+  id: string;
+  target_type: string;
+  target_id: string;
+  feedback_text: string;
+  created_at: string;
+}
+
+interface LiveSession {
+  id: string;
+  title: string;
+  scheduled_at: string;
+  room_url: string;
+  status: LiveSessionStatus;
+  created_at: string;
+}
+
 const workoutStatusColor: Record<WorkoutStatus, string> = {
   in_progress: "text-yellow-400",
   completed: "text-green-400",
   abandoned: "text-red-400",
+};
+
+const liveSessionStatusColor: Record<LiveSessionStatus, string> = {
+  scheduled: "bg-blue-500/10 text-blue-400 border border-blue-500/20",
+  completed: "bg-green-500/10 text-green-400 border border-green-500/20",
+  canceled: "bg-red-500/10 text-red-400 border border-red-500/20",
 };
 
 function formatDate(dateStr: string | null): string {
@@ -45,6 +88,25 @@ function formatDate(dateStr: string | null): string {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+function formatDateShort(dateStr: string | null): string {
+  if (!dateStr) return "—";
+  return new Date(dateStr).toLocaleDateString("es-AR", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function formatWeight(weightG: number | null): string {
+  if (weightG === null) return "—";
+  return `${(weightG / 1000).toFixed(1)} kg`;
+}
+
+function formatBodyFat(pct: number | null): string {
+  if (pct === null) return "—";
+  return `${pct.toFixed(1)}%`;
 }
 
 export default async function StudentDetailPage({ params }: Props) {
@@ -62,7 +124,8 @@ export default async function StudentDetailPage({ params }: Props) {
       id,
       status,
       routine_id,
-      routines!coach_assignments_routine_id_fkey(title)
+      routines!coach_assignments_routine_id_fkey(title),
+      coach_packages!coach_assignments_package_id_fkey(tier)
     `
     )
     .eq("coach_id", coachProfileId)
@@ -70,6 +133,10 @@ export default async function StudentDetailPage({ params }: Props) {
     .single();
 
   if (!assignment) notFound();
+
+  // Determine if student has a PRO/elite package (feedback is only available for those)
+  const pkg = assignment.coach_packages as { tier: PackageTier } | null;
+  const canLeaveFeedback = pkg?.tier === "pro" || pkg?.tier === "elite";
 
   // Fetch student profile
   const { data: studentProfile } = await supabase
@@ -135,6 +202,66 @@ export default async function StudentDetailPage({ params }: Props) {
     .limit(1)
     .single();
 
+  // Body metrics (last 5)
+  const { data: metricsRaw } = await supabase
+    .from("body_metrics")
+    .select("id, recorded_at, weight_g, body_fat_pct")
+    .eq("student_id", studentId)
+    .order("recorded_at", { ascending: false })
+    .limit(5);
+
+  const metrics = (metricsRaw ?? []) as BodyMetric[];
+
+  // Progress photos (last 6)
+  const { data: photosRaw } = await supabase
+    .from("progress_photos")
+    .select("id, recorded_at, storage_path, notes")
+    .eq("student_id", studentId)
+    .order("recorded_at", { ascending: false })
+    .limit(6);
+
+  // Generate signed URLs for photos (TTL 1h, private bucket — never logged)
+  const photos: ProgressPhoto[] = await Promise.all(
+    (photosRaw ?? []).map(async (p) => {
+      const photo = p as ProgressPhoto;
+      if (!photo.storage_path) return { ...photo, signedUrl: null };
+      const { data: signedData } = await supabase.storage
+        .from("progress-photos")
+        .createSignedUrl(photo.storage_path, 3600);
+      return { ...photo, signedUrl: signedData?.signedUrl ?? null };
+    })
+  );
+
+  // Existing coach_feedback for this student by this coach
+  const { data: feedbackRaw } = await supabase
+    .from("coach_feedback")
+    .select("id, target_type, target_id, feedback_text, created_at")
+    .eq("coach_id", coachProfileId)
+    .eq("student_id", studentId)
+    .order("created_at", { ascending: false })
+    .limit(20);
+
+  const feedbackItems = (feedbackRaw ?? []) as FeedbackItem[];
+
+  // Build a lookup map: targetId -> feedback list
+  const feedbackByTarget = new Map<string, FeedbackItem[]>();
+  for (const fb of feedbackItems) {
+    const existing = feedbackByTarget.get(fb.target_id) ?? [];
+    existing.push(fb);
+    feedbackByTarget.set(fb.target_id, existing);
+  }
+
+  // Live sessions for this student (by this coach), ordered newest first
+  const { data: liveSessionsRaw } = await supabase
+    .from("live_sessions")
+    .select("id, title, scheduled_at, room_url, status, created_at")
+    .eq("coach_id", coachProfileId)
+    .eq("student_id", studentId)
+    .order("scheduled_at", { ascending: false })
+    .limit(10);
+
+  const liveSessions = (liveSessionsRaw ?? []) as LiveSession[];
+
   const workoutSessions = (sessions ?? []) as unknown as WorkoutSession[];
   const checkin = lastCheckin as unknown as CheckinResponse | null;
   const assignmentData = assignment as unknown as {
@@ -142,12 +269,19 @@ export default async function StudentDetailPage({ params }: Props) {
     status: string;
     routine_id: string | null;
     routines: { title: string } | null;
+    coach_packages: { tier: PackageTier } | null;
   };
 
   const workoutStatusLabel: Record<WorkoutStatus, string> = {
     in_progress: t("alumnos.statusPaused"),
     completed: t("alumnos.statusActive"),
     abandoned: t("alumnos.statusCancelled"),
+  };
+
+  const liveSessionStatusLabel: Record<LiveSessionStatus, string> = {
+    scheduled: t("alumnos.detail.liveSessions.statusScheduled"),
+    completed: t("alumnos.detail.liveSessions.statusCompleted"),
+    canceled: t("alumnos.detail.liveSessions.statusCanceled"),
   };
 
   return (
@@ -168,6 +302,11 @@ export default async function StudentDetailPage({ params }: Props) {
             <p className="text-muted text-sm mt-1">
               {studentProfile.level}
             </p>
+          )}
+          {pkg && (
+            <span className="mt-2 inline-flex items-center rounded-full bg-lime/10 border border-lime/20 px-2.5 py-0.5 text-xs font-medium text-lime">
+              {pkg.tier.toUpperCase()}
+            </span>
           )}
         </div>
       </div>
@@ -222,6 +361,134 @@ export default async function StudentDetailPage({ params }: Props) {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Body metrics */}
+      <div className="rounded-xl border border-border bg-surface p-5">
+        <h2 className="text-xs uppercase tracking-wider text-muted mb-4">
+          {t("alumnos.detail.bodyMetrics")}
+        </h2>
+        {metrics.length === 0 ? (
+          <p className="text-muted text-sm opacity-50">{t("alumnos.detail.noMetrics")}</p>
+        ) : (
+          <div className="space-y-3">
+            {metrics.map((metric) => {
+              const metricFeedback = feedbackByTarget.get(metric.id) ?? [];
+              const metricLabel = formatDateShort(metric.recorded_at);
+              return (
+                <div
+                  key={metric.id}
+                  className="rounded-lg border border-surface-2 bg-surface-2 p-3"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted text-xs">{metricLabel}</span>
+                    <div className="flex gap-4 text-right">
+                      <span className="text-text text-sm font-mono">
+                        {formatWeight(metric.weight_g)}
+                      </span>
+                      <span className="text-muted text-sm font-mono">
+                        {formatBodyFat(metric.body_fat_pct)}
+                      </span>
+                    </div>
+                  </div>
+                  {/* Existing feedback */}
+                  {metricFeedback.length > 0 && (
+                    <div className="mt-2 space-y-1 border-t border-border pt-2">
+                      {metricFeedback.map((fb) => (
+                        <p key={fb.id} className="text-muted text-xs italic">
+                          {fb.feedback_text}
+                          <span className="ml-2 not-italic opacity-50">
+                            — {formatDate(fb.created_at)}
+                          </span>
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                  {/* Feedback form (only for PRO/elite) */}
+                  {canLeaveFeedback && (
+                    <FeedbackForm
+                      studentId={studentId}
+                      targetType="metric"
+                      targetId={metric.id}
+                      targetLabel={metricLabel}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {!canLeaveFeedback && metrics.length > 0 && (
+          <p className="mt-3 text-muted text-xs opacity-60">
+            {t("alumnos.detail.feedback.proOnly")}
+          </p>
+        )}
+      </div>
+
+      {/* Progress photos */}
+      <div className="rounded-xl border border-border bg-surface p-5">
+        <h2 className="text-xs uppercase tracking-wider text-muted mb-4">
+          {t("alumnos.detail.progressPhotos")}
+        </h2>
+        {photos.length === 0 ? (
+          <p className="text-muted text-sm opacity-50">{t("alumnos.detail.noPhotos")}</p>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {photos.map((photo) => {
+              const photoFeedback = feedbackByTarget.get(photo.id) ?? [];
+              const photoLabel = formatDateShort(photo.recorded_at);
+              return (
+                <div key={photo.id} className="flex flex-col gap-2">
+                  <div className="relative aspect-square rounded-lg overflow-hidden border border-border bg-surface-2">
+                    {photo.signedUrl ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={photo.signedUrl}
+                        alt={t("alumnos.detail.photoAlt", { date: photoLabel })}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center">
+                        <span className="text-muted text-xs opacity-50">
+                          {t("alumnos.detail.photoUnavailable")}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-muted text-xs">{photoLabel}</p>
+                  {photo.notes && (
+                    <p className="text-muted text-xs italic">{photo.notes}</p>
+                  )}
+                  {/* Existing feedback on photo */}
+                  {photoFeedback.length > 0 && (
+                    <div className="space-y-1">
+                      {photoFeedback.map((fb) => (
+                        <p key={fb.id} className="text-muted text-xs italic">
+                          {fb.feedback_text}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                  {/* Feedback form (PRO/elite only) */}
+                  {canLeaveFeedback && (
+                    <FeedbackForm
+                      studentId={studentId}
+                      targetType="photo"
+                      targetId={photo.id}
+                      targetLabel={photoLabel}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {!canLeaveFeedback && photos.length > 0 && (
+          <p className="mt-3 text-muted text-xs opacity-60">
+            {t("alumnos.detail.feedback.proOnly")}
+          </p>
+        )}
       </div>
 
       {/* Last check-in */}
@@ -318,20 +585,71 @@ export default async function StudentDetailPage({ params }: Props) {
         )}
       </div>
 
-      {/* Progress placeholder */}
+      {/* Live sessions section */}
       <div className="rounded-xl border border-border bg-surface p-5">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xs uppercase tracking-wider text-muted">
-            {t("alumnos.detail.recentSessions")}
-          </h2>
-          <button
-            type="button"
-            className="text-lime hover:text-[#AADD00] text-xs transition-colors cursor-not-allowed opacity-50"
-            disabled
-          >
-            Ver progreso (próximamente)
-          </button>
+        <h2 className="text-xs uppercase tracking-wider text-muted mb-4">
+          {t("alumnos.detail.liveSessions.title")}
+        </h2>
+
+        {/* Schedule new session form */}
+        <div className="mb-6">
+          <h3 className="text-sm font-semibold text-text mb-3">
+            {t("alumnos.detail.liveSessions.newSession")}
+          </h3>
+          <LiveSessionForm
+            studentId={studentId}
+            assignmentId={assignmentData.id}
+          />
         </div>
+
+        {/* List of sessions */}
+        {liveSessions.length === 0 ? (
+          <p className="text-muted text-sm opacity-50">{t("alumnos.detail.liveSessions.empty")}</p>
+        ) : (
+          <div className="space-y-3">
+            <h3 className="text-xs uppercase tracking-wider text-muted">
+              {t("alumnos.detail.liveSessions.scheduled")}
+            </h3>
+            {liveSessions.map((ls) => (
+              <div
+                key={ls.id}
+                className="flex items-start justify-between gap-4 rounded-lg border border-surface-2 bg-surface-2 p-3"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="text-text text-sm font-medium truncate">{ls.title}</p>
+                  <p className="text-muted text-xs mt-0.5">{formatDate(ls.scheduled_at)}</p>
+                  <a
+                    href={ls.room_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-lime hover:text-[#AADD00] text-xs mt-1 inline-block truncate max-w-xs transition-colors"
+                  >
+                    {ls.room_url}
+                  </a>
+                </div>
+                <div className="flex flex-col items-end gap-2 shrink-0">
+                  <span
+                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${liveSessionStatusColor[ls.status]}`}
+                  >
+                    {liveSessionStatusLabel[ls.status]}
+                  </span>
+                  {ls.status === "scheduled" && (
+                    <div className="flex gap-3">
+                      <LiveSessionStatusButton
+                        sessionId={ls.id}
+                        newStatus="completed"
+                      />
+                      <LiveSessionStatusButton
+                        sessionId={ls.id}
+                        newStatus="canceled"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

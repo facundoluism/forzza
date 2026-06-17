@@ -326,10 +326,56 @@ export type Database = {
           },
         ]
       }
+      coach_feedback: {
+        Row: {
+          coach_id: string
+          created_at: string
+          feedback_text: string
+          id: string
+          student_id: string
+          target_id: string
+          target_type: string
+        }
+        Insert: {
+          coach_id: string
+          created_at?: string
+          feedback_text: string
+          id?: string
+          student_id: string
+          target_id: string
+          target_type: string
+        }
+        Update: {
+          coach_id?: string
+          created_at?: string
+          feedback_text?: string
+          id?: string
+          student_id?: string
+          target_id?: string
+          target_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coach_feedback_coach_id_fkey"
+            columns: ["coach_id"]
+            isOneToOne: false
+            referencedRelation: "coach_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coach_feedback_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       coach_profiles: {
         Row: {
           active_student_count: number
           alias_cbu: string | null
+          avg_rating: number
           avatar_url: string | null
           bank_account: string | null
           billing_model: Database["public"]["Enums"]["billing_model"]
@@ -344,6 +390,7 @@ export type Database = {
           legal_entity_type:
             | Database["public"]["Enums"]["legal_entity_type"]
             | null
+          rating_count: number
           specialties: string[] | null
           status: Database["public"]["Enums"]["coach_status"]
           updated_at: string
@@ -353,6 +400,7 @@ export type Database = {
         Insert: {
           active_student_count?: number
           alias_cbu?: string | null
+          avg_rating?: number
           avatar_url?: string | null
           bank_account?: string | null
           billing_model?: Database["public"]["Enums"]["billing_model"]
@@ -367,6 +415,7 @@ export type Database = {
           legal_entity_type?:
             | Database["public"]["Enums"]["legal_entity_type"]
             | null
+          rating_count?: number
           specialties?: string[] | null
           status?: Database["public"]["Enums"]["coach_status"]
           updated_at?: string
@@ -376,6 +425,7 @@ export type Database = {
         Update: {
           active_student_count?: number
           alias_cbu?: string | null
+          avg_rating?: number
           avatar_url?: string | null
           bank_account?: string | null
           billing_model?: Database["public"]["Enums"]["billing_model"]
@@ -390,6 +440,7 @@ export type Database = {
           legal_entity_type?:
             | Database["public"]["Enums"]["legal_entity_type"]
             | null
+          rating_count?: number
           specialties?: string[] | null
           status?: Database["public"]["Enums"]["coach_status"]
           updated_at?: string
@@ -401,6 +452,51 @@ export type Database = {
             foreignKeyName: "coach_profiles_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coach_ratings: {
+        Row: {
+          coach_id: string
+          comment: string | null
+          created_at: string
+          id: string
+          rating: number
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          coach_id: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating: number
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          coach_id?: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating?: number
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coach_ratings_coach_id_fkey"
+            columns: ["coach_id"]
+            isOneToOne: false
+            referencedRelation: "coach_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coach_ratings_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -537,6 +633,67 @@ export type Database = {
           video_url?: string | null
         }
         Relationships: []
+      }
+      live_sessions: {
+        Row: {
+          assignment_id: string | null
+          coach_id: string
+          created_at: string
+          id: string
+          reminded_at: string | null
+          room_url: string
+          scheduled_at: string
+          status: string
+          student_id: string
+          title: string
+        }
+        Insert: {
+          assignment_id?: string | null
+          coach_id: string
+          created_at?: string
+          id?: string
+          reminded_at?: string | null
+          room_url: string
+          scheduled_at: string
+          status?: string
+          student_id: string
+          title: string
+        }
+        Update: {
+          assignment_id?: string | null
+          coach_id?: string
+          created_at?: string
+          id?: string
+          reminded_at?: string | null
+          room_url?: string
+          scheduled_at?: string
+          status?: string
+          student_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "live_sessions_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "coach_assignments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "live_sessions_coach_id_fkey"
+            columns: ["coach_id"]
+            isOneToOne: false
+            referencedRelation: "coach_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "live_sessions_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       leads: {
         Row: {
@@ -1271,6 +1428,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      auth_coach_profile_id: {
+        Args: never
+        Returns: string
+      }
       auth_role: {
         Args: never
         Returns: Database["public"]["Enums"]["user_role"]
@@ -1280,7 +1441,7 @@ export type Database = {
         Returns: boolean
       }
       student_has_pro_or_elite_package: {
-        Args: { p_coach_id: string; p_student_id: string }
+        Args: { p_student_id: string; p_coach_id: string }
         Returns: boolean
       }
     }

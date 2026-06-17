@@ -26,6 +26,172 @@ import {
 import { EmptyState, ErrorState, Card, UpgradeModal, LineChart } from "@forzza/ui/native";
 import { colors, fontSize, spacing, radius, typography } from "@forzza/ui/tokens";
 
+// ─── Coach Feedback ───────────────────────────────────────────────────────────
+
+type FeedbackTargetType = "metric" | "photo";
+
+interface CoachFeedbackItem {
+  id: string;
+  coach_id: string;
+  target_type: FeedbackTargetType;
+  target_id: string;
+  feedback_text: string;
+  created_at: string;
+  coach_display_name: string | null;
+}
+
+function CoachFeedbackSection({ userId }: { userId: string }): React.JSX.Element {
+  const { t } = useTranslation();
+
+  const {
+    data: feedbackItems = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery<CoachFeedbackItem[]>({
+    queryKey: ["coach_feedback", userId],
+    queryFn: async (): Promise<CoachFeedbackItem[]> => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
+        .from("coach_feedback")
+        .select(
+          "id, coach_id, target_type, target_id, feedback_text, created_at, coach_profiles!coach_feedback_coach_id_fkey(display_name)"
+        )
+        .eq("student_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(20);
+
+      if (error) throw error;
+
+      return ((data ?? []) as Array<{
+        id: string;
+        coach_id: string;
+        target_type: FeedbackTargetType;
+        target_id: string;
+        feedback_text: string;
+        created_at: string;
+        coach_profiles: { display_name: string } | null;
+      }>).map((row) => ({
+        id: row.id,
+        coach_id: row.coach_id,
+        target_type: row.target_type,
+        target_id: row.target_id,
+        feedback_text: row.feedback_text,
+        created_at: row.created_at,
+        coach_display_name: row.coach_profiles?.display_name ?? null,
+      }));
+    },
+    enabled: !!userId,
+    staleTime: 60 * 1000,
+  });
+
+  if (isLoading) {
+    return (
+      <ActivityIndicator
+        color={colors.lime}
+        style={{ marginVertical: spacing[4] }}
+        testID="coach-feedback-loading"
+      />
+    );
+  }
+
+  if (isError) {
+    return (
+      <ErrorState
+        title={t("common.error")}
+        description={t("common.noConnection")}
+        onRetry={() => { void refetch(); }}
+      />
+    );
+  }
+
+  if (feedbackItems.length === 0) {
+    return (
+      <EmptyState
+        title={t("coachFeedback.noFeedback")}
+        description=""
+        icon="💬"
+      />
+    );
+  }
+
+  return (
+    <View style={feedbackStyles.list} testID="coach-feedback-list">
+      {feedbackItems.map((item) => (
+        <Card key={item.id} style={feedbackStyles.card} testID={`coach-feedback-item-${item.id}`}>
+          <View style={feedbackStyles.header}>
+            {item.coach_display_name ? (
+              <Text style={feedbackStyles.coachName}>{item.coach_display_name}</Text>
+            ) : null}
+            <View style={feedbackStyles.targetBadge}>
+              <Text style={feedbackStyles.targetBadgeText}>
+                {t("coachFeedback.on")}{" "}
+                {item.target_type === "metric"
+                  ? t("coachFeedback.targetMetric")
+                  : t("coachFeedback.targetPhoto")}
+              </Text>
+            </View>
+          </View>
+          <Text style={feedbackStyles.text}>{item.feedback_text}</Text>
+          <Text style={feedbackStyles.date}>
+            {new Date(item.created_at).toLocaleDateString("es-AR", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            })}
+          </Text>
+        </Card>
+      ))}
+    </View>
+  );
+}
+
+const feedbackStyles = StyleSheet.create({
+  list: {
+    gap: spacing[3],
+  },
+  card: {
+    gap: spacing[2],
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: spacing[2],
+  },
+  coachName: {
+    fontFamily: typography.body,
+    color: colors.lime,
+    fontSize: fontSize.sm,
+    fontWeight: "700",
+    flex: 1,
+  },
+  targetBadge: {
+    backgroundColor: colors.surface3,
+    borderRadius: radius.full,
+    paddingHorizontal: spacing[2],
+    paddingVertical: 2,
+  },
+  targetBadgeText: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.xs,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  text: {
+    fontFamily: typography.body,
+    color: colors.text,
+    fontSize: fontSize.base,
+    lineHeight: 22,
+  },
+  date: {
+    fontFamily: typography.mono,
+    color: colors.muted,
+    fontSize: fontSize.xs,
+  },
+});
+
 const TEN_DAYS_MS = 10 * 24 * 60 * 60 * 1000;
 
 function calcStreak(sessions: CompletedWorkoutSession[]): number {
@@ -462,6 +628,14 @@ export default function ProgressTab(): React.JSX.Element {
       {user?.id && (
         <View style={styles.section}>
           <BodyMetricsCard userId={user.id} isPro={isPro} />
+        </View>
+      )}
+
+      {/* Coach feedback — shown only when user has a coach */}
+      {user?.id && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t("coachFeedback.sectionTitle")}</Text>
+          <CoachFeedbackSection userId={user.id} />
         </View>
       )}
 
