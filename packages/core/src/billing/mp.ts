@@ -247,6 +247,13 @@ export interface MpPreapprovalResponse {
   status: MpPreapprovalStatus;
   date_created: string;
   next_payment_date?: string;
+  /**
+   * ID del plan de pago al que pertenece este preapproval.
+   * MP crea primero un preapproval_plan (el plan) y luego, cuando el alumno
+   * paga, crea un preapproval (la suscripción real) con un id distinto.
+   * Este campo apunta al plan. Fuente: GET /preapproval/{id}.
+   */
+  preapproval_plan_id?: string;
 }
 
 export interface MpPreapprovalPlanRequest {

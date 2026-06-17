@@ -41,6 +41,7 @@ export interface WebhookDbClient {
 
   /**
    * Actualiza el estado de una suscripción por gateway_subscription_id.
+   * Usado cuando ya tenemos el preapproval id guardado (eventos recurrentes).
    */
   updateSubscription(
     gatewaySubscriptionId: string,
@@ -48,6 +49,25 @@ export interface WebhookDbClient {
     periodStart: string,
     periodEnd: string
   ): Promise<void>;
+
+  /**
+   * Busca una suscripción por preapproval_plan_id (= gateway_subscription_id
+   * guardado en el alta inicial) y la actualiza promoviendo el
+   * gateway_subscription_id al preapproval id real.
+   *
+   * Esto resuelve el mismatch: al alta guardamos el plan id, pero MP luego
+   * notifica con el preapproval id (distinto). Tras esta llamada, los eventos
+   * futuros ya pueden matchear por preapproval id directamente.
+   *
+   * @returns true si encontró y actualizó la fila; false si no hubo match.
+   */
+  updateSubscriptionByPlanId(
+    preapprovalPlanId: string,
+    newGatewaySubscriptionId: string,
+    status: string,
+    periodStart: string,
+    periodEnd: string
+  ): Promise<boolean>;
 
   /**
    * Inserta un registro en audit_log.
@@ -137,9 +157,15 @@ export async function handleMpWebhook(
     return { status: 500, body: "Internal error" };
   }
 
-  // 4. Procesar evento preapproval
+  // 4. Procesar evento preapproval / subscription_preapproval
+  //
+  // MP usa dos nombres de tipo para el ciclo de vida de suscripciones:
+  //   - "preapproval"              (legacy / algunos entornos)
+  //   - "subscription_preapproval" (actual — ciclo de vida de la suscripción)
+  // Ambos deben procesarse con la misma lógica.
   if (
     body.type === "preapproval" ||
+    body.type === "subscription_preapproval" ||
     body.action?.startsWith("preapproval")
   ) {
     const preapprovalId = body.data?.id;
@@ -147,7 +173,10 @@ export async function handleMpWebhook(
       return { status: 200, body: "ok" };
     }
 
-    // Obtener detalles del preapproval (mockeable)
+    // Obtener detalles del preapproval (mockeable).
+    // El objeto devuelto por GET /preapproval/{id} incluye preapproval_plan_id,
+    // que es el id del plan que guardamos en subscriptions.gateway_subscription_id
+    // al momento del alta.
     const preapproval = await fetchPreapproval(preapprovalId);
 
     // Mapear status
@@ -157,13 +186,44 @@ export async function handleMpWebhook(
       preapproval.next_payment_date ??
       new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
-    // Actualizar suscripción
-    await db.updateSubscription(
-      preapprovalId,
-      newStatus,
-      preapproval.date_created,
-      periodEnd
-    );
+    // ── Matching robusto ──────────────────────────────────────────────────────
+    //
+    // Al crear la suscripción (mp-create-preapproval) guardamos el plan id como
+    // gateway_subscription_id. MP luego crea un preapproval (id distinto) y
+    // notifica con ese preapproval id. El objeto del preapproval incluye
+    // preapproval_plan_id que apunta al plan original.
+    //
+    // Estrategia:
+    //   1. Si el preapproval tiene preapproval_plan_id, buscar por ese campo
+    //      (primera notificación: la suscripción sigue con el plan id).
+    //      Si hay match, promover gateway_subscription_id al preapproval id
+    //      para que las notificaciones futuras ya resuelvan por preapproval id.
+    //   2. Si no hubo match por plan id (o el campo no viene), intentar por
+    //      el preapproval id directamente (suscripción ya promovida en paso 1,
+    //      eventos recurrentes subsiguientes).
+    //
+    let matched = false;
+
+    if (preapproval.preapproval_plan_id) {
+      matched = await db.updateSubscriptionByPlanId(
+        preapproval.preapproval_plan_id,
+        preapprovalId,
+        newStatus,
+        preapproval.date_created,
+        periodEnd
+      );
+    }
+
+    if (!matched) {
+      // Fallback: la suscripción ya fue promovida al preapproval id en un
+      // evento anterior (o el plan id no vino en el payload).
+      await db.updateSubscription(
+        preapprovalId,
+        newStatus,
+        preapproval.date_created,
+        periodEnd
+      );
+    }
 
     // Audit log
     await db.insertAuditLog({
@@ -175,6 +235,8 @@ export async function handleMpWebhook(
         event_id: eventId,
         mp_status: preapproval.status,
         preapproval_id: preapprovalId,
+        preapproval_plan_id: preapproval.preapproval_plan_id ?? null,
+        matched_by: matched ? "plan_id" : "preapproval_id",
       },
     });
   }

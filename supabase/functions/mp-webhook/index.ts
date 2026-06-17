@@ -8,6 +8,12 @@ interface MpPreapproval {
   status: string;
   date_created: string;
   next_payment_date?: string;
+  /**
+   * ID del preapproval_plan al que pertenece este preapproval.
+   * Presente en GET /preapproval/{id}. Se usa para hacer el matching contra
+   * subscriptions.gateway_subscription_id (que al alta guarda el plan id).
+   */
+  preapproval_plan_id?: string;
 }
 
 interface MpWebhookBody {
@@ -161,15 +167,22 @@ serve(async (req) => {
     return new Response("Internal error", { status: 500 });
   }
 
-  // Handle preapproval events
+  // Handle preapproval / subscription_preapproval events.
+  //
+  // MP usa dos nombres de tipo para el ciclo de vida de suscripciones:
+  //   - "preapproval"              (legacy / algunos entornos)
+  //   - "subscription_preapproval" (actual — ciclo de vida de la suscripción)
+  // Ambos se procesan con la misma lógica.
   if (
     body.type === "preapproval" ||
+    body.type === "subscription_preapproval" ||
     body.action?.startsWith("preapproval")
   ) {
     const preapprovalId = body.data?.id;
     if (!preapprovalId) return new Response("ok", { status: 200 });
 
-    // Fetch preapproval from MP
+    // Fetch preapproval from MP.
+    // El objeto incluye preapproval_plan_id → id del plan guardado al alta.
     const mpRes = await fetch(
       `https://api.mercadopago.com/preapproval/${preapprovalId}`,
       {
@@ -194,16 +207,50 @@ serve(async (req) => {
       preapproval.next_payment_date ??
       new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
-    // Update subscription — columnas reales: gateway_subscription_id, current_period_start, current_period_end
-    // NO tiene provider_subscription_id, started_at, expires_at
-    await supabase
-      .from("subscriptions")
-      .update({
-        status: newStatus,
-        current_period_start: preapproval.date_created,
-        current_period_end: periodEnd,
-      })
-      .eq("gateway_subscription_id", preapprovalId);
+    // ── Matching robusto ──────────────────────────────────────────────────────
+    //
+    // Al crear la suscripción (mp-create-preapproval) guardamos el plan id como
+    // gateway_subscription_id. MP luego crea un preapproval (id distinto) y
+    // notifica con ese preapproval id. El objeto del preapproval incluye
+    // preapproval_plan_id que apunta al plan original.
+    //
+    // Paso 1: intentar match por plan id. Si hay match, promover
+    //   gateway_subscription_id al preapproval id real (futuras notificaciones
+    //   ya matchearán por preapproval id directamente).
+    // Paso 2: si no hubo match (suscripción ya promovida), actualizar por
+    //   preapproval id.
+    //
+    let matchedByPlanId = false;
+
+    if (preapproval.preapproval_plan_id) {
+      const { data: updatedRows } = await supabase
+        .from("subscriptions")
+        .update({
+          status: newStatus,
+          current_period_start: preapproval.date_created,
+          current_period_end: periodEnd,
+          // Promover el gateway_subscription_id al preapproval id real
+          // para que los eventos futuros ya matcheen sin necesidad del plan id.
+          gateway_subscription_id: preapprovalId,
+        })
+        .eq("gateway_subscription_id", preapproval.preapproval_plan_id)
+        .select("id");
+
+      matchedByPlanId = Array.isArray(updatedRows) && updatedRows.length > 0;
+    }
+
+    if (!matchedByPlanId) {
+      // Fallback: la suscripción ya fue promovida al preapproval id en un
+      // evento anterior, o el plan id no vino en el payload.
+      await supabase
+        .from("subscriptions")
+        .update({
+          status: newStatus,
+          current_period_start: preapproval.date_created,
+          current_period_end: periodEnd,
+        })
+        .eq("gateway_subscription_id", preapprovalId);
+    }
 
     // Audit log — columna 'payload' (no metadata)
     await supabase.from("audit_log").insert({
@@ -211,7 +258,13 @@ serve(async (req) => {
       action: `mp_preapproval_${preapproval.status}`,
       entity_type: "subscription",
       entity_id: null,
-      payload: { event_id: eventId, mp_status: preapproval.status, preapproval_id: preapprovalId },
+      payload: {
+        event_id: eventId,
+        mp_status: preapproval.status,
+        preapproval_id: preapprovalId,
+        preapproval_plan_id: preapproval.preapproval_plan_id ?? null,
+        matched_by: matchedByPlanId ? "plan_id" : "preapproval_id",
+      },
     });
   }
 

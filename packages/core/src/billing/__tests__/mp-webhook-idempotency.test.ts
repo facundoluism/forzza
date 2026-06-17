@@ -73,6 +73,27 @@ function makePgDbClient(pool: pg.Pool): WebhookDbClient {
       );
     },
 
+    async updateSubscriptionByPlanId(
+      preapprovalPlanId: string,
+      newGatewaySubscriptionId: string,
+      status: string,
+      periodStart: string,
+      periodEnd: string
+    ): Promise<boolean> {
+      const result = await pool.query(
+        `UPDATE subscriptions
+         SET status = $1::subscription_status,
+             current_period_start = $2,
+             current_period_end = $3,
+             gateway_subscription_id = $4,
+             updated_at = now()
+         WHERE gateway_subscription_id = $5
+         RETURNING id`,
+        [status, periodStart, periodEnd, newGatewaySubscriptionId, preapprovalPlanId]
+      );
+      return result.rowCount !== null && result.rowCount > 0;
+    },
+
     async insertAuditLog(entry: {
       actor_id: null;
       action: string;
@@ -151,6 +172,7 @@ describe("Firma HMAC-SHA256", () => {
     const dbClient: WebhookDbClient = {
       insertProcessedEvent() { return Promise.resolve("ok" as const); },
       updateSubscription() { return Promise.resolve(); },
+      updateSubscriptionByPlanId() { return Promise.resolve(false); },
       insertAuditLog() { return Promise.resolve(); },
     };
 
@@ -170,6 +192,7 @@ describe("Firma HMAC-SHA256", () => {
     const dbClient: WebhookDbClient = {
       insertProcessedEvent() { return Promise.resolve("ok" as const); },
       updateSubscription() { return Promise.resolve(); },
+      updateSubscriptionByPlanId() { return Promise.resolve(false); },
       insertAuditLog() { return Promise.resolve(); },
     };
 
@@ -190,6 +213,7 @@ describe("Firma HMAC-SHA256", () => {
     const dbClient: WebhookDbClient = {
       insertProcessedEvent() { return Promise.resolve("ok" as const); },
       updateSubscription() { return Promise.resolve(); },
+      updateSubscriptionByPlanId() { return Promise.resolve(false); },
       insertAuditLog() { return Promise.resolve(); },
     };
 
@@ -209,6 +233,7 @@ describe("Firma HMAC-SHA256", () => {
     const dbClient: WebhookDbClient = {
       insertProcessedEvent() { return Promise.resolve("ok" as const); },
       updateSubscription() { return Promise.resolve(); },
+      updateSubscriptionByPlanId() { return Promise.resolve(false); },
       insertAuditLog() { return Promise.resolve(); },
     };
 
@@ -229,6 +254,7 @@ describe("Firma HMAC-SHA256", () => {
     const dbClient: WebhookDbClient = {
       insertProcessedEvent() { return Promise.resolve("ok" as const); },
       updateSubscription() { return Promise.resolve(); },
+      updateSubscriptionByPlanId() { return Promise.resolve(false); },
       insertAuditLog() { return Promise.resolve(); },
     };
 
@@ -253,6 +279,7 @@ describe("Firma HMAC-SHA256", () => {
     const dbClient: WebhookDbClient = {
       insertProcessedEvent() { return Promise.resolve("ok" as const); },
       updateSubscription() { return Promise.resolve(); },
+      updateSubscriptionByPlanId() { return Promise.resolve(false); },
       insertAuditLog() { return Promise.resolve(); },
     };
 
@@ -283,6 +310,10 @@ describe("Mapeo de status MP → Forzza (stub DB)", () => {
       updateSubscription(_id, status) {
         capture.lastStatus = status;
         return Promise.resolve();
+      },
+      updateSubscriptionByPlanId(_planId, _newGatewayId, status) {
+        capture.lastStatus = status;
+        return Promise.resolve(true);
       },
       insertAuditLog() { return Promise.resolve(); },
     };
@@ -447,6 +478,10 @@ describe.runIf(process.env["RUN_DB_TESTS"] === "1")(
           updateCalls.push(status);
           return realPgDb.updateSubscription(id, status, start, end);
         },
+        updateSubscriptionByPlanId(planId, newGatewayId, status, start, end) {
+          updateCalls.push(status);
+          return realPgDb.updateSubscriptionByPlanId(planId, newGatewayId, status, start, end);
+        },
         insertAuditLog(entry) {
           return realPgDb.insertAuditLog(entry);
         },
@@ -518,6 +553,7 @@ describe("Comportamiento del handler (stub DB)", () => {
   const stubDb: WebhookDbClient = {
     insertProcessedEvent() { return Promise.resolve("ok" as const); },
     updateSubscription() { return Promise.resolve(); },
+    updateSubscriptionByPlanId() { return Promise.resolve(false); },
     insertAuditLog() { return Promise.resolve(); },
   };
 
@@ -545,6 +581,7 @@ describe("Comportamiento del handler (stub DB)", () => {
     const trackingDb: WebhookDbClient = {
       insertProcessedEvent() { return Promise.resolve("ok" as const); },
       updateSubscription() { return Promise.resolve(); },
+      updateSubscriptionByPlanId() { return Promise.resolve(false); },
       insertAuditLog() { return Promise.resolve(); },
     };
 
@@ -569,6 +606,7 @@ describe("Comportamiento del handler (stub DB)", () => {
     const errorDb: WebhookDbClient = {
       insertProcessedEvent() { return Promise.resolve("error" as const); },
       updateSubscription() { return Promise.resolve(); },
+      updateSubscriptionByPlanId() { return Promise.resolve(false); },
       insertAuditLog() { return Promise.resolve(); },
     };
 
@@ -597,6 +635,7 @@ describe("Comportamiento del handler (stub DB)", () => {
         return Promise.resolve("ok" as const);
       },
       updateSubscription() { return Promise.resolve(); },
+      updateSubscriptionByPlanId() { return Promise.resolve(false); },
       insertAuditLog() { return Promise.resolve(); },
     };
 
@@ -631,5 +670,123 @@ describe("Comportamiento del handler (stub DB)", () => {
     );
 
     expect(valid).toBe(true);
+  });
+});
+
+// ─── describe #5: Bugs de matching plan_id y event type subscription_preapproval ─
+
+describe("Bug fix: plan_id matching y subscription_preapproval event type", () => {
+  // ── Test (a): evento subscription_preapproval authorized cuyo
+  //    preapproval.preapproval_plan_id matchea una subscription en trialing
+  //    la pone en active usando updateSubscriptionByPlanId.
+  it("(a) subscription_preapproval authorized: matchea por plan_id → pone en active", async () => {
+    // Simulamos el flujo real de MP:
+    //   1. Al alta se guardó planId como gateway_subscription_id (status: trialing).
+    //   2. El alumno paga → MP crea un preapproval con id distinto.
+    //   3. MP notifica con type="subscription_preapproval", data.id=preapprovalId.
+    //   4. GET /preapproval/{preapprovalId} devuelve { preapproval_plan_id: planId, status: "authorized" }.
+    const planId = "mock_plan_42";
+
+    // El preapproval real creado por MP cuando el alumno paga.
+    const preapprovalId = mp.createPreapprovalForPlan(planId, "authorized");
+
+    // Captura de calls al DbClient
+    const updateByPlanCalls: Array<{ planId: string; newId: string; status: string }> = [];
+    const updateCalls: Array<{ id: string; status: string }> = [];
+
+    const db: WebhookDbClient = {
+      insertProcessedEvent() { return Promise.resolve("ok" as const); },
+      updateSubscription(id, status) {
+        updateCalls.push({ id, status });
+        return Promise.resolve();
+      },
+      updateSubscriptionByPlanId(planId, newGatewayId, status) {
+        updateByPlanCalls.push({ planId, newId: newGatewayId, status });
+        // Simula que encontró la fila y la actualizó.
+        return Promise.resolve(true);
+      },
+      insertAuditLog() { return Promise.resolve(); },
+    };
+
+    // El webhook llega con type="subscription_preapproval" y data.id=preapprovalId.
+    const body = {
+      id: `evt-plan-match-001`,
+      type: "subscription_preapproval" as const,
+      data: { id: preapprovalId },
+    };
+
+    const { xSignature, xRequestId, dataId } = await mp.generateWebhookHeaders(
+      preapprovalId,
+      `req-evt-plan-match-001`
+    );
+
+    const result = await handleMpWebhook({
+      secret: mp.getWebhookSecret(),
+      xSignature,
+      xRequestId,
+      dataId,
+      body,
+      fetchPreapproval: (id) => Promise.resolve(mp.getPreapproval(id)),
+      db,
+    });
+
+    // El handler procesa correctamente
+    expect(result.status).toBe(200);
+    expect(result.body).toBe("ok");
+
+    // Se usó updateSubscriptionByPlanId (match por plan_id)
+    expect(updateByPlanCalls).toHaveLength(1);
+    expect(updateByPlanCalls[0]!.planId).toBe(planId);
+    expect(updateByPlanCalls[0]!.newId).toBe(preapprovalId);
+    expect(updateByPlanCalls[0]!.status).toBe("active"); // authorized → active
+
+    // NO se llamó updateSubscription (fallback) porque ya hubo match
+    expect(updateCalls).toHaveLength(0);
+  });
+
+  // ── Test (b): el tipo "subscription_preapproval" es procesado (no ignorado).
+  //    Verifica que el handler llame fetchPreapproval cuando body.type es
+  //    "subscription_preapproval" (era ignorado antes del fix).
+  it("(b) type=subscription_preapproval se procesa — fetchPreapproval es invocado", async () => {
+    const planId = "mock_plan_99";
+    const preapprovalId = mp.createPreapprovalForPlan(planId, "authorized");
+
+    let fetchCalled = false;
+
+    const db: WebhookDbClient = {
+      insertProcessedEvent() { return Promise.resolve("ok" as const); },
+      updateSubscription() { return Promise.resolve(); },
+      updateSubscriptionByPlanId() { return Promise.resolve(true); },
+      insertAuditLog() { return Promise.resolve(); },
+    };
+
+    const body = {
+      id: "evt-sub-preapproval-type",
+      type: "subscription_preapproval" as const,
+      data: { id: preapprovalId },
+    };
+
+    const { xSignature, xRequestId, dataId } = await mp.generateWebhookHeaders(
+      preapprovalId,
+      "req-evt-sub-preapproval-type"
+    );
+
+    const result = await handleMpWebhook({
+      secret: mp.getWebhookSecret(),
+      xSignature,
+      xRequestId,
+      dataId,
+      body,
+      fetchPreapproval: (id) => {
+        fetchCalled = true;
+        return Promise.resolve(mp.getPreapproval(id));
+      },
+      db,
+    });
+
+    expect(result.status).toBe(200);
+    // La clave: fetchPreapproval debe haber sido invocado.
+    // Si el tipo "subscription_preapproval" no estaba en el guard, fetchCalled = false.
+    expect(fetchCalled).toBe(true);
   });
 });

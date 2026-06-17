@@ -104,7 +104,11 @@ export class MockMercadoPago {
 
   /**
    * Consulta el estado de un preapproval simulado.
-   * Devuelve el objeto con { id, status, date_created, next_payment_date }.
+   * Devuelve el objeto con { id, status, date_created, next_payment_date, preapproval_plan_id }.
+   *
+   * El campo preapproval_plan_id refleja la estructura real de MP:
+   *   - Al crear el preapproval, el mock guarda el plan_id interno del preapproval.
+   *   - Este campo se incluye en la respuesta de GET /preapproval/{id}.
    *
    * Si el id no existe, devuelve un objeto con status "pending" (como haría MP
    * para un preapproval desconocido, aunque en la práctica devolvería 404).
@@ -124,6 +128,8 @@ export class MockMercadoPago {
       status: stored.status,
       date_created: stored.date_created,
       next_payment_date: stored.next_payment_date,
+      // Refleja la estructura real de MP: el preapproval conoce su plan padre.
+      preapproval_plan_id: stored.plan_id,
     };
   }
 
@@ -141,6 +147,40 @@ export class MockMercadoPago {
     if (stored) {
       stored.status = status;
     }
+  }
+
+  /**
+   * Simula el flujo real de MP: dado un planId ya existente (guardado en DB al alta),
+   * crea el preapproval real que MP genera cuando el alumno paga por primera vez.
+   *
+   * Devuelve el preapprovalId (distinto del planId), que es lo que MP envía
+   * en la notificación webhook (data.id) y en GET /preapproval/{id} como `id`.
+   * El objeto también incluye preapproval_plan_id = planId.
+   *
+   * Usar en tests que verifican el matching plan_id → preapproval_id.
+   */
+  createPreapprovalForPlan(
+    planId: string,
+    status: MpPreapprovalStatus = "authorized"
+  ): string {
+    const preapprovalId = `mock_preapproval_${idCounter++}`;
+    const now = new Date();
+    const nextPayment = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+    const preapproval: MockPreapproval = {
+      id: preapprovalId,
+      status,
+      date_created: now.toISOString(),
+      next_payment_date: nextPayment.toISOString(),
+      plan_id: planId,
+      reason: "mock preapproval for plan",
+      transaction_amount: 0,
+      currency_id: "ARS",
+      payer_email: "mock@forzza.app",
+    };
+
+    mockPreapprovals.set(preapprovalId, preapproval);
+    return preapprovalId;
   }
 
   // ─── Generación de firmas webhook ──────────────────────────────────────────
