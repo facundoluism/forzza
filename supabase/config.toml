@@ -55,3 +55,12 @@ enable_confirmations = false
 [auth.sms]
 enable_signup = false
 enable_confirmations = false
+
+# Webhooks de pasarelas de pago: se autentican por firma HMAC dentro de la
+# función (no por JWT). Sin esto, Kong rechaza con 401 "Missing authorization
+# header" y el webhook nunca llega. Aplica en local y en deploy.
+[functions.mp-webhook]
+verify_jwt = false
+
+[functions.mp-assignment-webhook]
+verify_jwt = false
