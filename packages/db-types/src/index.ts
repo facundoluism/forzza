@@ -447,12 +447,17 @@ export type Database = {
       }
       exercise_library: {
         Row: {
+          common_errors_en: Json
+          common_errors_es: Json
+          content_verified: boolean
           created_at: string
           description: string | null
           description_en: string | null
           description_es: string | null
           difficulty: string | null
           equipment: string[] | null
+          execution_steps_en: Json
+          execution_steps_es: Json
           icon_id: string | null
           id: string
           movement_pattern: string | null
@@ -461,19 +466,28 @@ export type Database = {
           name_en: string | null
           primary_group: string | null
           primary_muscles: string[]
+          pro_tip_en: string | null
+          pro_tip_es: string | null
           secondary_muscles: string[]
           slug: string | null
           source: string | null
+          svg_icon: string | null
           tags: string[]
+          tertiary_muscles: string[]
           video_url: string | null
         }
         Insert: {
+          common_errors_en?: Json
+          common_errors_es?: Json
+          content_verified?: boolean
           created_at?: string
           description?: string | null
           description_en?: string | null
           description_es?: string | null
           difficulty?: string | null
           equipment?: string[] | null
+          execution_steps_en?: Json
+          execution_steps_es?: Json
           icon_id?: string | null
           id?: string
           movement_pattern?: string | null
@@ -482,19 +496,28 @@ export type Database = {
           name_en?: string | null
           primary_group?: string | null
           primary_muscles?: string[]
+          pro_tip_en?: string | null
+          pro_tip_es?: string | null
           secondary_muscles?: string[]
           slug?: string | null
           source?: string | null
+          svg_icon?: string | null
           tags?: string[]
+          tertiary_muscles?: string[]
           video_url?: string | null
         }
         Update: {
+          common_errors_en?: Json
+          common_errors_es?: Json
+          content_verified?: boolean
           created_at?: string
           description?: string | null
           description_en?: string | null
           description_es?: string | null
           difficulty?: string | null
           equipment?: string[] | null
+          execution_steps_en?: Json
+          execution_steps_es?: Json
           icon_id?: string | null
           id?: string
           movement_pattern?: string | null
@@ -503,10 +526,14 @@ export type Database = {
           name_en?: string | null
           primary_group?: string | null
           primary_muscles?: string[]
+          pro_tip_en?: string | null
+          pro_tip_es?: string | null
           secondary_muscles?: string[]
           slug?: string | null
           source?: string | null
+          svg_icon?: string | null
           tags?: string[]
+          tertiary_muscles?: string[]
           video_url?: string | null
         }
         Relationships: []
