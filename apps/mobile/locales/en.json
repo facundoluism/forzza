@@ -63,7 +63,9 @@
     "quickProgress": "My progress",
     "quickProgressSub": "View stats",
     "coachMessage": "Coach message",
-    "coachMessageReply": "Reply"
+    "coachMessageReply": "Reply",
+    "quickLiveSessions": "Live sessions",
+    "quickLiveSessionsSub": "See upcoming sessions"
   },
   "routines": {
     "title": "My Routines",
@@ -516,6 +518,48 @@
     "status_in_process": "Processing",
     "gateway": "Via",
     "viewHistory": "View payment history"
+  },
+  "coachRatings": {
+    "sectionTitle": "Reviews",
+    "ratingCount_one": "{{count}} review",
+    "ratingCount_other": "{{count}} reviews",
+    "avgRating": "{{avg}} out of 5",
+    "noReviews": "No reviews yet for this coach.",
+    "yourRating": "Your rating",
+    "editRating": "Edit your rating",
+    "commentLabel": "Comment (optional)",
+    "commentPlaceholder": "Share your experience with this coach...",
+    "submit": "Submit rating",
+    "update": "Update rating",
+    "submitting": "Submitting...",
+    "successTitle": "Thank you!",
+    "successDesc": "Your rating has been submitted.",
+    "errorTitle": "Could not submit",
+    "errorDesc": "Check your connection and try again.",
+    "noAssignment": "You can only rate a coach you have hired.",
+    "rateThisCoach": "Rate this coach",
+    "alreadyRated": "You already rated this coach"
+  },
+  "liveSessions": {
+    "screenTitle": "Live sessions",
+    "sectionUpcoming": "Upcoming",
+    "sectionPast": "Past",
+    "join": "Join",
+    "statusScheduled": "Scheduled",
+    "statusCompleted": "Completed",
+    "statusCanceled": "Canceled",
+    "empty_title": "No sessions scheduled",
+    "empty_desc": "Your coach hasn't scheduled any live sessions with you yet.",
+    "error_title": "Could not load sessions",
+    "error_desc": "Check your connection and try again.",
+    "noCoach": "You don't have a coach assigned yet."
+  },
+  "coachFeedback": {
+    "sectionTitle": "Coach feedback",
+    "noFeedback": "Your coach hasn't left any feedback yet.",
+    "on": "On",
+    "targetMetric": "metric",
+    "targetPhoto": "photo"
   },
   "upgrade": {
     "screenTitle": "Plans",

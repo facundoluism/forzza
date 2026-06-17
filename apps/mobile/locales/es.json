@@ -63,7 +63,9 @@
     "quickProgress": "Mi progreso",
     "quickProgressSub": "Ver estadísticas",
     "coachMessage": "Mensaje del coach",
-    "coachMessageReply": "Responder"
+    "coachMessageReply": "Responder",
+    "quickLiveSessions": "Sesiones en vivo",
+    "quickLiveSessionsSub": "Ver próximas sesiones"
   },
   "routines": {
     "title": "Mis Rutinas",
@@ -516,6 +518,48 @@
     "status_in_process": "En proceso",
     "gateway": "Vía",
     "viewHistory": "Ver historial de pagos"
+  },
+  "coachRatings": {
+    "sectionTitle": "Reseñas",
+    "ratingCount_one": "{{count}} reseña",
+    "ratingCount_other": "{{count}} reseñas",
+    "avgRating": "{{avg}} de 5",
+    "noReviews": "Todavía no hay reseñas para este coach.",
+    "yourRating": "Tu calificación",
+    "editRating": "Editar tu calificación",
+    "commentLabel": "Comentario (opcional)",
+    "commentPlaceholder": "Contá tu experiencia con este coach...",
+    "submit": "Enviar calificación",
+    "update": "Actualizar calificación",
+    "submitting": "Enviando...",
+    "successTitle": "¡Gracias!",
+    "successDesc": "Tu calificación fue enviada.",
+    "errorTitle": "No se pudo enviar",
+    "errorDesc": "Revisá tu conexión e intentá de nuevo.",
+    "noAssignment": "Solo podés calificar a un coach con el que tuviste una contratación.",
+    "rateThisCoach": "Calificá a este coach",
+    "alreadyRated": "Ya calificaste a este coach"
+  },
+  "liveSessions": {
+    "screenTitle": "Sesiones en vivo",
+    "sectionUpcoming": "Próximas",
+    "sectionPast": "Pasadas",
+    "join": "Unirse",
+    "statusScheduled": "Programada",
+    "statusCompleted": "Completada",
+    "statusCanceled": "Cancelada",
+    "empty_title": "Sin sesiones programadas",
+    "empty_desc": "Tu coach todavía no agendó sesiones en vivo contigo.",
+    "error_title": "No se pudieron cargar las sesiones",
+    "error_desc": "Revisá tu conexión e intentá de nuevo.",
+    "noCoach": "No tenés un coach asignado todavía."
+  },
+  "coachFeedback": {
+    "sectionTitle": "Comentarios del coach",
+    "noFeedback": "Tu coach todavía no dejó comentarios.",
+    "on": "Sobre",
+    "targetMetric": "métrica",
+    "targetPhoto": "foto"
   },
   "upgrade": {
     "screenTitle": "Planes",
