@@ -59,14 +59,31 @@ describe("parseMpSignatureHeader", () => {
 // ─── buildMpSignedMessage ─────────────────────────────────────────────────────
 
 describe("buildMpSignedMessage", () => {
-  it("construye el mensaje firmado con formato exacto de MP", () => {
-    const msg = buildMpSignedMessage("req-abc-123", "1704067200");
-    expect(msg).toBe("id:req-abc-123;ts:1704067200;");
+  // Test de regresión: fija el formato exacto del manifest correcto de MP.
+  // Si este test falla, el manifest está roto y NINGÚN webhook real de MP pasará.
+  it("REGRESION: formato exacto id:X;request-id:Y;ts:Z; con todos los campos presentes", () => {
+    const msg = buildMpSignedMessage("12345678", "req-abc-123", "1704067200");
+    expect(msg).toBe("id:12345678;request-id:req-abc-123;ts:1704067200;");
   });
 
-  it("preserva caracteres especiales en requestId", () => {
-    const msg = buildMpSignedMessage("req/123+abc", "999");
-    expect(msg).toBe("id:req/123+abc;ts:999;");
+  it("lowercase de dataId si es alfanumérico", () => {
+    const msg = buildMpSignedMessage("AbCdEf123", "req-xyz", "999");
+    expect(msg).toBe("id:abcdef123;request-id:req-xyz;ts:999;");
+  });
+
+  it("omite el segmento id: si dataId es null", () => {
+    const msg = buildMpSignedMessage(null, "req-abc-123", "1704067200");
+    expect(msg).toBe("request-id:req-abc-123;ts:1704067200;");
+  });
+
+  it("omite el segmento request-id: si requestId es null", () => {
+    const msg = buildMpSignedMessage("12345678", null, "1704067200");
+    expect(msg).toBe("id:12345678;ts:1704067200;");
+  });
+
+  it("REGRESION: solo ts si dataId y requestId son null (siempre incluye ts)", () => {
+    const msg = buildMpSignedMessage(null, null, "1704067200");
+    expect(msg).toBe("ts:1704067200;");
   });
 });
 
@@ -136,14 +153,26 @@ describe("constantTimeEqual", () => {
 describe("validateMpSignature", () => {
   const SECRET = "test-webhook-secret-12345";
 
-  it("valida una firma correcta generada con el mismo secret", async () => {
+  it("valida una firma correcta con dataId, requestId y ts (manifest completo)", async () => {
     const ts = "1704067200";
+    const dataId = "12345678";
     const requestId = "req-abc-123";
-    const signedMessage = buildMpSignedMessage(requestId, ts);
+    const signedMessage = buildMpSignedMessage(dataId, requestId, ts);
     const hash = await computeHmacSha256Hex(SECRET, signedMessage);
     const xSignature = `ts=${ts},v1=${hash}`;
 
-    const valid = await validateMpSignature(SECRET, xSignature, requestId);
+    const valid = await validateMpSignature(SECRET, xSignature, requestId, dataId);
+    expect(valid).toBe(true);
+  });
+
+  it("valida firma con dataId ausente (solo request-id y ts)", async () => {
+    const ts = "1704067200";
+    const requestId = "req-abc-123";
+    const signedMessage = buildMpSignedMessage(null, requestId, ts);
+    const hash = await computeHmacSha256Hex(SECRET, signedMessage);
+    const xSignature = `ts=${ts},v1=${hash}`;
+
+    const valid = await validateMpSignature(SECRET, xSignature, requestId, null);
     expect(valid).toBe(true);
   });
 
@@ -151,40 +180,50 @@ describe("validateMpSignature", () => {
     const valid = await validateMpSignature(
       SECRET,
       "ts=1704067200,v1=0000000000000000000000000000000000000000000000000000000000000000",
-      "req-abc-123"
+      "req-abc-123",
+      "12345678"
     );
     expect(valid).toBe(false);
   });
 
   it("rechaza cuando falta x-signature", async () => {
-    const valid = await validateMpSignature(SECRET, null, "req-abc-123");
-    expect(valid).toBe(false);
-  });
-
-  it("rechaza cuando falta x-request-id", async () => {
-    const valid = await validateMpSignature(SECRET, "ts=1,v1=abc", null);
+    const valid = await validateMpSignature(SECRET, null, "req-abc-123", "12345678");
     expect(valid).toBe(false);
   });
 
   it("rechaza x-signature con formato inválido (sin ts o v1)", async () => {
-    const valid = await validateMpSignature(SECRET, "invalid-format", "req-id");
+    const valid = await validateMpSignature(SECRET, "invalid-format", "req-id", "12345678");
     expect(valid).toBe(false);
   });
 
   it("lanza error si el secret está vacío", async () => {
     await expect(
-      validateMpSignature("", "ts=1,v1=abc", "req-id")
+      validateMpSignature("", "ts=1,v1=abc", "req-id", "12345678")
     ).rejects.toThrow("MP_WEBHOOK_SECRET is not configured");
   });
 
   it("rechaza firma con secret diferente", async () => {
     const ts = "1704067200";
+    const dataId = "12345678";
     const requestId = "req-abc-123";
-    const signedMessage = buildMpSignedMessage(requestId, ts);
+    const signedMessage = buildMpSignedMessage(dataId, requestId, ts);
     const hash = await computeHmacSha256Hex("wrong-secret", signedMessage);
     const xSignature = `ts=${ts},v1=${hash}`;
 
-    const valid = await validateMpSignature(SECRET, xSignature, requestId);
+    const valid = await validateMpSignature(SECRET, xSignature, requestId, dataId);
+    expect(valid).toBe(false);
+  });
+
+  it("rechaza si dataId difiere del usado en la firma (ataque de sustitución)", async () => {
+    const ts = "1704067200";
+    const dataId = "12345678";
+    const requestId = "req-abc-123";
+    const signedMessage = buildMpSignedMessage(dataId, requestId, ts);
+    const hash = await computeHmacSha256Hex(SECRET, signedMessage);
+    const xSignature = `ts=${ts},v1=${hash}`;
+
+    // Intentar validar con un dataId diferente
+    const valid = await validateMpSignature(SECRET, xSignature, requestId, "99999999");
     expect(valid).toBe(false);
   });
 });
@@ -192,19 +231,31 @@ describe("validateMpSignature", () => {
 // ─── generateMpSignatureHeader ────────────────────────────────────────────────
 
 describe("generateMpSignatureHeader", () => {
-  it("genera un header que validateMpSignature acepta", async () => {
+  it("genera un header que validateMpSignature acepta (manifest completo)", async () => {
+    const SECRET = "mi-secreto-de-test";
+    const dataId = "12345678";
+    const requestId = "req-test-999";
+    const ts = "1704067200";
+
+    const xSignature = await generateMpSignatureHeader(SECRET, dataId, requestId, ts);
+    const valid = await validateMpSignature(SECRET, xSignature, requestId, dataId);
+
+    expect(valid).toBe(true);
+  });
+
+  it("genera un header que validateMpSignature acepta (sin dataId)", async () => {
     const SECRET = "mi-secreto-de-test";
     const requestId = "req-test-999";
     const ts = "1704067200";
 
-    const xSignature = await generateMpSignatureHeader(SECRET, requestId, ts);
-    const valid = await validateMpSignature(SECRET, xSignature, requestId);
+    const xSignature = await generateMpSignatureHeader(SECRET, null, requestId, ts);
+    const valid = await validateMpSignature(SECRET, xSignature, requestId, null);
 
     expect(valid).toBe(true);
   });
 
   it("el formato del header es ts=...,v1=...", async () => {
-    const xSig = await generateMpSignatureHeader("s", "id", "123");
+    const xSig = await generateMpSignatureHeader("s", "dataid", "reqid", "123");
     expect(xSig).toMatch(/^ts=123,v1=[0-9a-f]{64}$/);
   });
 });
@@ -359,28 +410,34 @@ describe("MockMercadoPago", () => {
   });
 
   describe("generateWebhookHeaders", () => {
-    it("genera headers que pasan validateMpSignature", async () => {
-      const eventId = "event-test-001";
-      const { xSignature, xRequestId } =
-        await mp.generateWebhookHeaders(eventId);
+    it("genera headers que pasan validateMpSignature (manifest completo)", async () => {
+      const dataId = "12345678";
+      const { xSignature, xRequestId, dataId: retDataId } =
+        await mp.generateWebhookHeaders(dataId);
 
       const valid = await validateMpSignature(
         mp.getWebhookSecret(),
         xSignature,
-        xRequestId
+        xRequestId,
+        retDataId
       );
 
       expect(valid).toBe(true);
     });
 
-    it("xRequestId es igual al eventId", async () => {
+    it("xRequestId usa el prefijo req- por defecto", async () => {
       const { xRequestId } = await mp.generateWebhookHeaders("evt-abc");
-      expect(xRequestId).toBe("evt-abc");
+      expect(xRequestId).toBe("req-evt-abc");
     });
 
-    it("con ts explícito genera un header determinístico", async () => {
-      const { xSignature: s1 } = await mp.generateWebhookHeaders("evt", "123");
-      const { xSignature: s2 } = await mp.generateWebhookHeaders("evt", "123");
+    it("dataId retornado coincide con el dataId pasado", async () => {
+      const { dataId: retDataId } = await mp.generateWebhookHeaders("99999");
+      expect(retDataId).toBe("99999");
+    });
+
+    it("con requestId y ts explícitos genera un header determinístico", async () => {
+      const { xSignature: s1 } = await mp.generateWebhookHeaders("evt", "req-custom", "123");
+      const { xSignature: s2 } = await mp.generateWebhookHeaders("evt", "req-custom", "123");
       expect(s1).toBe(s2);
     });
   });

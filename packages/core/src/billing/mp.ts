@@ -95,10 +95,35 @@ export function parseMpSignatureHeader(
 /**
  * Construye el mensaje firmado exactamente como lo especifica Mercado Pago.
  *
- *   signedMessage = `id:REQUEST_ID;ts:TIMESTAMP;`
+ * Formato oficial (doc: https://www.mercadopago.com.ar/developers/en/docs/your-integrations/notifications/webhooks):
+ *   id:[data.id];request-id:[x-request-id];ts:[ts];
+ *
+ * Reglas:
+ *   - `dataId`    viene del QUERY PARAM ?data.id de la URL del webhook (NO del body). Lowercase si alfanumérico.
+ *   - `requestId` = header `x-request-id`
+ *   - `ts`        = extraído del header `x-signature` (ts=...)
+ *   - Orden EXACTO: id, request-id, ts
+ *   - Si algún valor no está presente, se OMITE ese segmento del template.
+ *
+ * @param dataId    Valor del query param ?data.id (null si ausente)
+ * @param requestId Valor del header x-request-id (null si ausente)
+ * @param ts        Timestamp extraído del header x-signature
  */
-export function buildMpSignedMessage(requestId: string, ts: string): string {
-  return `id:${requestId};ts:${ts};`;
+export function buildMpSignedMessage(
+  dataId: string | null,
+  requestId: string | null,
+  ts: string
+): string {
+  let message = "";
+  if (dataId != null) {
+    // MP requiere lowercase si el valor es alfanumérico
+    message += `id:${dataId.toLowerCase()};`;
+  }
+  if (requestId != null) {
+    message += `request-id:${requestId};`;
+  }
+  message += `ts:${ts};`;
+  return message;
 }
 
 // ─── HMAC-SHA256 (Web Crypto API — disponible en Node 18+ y Deno) ─────────────
@@ -149,22 +174,28 @@ export function constantTimeEqual(a: string, b: string): boolean {
  * Lógica extraída de las Edge Functions (mp-webhook, mp-assignment-webhook)
  * para ser testeable en Node.js sin Deno.
  *
+ * Manifest correcto (doc oficial MP):
+ *   id:[data.id];request-id:[x-request-id];ts:[ts];
+ * donde `dataId` proviene del QUERY PARAM ?data.id de la URL del webhook.
+ *
  * @param secret        Valor de MP_WEBHOOK_SECRET
  * @param xSignature    Valor del header `x-signature`
  * @param xRequestId    Valor del header `x-request-id`
+ * @param dataId        Valor del query param ?data.id de la URL del webhook (null si ausente)
  * @returns             true si la firma es válida, false si no
  * @throws              Si el secret es vacío (error de configuración)
  */
 export async function validateMpSignature(
   secret: string,
   xSignature: string | null,
-  xRequestId: string | null
+  xRequestId: string | null,
+  dataId?: string | null
 ): Promise<boolean> {
   if (!secret) {
     throw new Error("MP_WEBHOOK_SECRET is not configured");
   }
 
-  if (!xSignature || !xRequestId) {
+  if (!xSignature) {
     return false;
   }
 
@@ -173,7 +204,11 @@ export async function validateMpSignature(
     return false;
   }
 
-  const signedMessage = buildMpSignedMessage(xRequestId, parsed.ts);
+  const signedMessage = buildMpSignedMessage(
+    dataId ?? null,
+    xRequestId ?? null,
+    parsed.ts
+  );
   const expectedHash = await computeHmacSha256Hex(secret, signedMessage);
 
   return constantTimeEqual(expectedHash, parsed.v1);
@@ -182,19 +217,25 @@ export async function validateMpSignature(
 // ─── Generador de firma (para tests / MockMercadoPago) ────────────────────────
 
 /**
- * Genera un header `x-signature` válido para un requestId y timestamp dados.
+ * Genera un header `x-signature` válido para un dataId, requestId y timestamp dados.
  * Usar SOLO en tests y en el MockMercadoPago — NUNCA en producción.
  *
+ * Refleja el manifest correcto de MP:
+ *   id:[data.id];request-id:[x-request-id];ts:[ts];
+ * con omisión condicional de segmentos ausentes.
+ *
  * @param secret      El mismo secreto que usará el validador
- * @param requestId   Valor del header `x-request-id`
+ * @param dataId      Valor del query param ?data.id (null si ausente)
+ * @param requestId   Valor del header `x-request-id` (null si ausente)
  * @param ts          Timestamp Unix en string (ej: "1704067200")
  */
 export async function generateMpSignatureHeader(
   secret: string,
-  requestId: string,
+  dataId: string | null,
+  requestId: string | null,
   ts: string
 ): Promise<string> {
-  const signedMessage = buildMpSignedMessage(requestId, ts);
+  const signedMessage = buildMpSignedMessage(dataId, requestId, ts);
   const hash = await computeHmacSha256Hex(secret, signedMessage);
   return `ts=${ts},v1=${hash}`;
 }

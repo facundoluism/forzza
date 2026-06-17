@@ -25,9 +25,16 @@ interface MpWebhookBody {
  * MP sends:
  *   x-signature:   ts=TIMESTAMP,v1=HASH
  *   x-request-id:  REQUEST_ID
+ *   URL query:     ?data.id=PAYMENT_ID
  *
- * The signed message is exactly: `id:REQUEST_ID;ts:TIMESTAMP;`
- * The key is the raw MP_WEBHOOK_SECRET string.
+ * Correct manifest (official MP docs):
+ *   id:[data.id];request-id:[x-request-id];ts:[ts];
+ * where:
+ *   - data.id    = query param ?data.id from the webhook URL (NOT from body). Lowercased.
+ *   - request-id = header x-request-id
+ *   - ts         = extracted from x-signature header (ts=...)
+ *   - Segments with absent values are OMITTED from the template.
+ *   - Order is EXACTLY: id, request-id, ts
  *
  * Returns true if the signature is valid, false otherwise.
  * Throws if the secret is missing (caller must return 500).
@@ -42,7 +49,7 @@ async function validateMpSignature(req: Request): Promise<boolean> {
   const xSignature = req.headers.get("x-signature");
   const xRequestId = req.headers.get("x-request-id");
 
-  if (!xSignature || !xRequestId) {
+  if (!xSignature) {
     return false;
   }
 
@@ -50,17 +57,30 @@ async function validateMpSignature(req: Request): Promise<boolean> {
   let ts: string | null = null;
   let v1: string | null = null;
   for (const part of xSignature.split(",")) {
-    const [key, value] = part.split("=");
-    if (key === "ts") ts = value ?? null;
-    if (key === "v1") v1 = value ?? null;
+    const eqIdx = part.indexOf("=");
+    if (eqIdx === -1) continue;
+    const key = part.slice(0, eqIdx).trim();
+    const value = part.slice(eqIdx + 1).trim();
+    if (key === "ts") ts = value;
+    if (key === "v1") v1 = value;
   }
 
   if (!ts || !v1) {
     return false;
   }
 
-  // Build the signed message exactly as MP specifies it
-  const signedMessage = `id:${xRequestId};ts:${ts};`;
+  // Extract data.id from the webhook URL query param (NOT from body)
+  const dataId = new URL(req.url).searchParams.get("data.id");
+
+  // Build the signed message per MP spec: id, request-id, ts — omit absent segments
+  let signedMessage = "";
+  if (dataId != null) {
+    signedMessage += `id:${dataId.toLowerCase()};`;
+  }
+  if (xRequestId != null) {
+    signedMessage += `request-id:${xRequestId};`;
+  }
+  signedMessage += `ts:${ts};`;
 
   // Import the secret as a CryptoKey for HMAC-SHA256
   const encoder = new TextEncoder();

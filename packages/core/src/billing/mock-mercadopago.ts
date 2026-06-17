@@ -147,27 +147,31 @@ export class MockMercadoPago {
 
   /**
    * Genera los headers `x-signature` y `x-request-id` válidos para un
-   * evento webhook simulado.
+   * evento webhook simulado, más el dataId que simula el query param ?data.id.
    *
-   * Usa el mismo algoritmo HMAC-SHA256 que validaMpSignature en las Edge
-   * Functions y en mp.ts — el webhook handler los aceptará como válidos.
+   * Usa el mismo algoritmo HMAC-SHA256 con el manifest correcto de MP:
+   *   id:[data.id];request-id:[x-request-id];ts:[ts];
+   * El webhook handler los aceptará como válidos.
    *
-   * @param eventId   El id del evento (body.id o body.data.id)
+   * @param dataId    Valor del query param ?data.id (simula lo que MP envía en la URL)
+   * @param requestId Valor del header x-request-id (si se omite, usa un UUID aleatorio)
    * @param ts        Timestamp Unix en string. Por defecto: now en segundos.
    */
   async generateWebhookHeaders(
-    eventId: string,
+    dataId: string,
+    requestId?: string,
     ts?: string
-  ): Promise<{ xSignature: string; xRequestId: string }> {
+  ): Promise<{ xSignature: string; xRequestId: string; dataId: string }> {
     const timestamp = ts ?? String(Math.floor(Date.now() / 1000));
-    const xRequestId = eventId;
+    const xRequestId = requestId ?? `req-${dataId}`;
     const xSignature = await generateMpSignatureHeader(
       this.webhookSecret,
+      dataId,
       xRequestId,
       timestamp
     );
 
-    return { xSignature, xRequestId };
+    return { xSignature, xRequestId, dataId };
   }
 
   /**

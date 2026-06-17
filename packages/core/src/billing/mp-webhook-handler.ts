@@ -79,6 +79,13 @@ export interface WebhookHandlerOptions {
   xSignature: string | null;
   /** Header x-request-id del request */
   xRequestId: string | null;
+  /**
+   * Query param ?data.id de la URL del webhook (NO del body).
+   * MP lo incluye en la URL como: POST /webhook?data.id=XXX
+   * Es el primer segmento del manifest de firma: `id:<data.id>;`
+   * null si el query param no está presente en la notificación.
+   */
+  dataId?: string | null;
   /** Body del webhook ya parseado */
   body: MpWebhookBody;
   /** Función que obtiene los detalles del preapproval (mockeable) */
@@ -99,11 +106,14 @@ export async function handleMpWebhook(
 ): Promise<WebhookHandlerResult> {
   const { secret, xSignature, xRequestId, body, fetchPreapproval, db } = opts;
   const gateway = opts.gateway ?? "mercadopago";
+  const dataId = opts.dataId ?? null;
 
-  // 1. Validar firma
+  // 1. Validar firma con el manifest correcto de MP:
+  //    id:[data.id];request-id:[x-request-id];ts:[ts];
+  //    dataId proviene del query param ?data.id de la URL del webhook.
   let signatureValid: boolean;
   try {
-    signatureValid = await validateMpSignature(secret, xSignature, xRequestId);
+    signatureValid = await validateMpSignature(secret, xSignature, xRequestId, dataId);
   } catch (_err) {
     return { status: 500, body: "Internal configuration error" };
   }

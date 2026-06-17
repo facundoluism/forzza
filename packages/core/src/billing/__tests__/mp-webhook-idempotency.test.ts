@@ -124,7 +124,12 @@ async function makeHandlerOpts(
     data: { id: preapprovalId },
   };
 
-  const { xSignature, xRequestId } = await mp.generateWebhookHeaders(eventId);
+  // dataId simula el query param ?data.id de la URL del webhook (en prod es preapprovalId)
+  // requestId es el header x-request-id
+  const { xSignature, xRequestId, dataId } = await mp.generateWebhookHeaders(
+    preapprovalId,       // dataId = el payment/preapproval id del query param de la URL
+    `req-${eventId}`,    // requestId explícito
+  );
 
   mp.setPreapprovalStatus(preapprovalId, mpStatus as never);
 
@@ -132,6 +137,7 @@ async function makeHandlerOpts(
     secret: mp.getWebhookSecret(),
     xSignature,
     xRequestId,
+    dataId,
     body,
     fetchPreapproval: async (id: string) => mp.getPreapproval(id),
     db,
@@ -227,13 +233,14 @@ describe("Firma HMAC-SHA256", () => {
     };
 
     // Generar firma con el secret del mock
-    const { xSignature, xRequestId } = await mp.generateWebhookHeaders("evt-004");
+    const { xSignature, xRequestId, dataId } = await mp.generateWebhookHeaders("evt-004");
 
     // Validar con un secret diferente → debe rechazar
     const result = await handleMpWebhook({
       secret: "wrong-secret-completely-different",
       xSignature,
       xRequestId,
+      dataId,
       body: { id: "evt-004" },
       fetchPreapproval: async (id) => mp.getPreapproval(id),
       db: dbClient,
@@ -513,13 +520,14 @@ describe("Comportamiento del handler (stub DB)", () => {
   };
 
   it("body sin id ni data.id → 200 sin procesar nada", async () => {
-    const { xSignature, xRequestId } = await mp.generateWebhookHeaders("req-noid");
+    const { xSignature, xRequestId, dataId } = await mp.generateWebhookHeaders("noid-payment-123");
 
     const result = await handleMpWebhook({
       secret: mp.getWebhookSecret(),
       xSignature,
       xRequestId,
-      body: { type: "preapproval" }, // sin id
+      dataId,
+      body: { type: "preapproval" }, // sin id en body
       fetchPreapproval: async (id) => mp.getPreapproval(id),
       db: stubDb,
     });
@@ -529,7 +537,7 @@ describe("Comportamiento del handler (stub DB)", () => {
 
   it("body con type diferente a preapproval → 200 sin llamar fetchPreapproval", async () => {
     const eventId = "evt-other-type";
-    const { xSignature, xRequestId } = await mp.generateWebhookHeaders(eventId);
+    const { xSignature, xRequestId, dataId } = await mp.generateWebhookHeaders(eventId);
 
     let fetchCalled = false;
     const trackingDb: WebhookDbClient = {
@@ -542,6 +550,7 @@ describe("Comportamiento del handler (stub DB)", () => {
       secret: mp.getWebhookSecret(),
       xSignature,
       xRequestId,
+      dataId,
       body: { id: eventId, type: "payment" }, // no es preapproval
       fetchPreapproval: async (id) => {
         fetchCalled = true;
@@ -562,12 +571,13 @@ describe("Comportamiento del handler (stub DB)", () => {
     };
 
     const eventId = "evt-db-error";
-    const { xSignature, xRequestId } = await mp.generateWebhookHeaders(eventId);
+    const { xSignature, xRequestId, dataId } = await mp.generateWebhookHeaders(eventId);
 
     const result = await handleMpWebhook({
       secret: mp.getWebhookSecret(),
       xSignature,
       xRequestId,
+      dataId,
       body: { id: eventId, type: "preapproval" },
       fetchPreapproval: async (id) => mp.getPreapproval(id),
       db: errorDb,
@@ -589,12 +599,13 @@ describe("Comportamiento del handler (stub DB)", () => {
     };
 
     const eventId = "evt-gateway-check";
-    const { xSignature, xRequestId } = await mp.generateWebhookHeaders(eventId);
+    const { xSignature, xRequestId, dataId } = await mp.generateWebhookHeaders(eventId);
 
     await handleMpWebhook({
       secret: mp.getWebhookSecret(),
       xSignature,
       xRequestId,
+      dataId,
       body: { id: eventId },
       fetchPreapproval: async (id) => mp.getPreapproval(id),
       db: capturingDb,
@@ -606,14 +617,15 @@ describe("Comportamiento del handler (stub DB)", () => {
 
   it("validateMpSignature de mp.ts y generateWebhookHeaders del mock son compatibles", async () => {
     const mp2 = new MockMercadoPago("compat-secret-xyz");
-    const { xSignature, xRequestId } = await mp2.generateWebhookHeaders(
+    const { xSignature, xRequestId, dataId } = await mp2.generateWebhookHeaders(
       "compat-event-001"
     );
 
     const valid = await validateMpSignature(
       mp2.getWebhookSecret(),
       xSignature,
-      xRequestId
+      xRequestId,
+      dataId
     );
 
     expect(valid).toBe(true);
