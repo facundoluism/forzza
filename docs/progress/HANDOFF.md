@@ -4,6 +4,42 @@
 
 Smoke integral y cierre de brechas V1 entre mobile, web coach/admin, Supabase y flujo de negocio.
 
+---
+
+## ⏯️ ESTADO EN VIVO — sesión 2026-06-16 (tarde) — LEER PRIMERO AL RETOMAR
+
+Sesión de verificación integral pedida por el owner: probar i18n ES/EN, MP end-to-end,
+UI/UX alineada con todas las funciones, Maestro mobile, y commitear pendientes.
+
+### Verificado OK por el orquestador (Opus), no por reporte ciego de subagentes
+- Typecheck VERDE: core, ui, db-types, web, **mobile**. core tests VERDE (billing/gating 100% cov).
+- i18n paridad de claves: web 609/609, mobile 307/307. Confirmado renderizando en EN en el emulador.
+- MP sandbox: 119/124 tests (idempotencia, firma HMAC, mapeo status). Checkout llega a init_point real. §5/§6 cubiertas.
+- App mobile real (emulador `forzza_pixel` / emulator-5554): build nativo + install OK; cadena
+  login → rutina de hoy → detalle → ficha de ejercicio → iniciar entreno FUNCIONA end-to-end
+  contra Supabase local (Metro con env override EXPO_PUBLIC_SUPABASE_URL=http://localhost:54321 + `adb reverse tcp:54321`).
+
+### DECISIÓN DE ARQUITECTURA DE PAGOS (confirmada con el owner y en código) — §3
+- **Mercado Pago** = paquetes de coach (mobile vía browser `coach-checkout`+Linking ✅, y web) + PRO en web (`/api/mp-preapproval` ✅) + liquidaciones/payouts a coaches. SE QUEDA, es central.
+- **RevenueCat (IAP)** = SOLO PRO comprado dentro de la app mobile (Apple/Google lo exigen). NO toca plata de coaches.
+- BUG: `apps/mobile/app/upgrade.tsx` activa PRO con MP web (`mp-create-preapproval`+Linking) — debe ser RevenueCat IAP. (En migración, ver abajo.)
+
+### Plan de 4 items (elegidos por el owner)
+1. **RevenueCat** (EN CURSO, agente payments): migrar SOLO `upgrade.tsx`+`services/revenuecat.ts`+`package.json` a IAP. Probar la compra real = HUMAN_REQUIRED (productos sandbox `pro_monthly` + entitlement `pro` en App Store Connect/Play Console).
+2. **UI/UX ALTA** (EN CURSO, agente ui-design-system): auth screens mobile a tokens, perfil mobile completo vs prototipo, ErrorState en backoffice web (coach/admin), dedup RestTimer en session.tsx, fix th duplicado en coach/alumnos. Excluye upgrade.tsx (lo toca el agente 1).
+3. **MP webhook real** (BLOQUEADO — acción humana): poner `MP_WEBHOOK_SECRET` real en `supabase/functions/.env` (está VACÍO; el de raíz dice MOCK_OK) + `ngrok http 54321` + configurar URL webhook en dashboard MP. Luego validar pago sandbox → subscription `active`.
+4. **Maestro verde** (BLOQUEADO — recursos): el host queda con ~1-2 GB libres → emulador ANR ("Pixel Launcher isn't responding") → cae el driver Maestro. Liberar RAM (cerrar Edge/tooling) o más RAM al AVD; reiniciar emulador limpio; repetir. Pendiente puntual: aislar el assert `reps-input` post-iniciar-entreno (revisar autopromo/entitlements en session.tsx).
+
+### IMPORTANTE al retomar
+- Si la sesión se cerró con los agentes a mitad: el working tree puede tener cambios PARCIALES en
+  `apps/mobile/app/upgrade.tsx`, `services/revenuecat.ts`, `package.json`, auth screens
+  (`app/(auth)/*`), `app/(tabs)/profile.tsx`, `app/session.tsx`, y backoffice web
+  (`coach/*`, `admin/*`). REVISAR `git status` + `git diff` antes de commitear; no commitear roto.
+  Verificar con `pnpm --filter mobile typecheck` / `--filter web typecheck` / `--filter @forzza/ui typecheck`.
+- Los 5 commits de código de esta sesión YA están en main local (cab6361 build Windows; c03d288 boot/metro/assets; 3705c88 flow login; + docs). NO pusheados a origin (main local va 25+ commits adelante de origin/main).
+
+---
+
 ## Hecho en esta tanda
 
 - Se agrego `packages/core/src/workout/index.ts` con logica pura para sesiones mobile: iniciar rutina, loguear series y finalizar con payload offline compatible con `workout_sessions`.
