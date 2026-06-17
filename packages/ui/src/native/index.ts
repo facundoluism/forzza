@@ -19,3 +19,4 @@ export * from "./LineChart";
 export * from "./Sheet";
 export * from "./RestTimer";
 export * from "./Confetti";
+export * from "./ExerciseIcon";

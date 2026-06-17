@@ -1,0 +1,1630 @@
+[
+  {
+    "slug": "cable-glute-kickback",
+    "execution_steps_es": [
+      "Colocáte la tobillera en el tobillo y paráte frente a la polea baja, sujetándote con ambas manos al soporte.",
+      "Inclináte levemente hacia adelante desde las caderas para mantener la espalda neutral.",
+      "Extendé la pierna hacia atrás en línea recta apretando el glúteo en el punto máximo de extensión.",
+      "Mantené la contracción un segundo y volvé la pierna de forma controlada sin apoyar el pie entre repeticiones.",
+      "Completá todas las repeticiones de un lado antes de cambiar."
+    ],
+    "execution_steps_en": [
+      "Attach the ankle strap and stand facing the low pulley, holding the support with both hands.",
+      "Lean slightly forward from the hips to keep a neutral spine.",
+      "Extend the leg straight back, squeezing the glute at maximum extension.",
+      "Hold the contraction for one second, then return the leg under control without resting the foot between reps.",
+      "Complete all reps on one side before switching."
+    ],
+    "common_errors_es": [
+      "Rotar la cadera para llevar la pierna más atrás, quitando el trabajo del glúteo.",
+      "Usar impulso del tronco en lugar de la extensión de cadera.",
+      "Cargar demasiado peso y acortar el recorrido.",
+      "No contraer el glúteo al final del movimiento."
+    ],
+    "common_errors_en": [
+      "Rotating the hip to swing the leg higher, removing glute engagement.",
+      "Using trunk momentum instead of a controlled hip extension.",
+      "Loading too much weight and shortening the range of motion.",
+      "Not squeezing the glute at the end of the movement."
+    ],
+    "pro_tip_es": "Imaginá que empujás el talón hacia la pared de atrás en línea recta; eso evita la rotación de cadera y concentra el esfuerzo en el glúteo mayor.",
+    "pro_tip_en": "Imagine pushing your heel straight back toward the wall; this prevents hip rotation and keeps the focus on the gluteus maximus.",
+    "tertiary_muscles": ["Core", "Erector Spinae", "Hip Flexors (antagonist)"]
+  },
+  {
+    "slug": "cable-glute-kickback-2",
+    "execution_steps_es": [
+      "Paráte frente a la polea baja con la tobillera en el tobillo y el cuerpo levemente inclinado hacia adelante, sujetándote al aparato.",
+      "Desde la posición neutra, extendé el muslo hacia atrás siguiendo los mismos principios biomecánicos que la extensión en máquina.",
+      "Apretá el glúteo en el punto más alto del recorrido y sostené un instante.",
+      "Devolvé la pierna de manera controlada sin dejar que el peso jale bruscamente.",
+      "Mantenélos lumbares estables en todo momento; no arquees la espalda para compensar amplitud."
+    ],
+    "execution_steps_en": [
+      "Stand facing the low cable with the ankle strap attached, body slightly leaning forward while holding the machine.",
+      "From a neutral position, extend the thigh rearward following the same biomechanical principles as the machine version.",
+      "Squeeze the glute at the top of the range and briefly hold.",
+      "Return the leg under control without letting the weight jerk back.",
+      "Keep the lumbar spine stable throughout; do not hyperextend to gain extra range."
+    ],
+    "common_errors_es": [
+      "Hiperlordosis lumbar para lograr mayor amplitud.",
+      "Dejar que el pie arrastre en lugar de extender activamente la cadera.",
+      "No mantener el core activado durante la serie.",
+      "Balancear el tronco para generar impulso."
+    ],
+    "common_errors_en": [
+      "Hyperlordosis of the lumbar spine to gain extra range.",
+      "Letting the foot drag instead of actively extending the hip.",
+      "Failing to keep the core braced throughout the set.",
+      "Swinging the trunk to create momentum."
+    ],
+    "pro_tip_es": "Con polea libre la amplitud suele ser menor que en máquina; priorizá la calidad de contracción del glúteo por encima de la cantidad de recorrido.",
+    "pro_tip_en": "Range of motion is usually shorter on the cable than on a machine; prioritize glute contraction quality over maximum range.",
+    "tertiary_muscles": ["Core", "Erector Spinae", "Hip Flexors (antagonist)"]
+  },
+  {
+    "slug": "cable-hack-squat",
+    "execution_steps_es": [
+      "Colocáte en decúbito prono sobre el banco con los pies orientados hacia la polea baja y sujetáte para estabilizarte.",
+      "Comenzá desde casi la extensión completa de rodilla y flexionálas de forma controlada hasta aproximadamente 120°.",
+      "Mantenélos lumbares neutros en todo momento; no hiperextendas la zona lumbar al bajar.",
+      "Volvé a la extensión de manera controlada sin bloquear la rodilla con brusquedad.",
+      "Respirá de forma natural en cargas ligeras; inspirá antes del descenso y espirá al subir en cargas moderadas."
+    ],
+    "execution_steps_en": [
+      "Lie prone on a bench with feet pointing toward the low pulley and hold on for stability.",
+      "Start from near full knee extension and flex the knees under control to approximately 120°.",
+      "Keep the lumbar spine neutral throughout; do not hyperextend the lower back during the descent.",
+      "Return to extension in a controlled manner without snapping the knee straight.",
+      "Breathe naturally at light loads; inhale before the descent and exhale on the way up at moderate loads."
+    ],
+    "common_errors_es": [
+      "Hiperlordosis lumbar al extender las rodillas.",
+      "Bajar más de 120° forzando el recorrido más allá del rango cómodo.",
+      "Usar impulso para completar las repeticiones en lugar de contracción activa.",
+      "No estabilizar el banco correctamente antes de iniciar."
+    ],
+    "common_errors_en": [
+      "Hyperlordosis of the lumbar spine when extending the knees.",
+      "Flexing beyond 120°, forcing the range past a comfortable position.",
+      "Using momentum to complete reps instead of active contraction.",
+      "Not securing the bench properly before starting."
+    ],
+    "pro_tip_es": "Este ejercicio es especialmente útil para trabajar el bíceps femoral corto, que no cruza la cadera; mantené la velocidad baja en la fase excéntrica para maximizar la tensión.",
+    "pro_tip_en": "This exercise is especially useful for targeting the short head of the biceps femoris, which does not cross the hip; keep the eccentric phase slow to maximize tension.",
+    "tertiary_muscles": ["Popliteus", "Sartorius", "Plantaris"]
+  },
+  {
+    "slug": "cable-hip-abduction",
+    "execution_steps_es": [
+      "Colocáte la tobillera en el tobillo externo y paráte lateral a la polea baja, sujetándote con la mano del mismo lado.",
+      "Con la pierna ligeramente separada del suelo, llevála hacia afuera en abducción sin flexionar la cadera.",
+      "Llegá al máximo recorrido cómodo sin inclinarte lateralmente con el tronco.",
+      "Retorná de manera controlada y repetí sin inercia."
+    ],
+    "execution_steps_en": [
+      "Attach the ankle strap to the outer ankle and stand sideways to the low pulley, holding the support.",
+      "With the leg slightly off the ground, swing it outward in abduction without flexing at the hip.",
+      "Reach maximum comfortable range without lateral trunk lean.",
+      "Return under control and repeat without momentum."
+    ],
+    "common_errors_es": [
+      "Inclinar el tronco lateralmente para ganar amplitud.",
+      "Flexionar la cadera convirtiendo el movimiento en una elevación frontal.",
+      "Usar demasiado peso y reducir el control del movimiento.",
+      "No activar el glúteo medio durante la abducción."
+    ],
+    "common_errors_en": [
+      "Leaning the trunk sideways to gain extra range.",
+      "Flexing at the hip, turning the movement into a front raise.",
+      "Using too much weight and losing movement control.",
+      "Failing to consciously activate the gluteus medius during abduction."
+    ],
+    "pro_tip_es": "Mantené el tronco completamente vertical y el pie en posición neutra; eso garantiza que el trabajo recaiga sobre el glúteo medio y no sobre el tensor de la fascia lata.",
+    "pro_tip_en": "Keep the trunk fully upright and the foot in a neutral position; this ensures the work falls on the gluteus medius rather than the tensor fascia latae.",
+    "tertiary_muscles": ["Core", "Gluteus Minimus", "Piriformis"]
+  },
+  {
+    "slug": "cable-hip-adduction",
+    "execution_steps_es": [
+      "Colocáte la tobillera en el tobillo interno y paráte lateral a la polea baja con la pierna trabajadora alejada de ella.",
+      "Cruzá la pierna hacia adentro por delante de la pierna de apoyo en un movimiento de aducción controlado.",
+      "Llegá al cruce máximo sin rotar la cadera ni la columna.",
+      "Devolvé la pierna de forma controlada a la posición inicial."
+    ],
+    "execution_steps_en": [
+      "Attach the ankle strap to the inner ankle and stand sideways to the low pulley with the working leg away from it.",
+      "Cross the working leg inward in front of the support leg in a controlled adduction movement.",
+      "Reach maximum crossing point without rotating the hip or spine.",
+      "Return the leg under control to the starting position."
+    ],
+    "common_errors_es": [
+      "Rotar el tronco o la pelvis para ganar más amplitud.",
+      "No controlar el retorno y dejar que el peso jale bruscamente.",
+      "Flexionar la rodilla trabajadora durante el movimiento.",
+      "Inclinar el tronco lateralmente."
+    ],
+    "common_errors_en": [
+      "Rotating the trunk or pelvis to gain extra range.",
+      "Not controlling the return and letting the weight snap back.",
+      "Bending the working knee during the movement.",
+      "Leaning the trunk sideways."
+    ],
+    "pro_tip_es": "Realizá el movimiento en forma lenta y deliberada; los aductores son un grupo que responde bien al tiempo bajo tensión.",
+    "pro_tip_en": "Perform the movement slowly and deliberately; the adductors respond well to time under tension.",
+    "tertiary_muscles": ["Core", "Pectineus", "Obturator Externus"]
+  },
+  {
+    "slug": "cable-hip-extension",
+    "execution_steps_es": [
+      "Sentáte lateralmente a la polea con la cuerda sujeta a la punta del pie más alejado.",
+      "Realizá una rotación lateral de la rodilla en movimiento lento y estricto, máximo 40°.",
+      "Dejá el talón apoyado y movéte solo con la punta del pie.",
+      "Volvé a la posición inicial de forma controlada.",
+      "Respirá de forma natural durante todo el ejercicio."
+    ],
+    "execution_steps_en": [
+      "Sit sideways to the cable with the rope attached to the far foot.",
+      "Perform a lateral knee rotation in a slow, strict movement, maximum 40°.",
+      "Keep the heel grounded and move only with the toe.",
+      "Return to the starting position under control.",
+      "Breathe naturally throughout the exercise."
+    ],
+    "common_errors_es": [
+      "Superar los 40° de rotación forzando el rango articular.",
+      "Usar el tronco o la cadera para generar el movimiento.",
+      "Ejecutar el movimiento a velocidad alta perdiendo el control.",
+      "No mantener el talón apoyado en el suelo."
+    ],
+    "common_errors_en": [
+      "Exceeding 40° of rotation and forcing the joint range.",
+      "Using the trunk or hip to generate the movement.",
+      "Executing the movement too fast and losing control.",
+      "Failing to keep the heel grounded."
+    ],
+    "pro_tip_es": "Priorizá la sensación muscular sobre la cantidad de recorrido; este ejercicio trabaja el bíceps femoral en un rango muy específico.",
+    "pro_tip_en": "Prioritize the muscle feel over range of motion; this exercise targets the biceps femoris in a very specific range.",
+    "tertiary_muscles": ["Tensor Fascia Latae", "Gluteus Minimus", "Hip External Rotators"]
+  },
+  {
+    "slug": "cable-hip-flexion",
+    "execution_steps_es": [
+      "Colocáte de espaldas a la polea baja con la tobillera en la pierna trabajadora.",
+      "Desde la posición erguida, flexioná la cadera llevando la rodilla hacia adelante y arriba hasta aproximadamente 45-65° de la vertical.",
+      "Mantené la rodilla casi extendida durante el movimiento.",
+      "Retorná a la posición inicial de forma controlada sin dejar que el peso jale.",
+      "Completá todas las repeticiones de un lado antes de cambiar."
+    ],
+    "execution_steps_en": [
+      "Stand facing away from the low cable with the ankle strap on the working leg.",
+      "From an upright position, flex the hip by bringing the knee forward and upward to approximately 45–65° from vertical.",
+      "Keep the knee nearly extended throughout the movement.",
+      "Return to the starting position under control without letting the weight pull you back.",
+      "Complete all reps on one side before switching."
+    ],
+    "common_errors_es": [
+      "Flexionar la rodilla excesivamente en lugar de priorizar la flexión de cadera.",
+      "Inclinar el tronco hacia atrás para compensar la resistencia.",
+      "Usar impulso en lugar de activar el psoas-iliaco.",
+      "Superar el rango recomendado sin control lumbar adecuado."
+    ],
+    "common_errors_en": [
+      "Flexing the knee excessively instead of prioritizing hip flexion.",
+      "Leaning the trunk backward to compensate for the resistance.",
+      "Using momentum instead of actively engaging the iliopsoas.",
+      "Exceeding the recommended range without adequate lumbar control."
+    ],
+    "pro_tip_es": "Mantené el tronco estable y erguido durante todo el movimiento; si necesitás reclinarte, el peso es excesivo para ese rango.",
+    "pro_tip_en": "Keep the trunk stable and upright throughout; if you need to lean back, the weight is too heavy for that range.",
+    "tertiary_muscles": ["Rectus Abdominis", "Core", "Pectineus"]
+  },
+  {
+    "slug": "cable-pull-through",
+    "execution_steps_es": [
+      "Paráte de espaldas a la polea baja y pasá la cuerda entre las piernas sujetándola con ambas manos.",
+      "Con los pies al ancho de los hombros, inclinéate hacia adelante desde las caderas manteniendo la espalda recta hasta que el torso quede casi paralelo al suelo.",
+      "Empujá las caderas hacia adelante de forma explosiva y controlada hasta la extensión completa, apretando los glúteos.",
+      "Controlá el retorno hacia atrás sin redondear la espalda.",
+      "Mantené el peso en los talones durante todo el movimiento."
+    ],
+    "execution_steps_en": [
+      "Stand facing away from the low cable and pass the rope between your legs, gripping it with both hands.",
+      "With feet shoulder-width apart, hinge forward at the hips with a flat back until the torso is nearly parallel to the floor.",
+      "Drive the hips forward explosively and under control to full extension, squeezing the glutes.",
+      "Control the return without rounding the back.",
+      "Keep weight through the heels throughout the movement."
+    ],
+    "common_errors_es": [
+      "Redondear la espalda al inclinar el tronco hacia adelante.",
+      "Doblar las rodillas convirtiendo el movimiento en una sentadilla.",
+      "No extender completamente las caderas al final del movimiento.",
+      "Dejar que los brazos tiren en lugar de que las caderas generen la fuerza."
+    ],
+    "common_errors_en": [
+      "Rounding the back when hinging the torso forward.",
+      "Bending the knees and turning it into a squat.",
+      "Not fully extending the hips at the end of the movement.",
+      "Letting the arms pull instead of driving from the hips."
+    ],
+    "pro_tip_es": "Pensá en este movimiento exactamente como en un swing de kettlebell: la fuerza viene de la extensión de cadera, no de los brazos ni de la espalda.",
+    "pro_tip_en": "Think of this movement exactly like a kettlebell swing: the power comes from the hip extension, not the arms or back.",
+    "tertiary_muscles": ["Core", "Erector Spinae", "Adductors"]
+  },
+  {
+    "slug": "calf-press-on-leg-press",
+    "execution_steps_es": [
+      "Colocáte en la prensa horizontal con solo la parte delantera del pie apoyada en el borde de la plataforma.",
+      "Desde la dorsiflexión máxima (talón bajo), empujá la plataforma en flexión plantar hasta la extensión completa del tobillo.",
+      "Sostenélo un instante en la cima y descendé de forma lenta y controlada hasta el punto de máximo estiramiento.",
+      "Mantenélas rodillas ligeramente flexionadas y fijas durante todo el movimiento.",
+      "Realizá el movimiento sin rebotar en la parte baja."
+    ],
+    "execution_steps_en": [
+      "Position yourself on the horizontal press with only the forefoot resting on the edge of the platform.",
+      "From maximum dorsiflexion (heel down), push the platform into plantar flexion until full ankle extension.",
+      "Hold briefly at the top, then lower slowly and under control to maximum stretch.",
+      "Keep the knees slightly bent and fixed throughout.",
+      "Do not bounce at the bottom position."
+    ],
+    "common_errors_es": [
+      "Rebotar en la posición de máximo estiramiento, aumentando el riesgo de lesión del tendón de Aquiles.",
+      "Usar las rodillas para ayudar al movimiento en lugar de aislar el tobillo.",
+      "No completar el rango completo de movimiento en ninguno de los dos extremos.",
+      "Cargar demasiado peso y perder el control de la velocidad."
+    ],
+    "common_errors_en": [
+      "Bouncing at the maximum stretch position, increasing Achilles tendon injury risk.",
+      "Using the knees to assist instead of isolating the ankle.",
+      "Not completing the full range of motion at either extreme.",
+      "Loading too much weight and losing speed control."
+    ],
+    "pro_tip_es": "Las series lentas (3 segundos de bajada, 1 de subida) en gemelos producen mejor hipertrofia que las rápidas; usá un tempo deliberado.",
+    "pro_tip_en": "Slow sets (3-second descent, 1-second ascent) produce better calf hypertrophy than fast ones; use a deliberate tempo.",
+    "tertiary_muscles": ["Tibialis Posterior", "Flexor Digitorum Longus", "Peroneals"]
+  },
+  {
+    "slug": "dumbbell-bulgarian-split-squat",
+    "execution_steps_es": [
+      "Colocá el pie trasero sobre un banco o superficie elevada y paráte con el pie adelantado a una distancia que permita que la rodilla delantera quede sobre el tobillo al bajar.",
+      "Sujetá una mancuerna en cada mano con los brazos extendidos a los costados.",
+      "Bajá el cuerpo de forma controlada hasta que la rodilla trasera esté cerca del suelo, manteniendo el tronco erguido.",
+      "Empujá desde el talón delantero para volver a la posición inicial.",
+      "Completá todas las repeticiones de un lado antes de cambiar."
+    ],
+    "execution_steps_en": [
+      "Place the rear foot on a bench or elevated surface and stand with the front foot far enough forward that the front knee stays over the ankle at the bottom.",
+      "Hold a dumbbell in each hand with arms extended at your sides.",
+      "Lower your body under control until the rear knee is close to the floor, keeping the torso upright.",
+      "Drive through the front heel to return to the starting position.",
+      "Complete all reps on one side before switching."
+    ],
+    "common_errors_es": [
+      "Dejar que la rodilla delantera caiga hacia adentro (valgo de rodilla).",
+      "Inclinarse excesivamente hacia adelante con el tronco.",
+      "Colocar el pie trasero demasiado cerca, lo que limita el descenso.",
+      "Rebotar en la posición baja en lugar de bajar de forma controlada."
+    ],
+    "common_errors_en": [
+      "Letting the front knee cave inward (knee valgus).",
+      "Leaning excessively forward with the torso.",
+      "Placing the rear foot too close, limiting the descent.",
+      "Bouncing at the bottom instead of lowering under control."
+    ],
+    "pro_tip_es": "Cuanto más adelantado esté el pie, mayor será la activación del glúteo; cuanto más vertical el torso, mayor será la del cuádriceps. Ajustá la posición según tu objetivo.",
+    "pro_tip_en": "The further forward the front foot, the greater the glute activation; the more upright the torso, the more quad-dominant. Adjust foot position according to your goal.",
+    "tertiary_muscles": ["Core", "Adductors", "Tibialis Anterior"]
+  },
+  {
+    "slug": "dumbbell-goblet-squat",
+    "execution_steps_es": [
+      "Sujetá una mancuerna verticalmente a la altura del pecho con ambas manos, con los pies al ancho de los hombros o levemente más abiertos.",
+      "Bajá en sentadilla manteniendo el torso erguido y los talones apoyados en el suelo.",
+      "Llevá las rodillas hacia afuera en la línea de los pies durante todo el descenso.",
+      "Bajá hasta donde puedas mantener la espalda recta, idealmente con los muslos paralelos al suelo o más.",
+      "Empujá desde los talones para volver a la posición inicial."
+    ],
+    "execution_steps_en": [
+      "Hold a dumbbell vertically at chest height with both hands, feet shoulder-width apart or slightly wider.",
+      "Lower into a squat while keeping the torso upright and heels on the ground.",
+      "Track the knees outward in line with the feet throughout the descent.",
+      "Lower as deep as you can while maintaining a flat back, ideally thighs parallel to the floor or below.",
+      "Drive through the heels to return to the starting position."
+    ],
+    "common_errors_es": [
+      "Dejar que las rodillas colapsen hacia adentro.",
+      "Inclinarse hacia adelante y perder la postura erguida del tronco.",
+      "Levantar los talones del suelo.",
+      "Redondear la espalda baja al llegar a la profundidad máxima."
+    ],
+    "common_errors_en": [
+      "Letting the knees cave inward.",
+      "Leaning forward and losing the upright torso position.",
+      "Lifting the heels off the ground.",
+      "Rounding the lower back at maximum depth."
+    ],
+    "pro_tip_es": "El peso frente al cuerpo actúa como contrapeso y facilita una sentadilla profunda con el torso más vertical; es ideal para aprender la mecánica correcta de la sentadilla.",
+    "pro_tip_en": "The weight in front acts as a counterbalance and makes it easier to squat deep with a more vertical torso; it is ideal for learning proper squat mechanics.",
+    "tertiary_muscles": ["Core", "Erector Spinae", "Tibialis Anterior"]
+  },
+  {
+    "slug": "dumbbell-hip-thrust",
+    "execution_steps_es": [
+      "Apoyá los hombros sobre un banco y colocá una mancuerna sobre las caderas, sosteniéndola con ambas manos.",
+      "Con los pies apoyados en el suelo al ancho de las caderas, dejá bajar las caderas hacia el suelo de forma controlada.",
+      "Empujá las caderas hacia arriba hasta la extensión completa apretando los glúteos en el punto más alto.",
+      "Sostenélo un segundo en la cima y volvé a bajar de forma controlada.",
+      "Mantené la barbilla ligeramente hacia el pecho para no arquear el cuello."
+    ],
+    "execution_steps_en": [
+      "Rest the upper back on a bench and place a dumbbell on the hips, holding it with both hands.",
+      "With feet flat on the floor at hip width, lower your hips toward the ground under control.",
+      "Drive the hips upward to full extension, squeezing the glutes at the top.",
+      "Hold for one second at the top, then lower under control.",
+      "Keep the chin slightly tucked to avoid hyperextending the neck."
+    ],
+    "common_errors_es": [
+      "Arquear la espalda lumbar en exceso al llegar arriba en lugar de extender desde la cadera.",
+      "No llegar a la extensión completa de cadera en el punto más alto.",
+      "Dejar que las rodillas caigan hacia adentro.",
+      "Usar el cuello o los brazos para compensar en lugar de los glúteos."
+    ],
+    "common_errors_en": [
+      "Hyperextending the lower back at the top instead of extending from the hip.",
+      "Not reaching full hip extension at the top.",
+      "Letting the knees fall inward.",
+      "Using the neck or arms to compensate instead of the glutes."
+    ],
+    "pro_tip_es": "Girá levemente las puntas de los pies hacia afuera (10-20°); esto facilita la activación del glúteo mayor al final del movimiento.",
+    "pro_tip_en": "Slightly externally rotate the feet (10–20°); this facilitates gluteus maximus activation at the end of the movement.",
+    "tertiary_muscles": ["Core", "Adductors", "Tibialis Anterior"]
+  },
+  {
+    "slug": "dumbbell-lunge",
+    "execution_steps_es": [
+      "Paráte erguido con una mancuerna en cada mano y los pies juntos.",
+      "Dá un paso adelante con una pierna hasta que ambas rodillas queden a 90°.",
+      "Mantenélas rodillas alineadas con los pies y la rodilla delantera sin sobrepasar el tobillo.",
+      "Empujá desde el talón delantero para volver a la posición inicial.",
+      "Alternálos lados o completálos de un solo lado según el protocolo."
+    ],
+    "execution_steps_en": [
+      "Stand upright holding a dumbbell in each hand with feet together.",
+      "Step forward with one leg until both knees are at 90°.",
+      "Keep knees aligned with the feet and the front knee not past the toe.",
+      "Drive through the front heel to return to the starting position.",
+      "Alternate sides or complete all reps on one side as per the protocol."
+    ],
+    "common_errors_es": [
+      "Dejar que la rodilla delantera pase por delante del pie.",
+      "Inclinar el tronco excesivamente hacia adelante.",
+      "Valgo de rodilla (rodilla hacia adentro) en el descenso.",
+      "Dar pasos demasiado cortos que no permiten los 90° en ambas rodillas."
+    ],
+    "common_errors_en": [
+      "Letting the front knee travel past the toes.",
+      "Leaning the trunk excessively forward.",
+      "Knee valgus (knee caving inward) during the descent.",
+      "Taking steps too short to allow 90° at both knees."
+    ],
+    "pro_tip_es": "El largo del paso determina dónde recae el trabajo: un paso más largo activa más el glúteo, uno más corto activa más el cuádriceps.",
+    "pro_tip_en": "Step length determines where the work falls: a longer step activates more glute, a shorter step activates more quad.",
+    "tertiary_muscles": ["Core", "Tibialis Anterior", "Peroneals"]
+  },
+  {
+    "slug": "dumbbell-reverse-lunge",
+    "execution_steps_es": [
+      "Paráte erguido con una mancuerna en cada mano y los pies juntos.",
+      "Dá un paso hacia atrás con una pierna y bajá la rodilla trasera hacia el suelo de forma controlada.",
+      "Mantené el tronco erguido y la rodilla delantera alineada con el tobillo.",
+      "Empujá desde el talón de la pierna delantera para volver a la posición inicial.",
+      "Completálos por el lado indicado antes de cambiar."
+    ],
+    "execution_steps_en": [
+      "Stand upright holding a dumbbell in each hand with feet together.",
+      "Step backward with one leg and lower the rear knee toward the floor under control.",
+      "Keep the torso upright and the front knee aligned over the front ankle.",
+      "Drive through the front heel to return to the starting position.",
+      "Complete all reps on the indicated side before switching."
+    ],
+    "common_errors_es": [
+      "Inclinar el tronco hacia adelante al descender.",
+      "Dejar caer bruscamente la rodilla trasera al suelo.",
+      "Valgo de rodilla en la pierna delantera.",
+      "Usar demasiado impulso al volver a la posición inicial."
+    ],
+    "common_errors_en": [
+      "Leaning the torso forward during the descent.",
+      "Dropping the rear knee to the floor abruptly.",
+      "Knee valgus in the front leg.",
+      "Using excessive momentum when returning to the starting position."
+    ],
+    "pro_tip_es": "La estocada inversa reduce el estrés en la rodilla delantera comparada con la estocada hacia adelante; es ideal para quienes tienen molestias en la articulación.",
+    "pro_tip_en": "The reverse lunge reduces stress on the front knee compared to the forward lunge; it is ideal for those with knee discomfort.",
+    "tertiary_muscles": ["Core", "Hip Flexors", "Tibialis Anterior"]
+  },
+  {
+    "slug": "dumbbell-romanian-deadlift",
+    "execution_steps_es": [
+      "Paráte erguido con una mancuerna en cada mano frente a los muslos, pies al ancho de las caderas.",
+      "Con una leve flexión fija en las rodillas, incliná el tronco hacia adelante empujando las caderas hacia atrás.",
+      "Bajá las mancuernas a lo largo de las piernas manteniendo la espalda completamente recta.",
+      "Sentí el estiramiento en los isquiotibiales y detené el descenso cuando la espalda no pueda mantenerse neutral.",
+      "Empujá las caderas hacia adelante para volver a la posición inicial."
+    ],
+    "execution_steps_en": [
+      "Stand upright holding a dumbbell in each hand in front of the thighs, feet hip-width apart.",
+      "With a slight fixed bend in the knees, hinge the torso forward by pushing the hips back.",
+      "Lower the dumbbells along the legs while keeping the back completely flat.",
+      "Feel the hamstring stretch and stop the descent when the back can no longer remain neutral.",
+      "Drive the hips forward to return to the starting position."
+    ],
+    "common_errors_es": [
+      "Redondear la espalda al bajar.",
+      "Doblar excesivamente las rodillas, convirtiendo el ejercicio en una sentadilla.",
+      "Dejar que las mancuernas se alejen del cuerpo.",
+      "Bloquear las rodillas completamente en la posición inicial."
+    ],
+    "common_errors_en": [
+      "Rounding the back during the descent.",
+      "Bending the knees excessively, turning it into a squat.",
+      "Letting the dumbbells drift away from the body.",
+      "Fully locking the knees at the starting position."
+    ],
+    "pro_tip_es": "Pensá en empujar las caderas hacia la pared de atrás en lugar de bajar las pesas; eso mantiene la carga en los isquiotibiales y glúteos en lugar de en la espalda.",
+    "pro_tip_en": "Think of pushing the hips back toward the wall rather than lowering the weights; this keeps the load on the hamstrings and glutes rather than the back.",
+    "tertiary_muscles": ["Erector Spinae", "Adductors", "Core"]
+  },
+  {
+    "slug": "dumbbell-squat",
+    "execution_steps_es": [
+      "Paráte con los pies al ancho de los hombros sosteniendo una mancuerna en cada mano a los costados del cuerpo.",
+      "Bajá en sentadilla manteniendo el pecho levantado, los talones en el suelo y las rodillas siguiendo la dirección de los pies.",
+      "Descendé hasta que los muslos estén paralelos al suelo o más abajo si la movilidad lo permite.",
+      "Empujá desde los talones para volver a la posición inicial.",
+      "Espirá durante el ascenso; inspirá durante el descenso."
+    ],
+    "execution_steps_en": [
+      "Stand with feet shoulder-width apart holding a dumbbell in each hand at your sides.",
+      "Lower into a squat keeping the chest up, heels on the ground and knees tracking over the toes.",
+      "Descend until thighs are parallel to the floor or lower if mobility allows.",
+      "Drive through the heels to return to the starting position.",
+      "Exhale during the ascent; inhale during the descent."
+    ],
+    "common_errors_es": [
+      "Dejar que las rodillas caigan hacia adentro.",
+      "Levantar los talones del suelo.",
+      "Inclinar el tronco excesivamente hacia adelante.",
+      "No alcanzar la profundidad paralela con las rodillas."
+    ],
+    "common_errors_en": [
+      "Letting the knees cave inward.",
+      "Lifting the heels off the ground.",
+      "Leaning the torso excessively forward.",
+      "Not reaching parallel depth with the thighs."
+    ],
+    "pro_tip_es": "Si las mancuernas a los costados limitan la profundidad, probálas a la altura de los hombros o en posición goblet para facilitar un torso más vertical.",
+    "pro_tip_en": "If dumbbells at your sides limit depth, try holding them at shoulder height or in a goblet position to encourage a more vertical torso.",
+    "tertiary_muscles": ["Core", "Erector Spinae", "Tibialis Anterior"]
+  },
+  {
+    "slug": "dumbbell-standing-calf-raise",
+    "execution_steps_es": [
+      "Sujetá una mancuerna en cada mano y paráte con las puntas de los pies en el borde de un escalón o superficie elevada.",
+      "Bajá los talones por debajo del nivel del escalón para obtener el estiramiento máximo.",
+      "Empujá sobre los dedos del pie hasta la extensión completa del tobillo.",
+      "Sostenélo un segundo en la cima y bajá de forma lenta y controlada.",
+      "Realizá el movimiento en rango completo sin rebotar en la parte baja."
+    ],
+    "execution_steps_en": [
+      "Hold a dumbbell in each hand and stand with the balls of the feet on the edge of a step or elevated surface.",
+      "Lower the heels below the step level for maximum stretch.",
+      "Rise up on the toes to full ankle extension.",
+      "Hold briefly at the top and lower slowly and under control.",
+      "Perform the full range of motion without bouncing at the bottom."
+    ],
+    "common_errors_es": [
+      "Rebotar en la posición de máximo estiramiento.",
+      "No bajar los talones por debajo del nivel del escalón.",
+      "No llegar a la extensión completa del tobillo en la parte alta.",
+      "Doblar las rodillas para ayudar al movimiento."
+    ],
+    "common_errors_en": [
+      "Bouncing at the maximum stretch position.",
+      "Not lowering the heels below the step level.",
+      "Not reaching full ankle extension at the top.",
+      "Bending the knees to assist the movement."
+    ],
+    "pro_tip_es": "Para mayor activación del sóleo (músculo profundo de la pantorrilla) realizá el ejercicio con las rodillas levemente flexionadas.",
+    "pro_tip_en": "For greater soleus activation (deep calf muscle) perform the exercise with the knees slightly bent.",
+    "tertiary_muscles": ["Tibialis Anterior", "Peroneals", "Flexor Hallucis Longus"]
+  },
+  {
+    "slug": "dumbbell-step-up",
+    "execution_steps_es": [
+      "Paráte frente a un banco o caja con una mancuerna en cada mano.",
+      "Colocá un pie completamente sobre la superficie y empujá desde ese talón para subir el cuerpo.",
+      "Llevá la pierna trasera arriba hasta que quede a 90° de cadera o la rodilla quede a nivel de la cadera.",
+      "Bajá de forma controlada volviendo el pie trasero al suelo primero.",
+      "Completá todas las repeticiones de un lado antes de cambiar."
+    ],
+    "execution_steps_en": [
+      "Stand in front of a bench or box holding a dumbbell in each hand.",
+      "Place one foot fully on the surface and drive through that heel to raise the body.",
+      "Bring the trailing leg up until the hip is at 90° or the knee is at hip level.",
+      "Lower under control, returning the trailing foot to the floor first.",
+      "Complete all reps on one side before switching."
+    ],
+    "common_errors_es": [
+      "Empujar con la pierna del suelo en lugar de la pierna elevada.",
+      "Dejar que la rodilla delantera caiga hacia adentro.",
+      "Bajar demasiado rápido sin controlar el excéntrico.",
+      "No colocar el pie completamente sobre la superficie."
+    ],
+    "common_errors_en": [
+      "Pushing off with the grounded leg instead of the elevated leg.",
+      "Letting the front knee cave inward.",
+      "Descending too fast without controlling the eccentric.",
+      "Not placing the full foot on the surface."
+    ],
+    "pro_tip_es": "Cuanto más alta la caja, mayor la activación del glúteo; usá una altura donde el muslo delantero esté paralelo o levemente por encima del suelo.",
+    "pro_tip_en": "The higher the box, the greater the glute activation; use a height where the front thigh is parallel to or slightly above the floor.",
+    "tertiary_muscles": ["Core", "Tibialis Anterior", "Peroneals"]
+  },
+  {
+    "slug": "dumbbell-sumo-squat",
+    "execution_steps_es": [
+      "Paráte con los pies más anchos que los hombros y las puntas de los pies apuntando hacia afuera a unos 45°.",
+      "Sujetá una mancuerna con ambas manos colgando entre las piernas.",
+      "Bajá en sentadilla manteniendo el torso erguido y las rodillas siguiendo la dirección de los pies.",
+      "Descendé hasta que los muslos estén paralelos al suelo o más abajo si la movilidad lo permite.",
+      "Empujá desde los talones para volver a la posición inicial."
+    ],
+    "execution_steps_en": [
+      "Stand with feet wider than shoulder-width and toes pointing outward at approximately 45°.",
+      "Hold a single dumbbell with both hands hanging between the legs.",
+      "Lower into a squat keeping the torso upright and knees tracking over the toes.",
+      "Descend until thighs are parallel to the floor or lower if mobility allows.",
+      "Drive through the heels to return to the starting position."
+    ],
+    "common_errors_es": [
+      "Inclinar el tronco hacia adelante perdiendo la postura erguida.",
+      "Dejar que las rodillas caigan hacia adentro.",
+      "No aprovechar el rango completo del movimiento.",
+      "Llevar el peso demasiado adelante en lugar de dejarlo colgar."
+    ],
+    "common_errors_en": [
+      "Leaning the torso forward and losing the upright position.",
+      "Letting the knees cave inward.",
+      "Not using the full range of motion.",
+      "Letting the weight drift forward instead of hanging straight down."
+    ],
+    "pro_tip_es": "La posición amplia activa los aductores y el glúteo en un rango diferente al de la sentadilla convencional; combiná ambas en tu entrenamiento para cobertura completa.",
+    "pro_tip_en": "The wide stance activates the adductors and glutes through a different range than a conventional squat; combine both in your training for complete coverage.",
+    "tertiary_muscles": ["Core", "Erector Spinae", "Hip External Rotators"]
+  },
+  {
+    "slug": "dumbbell-walking-lunge",
+    "execution_steps_es": [
+      "Paráte erguido con una mancuerna en cada mano y los pies juntos.",
+      "Dá un paso adelante con una pierna y bajá el cuerpo hasta que ambas rodillas queden a 90°.",
+      "Sin detener el movimiento, empujá desde el talón delantero y avanzá llevando la pierna trasera al frente para el siguiente paso.",
+      "Mantené el tronco erguido y los hombros sobre las caderas durante toda la trayectoria.",
+      "Continuálos pasos alternados hasta completar las repeticiones indicadas."
+    ],
+    "execution_steps_en": [
+      "Stand upright holding a dumbbell in each hand with feet together.",
+      "Step forward with one leg and lower the body until both knees are at 90°.",
+      "Without stopping, drive through the front heel and bring the rear leg forward for the next step.",
+      "Keep the torso upright and shoulders over the hips throughout.",
+      "Continue alternating steps until all indicated reps are complete."
+    ],
+    "common_errors_es": [
+      "Inclinarse hacia adelante con el tronco al dar el paso.",
+      "Valgo de rodilla en la pierna delantera.",
+      "Dar pasos demasiado cortos y no alcanzar los 90° de rodilla.",
+      "Perder el equilibrio al traspasar el peso entre piernas."
+    ],
+    "common_errors_en": [
+      "Leaning the torso forward when stepping.",
+      "Knee valgus in the front leg.",
+      "Taking short steps and failing to reach 90° knee flexion.",
+      "Losing balance when transferring weight between legs."
+    ],
+    "pro_tip_es": "Si te cuesta mantener el equilibrio al inicio, practicá primero estocadas estáticas; la versión caminando agrega demanda propioceptiva y cardiovascular.",
+    "pro_tip_en": "If balance is a challenge at first, practice stationary lunges first; the walking version adds proprioceptive and cardiovascular demand.",
+    "tertiary_muscles": ["Core", "Tibialis Anterior", "Peroneals"]
+  },
+  {
+    "slug": "glute-ham-developer-ghd",
+    "execution_steps_es": [
+      "Arrodilláte en la almohadilla del GHD con los pies bien anclados en los soportes.",
+      "Desde la posición erguida, bajá el torso hacia el suelo de forma excéntrica usando los isquiotibiales para frenar el movimiento.",
+      "Llegá al punto más bajo que el control muscular permita sin caer.",
+      "Contraé los isquiotibiales y los glúteos para volver a la posición inicial.",
+      "Mantené la espalda neutral en todo momento; no redondes la zona lumbar."
+    ],
+    "execution_steps_en": [
+      "Kneel on the GHD pad with the feet firmly anchored in the supports.",
+      "From the upright position, lower the torso toward the floor eccentrically using the hamstrings to brake the movement.",
+      "Reach the lowest point that muscular control allows without falling.",
+      "Contract the hamstrings and glutes to return to the starting position.",
+      "Keep the back neutral throughout; do not round the lumbar spine."
+    ],
+    "common_errors_es": [
+      "Usar la cadera en flexión-extensión para ayudar al movimiento en lugar de los isquiotibiales.",
+      "Bajar más rápido de lo que los músculos pueden controlar.",
+      "Redondear la espalda en la posición más baja.",
+      "Intentar el ejercicio sin una base de fuerza isquiotibial adecuada."
+    ],
+    "common_errors_en": [
+      "Using hip flexion-extension to assist the movement instead of the hamstrings.",
+      "Lowering faster than the muscles can control.",
+      "Rounding the back at the lowest position.",
+      "Attempting the exercise without an adequate hamstring strength base."
+    ],
+    "pro_tip_es": "Este es uno de los ejercicios más exigentes para los isquiotibiales; comenzá solo con la fase excéntrica (bajada con asistencia de los brazos) hasta tener la fuerza suficiente.",
+    "pro_tip_en": "This is one of the most demanding hamstring exercises; start with only the eccentric phase (lowering with arm assistance) until you have sufficient strength.",
+    "tertiary_muscles": ["Erector Spinae", "Gastrocnemius", "Core"]
+  },
+  {
+    "slug": "glute-kickback",
+    "execution_steps_es": [
+      "Colocáte en decúbito prono sobre un banco, abrazáte a él y dejá las piernas completamente fuera con las rodillas dobladas.",
+      "Elevá ambas piernas a la vez hasta la vertical contrayendo activamente los glúteos y los lumbares.",
+      "Sostenélo un instante en la posición alta y descendélas de forma controlada.",
+      "Mantené los lumbares contraídos isométricamente durante toda la serie para estabilizar la pelvis.",
+      "No uses impulso; el movimiento debe ser lento y deliberado."
+    ],
+    "execution_steps_en": [
+      "Lie prone on a bench, wrap your arms around it, and let both legs hang off the end with knees bent.",
+      "Raise both legs simultaneously toward vertical, actively contracting the glutes and lower back.",
+      "Hold briefly at the top position and lower under control.",
+      "Keep the lower back muscles contracted isometrically throughout to stabilize the pelvis.",
+      "Do not use momentum; the movement should be slow and deliberate."
+    ],
+    "common_errors_es": [
+      "Usar impulso para subir las piernas en lugar de contracción activa.",
+      "No llegar a la extensión completa de cadera.",
+      "Relajar los lumbares durante el movimiento.",
+      "Elevar solo una pierna alternativamente cuando el ejercicio requiere las dos."
+    ],
+    "common_errors_en": [
+      "Using momentum to raise the legs instead of active contraction.",
+      "Not reaching full hip extension.",
+      "Relaxing the lower back during the movement.",
+      "Alternating one leg at a time when the exercise requires both."
+    ],
+    "pro_tip_es": "La contracción isométrica de los lumbares es muy intensa en esta variante; si sentís molestia lumbar, reducí el rango o realizá el ejercicio de pie con soporte.",
+    "pro_tip_en": "The isometric lower back contraction is very intense in this variation; if you feel lumbar discomfort, reduce the range or perform the exercise standing with support.",
+    "tertiary_muscles": ["Erector Spinae", "Core", "Piriformis"]
+  },
+  {
+    "slug": "hack-squat-machine",
+    "execution_steps_es": [
+      "Colocáte con la espalda apoyada en el respaldo inclinado y los pies en la plataforma al ancho de los hombros.",
+      "Soltá los seguros y bajá de forma controlada flexionando las rodillas hasta que los muslos estén paralelos a la plataforma.",
+      "Empujá desde los talones y los medios pies para volver a la posición inicial sin bloquear las rodillas con brusquedad.",
+      "Mantené la espalda baja apoyada en el respaldo durante todo el movimiento.",
+      "Espirá durante el empuje; inspirá durante el descenso."
+    ],
+    "execution_steps_en": [
+      "Position yourself with the back against the angled pad and feet on the platform at shoulder width.",
+      "Release the safety handles and lower under control, bending the knees until the thighs are parallel to the platform.",
+      "Drive through the heels and mid-foot to return to the starting position without snapping the knees.",
+      "Keep the lower back in contact with the pad throughout the movement.",
+      "Exhale during the push; inhale during the descent."
+    ],
+    "common_errors_es": [
+      "Levantar los talones de la plataforma durante el descenso.",
+      "Dejar que las rodillas caigan hacia adentro.",
+      "No mantener la espalda en contacto con el respaldo.",
+      "Usar un rango de movimiento incompleto para manejar más peso."
+    ],
+    "common_errors_en": [
+      "Lifting the heels off the platform during the descent.",
+      "Letting the knees cave inward.",
+      "Losing back contact with the pad.",
+      "Using an incomplete range of motion to handle more weight."
+    ],
+    "pro_tip_es": "Colocar los pies más arriba en la plataforma activa más los glúteos e isquiotibiales; más abajo activa más el cuádriceps.",
+    "pro_tip_en": "Placing the feet higher on the platform activates more glutes and hamstrings; lower placement emphasizes the quadriceps.",
+    "tertiary_muscles": ["Core", "Tibialis Anterior", "Adductors"]
+  },
+  {
+    "slug": "hip-abductor-machine",
+    "execution_steps_es": [
+      "Sentáte en la máquina con la espalda bien apoyada y colocá las almohadillas en el exterior de las rodillas.",
+      "Abrí las piernas empujando contra las almohadillas hasta llegar al máximo recorrido cómodo.",
+      "Sostenélas un instante en la posición abierta apretando el glúteo medio.",
+      "Volvélas a la posición inicial de forma controlada sin dejar que el peso las jale.",
+      "Mantené el tronco estable; no te inclinés para ganar amplitud."
+    ],
+    "execution_steps_en": [
+      "Sit in the machine with back fully supported and pads on the outside of the knees.",
+      "Open the legs by pushing outward against the pads to the maximum comfortable range.",
+      "Hold briefly at the open position, squeezing the gluteus medius.",
+      "Return to the starting position under control without letting the weight pull the legs.",
+      "Keep the trunk stable; do not lean to gain extra range."
+    ],
+    "common_errors_es": [
+      "Inclinarse hacia adelante con el tronco para ayudar al movimiento.",
+      "Usar peso excesivo y reducir el rango de movimiento.",
+      "No mantener la contracción muscular en el punto de máxima apertura.",
+      "Dejar que el peso controle el retorno en lugar de frenarlo activamente."
+    ],
+    "common_errors_en": [
+      "Leaning the torso forward to assist the movement.",
+      "Using excessive weight and reducing the range of motion.",
+      "Not maintaining muscle contraction at maximum opening.",
+      "Letting the weight control the return instead of actively braking."
+    ],
+    "pro_tip_es": "Este ejercicio complementa la sentadilla y el peso muerto para la salud de la cadera; priorizá la calidad del movimiento por encima de la carga.",
+    "pro_tip_en": "This exercise complements squats and deadlifts for hip health; prioritize movement quality over load.",
+    "tertiary_muscles": ["Gluteus Minimus", "Piriformis", "Core"]
+  },
+  {
+    "slug": "hip-abductor-machine-2",
+    "execution_steps_es": [
+      "Paráte lateral a la polea baja con la tobillera en la pierna alejada de la máquina y sujetáte al aparato.",
+      "Permanecé lo suficientemente separado de la polea para permitir un recorrido significativo.",
+      "Llevá la pierna en abducción en todo el rango posible sin llegar al choque articular de la cadera.",
+      "No flexionés apenas la cadera; mantené el cuerpo lateral a la polea para que el movimiento sea abducción pura.",
+      "Retorná de forma controlada y repetí."
+    ],
+    "execution_steps_en": [
+      "Stand sideways to the low pulley with the ankle strap on the far leg and hold the machine for support.",
+      "Stand far enough from the pulley to allow a significant range of motion.",
+      "Lift the leg in abduction through the full available range without forcing the hip joint.",
+      "Minimize hip flexion; keep the body sideways to the pulley so the movement is pure abduction.",
+      "Return under control and repeat."
+    ],
+    "common_errors_es": [
+      "Flexionar la cadera en lugar de realizar una abducción lateral pura.",
+      "Estar demasiado cerca de la polea y no tener recorrido útil.",
+      "Inclinar lateralmente el tronco para compensar la falta de movilidad.",
+      "Superar el rango seguro y forzar el choque articular."
+    ],
+    "common_errors_en": [
+      "Flexing the hip instead of performing pure lateral abduction.",
+      "Standing too close to the pulley with no useful range of motion.",
+      "Leaning the trunk laterally to compensate for limited mobility.",
+      "Exceeding the safe range and forcing a hip impingement."
+    ],
+    "pro_tip_es": "Mantené el pie en posición neutra (ni rotado hacia adentro ni hacia afuera) para asegurarte de que el glúteo medio sea el músculo principal.",
+    "pro_tip_en": "Keep the foot in a neutral position (not rotated in or out) to ensure the gluteus medius is the primary muscle.",
+    "tertiary_muscles": ["Gluteus Minimus", "Sartorius", "Core"]
+  },
+  {
+    "slug": "hip-adductor-machine",
+    "execution_steps_es": [
+      "Sentáte en la máquina con la espalda apoyada y colocá las almohadillas en el interior de las rodillas.",
+      "Abrí las piernas hasta la posición inicial de estiramiento cómodo.",
+      "Cerrá las piernas empujando contra las almohadillas hacia adentro de forma controlada.",
+      "Sostenélas un instante en la posición cerrada y volvé al punto inicial de forma controlada.",
+      "Mantené el tronco estable y no uses el torso para generar fuerza."
+    ],
+    "execution_steps_en": [
+      "Sit in the machine with back supported and pads on the inside of the knees.",
+      "Open the legs to a comfortable initial stretch position.",
+      "Close the legs by pressing the pads inward in a controlled manner.",
+      "Hold briefly at the closed position and return to the start under control.",
+      "Keep the trunk stable and do not use the torso to generate force."
+    ],
+    "common_errors_es": [
+      "Usar el tronco o inclinarse para ayudar al cierre de las piernas.",
+      "Abrir las piernas en exceso y generar estiramiento doloroso.",
+      "Cerrar las piernas de forma explosiva sin control.",
+      "No completar el rango de movimiento en el cierre."
+    ],
+    "common_errors_en": [
+      "Using the trunk or leaning to help close the legs.",
+      "Opening the legs too wide and causing a painful stretch.",
+      "Closing the legs explosively without control.",
+      "Not completing the full range of motion at the close."
+    ],
+    "pro_tip_es": "Los aductores se trabajan muy poco con sentadillas convencionales; incluir esta máquina complementa el entrenamiento de piernas de forma eficiente.",
+    "pro_tip_en": "The adductors are underworked in conventional squats; including this machine efficiently complements leg training.",
+    "tertiary_muscles": ["Pectineus", "Obturator Externus", "Core"]
+  },
+  {
+    "slug": "hip-adductor-machine-2",
+    "execution_steps_es": [
+      "Sentáte en la versión de la máquina con el respaldo más inclinado hacia atrás y colocá las almohadillas en el interior de las rodillas.",
+      "Abrí las piernas hasta la posición de estiramiento inicial cómodo.",
+      "Cerrá las piernas de forma controlada empujando las almohadillas hacia adentro.",
+      "Sostenélas en la posición cerrada un instante antes de volver al inicio.",
+      "La mayor inclinación del respaldo añade trabajo a los músculos posteriores de la pierna; mantenélos activados durante la serie."
+    ],
+    "execution_steps_en": [
+      "Sit in the version of the machine with the back pad more reclined and place the pads on the inside of the knees.",
+      "Open the legs to a comfortable initial stretch.",
+      "Close the legs under control by pressing the pads inward.",
+      "Hold briefly at the closed position before returning to the start.",
+      "The increased back recline adds work to the posterior leg muscles; keep them engaged throughout the set."
+    ],
+    "common_errors_es": [
+      "Usar impulso del tronco en lugar de los aductores.",
+      "No controlar el retorno a la posición abierta.",
+      "Abrir demasiado las piernas forzando el estiramiento.",
+      "Ignorar la activación adicional de la musculatura posterior que ofrece esta variante."
+    ],
+    "common_errors_en": [
+      "Using trunk momentum instead of the adductors.",
+      "Not controlling the return to the open position.",
+      "Opening the legs too wide, forcing the stretch.",
+      "Ignoring the additional posterior muscle activation this variant offers."
+    ],
+    "pro_tip_es": "Esta variante con respaldo reclinado recluta más el aductor mayor en su porción posterior; es complementaria a la variante sedente estándar.",
+    "pro_tip_en": "This reclined back variant recruits more of the posterior portion of the adductor magnus; it complements the standard seated version.",
+    "tertiary_muscles": ["Adductor Magnus (posterior)", "Gluteus Maximus (deep)", "Core"]
+  },
+  {
+    "slug": "leg-extension-machine",
+    "execution_steps_es": [
+      "Sentáte en la máquina con la espalda apoyada y la almohadilla justo sobre el tobillo.",
+      "Extendé las rodillas hasta la posición recta de forma controlada, apretando el cuádriceps en la cima.",
+      "Sostenélo un instante y bajá de forma lenta controlando el descenso.",
+      "No bloqueés las rodillas con brusquedad en la extensión completa.",
+      "Mantenélos pies en posición neutra durante todo el movimiento."
+    ],
+    "execution_steps_en": [
+      "Sit in the machine with back supported and the pad just above the ankle.",
+      "Extend the knees to straight under control, squeezing the quad at the top.",
+      "Hold briefly, then lower slowly with a controlled descent.",
+      "Do not snap the knees into full extension.",
+      "Keep the feet in a neutral position throughout."
+    ],
+    "common_errors_es": [
+      "Usar impulso balanceando el tronco para completar las repeticiones.",
+      "Extender de forma explosiva y bloquear la rodilla bruscamente.",
+      "No bajar de forma controlada en la fase excéntrica.",
+      "Colocar la almohadilla muy alta sobre la tibia generando presión excesiva."
+    ],
+    "common_errors_en": [
+      "Using trunk swinging momentum to complete reps.",
+      "Extending explosively and snapping the knee.",
+      "Not lowering under control during the eccentric phase.",
+      "Placing the pad too high on the shin, creating excessive pressure."
+    ],
+    "pro_tip_es": "El movimiento de extensión de rodilla aislado es útil para la hipertrofia del cuádriceps; combinalo con ejercicios compuestos para resultados óptimos.",
+    "pro_tip_en": "The isolated knee extension is useful for quadriceps hypertrophy; combine it with compound exercises for optimal results.",
+    "tertiary_muscles": ["Tensor Fascia Latae", "Sartorius", "Core"]
+  },
+  {
+    "slug": "leg-extension-machine-2",
+    "execution_steps_es": [
+      "Sentáte con las puntas de los pies levemente giradas hacia adentro y apoyá el lateral del muslo en el banco.",
+      "Extendé la rodilla de forma controlada hasta aproximadamente 90° sin llegar a la extensión completa.",
+      "Apretá el vasto externo en el punto de mayor tensión y descendé de forma lenta.",
+      "Usá cargas ligeras en esta variante; es específica para rehabilitación o corrección de desequilibrios.",
+      "Solo realizá esta variante por indicación específica; la extensión completa no se recomienda en esta posición."
+    ],
+    "execution_steps_en": [
+      "Sit with the toes slightly turned inward and rest the lateral thigh against the bench.",
+      "Extend the knee under control to approximately 90° without reaching full extension.",
+      "Squeeze the vastus lateralis at the peak tension point and lower slowly.",
+      "Use light loads for this variation; it is specific to rehabilitation or imbalance correction.",
+      "Only perform this variation on specific indication; full extension is not recommended in this position."
+    ],
+    "common_errors_es": [
+      "Llegar a la extensión completa en esta variante.",
+      "Usar demasiado peso para una variante de corrección muscular.",
+      "No mantener la rotación interna durante todo el recorrido.",
+      "Realizar esta variante sin una indicación técnica o terapéutica específica."
+    ],
+    "common_errors_en": [
+      "Reaching full extension in this variation.",
+      "Using too much weight for a muscle-correction variant.",
+      "Not maintaining the internal rotation throughout the range.",
+      "Performing this variant without a specific technical or therapeutic indication."
+    ],
+    "pro_tip_es": "Esta variante está orientada a la rehabilitación de desequilibrios en el cuádriceps; no la uses como ejercicio principal de masa.",
+    "pro_tip_en": "This variation targets quadriceps imbalance rehabilitation; do not use it as a primary mass-building exercise.",
+    "tertiary_muscles": ["Tensor Fascia Latae", "Sartorius", "Rectus Femoris"]
+  },
+  {
+    "slug": "leg-press-machine",
+    "execution_steps_es": [
+      "Sentáte en la prensa con la espalda y la pelvis bien apoyadas en el respaldo.",
+      "Colocá los pies al ancho de los hombros en la plataforma y soltá los seguros.",
+      "Bajá la plataforma de forma controlada hasta que las rodillas lleguen aproximadamente a 90°.",
+      "Empujá desde los talones y el centro del pie para volver a la posición inicial sin bloquear las rodillas.",
+      "Mantenélos lumbares en contacto con el respaldo durante todo el movimiento."
+    ],
+    "execution_steps_en": [
+      "Sit in the press with the back and pelvis fully supported against the pad.",
+      "Place feet shoulder-width apart on the platform and release the safety handles.",
+      "Lower the platform under control until the knees reach approximately 90°.",
+      "Drive through the heels and mid-foot to return to the starting position without locking the knees.",
+      "Keep the lower back in contact with the pad throughout the movement."
+    ],
+    "common_errors_es": [
+      "Dejar que la espalda baja se despegue del respaldo al bajar.",
+      "Doblar las rodillas más allá de 90° sin el rango de movilidad adecuado.",
+      "Bloqueár las rodillas de forma brusca al final del empuje.",
+      "Colocar los pies demasiado juntos, aumentando el stress en la rodilla."
+    ],
+    "common_errors_en": [
+      "Letting the lower back peel off the pad during the descent.",
+      "Bending the knees past 90° without adequate mobility.",
+      "Snapping the knees at the end of the push.",
+      "Placing feet too close together, increasing knee stress."
+    ],
+    "pro_tip_es": "Colocar los pies en la parte alta de la plataforma aumenta la activación de glúteos e isquiotibiales; más abajo activa más el cuádriceps.",
+    "pro_tip_en": "Placing feet higher on the platform increases glute and hamstring activation; lower foot placement emphasizes the quadriceps.",
+    "tertiary_muscles": ["Calves", "Core", "Hip Flexors (eccentric)"]
+  },
+  {
+    "slug": "leg-press-machine-45",
+    "execution_steps_es": [
+      "Recostáte en la plataforma inclinada a 45° con la espalda completamente apoyada.",
+      "Colocá los pies al ancho de los hombros en la plataforma y soltá los seguros.",
+      "Bajá la plataforma de forma controlada flexionando las rodillas sin despegar los lumbares.",
+      "Empujá desde los talones hasta casi la extensión completa sin bloquear las rodillas.",
+      "Respirá: inspirá en el descenso, espirá en el empuje."
+    ],
+    "execution_steps_en": [
+      "Recline on the 45° angled platform with the back fully supported.",
+      "Place feet shoulder-width apart on the platform and release the safety handles.",
+      "Lower the platform under control by bending the knees without letting the lower back peel off.",
+      "Drive through the heels to near full extension without locking the knees.",
+      "Breathe: inhale on the descent, exhale on the push."
+    ],
+    "common_errors_es": [
+      "Dejar que los lumbares se curven al bajar la plataforma demasiado.",
+      "Bloqueár las rodillas de golpe en la extensión.",
+      "Usar solo la punta del pie en lugar del talón y el centro del pie.",
+      "Soltar los seguros sin verificar que los pies estén bien posicionados."
+    ],
+    "common_errors_en": [
+      "Letting the lower back curl when lowering the platform too far.",
+      "Snapping the knees into extension.",
+      "Using only the toes instead of the heel and mid-foot.",
+      "Releasing the safety handles without verifying foot placement."
+    ],
+    "pro_tip_es": "La prensa a 45° permite cargar más peso que otras variantes con menos carga espinal; aprovechá esto para series de alto volumen de forma segura.",
+    "pro_tip_en": "The 45° press allows heavier loading than other variants with less spinal compression; use this for high-volume sets safely.",
+    "tertiary_muscles": ["Calves", "Adductors", "Core"]
+  },
+  {
+    "slug": "leg-press-machine-horizontalseated",
+    "execution_steps_es": [
+      "Sentáte en la prensa horizontal con la espalda apoyada en el respaldo vertical.",
+      "Colocá los pies al ancho de los hombros en la plataforma y soltá los seguros.",
+      "Empujá la plataforma hacia adelante hasta casi la extensión completa de las rodillas.",
+      "Volvé la plataforma de forma controlada hasta que las rodillas lleguen a 90°.",
+      "Mantenélos pies planos en la plataforma y los lumbares en contacto con el respaldo."
+    ],
+    "execution_steps_en": [
+      "Sit in the horizontal press with the back against the vertical support.",
+      "Place feet shoulder-width apart on the platform and release the safety handles.",
+      "Push the platform forward to near full knee extension.",
+      "Return the platform under control until the knees reach 90°.",
+      "Keep the feet flat on the platform and the lower back in contact with the pad."
+    ],
+    "common_errors_es": [
+      "Bloqueár las rodillas de forma brusca en la extensión.",
+      "Dejar que las rodillas caigan hacia adentro durante el movimiento.",
+      "No controlar el retorno y dejar que el peso jale las piernas.",
+      "Despegar la espalda del respaldo al empujar."
+    ],
+    "common_errors_en": [
+      "Snapping the knees into extension.",
+      "Letting the knees cave inward during the movement.",
+      "Not controlling the return and letting the weight pull the legs.",
+      "Peeling the back off the pad during the push."
+    ],
+    "pro_tip_es": "La posición sentada de esta variante genera menor compresión en la columna que la prensa a 45°; es una buena alternativa para personas con molestias lumbares.",
+    "pro_tip_en": "The seated position of this variant generates less spinal compression than the 45° press; it is a good alternative for those with lower back discomfort.",
+    "tertiary_muscles": ["Calves", "Adductors", "Core"]
+  },
+  {
+    "slug": "lunges",
+    "execution_steps_es": [
+      "Paráte erguido con los pies juntos y las manos en las caderas o con peso adicional.",
+      "Dá un paso adelante con una pierna y bajá hasta que ambas rodillas estén a 90°.",
+      "La rodilla delantera no debe sobrepasar el tobillo; la trasera se acerca pero no toca el suelo.",
+      "Empujá desde el talón delantero para volver a la posición inicial.",
+      "Alternálos lados de forma controlada durante toda la serie."
+    ],
+    "execution_steps_en": [
+      "Stand upright with feet together and hands on hips or holding additional weight.",
+      "Step forward with one leg and lower until both knees are at 90°.",
+      "The front knee should not pass the ankle; the rear knee approaches but does not touch the floor.",
+      "Drive through the front heel to return to the starting position.",
+      "Alternate sides in a controlled manner throughout the set."
+    ],
+    "common_errors_es": [
+      "Dejar que la rodilla delantera pase por delante del tobillo.",
+      "Inclinar el tronco excesivamente hacia adelante.",
+      "Dar pasos demasiado cortos limitando la profundidad.",
+      "Valgo de rodilla en la pierna delantera."
+    ],
+    "common_errors_en": [
+      "Letting the front knee travel past the ankle.",
+      "Leaning the torso excessively forward.",
+      "Taking short steps that limit depth.",
+      "Knee valgus in the front leg."
+    ],
+    "pro_tip_es": "Mantené el tronco perfectamente vertical durante el descenso; imagináte que un hilo jala la parte superior de tu cabeza hacia el techo.",
+    "pro_tip_en": "Keep the torso perfectly vertical during the descent; imagine a string pulling the top of your head toward the ceiling.",
+    "tertiary_muscles": ["Core", "Tibialis Anterior", "Peroneals"]
+  },
+  {
+    "slug": "lying-leg-curl-machine",
+    "execution_steps_es": [
+      "Colocáte en decúbito prono con los talones bajo la almohadilla y las rodillas justo en el borde del banco.",
+      "Desde la extensión completa, flexioná las rodillas llevando los talones hacia los glúteos de forma controlada.",
+      "Apretá los isquiotibiales en el punto de máxima flexión.",
+      "Bajá de forma lenta y controlada sin dejar que el peso caiga.",
+      "Mantenélas caderas en contacto con el banco durante toda la serie."
+    ],
+    "execution_steps_en": [
+      "Lie prone with the heels under the pad and knees just at the bench edge.",
+      "From full extension, flex the knees bringing the heels toward the glutes under control.",
+      "Squeeze the hamstrings at maximum flexion.",
+      "Lower slowly and under control without letting the weight drop.",
+      "Keep the hips in contact with the bench throughout the set."
+    ],
+    "common_errors_es": [
+      "Levantar las caderas del banco para ayudar al movimiento.",
+      "No controlar el descenso y dejar que el peso jale hacia abajo.",
+      "Usar excesivo peso y acortar el rango de movimiento.",
+      "No llegar a la extensión completa entre repeticiones."
+    ],
+    "common_errors_en": [
+      "Lifting the hips off the bench to assist the movement.",
+      "Not controlling the descent and letting the weight pull down.",
+      "Using excessive weight and shortening the range of motion.",
+      "Not reaching full extension between reps."
+    ],
+    "pro_tip_es": "La versión acostada activa más el bíceps femoral (porción larga); combinala con la versión sentada para trabajar todos los isquiotibiales.",
+    "pro_tip_en": "The prone version activates more of the biceps femoris (long head); combine it with the seated version to work all hamstring heads.",
+    "tertiary_muscles": ["Gastrocnemius", "Popliteus", "Sartorius"]
+  },
+  {
+    "slug": "lying-leg-curl-machine-2",
+    "execution_steps_es": [
+      "Colocáte en decúbito prono con los pies en rotación interna (puntas hacia adentro) y el lateral de la pierna apoyado.",
+      "Flexioná las rodillas de forma controlada llevando los talones hacia los glúteos.",
+      "Esta posición traslada mayor trabajo al semimembranoso y semitendinoso.",
+      "Bajá de forma lenta sin dejar que el peso jale.",
+      "Usá cargas moderadas dado el mayor estrés sobre los tendones en esta posición."
+    ],
+    "execution_steps_en": [
+      "Lie prone with feet internally rotated (toes inward) and the lateral leg resting against the bench.",
+      "Flex the knees under control, bringing the heels toward the glutes.",
+      "This position shifts more work to the semimembranosus and semitendinosus.",
+      "Lower slowly without letting the weight pull down.",
+      "Use moderate loads given the increased tendon stress in this position."
+    ],
+    "common_errors_es": [
+      "Usar demasiado peso en una posición que ya es más exigente para los tendones.",
+      "Perder la rotación interna durante el movimiento.",
+      "Levantar las caderas para completar las repeticiones.",
+      "Realizar esta variante sin una razón técnica específica."
+    ],
+    "common_errors_en": [
+      "Using too much weight in a position that is already more tendon-demanding.",
+      "Losing the internal rotation during the movement.",
+      "Raising the hips to complete reps.",
+      "Performing this variant without a specific technical reason."
+    ],
+    "pro_tip_es": "Esta variante permite dirigir el trabajo hacia la parte interna del muslo posterior; combinala con la versión estándar para desarrollo completo de isquiotibiales.",
+    "pro_tip_en": "This variant directs work toward the inner posterior thigh; combine it with the standard version for complete hamstring development.",
+    "tertiary_muscles": ["Gracilis", "Sartorius", "Popliteus"]
+  },
+  {
+    "slug": "seated-calf-raise-bar",
+    "execution_steps_es": [
+      "Sentáte en un banco con las puntas de los pies sobre una superficie elevada y una barra o mancuernas sobre los muslos.",
+      "Desde la dorsiflexión máxima (talones bajos), elevá los talones en flexión plantar completa.",
+      "Sostenélos en la cima un segundo y bajá de forma lenta y controlada.",
+      "Mantenélas rodillas a 90° durante todo el movimiento para trabajar el sóleo.",
+      "No rebotés en la posición de máximo estiramiento."
+    ],
+    "execution_steps_en": [
+      "Sit on a bench with the balls of the feet on an elevated surface and a bar or dumbbells on the thighs.",
+      "From maximum dorsiflexion (heels low), raise the heels into full plantar flexion.",
+      "Hold at the top for one second and lower slowly under control.",
+      "Keep the knees at 90° throughout to target the soleus.",
+      "Do not bounce at the maximum stretch position."
+    ],
+    "common_errors_es": [
+      "Rebotar en la posición de estiramiento.",
+      "No mantener las rodillas a 90° durante el movimiento.",
+      "No llegar a la extensión completa del tobillo en la cima.",
+      "Usar demasiado peso y perder el control del movimiento."
+    ],
+    "common_errors_en": [
+      "Bouncing at the stretch position.",
+      "Not keeping the knees at 90° during the movement.",
+      "Not reaching full ankle extension at the top.",
+      "Using too much weight and losing movement control."
+    ],
+    "pro_tip_es": "Las rodillas dobladas a 90° relajan los gemelos y ponen el trabajo principalmente en el sóleo; esta variante es clave para desarrollar la pantorrilla completa.",
+    "pro_tip_en": "Knees bent at 90° relax the gastrocnemius and place the work primarily on the soleus; this variant is key to developing the full calf.",
+    "tertiary_muscles": ["Tibialis Posterior", "Peroneals", "Flexor Digitorum Longus"]
+  },
+  {
+    "slug": "seated-calf-raise-machine",
+    "execution_steps_es": [
+      "Sentáte en la máquina con las almohadillas sobre los muslos y las puntas de los pies en la plataforma.",
+      "Desde la dorsiflexión máxima, elevá los talones hasta la extensión completa del tobillo.",
+      "Sostenélos en la cima un segundo y bajá de forma lenta y controlada.",
+      "Descargá el peso antes de retirarte de la máquina.",
+      "No rebotés en la posición de máximo estiramiento."
+    ],
+    "execution_steps_en": [
+      "Sit in the machine with pads on the thighs and balls of the feet on the platform.",
+      "From maximum dorsiflexion, raise the heels to full ankle extension.",
+      "Hold for one second at the top and lower slowly and under control.",
+      "Release the weight before getting off the machine.",
+      "Do not bounce at the maximum stretch position."
+    ],
+    "common_errors_es": [
+      "Rebotar en la posición baja para usar impulso.",
+      "No llegar a la extensión completa del tobillo.",
+      "Despegar los talones de la plataforma al inicio del movimiento.",
+      "Usar peso excesivo que impide el rango completo."
+    ],
+    "common_errors_en": [
+      "Bouncing at the bottom to use momentum.",
+      "Not reaching full ankle extension.",
+      "Lifting the heels off the platform at the start of the movement.",
+      "Using excessive weight that prevents full range."
+    ],
+    "pro_tip_es": "El sóleo responde especialmente bien a series largas (12-20 reps) con tempo lento; priorizá tiempo bajo tensión sobre carga máxima.",
+    "pro_tip_en": "The soleus responds especially well to longer sets (12–20 reps) with a slow tempo; prioritize time under tension over maximum load.",
+    "tertiary_muscles": ["Tibialis Posterior", "Peroneals", "Flexor Hallucis Longus"]
+  },
+  {
+    "slug": "seated-calf-raise-machine-2",
+    "execution_steps_es": [
+      "Sentáte en la máquina donde las puntas de los pies descienden en flexión plantar (diseño invertido).",
+      "Desde la posición inicial, elevá los talones empujando las puntas de los pies hacia abajo.",
+      "Llegá a la extensión máxima del tobillo y sostenélo un segundo.",
+      "Volvé de forma controlada al punto inicial sin rebotar.",
+      "Descargá el peso antes de salir de la máquina."
+    ],
+    "execution_steps_en": [
+      "Sit in the machine where the toes descend in plantar flexion (inverted design).",
+      "From the starting position, raise the heels by pushing the toes downward.",
+      "Reach maximum ankle extension and hold for one second.",
+      "Return under control to the starting point without bouncing.",
+      "Release the weight before getting off the machine."
+    ],
+    "common_errors_es": [
+      "No llegar al rango completo dado el diseño limitado de algunos aparatos.",
+      "Despegar los pies de la plataforma en lugar de mover solo el tobillo.",
+      "Usar carga excesiva en una máquina donde el rango es ya limitado.",
+      "No descargar el peso al terminar la serie."
+    ],
+    "common_errors_en": [
+      "Not achieving full range given the limited design of some machines.",
+      "Lifting the feet off the platform instead of moving only the ankle.",
+      "Using excessive load on a machine where range is already limited.",
+      "Not releasing the weight at the end of the set."
+    ],
+    "pro_tip_es": "Verificá el rango real de movimiento disponible en la máquina antes de cargar peso; algunos diseños tienen recorrido muy corto.",
+    "pro_tip_en": "Check the actual available range of motion on the machine before loading weight; some designs have a very short stroke.",
+    "tertiary_muscles": ["Tibialis Posterior", "Peroneals", "Flexor Digitorum Longus"]
+  },
+  {
+    "slug": "seated-leg-curl-machine",
+    "execution_steps_es": [
+      "Sentáte con la espalda apoyada en el respaldo y la almohadilla superior sobre los muslos.",
+      "Colocá los talones sobre la almohadilla inferior y aseguráte de que las rodillas queden alineadas con el eje de la máquina.",
+      "Flexioná las rodillas llevando los talones hacia abajo y hacia atrás en el rango completo.",
+      "Apretá los isquiotibiales en el punto de máxima flexión y volvé de forma controlada.",
+      "No uses el tronco para ayudar al movimiento."
+    ],
+    "execution_steps_en": [
+      "Sit with the back against the pad and the upper pad resting on the thighs.",
+      "Place the heels on the lower pad and ensure the knees align with the machine axis.",
+      "Flex the knees by bringing the heels down and back through the full range.",
+      "Squeeze the hamstrings at maximum flexion and return under control.",
+      "Do not use the trunk to assist the movement."
+    ],
+    "common_errors_es": [
+      "No alinear las rodillas con el eje de la máquina, generando estrés articular.",
+      "Usar el tronco hacia adelante para ayudar al movimiento.",
+      "No llegar al rango completo de flexión.",
+      "Relajar la tensión en la fase excéntrica."
+    ],
+    "common_errors_en": [
+      "Not aligning the knees with the machine axis, creating joint stress.",
+      "Using the trunk forward to assist the movement.",
+      "Not reaching the full range of flexion.",
+      "Releasing tension in the eccentric phase."
+    ],
+    "pro_tip_es": "La versión sentada estira los isquiotibiales desde la cadera y activa todos los cabezas del músculo de forma más equilibrada que la versión acostada.",
+    "pro_tip_en": "The seated version stretches the hamstrings from the hip and activates all heads more evenly than the prone version.",
+    "tertiary_muscles": ["Gastrocnemius", "Popliteus", "Gracilis"]
+  },
+  {
+    "slug": "side-leg-raise",
+    "execution_steps_es": [
+      "Recostáte de lado en el suelo con el cuerpo en línea recta y la cabeza apoyada en el brazo extendido.",
+      "Desde la posición de piernas juntas, elevá la pierna superior en abducción sin doblar la cintura.",
+      "Llegá al máximo rango de abducción controlada sin rotar la cadera.",
+      "Bajá de forma controlada sin apoyar la pierna entre repeticiones para mantener la tensión.",
+      "Completá todas las repeticiones de un lado antes de girar."
+    ],
+    "execution_steps_en": [
+      "Lie on your side with the body in a straight line and the head resting on the extended arm.",
+      "From the legs-together position, raise the top leg in abduction without bending at the waist.",
+      "Reach maximum controlled abduction range without hip rotation.",
+      "Lower under control without resting the leg between reps to maintain tension.",
+      "Complete all reps on one side before rolling over."
+    ],
+    "common_errors_es": [
+      "Doblar la cintura hacia adelante en lugar de realizar una abducción pura.",
+      "Rotar la cadera y llevar la pierna hacia adelante.",
+      "No controlar el descenso y dejar que la pierna caiga.",
+      "Elevar la pierna demasiado alto forzando la articulación de la cadera."
+    ],
+    "common_errors_en": [
+      "Bending at the waist instead of performing pure abduction.",
+      "Rotating the hip and bringing the leg forward.",
+      "Not controlling the descent and letting the leg fall.",
+      "Lifting the leg too high and forcing the hip joint."
+    ],
+    "pro_tip_es": "Colocá una tobillera lastrada para aumentar la resistencia progresivamente; el peso corporal solo puede volverse insuficiente con el tiempo.",
+    "pro_tip_en": "Use an ankle weight to progressively increase resistance; bodyweight alone may become insufficient over time.",
+    "tertiary_muscles": ["Gluteus Minimus", "Piriformis", "Core"]
+  },
+  {
+    "slug": "smith-machine-calf-raise",
+    "execution_steps_es": [
+      "Colocá la barra de la máquina Smith sobre los hombros y paráte con las puntas de los pies en el borde de una plataforma.",
+      "Desde la dorsiflexión máxima, elevá los talones hasta la extensión completa del tobillo.",
+      "Sostenélos en la cima un segundo y bajá de forma lenta y controlada.",
+      "Mantenélas rodillas levemente flexionadas y fijas durante todo el movimiento.",
+      "No rebotés en la posición de máximo estiramiento."
+    ],
+    "execution_steps_en": [
+      "Place the Smith machine bar on the shoulders and stand with the balls of the feet on the edge of a platform.",
+      "From maximum dorsiflexion, raise the heels to full ankle extension.",
+      "Hold for one second at the top and lower slowly under control.",
+      "Keep the knees slightly bent and fixed throughout.",
+      "Do not bounce at the maximum stretch position."
+    ],
+    "common_errors_es": [
+      "Rebotar en la posición de estiramiento.",
+      "No llegar a la extensión completa del tobillo.",
+      "Doblar las rodillas para ayudar al movimiento.",
+      "Usar demasiado peso comprometiendo el rango de movimiento."
+    ],
+    "common_errors_en": [
+      "Bouncing at the stretch position.",
+      "Not reaching full ankle extension.",
+      "Bending the knees to assist the movement.",
+      "Using too much weight and compromising range of motion."
+    ],
+    "pro_tip_es": "La guía de la máquina Smith permite concentrarse en el tobillo sin preocuparse por el equilibrio, lo que facilita series de alto volumen y carga.",
+    "pro_tip_en": "The Smith machine guide allows full focus on the ankle without balance concerns, making it easier to perform high-volume, heavy sets.",
+    "tertiary_muscles": ["Tibialis Anterior", "Peroneals", "Soleus"]
+  },
+  {
+    "slug": "smith-machine-hip-thrust",
+    "execution_steps_es": [
+      "Apoyá los hombros en un banco y colocá la barra de la Smith sobre las caderas protegidas con una almohadilla.",
+      "Con los pies apoyados en el suelo al ancho de las caderas, bajá las caderas hacia el suelo de forma controlada.",
+      "Empujá las caderas hacia arriba hasta la extensión completa apretando los glúteos.",
+      "Sostenélos en la cima un segundo y volvé de forma controlada.",
+      "Ajustá la altura de la barra antes de comenzar la serie."
+    ],
+    "execution_steps_en": [
+      "Rest the upper back on a bench and place the Smith bar across the hips protected by a pad.",
+      "With feet flat on the floor at hip width, lower the hips toward the floor under control.",
+      "Drive the hips upward to full extension, squeezing the glutes.",
+      "Hold for one second at the top and return under control.",
+      "Adjust the bar height before starting the set."
+    ],
+    "common_errors_es": [
+      "Arquear la espalda lumbar en exceso en lugar de extender desde la cadera.",
+      "No usar almohadilla protectora en la barra.",
+      "No llegar a la extensión completa de cadera.",
+      "Dejar que las rodillas caigan hacia adentro."
+    ],
+    "common_errors_en": [
+      "Hyperextending the lower back instead of extending from the hip.",
+      "Not using a protective pad on the bar.",
+      "Not reaching full hip extension.",
+      "Letting the knees fall inward."
+    ],
+    "pro_tip_es": "La máquina Smith permite cargas más altas de forma segura al no requerir equilibrio; usá esto a tu favor para sobrecargar progresivamente los glúteos.",
+    "pro_tip_en": "The Smith machine allows heavier safe loading by removing the balance requirement; use this advantage for progressive glute overload.",
+    "tertiary_muscles": ["Core", "Adductors", "Tibialis Anterior"]
+  },
+  {
+    "slug": "smith-machine-lunge",
+    "execution_steps_es": [
+      "Colocá la barra de la Smith sobre los hombros y paráte erguido dentro de la máquina.",
+      "Dá un paso adelante con una pierna y bajá hasta que ambas rodillas queden a 90°.",
+      "Mantené el tronco erguido y la rodilla delantera alineada con el tobillo.",
+      "Empujá desde el talón delantero para volver a la posición inicial.",
+      "Completá todas las repeticiones de un lado antes de cambiar el paso."
+    ],
+    "execution_steps_en": [
+      "Place the Smith bar on the shoulders and stand upright inside the machine.",
+      "Step forward with one leg and lower until both knees are at 90°.",
+      "Keep the torso upright and the front knee aligned over the front ankle.",
+      "Drive through the front heel to return to the starting position.",
+      "Complete all reps on one side before changing the step."
+    ],
+    "common_errors_es": [
+      "Dejar que la rodilla delantera pase por delante del tobillo.",
+      "Inclinarse hacia adelante con el tronco al descender.",
+      "Valgo de rodilla en la pierna delantera.",
+      "Bloquear los seguros sin haber completado la repetición."
+    ],
+    "common_errors_en": [
+      "Letting the front knee travel past the ankle.",
+      "Leaning the torso forward during the descent.",
+      "Knee valgus in the front leg.",
+      "Engaging the safety handles before completing the rep."
+    ],
+    "pro_tip_es": "La guía de la Smith elimina la demanda de equilibrio, permitiéndote enfocarte en la profundidad y la activación muscular.",
+    "pro_tip_en": "The Smith guide removes the balance demand, allowing you to focus entirely on depth and muscle activation.",
+    "tertiary_muscles": ["Core", "Tibialis Anterior", "Hip Flexors"]
+  },
+  {
+    "slug": "smith-machine-squat",
+    "execution_steps_es": [
+      "Ajustá la barra de la Smith a la altura de los hombros y colocátela sobre la parte alta de la espalda.",
+      "Colocá los pies ligeramente adelantados respecto a la vertical de la barra al ancho de los hombros.",
+      "Bajá en sentadilla de forma controlada hasta que los muslos estén paralelos al suelo.",
+      "Empujá desde los talones para volver a la posición inicial.",
+      "Espirá en el ascenso; inspirá en el descenso."
+    ],
+    "execution_steps_en": [
+      "Set the Smith bar at shoulder height and position it on the upper back.",
+      "Place feet slightly forward of the bar's vertical line, shoulder-width apart.",
+      "Lower into a squat under control until the thighs are parallel to the floor.",
+      "Drive through the heels to return to the starting position.",
+      "Exhale on the ascent; inhale on the descent."
+    ],
+    "common_errors_es": [
+      "Colocar los pies directamente debajo de la barra en lugar de ligeramente adelantados.",
+      "Dejar que las rodillas caigan hacia adentro.",
+      "No alcanzar la profundidad paralela.",
+      "Bloqueár las rodillas de forma brusca al terminar."
+    ],
+    "common_errors_en": [
+      "Placing feet directly under the bar instead of slightly forward.",
+      "Letting the knees cave inward.",
+      "Not reaching parallel depth.",
+      "Snapping the knees at the end of the movement."
+    ],
+    "pro_tip_es": "La guía de la Smith limita el movimiento natural de la barra; colocálos pies ligeramente adelantados compensa esta restricción y reduce el stress lumbar.",
+    "pro_tip_en": "The Smith guide limits the bar's natural path; placing feet slightly forward compensates for this restriction and reduces lumbar stress.",
+    "tertiary_muscles": ["Core", "Erector Spinae", "Tibialis Anterior"]
+  },
+  {
+    "slug": "smith-machine-squat-2",
+    "execution_steps_es": [
+      "Colocá la barra en la posición de sentadilla convencional sobre la espalda alta dentro del multipower.",
+      "Posicionálos pies más adelantados que en una sentadilla libre; no hay riesgo de caer hacia atrás.",
+      "Bajá de forma controlada hasta la profundidad deseada manteniendo la espalda recta.",
+      "Empujá desde los talones para volver a la posición inicial.",
+      "El glúteo trabajará de forma más intensa con esta posición de pies adelantados."
+    ],
+    "execution_steps_en": [
+      "Place the bar in the conventional squat position on the upper back inside the Smith machine.",
+      "Position the feet further forward than in a free-weight squat; there is no risk of falling backward.",
+      "Lower under control to the desired depth while keeping the back straight.",
+      "Drive through the heels to return to the starting position.",
+      "The glutes will work more intensely with this forward foot position."
+    ],
+    "common_errors_es": [
+      "Colocar los pies demasiado juntos aumentando el estrés en la rodilla.",
+      "Dejar que las rodillas caigan hacia adentro.",
+      "No aprovechar la posición de pies adelantados para trabajar más el glúteo.",
+      "Usar el equilibrio del Smith para compensar una técnica deficiente."
+    ],
+    "common_errors_en": [
+      "Placing feet too close together, increasing knee stress.",
+      "Letting the knees cave inward.",
+      "Not taking advantage of the forward foot position to increase glute work.",
+      "Using the Smith balance to compensate for poor technique."
+    ],
+    "pro_tip_es": "Con los pies adelantados en el Smith, la tensión en la rótula se reduce y el glúteo trabaja de forma más intensa; es una ventaja táctica de esta variante.",
+    "pro_tip_en": "With feet forward on the Smith, patellar stress is reduced and the glute works more intensely; this is a tactical advantage of this variant.",
+    "tertiary_muscles": ["Core", "Erector Spinae", "Adductors"]
+  },
+  {
+    "slug": "standing-cable-glute-extension",
+    "execution_steps_es": [
+      "Sentáte con las rodillas flexionadas 90° y los talones sobre un escalón bajo.",
+      "Colocá un disco o lastre sobre el empeine del pie.",
+      "Elevá el pie hasta el máximo recorrido posible, aproximadamente 30°, de forma controlada.",
+      "Sostenélo un instante en la parte alta y descendélo de nuevo.",
+      "Respirá de forma natural durante todo el ejercicio."
+    ],
+    "execution_steps_en": [
+      "Sit with knees bent at 90° and heels on a low step.",
+      "Place a weight plate or similar load on the top of the foot.",
+      "Raise the foot to the maximum available range, approximately 30°, in a controlled manner.",
+      "Hold briefly at the top and lower back down.",
+      "Breathe naturally throughout the exercise."
+    ],
+    "common_errors_es": [
+      "Superar los 30° de elevación forzando el rango articular del tobillo.",
+      "Usar demasiado peso y perder el control del movimiento.",
+      "No mantener las rodillas a 90° durante la serie.",
+      "Ejecutar el movimiento de forma rápida sin tiempo bajo tensión."
+    ],
+    "common_errors_en": [
+      "Exceeding 30° of elevation and forcing the ankle joint range.",
+      "Using too much weight and losing movement control.",
+      "Not keeping the knees at 90° during the set.",
+      "Executing the movement quickly without time under tension."
+    ],
+    "pro_tip_es": "Este es un ejercicio complementario para el tibial anterior y los extensores de los dedos; usálo en volúmenes moderados como parte de un trabajo de tobillo equilibrado.",
+    "pro_tip_en": "This is a complementary exercise for the tibialis anterior and toe extensors; use it in moderate volumes as part of balanced ankle work.",
+    "tertiary_muscles": ["Extensor Hallucis Longus", "Peroneus Tertius", "Core"]
+  },
+  {
+    "slug": "standing-cable-hamstring-curl",
+    "execution_steps_es": [
+      "Colocáte la tobillera y paráte de espaldas a la polea baja.",
+      "Desde la posición erguida, flexioná la rodilla llevando el talón hacia el glúteo de forma controlada.",
+      "Apretá los isquiotibiales en el punto de máxima flexión.",
+      "Bajá de forma controlada hasta casi la extensión completa sin apoyar el pie.",
+      "Completá todas las repeticiones de un lado antes de cambiar."
+    ],
+    "execution_steps_en": [
+      "Attach the ankle strap and stand facing away from the low cable.",
+      "From an upright position, flex the knee bringing the heel toward the glute under control.",
+      "Squeeze the hamstrings at maximum flexion.",
+      "Lower under control to near full extension without resting the foot.",
+      "Complete all reps on one side before switching."
+    ],
+    "common_errors_es": [
+      "Inclinar el tronco hacia adelante para compensar la resistencia.",
+      "Usar impulso del tronco en lugar de la flexión activa de rodilla.",
+      "No llegar a la extensión completa entre repeticiones.",
+      "Usar demasiado peso y acortar el rango de movimiento."
+    ],
+    "common_errors_en": [
+      "Leaning the torso forward to compensate for the resistance.",
+      "Using trunk momentum instead of active knee flexion.",
+      "Not reaching full extension between reps.",
+      "Using too much weight and shortening the range of motion."
+    ],
+    "pro_tip_es": "Sujetáte a un soporte con la mano para mantener el tronco estable; el objetivo es aislar los isquiotibiales, no trabajar el equilibrio.",
+    "pro_tip_en": "Hold a support with one hand to keep the trunk stable; the goal is to isolate the hamstrings, not challenge balance.",
+    "tertiary_muscles": ["Gluteus Maximus", "Sartorius", "Core"]
+  },
+  {
+    "slug": "standing-calf-raise",
+    "execution_steps_es": [
+      "Paráte con las puntas de los pies en el borde de un escalón o superficie elevada.",
+      "Desde la dorsiflexión máxima, elevá los talones hasta la extensión completa del tobillo.",
+      "Sostenélos en la cima un segundo y bajá de forma lenta y controlada.",
+      "Realizá el movimiento en rango completo sin rebotar en la parte baja.",
+      "Para la versión con compañero: flexioná el tronco 90° y sujetáte a un soporte mientras el compañero se sienta en las caderas (no en la espalda)."
+    ],
+    "execution_steps_en": [
+      "Stand with the balls of the feet on the edge of a step or elevated surface.",
+      "From maximum dorsiflexion, raise the heels to full ankle extension.",
+      "Hold for one second at the top and lower slowly under control.",
+      "Perform the full range without bouncing at the bottom.",
+      "For the partner version: flex the torso 90° and hold a support while the partner sits on the hips (not the back)."
+    ],
+    "common_errors_es": [
+      "Rebotar en la posición de máximo estiramiento.",
+      "No bajar los talones por debajo del nivel del escalón.",
+      "No llegar a la extensión completa del tobillo en la cima.",
+      "Doblar las rodillas para ayudar al movimiento."
+    ],
+    "common_errors_en": [
+      "Bouncing at the maximum stretch position.",
+      "Not lowering the heels below the step level.",
+      "Not reaching full ankle extension at the top.",
+      "Bending the knees to assist the movement."
+    ],
+    "pro_tip_es": "Los gemelos (gastrocnemios) se trabajan mejor con la rodilla extendida; para el sóleo, flexioná levemente la rodilla.",
+    "pro_tip_en": "The gastrocnemius is best targeted with the knee extended; for the soleus, add a slight knee bend.",
+    "tertiary_muscles": ["Tibialis Posterior", "Peroneals", "Flexor Digitorum Longus"]
+  },
+  {
+    "slug": "standing-calf-raise-machine",
+    "execution_steps_es": [
+      "Colocáte bajo las almohadillas de la máquina con las puntas de los pies en el borde de la plataforma.",
+      "Desde la dorsiflexión máxima, elevá los talones empujando las almohadillas hacia arriba.",
+      "Llegá a la extensión completa del tobillo y sostenéla un segundo.",
+      "Descendé de forma lenta y controlada hasta el punto de máximo estiramiento.",
+      "No rebotés en la posición de máximo estiramiento."
+    ],
+    "execution_steps_en": [
+      "Position yourself under the machine pads with the balls of the feet on the platform edge.",
+      "From maximum dorsiflexion, raise the heels by pushing the pads upward.",
+      "Reach full ankle extension and hold for one second.",
+      "Lower slowly and under control to maximum stretch.",
+      "Do not bounce at the maximum stretch position."
+    ],
+    "common_errors_es": [
+      "Rebotar en la posición de estiramiento.",
+      "No completar el rango de movimiento en ninguno de los dos extremos.",
+      "Doblar las rodillas para ayudar al movimiento.",
+      "Usar demasiado peso y perder el control del movimiento."
+    ],
+    "common_errors_en": [
+      "Bouncing at the stretch position.",
+      "Not completing the range of motion at either extreme.",
+      "Bending the knees to assist the movement.",
+      "Using too much weight and losing movement control."
+    ],
+    "pro_tip_es": "Variá la posición de los pies (neutros, punta adentro, punta afuera) en diferentes series para estimular distintas porciones de los gastrocnemios.",
+    "pro_tip_en": "Vary foot position (neutral, toes in, toes out) across sets to stimulate different portions of the gastrocnemius.",
+    "tertiary_muscles": ["Soleus", "Tibialis Anterior", "Peroneals"]
+  },
+  {
+    "slug": "standing-calf-raise-machine-2",
+    "execution_steps_es": [
+      "Colocáte en la máquina de gemelos de pie y ajustá las almohadillas sobre los hombros.",
+      "Para trabajar el gastrocnemio lateral: rotá levemente la pierna hacia adentro (rotación medial) con muy poco peso.",
+      "Para trabajar el gastrocnemio interno: rotá levemente la pierna hacia afuera (rotación lateral) con muy poco peso.",
+      "Realizá el rango completo de movimiento de dorsiflexión a flexión plantar.",
+      "Usá estas variantes solo para corregir descompensaciones musculares específicas, no como ejercicio principal."
+    ],
+    "execution_steps_en": [
+      "Position yourself in the standing calf machine and adjust the pads on the shoulders.",
+      "To target the lateral gastrocnemius: slightly internally rotate the leg with light weight.",
+      "To target the medial gastrocnemius: slightly externally rotate the leg with light weight.",
+      "Perform the full range of motion from dorsiflexion to plantar flexion.",
+      "Use these variations only to correct specific muscle imbalances, not as the primary exercise."
+    ],
+    "common_errors_es": [
+      "Usar estas variantes con cargas altas; son para corrección, no para carga máxima.",
+      "Exagerar la rotación, lo que puede generar estrés articular.",
+      "Usar estas variantes sin una razón técnica o de desequilibrio identificada.",
+      "No controlar el rango completo en cada variante."
+    ],
+    "common_errors_en": [
+      "Using these variations with heavy loads; they are for correction, not maximum loading.",
+      "Exaggerating the rotation, which can cause joint stress.",
+      "Using these variations without an identified technical or imbalance reason.",
+      "Not controlling the full range in each variant."
+    ],
+    "pro_tip_es": "Las rotaciones de pierna para diferenciar las porciones del gemelo son válidas solo con cargas muy ligeras; priorizá el ejercicio estándar para la masa.",
+    "pro_tip_en": "Leg rotations to differentiate gastrocnemius portions are only valid with very light loads; prioritize the standard exercise for mass.",
+    "tertiary_muscles": ["Soleus", "Tibialis Posterior", "Peroneals"]
+  },
+  {
+    "slug": "standing-hip-adduction",
+    "execution_steps_es": [
+      "Paráte lateral a un soporte o colocáte en decúbito lateral en el suelo.",
+      "Para la versión de suelo: apoyá la pierna superior con la planta del pie y dejá levemente flexionada la cadera; elevá la pierna inferior en aducción.",
+      "Elevá la pierna de forma controlada sin rotar la pelvis.",
+      "Bajá de forma controlada sin dejar que la pierna toque el suelo entre repeticiones.",
+      "Completá todas las repeticiones de un lado antes de cambiar."
+    ],
+    "execution_steps_en": [
+      "Stand sideways to a support or lie on your side on the floor.",
+      "For the floor version: rest the top leg with its foot planted and allow a slight hip bend; raise the bottom leg in adduction.",
+      "Raise the leg under control without rotating the pelvis.",
+      "Lower under control without letting the leg touch the floor between reps.",
+      "Complete all reps on one side before switching."
+    ],
+    "common_errors_es": [
+      "Rotar la pelvis para compensar la falta de movilidad en aducción.",
+      "Usar impulso en lugar de contracción activa de los aductores.",
+      "No controlar el descenso.",
+      "Confundir aducción con flexión de cadera."
+    ],
+    "common_errors_en": [
+      "Rotating the pelvis to compensate for limited adduction mobility.",
+      "Using momentum instead of active adductor contraction.",
+      "Not controlling the descent.",
+      "Confusing adduction with hip flexion."
+    ],
+    "pro_tip_es": "La ventaja del suelo frente a la versión de pie es que los aductores trabajan contra la gravedad en todo el rango; aprovechá esto en el excéntrico.",
+    "pro_tip_en": "The advantage of the floor version over the standing one is that the adductors work against gravity throughout the full range; take advantage of this in the eccentric.",
+    "tertiary_muscles": ["Psoas-Iliacus", "Pectineus", "Core"]
+  }
+]

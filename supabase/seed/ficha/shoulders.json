@@ -1,0 +1,1282 @@
+[
+  {
+    "slug": "barbell-upright-row",
+    "execution_steps_es": [
+      "Pará de pie con la barra tomada en agarre prono, manos separadas unos 30-40 cm, brazos extendidos frente a los muslos.",
+      "Inspirá y tirá la barra hacia arriba pegada al cuerpo, elevando los codos por encima de los hombros.",
+      "Al llegar a la altura del mentón, hacé una pausa breve con los codos apuntando al techo.",
+      "Espirá y bajá la barra de forma controlada hasta la posición inicial.",
+      "Mantené el torso recto y evitá inclinar el tronco para generar impulso."
+    ],
+    "execution_steps_en": [
+      "Stand with the barbell in an overhand grip, hands 30-40 cm apart, arms extended in front of your thighs.",
+      "Inhale and pull the bar straight up close to your body, driving elbows above shoulder level.",
+      "Hold briefly at chin height with elbows pointing toward the ceiling.",
+      "Exhale and lower the bar under control to the starting position.",
+      "Keep the torso upright and avoid leaning back to generate momentum."
+    ],
+    "common_errors_es": [
+      "Usar un agarre demasiado cerrado, lo que fuerza la rotación interna del hombro en la parte alta.",
+      "Dejar que la barra se separe del cuerpo durante el recorrido, reduciendo la activación del deltoides medio.",
+      "Elevar el mentón o el torso para alcanzar mayor altura en lugar de elevar los codos.",
+      "Bajar el peso con caída libre, perdiendo el control excéntrico."
+    ],
+    "common_errors_en": [
+      "Using too narrow a grip, which forces internal shoulder rotation at the top.",
+      "Letting the bar drift away from the body during the lift, reducing medial delt activation.",
+      "Raising the chin or torso to reach more height instead of driving the elbows.",
+      "Dropping the weight without eccentric control."
+    ],
+    "pro_tip_es": "Usá un agarre más ancho que el de los hombros para reducir la rotación interna y el riesgo de pinzamiento subacromial; los codos deben guiar el movimiento, no las manos.",
+    "pro_tip_en": "Use a grip slightly wider than shoulder-width to reduce internal rotation and impingement risk; let the elbows lead the movement, not the hands.",
+    "tertiary_muscles": ["Serratus Anterior", "Wrist Flexors", "Core"]
+  },
+  {
+    "slug": "bent-over-rear-delt-fly",
+    "execution_steps_es": [
+      "Posicionáte de pie con las rodillas ligeramente flexionadas y el torso inclinado hasta casi paralelo al suelo.",
+      "Tomá las mancuernas con agarre neutro, dejándolas colgar bajo el pecho con codos ligeramente flexionados.",
+      "Inspirá y elevá ambos brazos hacia los costados con un arco controlado hasta la altura de los hombros.",
+      "Apretá los deltoides posteriores y los romboides en el punto más alto durante un instante.",
+      "Espirá y bajá las mancuernas de forma lenta y controlada a la posición inicial."
+    ],
+    "execution_steps_en": [
+      "Stand with knees slightly bent and hinge forward until your torso is nearly parallel to the floor.",
+      "Hold the dumbbells with a neutral grip, letting them hang below your chest with elbows slightly bent.",
+      "Inhale and raise both arms out to the sides in a controlled arc to shoulder height.",
+      "Squeeze the rear delts and rhomboids at the top for a brief moment.",
+      "Exhale and slowly lower the dumbbells back to the starting position."
+    ],
+    "common_errors_es": [
+      "Encorvar la espalda baja al inclinar el tronco, generando tensión lumbar innecesaria.",
+      "Doblar en exceso los codos, convirtiendo el movimiento en un jalón de remo.",
+      "Usar momentum con el torso para balancear las mancuernas hacia arriba.",
+      "No llegar a la altura de los hombros, reduciendo el rango de trabajo del deltoides posterior."
+    ],
+    "common_errors_en": [
+      "Rounding the lower back when hinging forward, creating unnecessary lumbar stress.",
+      "Bending the elbows too much, turning the movement into a rowing pull.",
+      "Using torso momentum to swing the dumbbells upward.",
+      "Not reaching shoulder height, reducing the rear delt range of motion."
+    ],
+    "pro_tip_es": "Imaginá que querés mostrar el dorso de las manos al techo al subir; esto mantiene la rotación externa del hombro y centra el trabajo en el deltoides posterior.",
+    "pro_tip_en": "Imagine showing the backs of your hands to the ceiling as you lift; this maintains external shoulder rotation and keeps the work on the rear deltoid.",
+    "tertiary_muscles": ["Infraspinatus", "Teres Minor", "Erector Spinae"]
+  },
+  {
+    "slug": "cable-face-pull",
+    "execution_steps_es": [
+      "Colocá la cuerda en la polea a la altura de los ojos y agarrá cada extremo con agarre neutro.",
+      "Alejáte un paso de la polea para poner tensión en el cable y posicionáte con los pies separados al ancho de los hombros.",
+      "Inspirá y tirá la cuerda hacia tu cara separando las manos, llevando los codos hacia atrás y afuera a la altura de los hombros.",
+      "Al llegar al punto final, las manos deben quedar junto a las orejas con los pulgares apuntando atrás.",
+      "Espirá y extendé los brazos de regreso con control, sin dejar que el peso caiga."
+    ],
+    "execution_steps_en": [
+      "Attach the rope to a pulley at eye level and grip each end with a neutral grip.",
+      "Step back to create cable tension and stand with feet shoulder-width apart.",
+      "Inhale and pull the rope toward your face, separating the hands and driving elbows back and out at shoulder height.",
+      "At the end point, hands should be beside your ears with thumbs pointing backward.",
+      "Exhale and extend your arms back under control without letting the weight drop."
+    ],
+    "common_errors_es": [
+      "Tirar la cuerda hacia abajo o hacia el mentón en lugar de hacia la cara, reduciendo la activación del manguito.",
+      "Permitir que los codos caigan por debajo de la línea de los hombros durante el tirón.",
+      "Usar demasiado peso y recurrir al balanceo del tronco.",
+      "No separar los extremos de la cuerda al final, perdiendo la rotación externa del hombro."
+    ],
+    "common_errors_en": [
+      "Pulling the rope downward or toward the chin instead of the face, reducing rotator cuff activation.",
+      "Letting the elbows drop below shoulder level during the pull.",
+      "Using too much weight and relying on trunk swinging.",
+      "Not pulling the rope ends apart at the finish, losing external shoulder rotation."
+    ],
+    "pro_tip_es": "Este ejercicio es clave para la salud del manguito rotador y la postura; priorizá la calidad del movimiento sobre el peso, y realizalo con pesos moderados en series de 15-20 reps.",
+    "pro_tip_en": "This exercise is key for rotator cuff health and posture; prioritize movement quality over weight, and perform it with moderate loads for 15-20 reps.",
+    "tertiary_muscles": ["Infraspinatus", "Teres Minor", "Subscapularis"]
+  },
+  {
+    "slug": "cable-front-raise",
+    "execution_steps_es": [
+      "Conectá una manija o barra corta a la polea baja y paráte de espaldas a la máquina.",
+      "Sujetá el agarre con una o ambas manos con agarre prono, brazos extendidos a los costados del cuerpo.",
+      "Inspirá y elevá el brazo hacia el frente de forma controlada hasta la altura del hombro.",
+      "Hacé una pequeña pausa al llegar a 90° para maximizar la contracción del deltoides anterior.",
+      "Espirá y bajá el brazo lentamente resistiendo la tensión del cable."
+    ],
+    "execution_steps_en": [
+      "Attach a handle or short bar to the low pulley and stand facing away from the machine.",
+      "Grip the handle with one or both hands in an overhand grip, arms extended by your sides.",
+      "Inhale and raise your arm forward in a controlled arc to shoulder height.",
+      "Pause briefly at 90° to maximize anterior deltoid contraction.",
+      "Exhale and lower your arm slowly, resisting the cable tension on the way down."
+    ],
+    "common_errors_es": [
+      "Inclinar el torso hacia atrás para ganar impulso en la fase concéntrica.",
+      "Superar la horizontal con el brazo de manera habitual, involucrando excesivamente el trapecio.",
+      "Doblar el codo durante el ascenso, reduciendo el trabajo del deltoides anterior.",
+      "Bajar el peso rápidamente sin resistencia excéntrica."
+    ],
+    "common_errors_en": [
+      "Leaning the torso back to generate momentum during the concentric phase.",
+      "Consistently going above horizontal, excessively recruiting the trapezius.",
+      "Bending the elbow during the ascent, reducing anterior delt engagement.",
+      "Lowering the weight quickly without eccentric resistance."
+    ],
+    "pro_tip_es": "La polea baja genera tensión constante en todo el rango, a diferencia de la mancuerna que tiene punto muerto al inicio; aprovechá esto bajando el peso muy despacio para maximizar el estímulo.",
+    "pro_tip_en": "The low pulley provides constant tension throughout the range, unlike the dumbbell which has a dead spot at the bottom; take advantage by lowering very slowly to maximize stimulus.",
+    "tertiary_muscles": ["Serratus Anterior", "Core", "Wrist Extensors"]
+  },
+  {
+    "slug": "cable-front-raise-2",
+    "execution_steps_es": [
+      "Conectá la cuerda o barra a la polea baja y pasala entre tus piernas, de espaldas a la máquina.",
+      "Tomá ambos extremos con agarre neutro o en semipronación, brazos extendidos hacia abajo.",
+      "Inspirá y elevá ambos brazos simultáneamente hacia el frente hasta la altura de los hombros.",
+      "Pausá brevemente al llegar a 90° y apretá el deltoides anterior.",
+      "Espirá y bajá los brazos lentamente manteniendo la tensión del cable."
+    ],
+    "execution_steps_en": [
+      "Attach the rope or bar to the low pulley and thread it between your legs, standing with your back to the machine.",
+      "Grip both ends with a neutral or semi-pronated grip, arms extended downward.",
+      "Inhale and raise both arms simultaneously forward to shoulder height.",
+      "Pause briefly at 90° and squeeze the anterior deltoid.",
+      "Exhale and lower your arms slowly, maintaining cable tension."
+    ],
+    "common_errors_es": [
+      "Inclinar la espalda baja hacia atrás para generar impulso, especialmente en series pesadas.",
+      "Permitir que el cable golpee las piernas durante el movimiento por mala colocación.",
+      "No mantener la simetría entre ambos brazos al subir simultáneamente.",
+      "Subir los hombros hacia las orejas en lugar de mantenerlos deprimidos."
+    ],
+    "common_errors_en": [
+      "Leaning the lower back backward to generate momentum, especially on heavier sets.",
+      "Allowing the cable to hit the legs due to poor positioning.",
+      "Failing to maintain symmetry between both arms when lifting simultaneously.",
+      "Shrugging the shoulders toward the ears instead of keeping them depressed."
+    ],
+    "pro_tip_es": "Usá un agarre en semipronación (pulgares hacia arriba) para concentrar el trabajo en el deltoides anterior y reducir la participación del pectoral superior.",
+    "pro_tip_en": "Use a semi-pronated grip (thumbs up) to concentrate work on the anterior deltoid and reduce upper pectoralis involvement.",
+    "tertiary_muscles": ["Serratus Anterior", "Upper Pectoralis", "Core"]
+  },
+  {
+    "slug": "cable-internal-rotation",
+    "execution_steps_es": [
+      "Ajustá la polea a la altura del codo y paráte de lado a la máquina con el brazo que trabaja más cercano.",
+      "Tomá el agarre con la mano interna, codo flexionado a 90° y pegado al costado del cuerpo.",
+      "Con el antebrazo paralelo al suelo (partiendo del lateral), rotá el hombro hacia adentro llevando la mano hacia el abdomen.",
+      "Llegá hasta donde el rango de movimiento sea cómodo, sin separar el codo del costado.",
+      "Volvé lentamente a la posición inicial controlando la resistencia del cable."
+    ],
+    "execution_steps_en": [
+      "Set the pulley to elbow height and stand sideways to the machine with the working arm closest.",
+      "Grip the handle with your inner hand, elbow bent 90° and tucked close to your side.",
+      "With your forearm parallel to the floor (starting from the side), internally rotate the shoulder by bringing your hand toward your abdomen.",
+      "Move as far as is comfortable without letting the elbow drift away from your side.",
+      "Slowly return to the starting position, controlling cable resistance."
+    ],
+    "common_errors_es": [
+      "Separar el codo del costado durante la rotación, cambiando el plano del movimiento.",
+      "Usar demasiado peso y completar el movimiento con la muñeca en lugar del hombro.",
+      "Realizar el recorrido demasiado rápido, perdiendo el control neuromuscular del manguito.",
+      "Inclinar el tronco para compensar la falta de rango articular."
+    ],
+    "common_errors_en": [
+      "Letting the elbow drift away from your side during rotation, altering the movement plane.",
+      "Using too much weight and completing the motion with the wrist instead of the shoulder.",
+      "Moving too quickly, losing neuromuscular control of the rotator cuff.",
+      "Tilting the torso to compensate for limited joint range."
+    ],
+    "pro_tip_es": "Este movimiento es de rehabilitación y prevención; usá cargas muy bajas (1-5 kg) y enfocáte en sentir el manguito rotador trabajar, no en mover mucho peso.",
+    "pro_tip_en": "This is a rehabilitation and prevention movement; use very light loads (1-5 kg) and focus on feeling the rotator cuff work, not on moving heavy weight.",
+    "tertiary_muscles": ["Subscapularis", "Pectoralis Major", "Biceps Brachii"]
+  },
+  {
+    "slug": "cable-lateral-raise",
+    "execution_steps_es": [
+      "Conectá una manija a la polea baja y paráte de lado a la máquina, sujetando el agarre con la mano más alejada.",
+      "Tomá el soporte de la máquina con la mano libre para estabilizarte y colocá los pies al ancho de los hombros.",
+      "Inspirá y elevá el brazo lateralmente de forma controlada hasta la altura del hombro.",
+      "Hacé una pausa breve con el brazo a 90°, manteniendo el hombro deprimido.",
+      "Espirá y bajá el brazo lentamente resistiendo la tensión constante del cable."
+    ],
+    "execution_steps_en": [
+      "Attach a D-handle to the low pulley and stand sideways to the machine, gripping the handle with your far hand.",
+      "Hold the machine frame with your free hand for stability and stand with feet shoulder-width apart.",
+      "Inhale and raise your arm laterally in a controlled arc to shoulder height.",
+      "Pause briefly at 90° with your shoulder depressed.",
+      "Exhale and lower your arm slowly, resisting the constant cable tension."
+    ],
+    "common_errors_es": [
+      "Elevar el hombro hacia la oreja durante el ascenso, activando el trapecio en lugar del deltoides medio.",
+      "Inclinar el torso hacia el lado contrario para generar impulso.",
+      "No controlar la bajada, perdiendo el trabajo excéntrico del deltoides.",
+      "Posicionar el cable demasiado adelante o atrás respecto al cuerpo, alterando el plano de movimiento."
+    ],
+    "common_errors_en": [
+      "Shrugging the shoulder toward the ear during the ascent, activating the trapezius instead of the medial delt.",
+      "Tilting the torso to the opposite side to generate momentum.",
+      "Not controlling the descent, losing eccentric deltoid work.",
+      "Positioning the cable too far forward or backward relative to the body, altering the movement plane."
+    ],
+    "pro_tip_es": "La polea baja genera tensión desde el inicio del movimiento, a diferencia de la mancuerna; aprovechá el punto muerto inferior para trabajar la parte inicial del rango con mayor estímulo.",
+    "pro_tip_en": "The low pulley creates tension from the very start of the movement, unlike a dumbbell; use the bottom dead-spot to challenge the initial range with greater stimulus.",
+    "tertiary_muscles": ["Serratus Anterior", "Core", "Subscapularis"]
+  },
+  {
+    "slug": "cable-lateral-raise-single",
+    "execution_steps_es": [
+      "Ajustá la polea baja y tomá el agarre con la mano del lado que trabaja, pasando el cable por detrás de tu cuerpo.",
+      "Paráte erguido con el lado trabajador alejado de la máquina y sujetáte al soporte con la mano libre.",
+      "Inspirá y elevá el brazo lateralmente hasta la altura del hombro, manteniendo el codo ligeramente flexionado.",
+      "El cable detrás del cuerpo limita la posibilidad de adelantar la mano; esto fuerza un plano de elevación lateral más puro.",
+      "Espirá y bajá el brazo de manera controlada hasta la posición inicial."
+    ],
+    "execution_steps_en": [
+      "Set the low pulley and grip the handle with the working hand, running the cable behind your body.",
+      "Stand upright with the working side away from the machine and hold the frame with your free hand.",
+      "Inhale and raise your arm laterally to shoulder height, keeping the elbow slightly bent.",
+      "The cable behind your body prevents the hand from drifting forward, enforcing a purer lateral raise plane.",
+      "Exhale and lower your arm in a controlled manner to the starting position."
+    ],
+    "common_errors_es": [
+      "No fijar correctamente el tronco, permitiendo rotaciones de columna durante el movimiento.",
+      "Llevar el brazo hacia el frente en lugar de mantener el plano lateral puro.",
+      "Elevar el hombro ipsilateral hacia la oreja durante la fase concéntrica.",
+      "No aprovechar la variante y realizar el mismo patrón que la elevación lateral convencional."
+    ],
+    "common_errors_en": [
+      "Failing to brace the trunk, allowing spinal rotation during the movement.",
+      "Moving the arm forward instead of maintaining a pure lateral plane.",
+      "Shrugging the ipsilateral shoulder toward the ear during the concentric phase.",
+      "Not taking advantage of the variant and replicating the same pattern as the standard lateral raise."
+    ],
+    "pro_tip_es": "Esta variante con el cable pasado por detrás forza la contracción terminal del deltoides lateral y el acromial; es una buena opción para trabajar la porción lateral en el punto de máxima tensión.",
+    "pro_tip_en": "This behind-the-body cable variant forces terminal contraction of the lateral and acromial deltoid; it is a good option for loading the lateral portion at maximum tension.",
+    "tertiary_muscles": ["Supraspinatus", "Serratus Anterior", "Core"]
+  },
+  {
+    "slug": "cable-rear-delt-fly",
+    "execution_steps_es": [
+      "Colocá ambas poleas a la altura de los hombros o cruza los cables (mano derecha toma polea izquierda y viceversa).",
+      "Paráte en el centro con los brazos cruzados o extendidos al frente y tomá las manijas con agarre neutro.",
+      "Inspirá y abrí los brazos horizontalmente hacia atrás, manteniendo los codos ligeramente flexionados.",
+      "Llegá hasta la extensión horizontal completa apretando los deltoides posteriores y romboides.",
+      "Espirá y volvé los brazos al centro de manera controlada sin dejar caer el peso."
+    ],
+    "execution_steps_en": [
+      "Set both pulleys at shoulder height or cross the cables (right hand takes left pulley and vice versa).",
+      "Stand in the center with arms crossed or extended forward, gripping handles with a neutral grip.",
+      "Inhale and open your arms horizontally backward, keeping elbows slightly bent.",
+      "Reach full horizontal extension, squeezing the rear delts and rhomboids.",
+      "Exhale and return your arms to center under control without dropping the weight."
+    ],
+    "common_errors_es": [
+      "Flexionar en exceso los codos convirtiendo el ejercicio en un remo.",
+      "Bajar los brazos por debajo de la horizontal, activando más el dorsal que el deltoides posterior.",
+      "Inclinar el torso hacia adelante para ayudarse con el movimiento.",
+      "Usar demasiado peso y completar el recorrido con rotaciones de tronco."
+    ],
+    "common_errors_en": [
+      "Bending the elbows too much, turning the exercise into a row.",
+      "Dropping the arms below the horizontal, activating the lats more than the rear delt.",
+      "Leaning the torso forward to assist the movement.",
+      "Using excessive weight and completing the range with trunk rotation."
+    ],
+    "pro_tip_es": "Mantené los brazos a la altura exacta de los hombros durante todo el movimiento; si el peso te obliga a bajarlos, es demasiado pesado para aislar el deltoides posterior.",
+    "pro_tip_en": "Keep your arms exactly at shoulder height throughout the movement; if the weight forces you to drop them, it is too heavy to isolate the rear deltoid.",
+    "tertiary_muscles": ["Infraspinatus", "Teres Minor", "Middle Trapezius"]
+  },
+  {
+    "slug": "cable-rear-delt-fly-single",
+    "execution_steps_es": [
+      "Ajustá la polea a la altura del hombro y paráte de frente a la máquina, tomando el agarre con la mano contraria al lado de la polea.",
+      "Atrasá la pierna del lado trabajador para ganar estabilidad y mirá hacia la polea.",
+      "Con el brazo casi extendido, tirá en extensión/retropulsión horizontal hasta que el brazo quede detrás de la línea del cuerpo.",
+      "Apretá el deltoides posterior y el dorsal al llegar al rango final.",
+      "Volvé de forma lenta y controlada a la posición inicial."
+    ],
+    "execution_steps_en": [
+      "Set the pulley at shoulder height and stand facing the machine, gripping the handle with the hand opposite to the pulley side.",
+      "Step back the foot on the working side for stability and look toward the pulley.",
+      "With your arm nearly extended, pull in horizontal extension/retropulsion until your arm is behind the body line.",
+      "Squeeze the rear deltoid and lat at the end of the range.",
+      "Return slowly and under control to the starting position."
+    ],
+    "common_errors_es": [
+      "Rotar el tronco para completar el recorrido en lugar de mover solo el hombro.",
+      "Flexionar en exceso el codo, convirtiendo el movimiento en un remo.",
+      "No estabilizar la cadera y los glúteos durante la ejecución unilateral.",
+      "Usar momentum del tronco en lugar de controlar el movimiento desde el deltoides."
+    ],
+    "common_errors_en": [
+      "Rotating the trunk to complete the range instead of moving only the shoulder.",
+      "Bending the elbow too much, turning the movement into a row.",
+      "Failing to stabilize the hips and glutes during unilateral execution.",
+      "Using trunk momentum instead of controlling the movement from the deltoid."
+    ],
+    "pro_tip_es": "Al trabajar un brazo a la vez podés concentrarte en la contracción y corregir desequilibrios entre el hombro dominante y el no dominante.",
+    "pro_tip_en": "Working one arm at a time lets you focus on the contraction and correct imbalances between the dominant and non-dominant shoulder.",
+    "tertiary_muscles": ["Latissimus Dorsi", "Teres Major", "Rhomboids"]
+  },
+  {
+    "slug": "cable-upright-row",
+    "execution_steps_es": [
+      "Conectá una barra corta o cuerda a la polea baja y paráte frente a la máquina con los pies al ancho de los hombros.",
+      "Sujetá la barra con agarre prono, manos separadas al ancho de los hombros, brazos extendidos hacia abajo.",
+      "Inspirá y tirá la barra hacia el mentón elevando los codos por encima de la línea de los hombros.",
+      "Pausá en la parte alta y apretá el deltoides medio y el trapecio.",
+      "Espirá y bajá la barra de forma controlada aprovechando la tensión constante del cable."
+    ],
+    "execution_steps_en": [
+      "Attach a short bar or rope to the low pulley and stand facing the machine with feet shoulder-width apart.",
+      "Grip the bar overhand with hands shoulder-width apart, arms extended downward.",
+      "Inhale and pull the bar to chin height, driving the elbows above shoulder level.",
+      "Pause at the top and squeeze the medial delt and trapezius.",
+      "Exhale and lower the bar under control, taking advantage of constant cable tension."
+    ],
+    "common_errors_es": [
+      "Usar un agarre demasiado cerrado que fuerza la rotación interna del hombro en la parte alta.",
+      "Inclinar el torso hacia atrás para completar el recorrido.",
+      "No controlar la fase excéntrica, perdiendo el beneficio de la tensión constante del cable.",
+      "Elevar solo hasta la altura del pecho, reduciendo el trabajo del deltoides medio."
+    ],
+    "common_errors_en": [
+      "Using a grip too narrow, forcing internal shoulder rotation at the top.",
+      "Leaning the torso back to complete the range.",
+      "Not controlling the eccentric phase, losing the benefit of constant cable tension.",
+      "Only raising to chest height, reducing medial delt engagement."
+    ],
+    "pro_tip_es": "La polea garantiza tensión desde el inicio, donde la mancuerna tiene punto muerto; esto hace que la fase baja del remo sea más estimulante que con barra libre.",
+    "pro_tip_en": "The cable ensures tension from the start, where a barbell has a dead spot; this makes the bottom phase of the upright row more stimulating than with free weights.",
+    "tertiary_muscles": ["Serratus Anterior", "Wrist Flexors", "Core"]
+  },
+  {
+    "slug": "cable-upright-row-2",
+    "execution_steps_es": [
+      "Ajustá la máquina de remo y conectá una barra corta a la polea baja; recostáte en el asiento con el torso apoyado.",
+      "Tomá la barra con agarre prono, manos al ancho de los hombros, brazos extendidos al frente.",
+      "Inspirá y jalá la barra hacia el mentón elevando los codos por encima de los hombros.",
+      "Pausá en la posición alta y apretá el deltoides medio y el trapecio.",
+      "Espirá y extendé los brazos de forma lenta y controlada hasta la posición de partida."
+    ],
+    "execution_steps_en": [
+      "Set up the rowing machine and attach a short bar to the low pulley; recline in the seat with your torso supported.",
+      "Grip the bar overhand with hands shoulder-width apart, arms extended forward.",
+      "Inhale and pull the bar to chin height, raising elbows above shoulder level.",
+      "Pause at the top and squeeze the medial delt and trapezius.",
+      "Exhale and slowly extend the arms back to the starting position."
+    ],
+    "common_errors_es": [
+      "No apoyar correctamente el torso, permitiendo que la zona lumbar tome carga.",
+      "Usar demasiado peso aprovechando la posición sentada para generar impulso.",
+      "No elevar los codos lo suficiente, limitando la activación del deltoides medio.",
+      "Subir los hombros hacia las orejas en lugar de elevar los codos."
+    ],
+    "common_errors_en": [
+      "Failing to properly support the torso, letting the lower back take load.",
+      "Using too much weight and exploiting the seated position to generate momentum.",
+      "Not raising the elbows high enough, limiting medial delt activation.",
+      "Shrugging the shoulders to the ears instead of driving the elbows up."
+    ],
+    "pro_tip_es": "La posición recostada elimina el balanceo de tronco y permite concentrarse puramente en la mecánica del hombro; es una excelente variante para quienes tienen problemas de espalda baja.",
+    "pro_tip_en": "The reclined position eliminates trunk swinging and allows you to focus purely on shoulder mechanics; it is an excellent variant for those with lower back issues.",
+    "tertiary_muscles": ["Serratus Anterior", "Core", "Wrist Flexors"]
+  },
+  {
+    "slug": "dumbbell-arnold-press",
+    "execution_steps_es": [
+      "Sentáte en un banco con respaldo vertical y tomá las mancuernas con agarre supino (palmas hacia vos) a la altura del mentón.",
+      "Inspirá y comenzá el press rotando las palmas hacia el frente al mismo tiempo que empujás las mancuernas hacia arriba.",
+      "Al finalizar la rotación, las palmas deben mirar hacia afuera y los brazos deben estar casi extendidos.",
+      "Pausá brevemente arriba y espirá al completar la extensión.",
+      "Bajá las mancuernas invirtiendo la rotación, volviendo a la posición con palmas hacia vos."
+    ],
+    "execution_steps_en": [
+      "Sit on a bench with a vertical backrest and hold dumbbells in a supinated grip (palms facing you) at chin height.",
+      "Inhale and begin pressing while rotating the palms to face forward simultaneously.",
+      "At the end of the rotation, palms should face outward and arms should be nearly extended.",
+      "Pause briefly at the top and exhale as you complete the extension.",
+      "Lower the dumbbells by reversing the rotation, returning to the palms-facing-you position."
+    ],
+    "common_errors_es": [
+      "Realizar la rotación antes de iniciar el press, en lugar de ejecutar ambos movimientos simultáneamente.",
+      "Arquear excesivamente la espalda baja durante el press para alcanzar más altura.",
+      "No completar el rango de rotación, reduciendo la activación del deltoides anterior y medio.",
+      "Usar demasiado peso que impide la rotación suave y controlada."
+    ],
+    "common_errors_en": [
+      "Rotating before starting the press, instead of performing both movements simultaneously.",
+      "Excessively arching the lower back during the press to reach more height.",
+      "Not completing the full rotation range, reducing anterior and medial delt activation.",
+      "Using too much weight that prevents smooth, controlled rotation."
+    ],
+    "pro_tip_es": "El Arnold press activa las tres cabezas del deltoides gracias a la rotación; es más demandante que un press estándar, así que reducí el peso respecto a tu press de hombros convencional.",
+    "pro_tip_en": "The Arnold press activates all three deltoid heads thanks to the rotation; it is more demanding than a standard press, so reduce the weight compared to your conventional shoulder press.",
+    "tertiary_muscles": ["Serratus Anterior", "Upper Pectoralis", "Core"]
+  },
+  {
+    "slug": "dumbbell-arnold-press-2",
+    "execution_steps_es": [
+      "Recliná el banco a unos 45°-60° y sentáte con la espalda apoyada, sujetando las mancuernas con agarre supino a la altura del mentón.",
+      "Rotá las palmas hacia el frente mientras empujás las mancuernas en diagonal hacia arriba y al frente.",
+      "El trayecto es oblicuo, no completamente vertical; apuntá a un punto frente a vos y algo por encima.",
+      "Extendé los brazos sin bloquear los codos y pausá un instante en el punto más alto.",
+      "Bajá invirtiendo el movimiento, con la palma volviendo a mirar hacia vos."
+    ],
+    "execution_steps_en": [
+      "Recline the bench to 45-60° and sit with your back supported, holding dumbbells in a supinated grip at chin height.",
+      "Rotate your palms to face forward while pressing the dumbbells diagonally upward and forward.",
+      "The trajectory is oblique, not fully vertical; aim toward a point in front of you and slightly above.",
+      "Extend your arms without locking the elbows and pause briefly at the top.",
+      "Lower by reversing the movement, with the palm returning to face you."
+    ],
+    "common_errors_es": [
+      "Empujar verticalmente como en un press estándar, perdiendo el énfasis en el deltoides anterior.",
+      "Perder el contacto de la espalda con el respaldo del banco al llegar al punto alto.",
+      "No sincronizar la rotación de la palma con el empuje.",
+      "Descender el peso sin control, perdiendo la fase excéntrica."
+    ],
+    "common_errors_en": [
+      "Pressing vertically like a standard press, losing the anterior delt emphasis.",
+      "Losing back contact with the bench backrest at the top of the press.",
+      "Failing to synchronize palm rotation with the press.",
+      "Lowering the weight without control, losing the eccentric phase."
+    ],
+    "pro_tip_es": "El banco inclinado reduce el trabajo del tríceps y dirige más el estímulo al deltoides anterior y pectoral superior; útil para series de mayor volumen con carga media.",
+    "pro_tip_en": "The inclined bench reduces triceps involvement and directs more stimulus to the anterior delt and upper pectoralis; useful for higher-volume sets with moderate load.",
+    "tertiary_muscles": ["Upper Pectoralis", "Triceps Long Head", "Serratus Anterior"]
+  },
+  {
+    "slug": "dumbbell-external-rotation",
+    "execution_steps_es": [
+      "Apoyáte en un banco horizontal con la mano y rodilla del mismo lado, como en el remo con mancuerna.",
+      "Tomá la mancuerna con la mano libre en posición neutra, con el codo a 90° y el antebrazo paralelo al suelo.",
+      "Inspirá y rotá externamente el hombro hasta llevar el antebrazo paralelo al suelo en el plano frontal.",
+      "Llegá hasta aproximadamente 80° de rotación sin modificar la flexión del codo.",
+      "Espirá y volvé lentamente a la posición inicial resistiendo la gravedad."
+    ],
+    "execution_steps_en": [
+      "Support yourself on a flat bench with the same-side hand and knee, as in a dumbbell row.",
+      "Hold the dumbbell with your free hand in a neutral grip, elbow at 90° and forearm parallel to the floor.",
+      "Inhale and externally rotate the shoulder until the forearm is parallel to the floor in the frontal plane.",
+      "Reach approximately 80° of rotation without changing elbow flexion.",
+      "Exhale and slowly return to the starting position, resisting gravity."
+    ],
+    "common_errors_es": [
+      "Modificar el ángulo del codo durante la rotación, cambiando el patrón del ejercicio.",
+      "Usar un peso excesivo que impide el rango de rotación completo.",
+      "Rotar el tronco en lugar de rotar solo el hombro.",
+      "Realizar el movimiento demasiado rápido, perdiendo el control del manguito rotador."
+    ],
+    "common_errors_en": [
+      "Changing the elbow angle during the rotation, altering the exercise pattern.",
+      "Using excessive weight that prevents full rotation range.",
+      "Rotating the trunk instead of only rotating the shoulder.",
+      "Moving too quickly, losing rotator cuff control."
+    ],
+    "pro_tip_es": "Este ejercicio trabaja el infraespinoso y el redondo menor; es fundamental para la salud del manguito rotador y se ejecuta con cargas muy bajas (1-5 kg), priorizando el control del movimiento.",
+    "pro_tip_en": "This exercise targets the infraspinatus and teres minor; it is essential for rotator cuff health and is performed with very light loads (1-5 kg), prioritizing movement control.",
+    "tertiary_muscles": ["Posterior Deltoid", "Rhomboids", "Lower Trapezius"]
+  },
+  {
+    "slug": "dumbbell-front-raise",
+    "execution_steps_es": [
+      "Paráte con las mancuernas frente a los muslos, agarre prono (palmas abajo) o neutro, brazos ligeramente flexionados.",
+      "Inspirá y elevá uno o ambos brazos hacia el frente de forma controlada hasta la altura de los hombros.",
+      "Pausá un instante al llegar a 90° con el brazo paralelo al suelo.",
+      "Espirá y bajá el brazo de manera lenta y controlada resistiendo la gravedad.",
+      "Mantené el torso estable y los hombros deprimidos durante todo el movimiento."
+    ],
+    "execution_steps_en": [
+      "Stand with dumbbells in front of your thighs, overhand (palms down) or neutral grip, arms slightly bent.",
+      "Inhale and raise one or both arms forward in a controlled arc to shoulder height.",
+      "Pause briefly at 90° with your arm parallel to the floor.",
+      "Exhale and lower the arm slowly and in a controlled manner, resisting gravity.",
+      "Keep your torso stable and shoulders depressed throughout the movement."
+    ],
+    "common_errors_es": [
+      "Balancear el torso hacia atrás para generar impulso en la fase concéntrica.",
+      "Elevar los brazos por encima de la horizontal de forma habitual, aumentando el riesgo de pinzamiento.",
+      "Subir los hombros hacia las orejas durante la elevación.",
+      "Bajar el peso con caída libre, perdiendo el trabajo excéntrico del deltoides anterior."
+    ],
+    "common_errors_en": [
+      "Swinging the torso backward to generate momentum during the concentric phase.",
+      "Habitually raising the arms above horizontal, increasing impingement risk.",
+      "Shrugging the shoulders to the ears during the raise.",
+      "Dropping the weight without control, losing eccentric anterior delt work."
+    ],
+    "pro_tip_es": "La elevación frontal aísla el deltoides anterior; usala como ejercicio complementario, no como movimiento principal, dado que el press de hombros ya lo trabaja intensamente.",
+    "pro_tip_en": "The front raise isolates the anterior deltoid; use it as an accessory movement, not a main one, since the shoulder press already trains it heavily.",
+    "tertiary_muscles": ["Upper Pectoralis", "Serratus Anterior", "Wrist Extensors"]
+  },
+  {
+    "slug": "dumbbell-front-raise-2",
+    "execution_steps_es": [
+      "Sentáte en un banco inclinado a 45° con el pecho apoyado, sujetando las mancuernas con agarre neutro a los costados.",
+      "Inspirá y elevá los brazos hacia el frente de forma alterna o simultánea, manteniendo los codos sin extensión completa.",
+      "Subí hasta que los brazos queden paralelos o ligeramente por encima del suelo (según el diseño del banco).",
+      "Pausá en el punto alto y apretá el deltoides anterior.",
+      "Espirá y bajá de forma controlada sin soltar la tensión al llegar a la posición inicial."
+    ],
+    "execution_steps_en": [
+      "Sit on a 45° incline bench with your chest supported, holding dumbbells in a neutral grip at your sides.",
+      "Inhale and raise your arms forward alternately or simultaneously, keeping elbows without full extension.",
+      "Raise until your arms are parallel to or slightly above the floor (depending on bench design).",
+      "Pause at the top and squeeze the anterior deltoid.",
+      "Exhale and lower under control without releasing tension at the starting position."
+    ],
+    "common_errors_es": [
+      "Extender completamente el antebrazo, lo que puede generar tensión en el codo.",
+      "Usar un banco con demasiada inclinación que impide el rango correcto de movimiento.",
+      "Balancear el torso para generar impulso incluso estando apoyado en el banco.",
+      "No mantener los hombros deprimidos, activando excesivamente el trapecio."
+    ],
+    "common_errors_en": [
+      "Fully extending the forearm, which can create elbow stress.",
+      "Using a bench with too much incline that prevents the correct range of motion.",
+      "Swinging the torso to generate momentum even with chest support.",
+      "Not keeping the shoulders depressed, excessively activating the trapezius."
+    ],
+    "pro_tip_es": "El banco inclinado elimina el balanceo y pone mayor tensión en el deltoides anterior desde el inicio del movimiento; una alternativa útil cuando necesitás mayor estricción que la elevación de pie.",
+    "pro_tip_en": "The incline bench eliminates swinging and places greater tension on the anterior deltoid from the very start of the movement; a useful alternative when you need more strictness than the standing raise.",
+    "tertiary_muscles": ["Biceps Brachii", "Serratus Anterior", "Core"]
+  },
+  {
+    "slug": "dumbbell-lateral-raise",
+    "execution_steps_es": [
+      "Paráte con las mancuernas a los costados del cuerpo, codos ligeramente flexionados, palmas mirando hacia adentro.",
+      "Inspirá y elevá ambos brazos lateralmente de forma controlada hasta la altura de los hombros.",
+      "Mantené los hombros deprimidos y los codos ligeramente adelante del plano del cuerpo.",
+      "Pausá un instante con los brazos a 90° y apretá el deltoides medio.",
+      "Espirá y bajá las mancuernas de forma lenta y controlada resistiendo la gravedad."
+    ],
+    "execution_steps_en": [
+      "Stand with dumbbells at your sides, elbows slightly bent, palms facing inward.",
+      "Inhale and raise both arms laterally in a controlled arc to shoulder height.",
+      "Keep shoulders depressed and elbows slightly in front of the body plane.",
+      "Pause briefly with arms at 90° and squeeze the medial deltoid.",
+      "Exhale and lower the dumbbells slowly and under control, resisting gravity."
+    ],
+    "common_errors_es": [
+      "Elevar los hombros hacia las orejas (encogerse) durante el ascenso, activando el trapecio.",
+      "Balancear el torso para generar impulso en lugar de trabajar el deltoides medio.",
+      "Extender los codos completamente, lo que puede estresar el codo y el manguito.",
+      "Bajar las mancuernas rápidamente sin control excéntrico."
+    ],
+    "common_errors_en": [
+      "Shrugging the shoulders toward the ears during the ascent, activating the trapezius.",
+      "Swinging the torso to generate momentum instead of working the medial deltoid.",
+      "Fully extending the elbows, which can stress the elbow and rotator cuff.",
+      "Lowering the dumbbells quickly without eccentric control."
+    ],
+    "pro_tip_es": "Incliná levemente el torso hacia adelante (~10°) para alinear mejor el deltoides medio con el plano de elevación y reducir la participación del supraespinoso en la parte alta del recorrido.",
+    "pro_tip_en": "Tilt the torso slightly forward (~10°) to better align the medial deltoid with the elevation plane and reduce supraspinatus involvement at the top of the range.",
+    "tertiary_muscles": ["Supraspinatus", "Serratus Anterior", "Core"]
+  },
+  {
+    "slug": "dumbbell-lateral-raise-2",
+    "execution_steps_es": [
+      "Paráte con las mancuernas a los costados, eligiendo el agarre: pulgares arriba (rotación externa) o pulgares abajo (rotación interna).",
+      "Inspirá y elevá los brazos lateralmente hasta la altura de los hombros.",
+      "Si usás pulgares hacia abajo, sentirás más activación del deltoides medio y posterior.",
+      "Si usás pulgares hacia arriba, el deltoides anterior y el bíceps toman más participación.",
+      "Espirá y bajá de forma controlada en ambas variantes."
+    ],
+    "execution_steps_en": [
+      "Stand with dumbbells at your sides, choosing your grip: thumbs up (external rotation) or thumbs down (internal rotation).",
+      "Inhale and raise your arms laterally to shoulder height.",
+      "With thumbs pointing down, you will feel more medial and posterior delt activation.",
+      "With thumbs pointing up, the anterior delt and biceps take more involvement.",
+      "Exhale and lower in a controlled manner for both grip variants."
+    ],
+    "common_errors_es": [
+      "No elegir conscientemente la variante de agarre y mezclar posiciones en la misma serie.",
+      "Elevar los hombros hacia las orejas independientemente del agarre utilizado.",
+      "Sobrepasar la horizontal con los brazos de forma habitual, aumentando el riesgo de pinzamiento.",
+      "Usar peso excesivo que impide el control de la rotación durante el movimiento."
+    ],
+    "common_errors_en": [
+      "Not consciously choosing a grip variant and mixing positions within the same set.",
+      "Shrugging the shoulders to the ears regardless of the grip used.",
+      "Habitually going above horizontal, increasing impingement risk.",
+      "Using excessive weight that prevents grip rotation control during the movement."
+    ],
+    "pro_tip_es": "La variante con pulgares abajo (rotación interna) puede reducir la protección del bíceps sobre la articulación glenohumeral; evitá usarla con cargas elevadas si tenés historial de lesión en el hombro.",
+    "pro_tip_en": "The thumbs-down variant (internal rotation) may reduce the protective role of the biceps on the glenohumeral joint; avoid using it with heavy loads if you have a shoulder injury history.",
+    "tertiary_muscles": ["Supraspinatus", "Biceps Brachii", "Upper Trapezius"]
+  },
+  {
+    "slug": "dumbbell-overhead-press",
+    "execution_steps_es": [
+      "Sentáte en un banco con respaldo vertical o paráte con los pies al ancho de los hombros, sujetando las mancuernas a la altura de los hombros con agarre prono.",
+      "Inspirá, activá el core y empujá las mancuernas hacia arriba y ligeramente hacia adentro hasta casi extender los brazos.",
+      "Juntá levemente las mancuernas en el punto más alto sin chocarlas.",
+      "Pausá un instante arriba y espirá al completar el empuje.",
+      "Bajá las mancuernas de forma controlada hasta la posición de inicio en los hombros."
+    ],
+    "execution_steps_en": [
+      "Sit on a bench with a vertical backrest or stand with feet shoulder-width apart, holding dumbbells at shoulder height with an overhand grip.",
+      "Inhale, brace your core, and press the dumbbells upward and slightly inward until arms are almost fully extended.",
+      "Bring the dumbbells slightly together at the top without clashing them.",
+      "Pause briefly at the top and exhale as you complete the press.",
+      "Lower the dumbbells under control back to the starting shoulder-height position."
+    ],
+    "common_errors_es": [
+      "Arquear la espalda baja de forma exagerada durante el press, generando carga en la columna lumbar.",
+      "Bajar las mancuernas por debajo de la línea de los hombros, reduciendo el trabajo del deltoides.",
+      "No activar el core antes del press, inestabilizando la columna.",
+      "Realizar el movimiento en un plano completamente frontal, sin convergencia de las mancuernas al subir."
+    ],
+    "common_errors_en": [
+      "Excessively arching the lower back during the press, loading the lumbar spine.",
+      "Lowering the dumbbells below shoulder level, reducing deltoid engagement.",
+      "Not bracing the core before the press, destabilizing the spine.",
+      "Pressing in a completely frontal plane without bringing the dumbbells together at the top."
+    ],
+    "pro_tip_es": "Las mancuernas permiten mayor libertad de movimiento que la barra; aprovechá esto para encontrar el plano de press más cómodo para tus hombros (ligeramente en diagonal).",
+    "pro_tip_en": "Dumbbells allow greater freedom of movement than a barbell; use this to find the most comfortable pressing plane for your shoulders (slightly diagonal).",
+    "tertiary_muscles": ["Serratus Anterior", "Upper Pectoralis", "Core"]
+  },
+  {
+    "slug": "dumbbell-press-2",
+    "execution_steps_es": [
+      "Paráte o sentáte con las mancuernas a la altura de los hombros en agarre prono, con el tronco activo.",
+      "Empujá las mancuernas de forma alterna, extendiendo un brazo mientras el otro permanece en posición inicial.",
+      "Mantené el tronco firme y evitá las inclinaciones laterales de columna al alternar brazos.",
+      "Completá el rango de cada brazo antes de iniciar el empuje del otro.",
+      "Controlá la bajada de cada mancuerna de forma independiente."
+    ],
+    "execution_steps_en": [
+      "Stand or sit with dumbbells at shoulder height in an overhand grip, with an active core.",
+      "Press the dumbbells alternately, extending one arm while the other stays in the starting position.",
+      "Keep the trunk firm and avoid lateral spinal tilting when alternating arms.",
+      "Complete the full range of each arm before starting the next press.",
+      "Control the descent of each dumbbell independently."
+    ],
+    "common_errors_es": [
+      "Inclinar el tronco hacia el lado del brazo que baja para ayudarse con el peso.",
+      "No completar la extensión de un brazo antes de iniciar el empuje del otro.",
+      "Usar un peso excesivo que fuerza a compensar con rotaciones de columna.",
+      "Perder la posición neutra de la columna al hacer el empuje alterno."
+    ],
+    "common_errors_en": [
+      "Tilting the trunk toward the lowering arm to help with the weight.",
+      "Not completing the extension of one arm before starting the press of the other.",
+      "Using excessive weight that forces spinal rotation compensation.",
+      "Losing neutral spine position during alternating presses."
+    ],
+    "pro_tip_es": "El press alterno aumenta el tiempo bajo tensión de cada deltoides y exige mayor estabilización del core que el press bilateral; reducí el peso respecto al press simultáneo.",
+    "pro_tip_en": "Alternating presses increase time under tension for each deltoid and demand more core stabilization than bilateral presses; reduce weight compared to simultaneous pressing.",
+    "tertiary_muscles": ["Serratus Anterior", "Core", "Upper Trapezius"]
+  },
+  {
+    "slug": "dumbbell-rear-delt-fly",
+    "execution_steps_es": [
+      "Incliná el torso hasta quedar casi paralelo al suelo con las rodillas ligeramente flexionadas.",
+      "Dejá colgar las mancuernas con agarre neutro bajo el pecho, codos con una leve flexión fija.",
+      "Inspirá y elevá ambos brazos hacia los costados en un arco controlado hasta la altura de los hombros.",
+      "Apretá los deltoides posteriores y los romboides en el punto más alto.",
+      "Espirá y bajá las mancuernas de forma lenta y controlada sin relajar el core."
+    ],
+    "execution_steps_en": [
+      "Hinge your torso until nearly parallel to the floor with knees slightly bent.",
+      "Let the dumbbells hang with a neutral grip below your chest, elbows with a slight fixed bend.",
+      "Inhale and raise both arms out to the sides in a controlled arc to shoulder height.",
+      "Squeeze the rear delts and rhomboids at the top.",
+      "Exhale and lower the dumbbells slowly and under control without releasing core tension."
+    ],
+    "common_errors_es": [
+      "Encorvar la espalda baja al inclinar el torso.",
+      "Doblar los codos progresivamente durante el movimiento, convirtiendo el ejercicio en un remo.",
+      "Usar el balanceo del torso para ayudarse en la subida.",
+      "No llegar a la altura de los hombros, reduciendo el estímulo del deltoides posterior."
+    ],
+    "common_errors_en": [
+      "Rounding the lower back when hinging the torso.",
+      "Progressively bending the elbows during the movement, turning it into a row.",
+      "Using torso momentum to assist the lift.",
+      "Not reaching shoulder height, reducing posterior delt stimulus."
+    ],
+    "pro_tip_es": "Realizálo sentado en el borde de un banco con el pecho apoyado en los muslos para eliminar completamente el balanceo y reducir la tensión lumbar.",
+    "pro_tip_en": "Perform it seated at the edge of a bench with your chest resting on your thighs to completely eliminate swinging and reduce lumbar stress.",
+    "tertiary_muscles": ["Infraspinatus", "Teres Minor", "Erector Spinae"]
+  },
+  {
+    "slug": "dumbbell-shrug-2",
+    "execution_steps_es": [
+      "Sentáte en un banco inclinado a 45°-60° con el respaldo elevado, sujetando las mancuernas en posición neutra a los costados.",
+      "Elevá las mancuernas frontalmente de forma alterna o simultánea sin modificar la flexión de los codos.",
+      "Subí hasta una altura algo superior a la cabeza controlando el movimiento.",
+      "Inspirá al iniciar el movimiento ascendente y espirá al bajar.",
+      "Bajá de forma controlada sin relajar la tensión del deltoides."
+    ],
+    "execution_steps_en": [
+      "Sit on a bench inclined at 45-60° with the backrest raised, holding dumbbells in a neutral grip at your sides.",
+      "Raise the dumbbells forward alternately or simultaneously without changing elbow flexion.",
+      "Raise to slightly above head height, controlling the movement.",
+      "Inhale as you begin the ascending movement and exhale as you lower.",
+      "Lower in a controlled manner without releasing deltoid tension."
+    ],
+    "common_errors_es": [
+      "Modificar el ángulo del codo durante el movimiento, cambiando el patrón del ejercicio.",
+      "Usar impulso del tronco para completar series pesadas.",
+      "No mantener la espalda apoyada en el respaldo durante todo el recorrido.",
+      "Bajar las mancuernas con caída libre, perdiendo el trabajo excéntrico."
+    ],
+    "common_errors_en": [
+      "Changing the elbow angle during the movement, altering the exercise pattern.",
+      "Using trunk momentum to complete heavier sets.",
+      "Failing to keep the back pressed against the backrest throughout the range.",
+      "Dropping the dumbbells without control, losing eccentric work."
+    ],
+    "pro_tip_es": "El banco inclinado fija el tronco y elimina el balanceo; el movimiento debe originarse completamente desde el hombro, no desde el codo ni la muñeca.",
+    "pro_tip_en": "The incline bench fixes the trunk and eliminates swinging; the movement should originate entirely from the shoulder, not the elbow or wrist.",
+    "tertiary_muscles": ["Biceps Brachii", "Serratus Anterior", "Upper Trapezius"]
+  },
+  {
+    "slug": "dumbbell-upright-row",
+    "execution_steps_es": [
+      "Paráte con las mancuernas frente a los muslos en agarre prono, manos al ancho de los hombros.",
+      "Inspirá y jalá las mancuernas hacia el mentón elevando los codos hacia arriba y afuera.",
+      "Al llegar a la altura del mentón, los codos deben estar por encima de las muñecas y de los hombros.",
+      "Pausá brevemente en el punto alto y apretá el deltoides medio y el trapecio.",
+      "Espirá y bajá las mancuernas de forma controlada hasta la posición inicial."
+    ],
+    "execution_steps_en": [
+      "Stand with dumbbells in front of your thighs in an overhand grip, hands shoulder-width apart.",
+      "Inhale and pull the dumbbells toward your chin, driving elbows upward and outward.",
+      "At chin height, elbows should be above the wrists and the shoulders.",
+      "Pause briefly at the top and squeeze the medial delt and trapezius.",
+      "Exhale and lower the dumbbells under control to the starting position."
+    ],
+    "common_errors_es": [
+      "Usar un agarre demasiado cerrado que fuerza la rotación interna del hombro en la parte alta.",
+      "No elevar los codos lo suficiente, limitando la activación del deltoides medio.",
+      "Inclinar el torso hacia atrás para ayudarse con el peso.",
+      "Bajar las mancuernas de forma brusca sin control excéntrico."
+    ],
+    "common_errors_en": [
+      "Using too narrow a grip, forcing internal shoulder rotation at the top.",
+      "Not raising the elbows high enough, limiting medial delt activation.",
+      "Leaning the torso back to help with the weight.",
+      "Dropping the dumbbells abruptly without eccentric control."
+    ],
+    "pro_tip_es": "Las mancuernas permiten mayor libertad de movimiento que la barra en el remo al mentón; los codos pueden abrirse más naturalmente, reduciendo el riesgo de pinzamiento subacromial.",
+    "pro_tip_en": "Dumbbells allow greater freedom of movement than a barbell in the upright row; elbows can flare more naturally, reducing subacromial impingement risk.",
+    "tertiary_muscles": ["Serratus Anterior", "Wrist Flexors", "Core"]
+  },
+  {
+    "slug": "elevaciones-laterales-a-una-mano",
+    "execution_steps_es": [
+      "Paráte de lado a un soporte firme y sujetáte con la mano libre para estabilizarte.",
+      "Tomá la mancuerna con la mano exterior y apoyá el cuerpo levemente inclinado hacia el soporte.",
+      "Inspirá y elevá el brazo lateralmente de forma controlada hasta la altura del hombro.",
+      "Apretá el deltoides medio en el punto más alto y pausá un instante.",
+      "Espirá y bajá la mancuerna de manera lenta y controlada resistiendo la gravedad."
+    ],
+    "execution_steps_en": [
+      "Stand sideways to a sturdy support and hold it with your free hand for stability.",
+      "Hold the dumbbell with your outer hand and lean the body slightly toward the support.",
+      "Inhale and raise your arm laterally in a controlled arc to shoulder height.",
+      "Squeeze the medial deltoid at the top and hold briefly.",
+      "Exhale and lower the dumbbell slowly and under control, resisting gravity."
+    ],
+    "common_errors_es": [
+      "No sujetarse firmemente al soporte, lo que genera inestabilidad durante el movimiento.",
+      "Elevar el hombro hacia la oreja durante el ascenso.",
+      "Inclinarse excesivamente hacia el soporte para ganar impulso.",
+      "No controlar la bajada, perdiendo el trabajo excéntrico del deltoides."
+    ],
+    "common_errors_en": [
+      "Not gripping the support firmly, causing instability during the movement.",
+      "Shrugging the shoulder toward the ear during the ascent.",
+      "Leaning excessively toward the support to generate momentum.",
+      "Not controlling the descent, losing eccentric deltoid work."
+    ],
+    "pro_tip_es": "Sujetarte al soporte y apoyarte levemente elimina el punto muerto inferior de la elevación lateral; podés generar una gran contracción final si ejecutás de forma estricta.",
+    "pro_tip_en": "Holding the support and leaning slightly eliminates the bottom dead-spot of the lateral raise; you can generate a strong terminal contraction if you execute strictly.",
+    "tertiary_muscles": ["Supraspinatus", "Serratus Anterior", "Core"]
+  },
+  {
+    "slug": "floor-shoulder-rotation",
+    "execution_steps_es": [
+      "Recostáte en decúbito prono sobre un banco plano con el pecho apoyado en el borde y la cabeza fuera del banco.",
+      "Abrazá el banco con los brazos a los costados para mantener el equilibrio.",
+      "Realizá el gesto de mirar al frente elevando la cabeza de forma natural.",
+      "Luego dejá caer la cabeza suavemente hasta mirar más allá del suelo, sin forzar el rango.",
+      "Respirá de forma natural durante todo el movimiento sin contener el aliento."
+    ],
+    "execution_steps_en": [
+      "Lie prone on a flat bench with your chest at the edge and your head hanging off.",
+      "Hug the bench with your arms at your sides to maintain balance.",
+      "Perform the gesture of looking forward by lifting your head naturally.",
+      "Then gently lower your head until you are looking past the floor, without forcing the range.",
+      "Breathe naturally throughout the movement without holding your breath."
+    ],
+    "common_errors_es": [
+      "Forzar el rango de movimiento más allá del límite confortable, generando tensión cervical.",
+      "Sostener la respiración durante el ejercicio, aumentando la tensión muscular innecesariamente.",
+      "Realizar el movimiento de forma brusca en lugar de lenta y controlada.",
+      "No apoyar correctamente el pecho en el banco, generando inestabilidad."
+    ],
+    "common_errors_en": [
+      "Forcing the range of motion beyond the comfortable limit, causing cervical strain.",
+      "Holding breath during the exercise, unnecessarily increasing muscle tension.",
+      "Performing the movement abruptly instead of slowly and controlled.",
+      "Not properly supporting the chest on the bench, creating instability."
+    ],
+    "pro_tip_es": "Este es un ejercicio de movilidad cervical y no de fuerza; el objetivo es la movilización suave de la columna cervical, no generar carga. Realizálo con total control y sin dolor.",
+    "pro_tip_en": "This is a cervical mobility exercise, not a strength exercise; the goal is gentle cervical spine mobilization, not load generation. Perform it with full control and without pain.",
+    "tertiary_muscles": ["Cervical Erectors", "Splenius Capitis", "Levator Scapulae"]
+  },
+  {
+    "slug": "lateral-raise-machine",
+    "execution_steps_es": [
+      "Sentáte en la máquina de elevaciones laterales y ajustá el asiento para que los codos queden alineados con el pivote de la máquina.",
+      "Apoyá los brazos en las almohadillas con los codos ligeramente flexionados.",
+      "Inspirá y empujá las almohadillas hacia arriba y afuera hasta que los brazos lleguen a la horizontal.",
+      "Pausá brevemente en el punto alto y apretá el deltoides medio.",
+      "Espirá y bajá las almohadillas de forma lenta y controlada."
+    ],
+    "execution_steps_en": [
+      "Sit in the lateral raise machine and adjust the seat so your elbows align with the machine pivot.",
+      "Rest your arms on the pads with elbows slightly bent.",
+      "Inhale and push the pads upward and outward until your arms reach horizontal.",
+      "Pause briefly at the top and squeeze the medial deltoid.",
+      "Exhale and lower the pads slowly and under control."
+    ],
+    "common_errors_es": [
+      "No ajustar la altura del asiento, lo que desalinea el pivote del codo con el eje de la máquina.",
+      "Elevar los hombros hacia las orejas durante el movimiento.",
+      "No llegar a la horizontal, reduciendo el rango efectivo del deltoides medio.",
+      "Bajar el peso bruscamente sin control excéntrico."
+    ],
+    "common_errors_en": [
+      "Not adjusting seat height, misaligning the elbow pivot with the machine axis.",
+      "Shrugging the shoulders toward the ears during the movement.",
+      "Not reaching horizontal, reducing the effective medial delt range.",
+      "Dropping the weight abruptly without eccentric control."
+    ],
+    "pro_tip_es": "La máquina guiada es ideal para principiantes porque elimina la necesidad de equilibrio; ajustá el pivote con precisión para que el movimiento sea eficiente y sin compensaciones.",
+    "pro_tip_en": "The guided machine is ideal for beginners because it eliminates the need for balance; adjust the pivot precisely so the movement is efficient and without compensation.",
+    "tertiary_muscles": ["Supraspinatus", "Upper Trapezius", "Serratus Anterior"]
+  },
+  {
+    "slug": "machine-lateral-raise",
+    "execution_steps_es": [
+      "Ajustá el asiento de la máquina para que el pivote quede alineado con el hombro y colocá los brazos en las almohadillas.",
+      "Tomá el agarre o apoyá los antebrazos según el diseño de la máquina.",
+      "Inspirá y empujá las palancas hacia arriba y afuera hasta llegar a la horizontal.",
+      "Pausá en el punto más alto y apretá el deltoides lateral.",
+      "Espirá y bajá de forma controlada hasta la posición de partida."
+    ],
+    "execution_steps_en": [
+      "Adjust the machine seat so the pivot aligns with your shoulder and place your arms on the pads.",
+      "Grip the handle or rest your forearms according to the machine design.",
+      "Inhale and push the levers upward and outward until you reach horizontal.",
+      "Pause at the top and squeeze the lateral deltoid.",
+      "Exhale and lower under control to the starting position."
+    ],
+    "common_errors_es": [
+      "No ajustar el asiento correctamente, lo que fuerza compensaciones en el rango de movimiento.",
+      "Elevar los hombros durante la ejecución en lugar de mantenerlos deprimidos.",
+      "Usar el diseño de la máquina para hacer trampa inclinando el torso.",
+      "Realizar el movimiento solo con un brazo sin ajustar el contrapeso si la máquina es bilateral."
+    ],
+    "common_errors_en": [
+      "Not correctly adjusting the seat, forcing compensations in range of motion.",
+      "Raising the shoulders during the movement instead of keeping them depressed.",
+      "Using the machine design to cheat by tilting the torso.",
+      "Performing the movement with only one arm without adjusting the counterweight on bilateral machines."
+    ],
+    "pro_tip_es": "En las máquinas de elevación lateral con almohadillas para antebrazos podés usar más carga que con mancuernas porque el antebrazo actúa como punto de apoyo; controlá igualmente la bajada.",
+    "pro_tip_en": "On lateral raise machines with forearm pads you can use more load than with dumbbells because the forearm acts as a lever point; still control the lowering phase.",
+    "tertiary_muscles": ["Supraspinatus", "Serratus Anterior", "Core"]
+  },
+  {
+    "slug": "machine-shoulder-press",
+    "execution_steps_es": [
+      "Ajustá el asiento para que las manijas queden a la altura de los hombros y apoyá la espalda en el respaldo.",
+      "Tomá las manijas con agarre prono y los codos ligeramente hacia adentro.",
+      "Inspirá, activá el core y empujá las manijas hacia arriba hasta casi extender los brazos.",
+      "Pausá un instante en el punto alto sin bloquear los codos.",
+      "Espirá y bajá las manijas de forma controlada hasta la posición inicial."
+    ],
+    "execution_steps_en": [
+      "Adjust the seat so the handles are at shoulder height and press your back against the backrest.",
+      "Grip the handles with an overhand grip and elbows slightly inward.",
+      "Inhale, brace your core, and push the handles upward until arms are nearly extended.",
+      "Pause briefly at the top without locking the elbows.",
+      "Exhale and lower the handles under control to the starting position."
+    ],
+    "common_errors_es": [
+      "No ajustar la altura del asiento, presionando desde una posición que carga el cuello o el trapecio.",
+      "Levantar los glúteos del asiento al empujar.",
+      "Bloquear los codos en el punto alto, trasladando toda la carga a los tendones.",
+      "Bajar el peso de forma brusca sin control excéntrico."
+    ],
+    "common_errors_en": [
+      "Not adjusting the seat height, pressing from a position that loads the neck or trapezius.",
+      "Lifting the glutes off the seat during the press.",
+      "Locking the elbows at the top, transferring all load to the tendons.",
+      "Lowering the weight abruptly without eccentric control."
+    ],
+    "pro_tip_es": "La máquina guiada fija el plano de movimiento y reduce la demanda de estabilización; es una buena opción para añadir volumen de press sin fatigar los estabilizadores del hombro.",
+    "pro_tip_en": "The guided machine fixes the movement plane and reduces stabilization demand; it is a good option to add pressing volume without fatiguing shoulder stabilizers.",
+    "tertiary_muscles": ["Serratus Anterior", "Core", "Biceps Long Head"]
+  },
+  {
+    "slug": "military-press-barbell",
+    "execution_steps_es": [
+      "Posicioná la barra en el rack a la altura de los hombros y tomala con agarre prono, manos algo más anchas que los hombros.",
+      "Sacá la barra del rack, paráte con los pies al ancho de los hombros y sostené la barra frente a la clavícula.",
+      "Inspirá, activá el core y empujá la barra verticalmente hacia arriba pasando por delante de la cara.",
+      "Extendé los brazos por encima de la cabeza y metés la cabeza hacia adelante al finalizar para quedar con la barra sobre la línea media del cuerpo.",
+      "Espirá y bajá la barra de forma controlada hasta la posición inicial frente a la clavícula."
+    ],
+    "execution_steps_en": [
+      "Position the bar in the rack at shoulder height and grip it overhand with hands slightly wider than shoulders.",
+      "Unrack the bar, stand with feet shoulder-width apart, and hold it in front of your collarbone.",
+      "Inhale, brace your core, and press the bar vertically upward, passing in front of your face.",
+      "Extend your arms overhead and push your head forward at the end so the bar is over your body's midline.",
+      "Exhale and lower the bar under control to the starting position in front of the collarbone."
+    ],
+    "common_errors_es": [
+      "No meter la cabeza hacia adelante al final del press, dejando la barra delante del cuerpo en lugar de sobre él.",
+      "Arquear excesivamente la espalda baja durante el press para alcanzar más altura.",
+      "No activar el core antes del empuje, desestabilizando la columna lumbar.",
+      "Bajar la barra detrás de la cabeza como variante sin indicación específica, lo que aumenta el riesgo de lesión cervical."
+    ],
+    "common_errors_en": [
+      "Not tucking the head forward at the top of the press, leaving the bar in front of the body instead of directly overhead.",
+      "Excessively arching the lower back during the press to reach more height.",
+      "Not bracing the core before the press, destabilizing the lumbar spine.",
+      "Lowering the bar behind the head as a variant without specific instruction, increasing cervical injury risk."
+    ],
+    "pro_tip_es": "El press militar es el ejercicio base de hombros con barra; dominá primero la técnica antes de aumentar la carga, especialmente la mecánica de meter la cabeza al finalizar cada rep.",
+    "pro_tip_en": "The military press is the foundational barbell shoulder exercise; master technique before increasing load, especially the mechanics of pushing the head through at the end of each rep.",
+    "tertiary_muscles": ["Serratus Anterior", "Core", "Upper Pectoralis"]
+  },
+  {
+    "slug": "rear-delt-machine-fly",
+    "execution_steps_es": [
+      "Sentáte en la máquina de pectoral (pec deck) al revés, con el pecho apoyado en el respaldo y los brazos en abducción de 90°.",
+      "Ajustá la posición para que los codos o antebrazos queden apoyados en las almohadillas.",
+      "Inspirá y abrí los brazos hacia atrás en el arco que permite la máquina.",
+      "Llegá al rango máximo que permite el diseño de la máquina apretando el deltoides posterior.",
+      "Espirá y volvé a la posición inicial de forma controlada."
+    ],
+    "execution_steps_en": [
+      "Sit in the pec deck machine in reverse, with your chest against the backrest and arms in 90° abduction.",
+      "Adjust the position so your elbows or forearms rest on the pads.",
+      "Inhale and open your arms rearward through the arc the machine allows.",
+      "Reach the maximum range the machine design permits, squeezing the rear deltoid.",
+      "Exhale and return to the starting position under control."
+    ],
+    "common_errors_es": [
+      "No invertir correctamente la posición en la máquina, terminando en la posición de pectoral en lugar de la de deltoides posterior.",
+      "Usar un recorrido parcial porque el diseño de la máquina no es óptimo para este ejercicio.",
+      "Elevar los hombros durante el movimiento en lugar de mantenerlos deprimidos.",
+      "Usar demasiado peso que impide el rango controlado de apertura posterior."
+    ],
+    "common_errors_en": [
+      "Not correctly reversing the position in the machine, ending up in the pec-deck position instead of rear-delt position.",
+      "Using a partial range because the machine design is not optimal for this exercise.",
+      "Shrugging the shoulders during the movement instead of keeping them depressed.",
+      "Using too much weight that prevents the controlled rear-opening range."
+    ],
+    "pro_tip_es": "Si el gimnasio tiene una máquina específica para deltoides posterior, es preferible usarla; si usás el pec deck al revés, verificá que el diseño permita un rango real de apertura posterior.",
+    "pro_tip_en": "If the gym has a specific rear delt machine, it is preferable to use it; if using the pec deck in reverse, verify that the design allows a real rear-opening range.",
+    "tertiary_muscles": ["Infraspinatus", "Teres Minor", "Rhomboids"]
+  },
+  {
+    "slug": "rear-delt-reverse-fly-machine",
+    "execution_steps_es": [
+      "Sentáte frente al respaldo acolchado de la máquina de deltoides posterior y apoyá el pecho en él.",
+      "Tomá las manijas con agarre neutro y los brazos extendidos hacia el frente.",
+      "Inspirá y abrí los brazos hacia atrás en el plano horizontal apretando los deltoides posteriores.",
+      "Llegá al rango máximo de la máquina y pausá un instante en el punto de máxima contracción.",
+      "Espirá y volvé las manijas al frente de forma controlada."
+    ],
+    "execution_steps_en": [
+      "Sit facing the padded backrest of the rear delt machine and press your chest against it.",
+      "Grip the handles with a neutral grip and arms extended forward.",
+      "Inhale and open your arms rearward in the horizontal plane, squeezing the rear deltoids.",
+      "Reach the machine's maximum range and pause briefly at peak contraction.",
+      "Exhale and return the handles forward under control."
+    ],
+    "common_errors_es": [
+      "No ajustar el asiento para que los brazos queden en el plano horizontal correcto.",
+      "Doblar los codos durante el movimiento, convirtiendo el ejercicio en un remo.",
+      "No apoyar firmemente el pecho en el respaldo, permitiendo que el torso se balancea.",
+      "Bajar el peso sin control al final del recorrido."
+    ],
+    "common_errors_en": [
+      "Not adjusting the seat so the arms are in the correct horizontal plane.",
+      "Bending the elbows during the movement, turning the exercise into a row.",
+      "Not firmly pressing the chest against the backrest, allowing the torso to sway.",
+      "Dropping the weight without control at the end of the range."
+    ],
+    "pro_tip_es": "La máquina específica de deltoides posterior permite aislar el hombro trasero sin tensión lumbar; es la opción más segura para quienes tienen limitaciones en la espalda baja.",
+    "pro_tip_en": "The dedicated rear delt machine allows isolation of the posterior shoulder without lumbar stress; it is the safest option for those with lower back limitations.",
+    "tertiary_muscles": ["Infraspinatus", "Teres Minor", "Lower Trapezius"]
+  },
+  {
+    "slug": "resistance-band-lateral-raise",
+    "execution_steps_es": [
+      "Pisá la banda elástica con el pie del mismo lado del brazo que trabaja y sujetá el extremo superior con la mano.",
+      "Paráte erguido con el brazo extendido a un costado del cuerpo.",
+      "Inspirá y elevá el brazo lateralmente de forma controlada hasta la altura del hombro.",
+      "Pausá brevemente en el punto alto y apretá el deltoides medio.",
+      "Espirá y bajá el brazo de forma lenta controlando la resistencia de la banda."
+    ],
+    "execution_steps_en": [
+      "Step on the resistance band with the foot on the same side as the working arm and grip the top end with your hand.",
+      "Stand upright with your arm extended at your side.",
+      "Inhale and raise your arm laterally in a controlled arc to shoulder height.",
+      "Pause briefly at the top and squeeze the medial deltoid.",
+      "Exhale and lower your arm slowly, controlling the band's resistance."
+    ],
+    "common_errors_es": [
+      "Usar una banda de resistencia excesiva que impide el rango completo de movimiento.",
+      "No fijar la banda bajo el pie de forma segura, generando riesgo de que se suelte.",
+      "Inclinar el torso al lado contrario para completar el rango.",
+      "Elevar el hombro hacia la oreja durante el ascenso."
+    ],
+    "common_errors_en": [
+      "Using a resistance band that is too heavy, preventing full range of motion.",
+      "Not securing the band under the foot safely, risking it coming loose.",
+      "Tilting the torso to the opposite side to complete the range.",
+      "Shrugging the shoulder toward the ear during the ascent."
+    ],
+    "pro_tip_es": "La banda elástica aumenta la resistencia progresivamente a medida que se estira; esto genera mayor tensión al final del rango donde el deltoides medio está más activo.",
+    "pro_tip_en": "The resistance band increases resistance progressively as it stretches; this creates greater tension at the end of the range where the medial deltoid is most active.",
+    "tertiary_muscles": ["Supraspinatus", "Serratus Anterior", "Core"]
+  },
+  {
+    "slug": "shoulder-press-machine",
+    "execution_steps_es": [
+      "Ajustá el asiento de la máquina de press de hombros para que las manijas queden a la altura de los hombros.",
+      "Apoyá firmemente la espalda en el respaldo y tomá las manijas con agarre prono.",
+      "Inspirá, activá el core y empujá las manijas verticalmente hacia arriba hasta casi extender los brazos.",
+      "Pausá un instante sin bloquear los codos y apretá el deltoides.",
+      "Espirá y bajá las manijas de forma controlada hasta la posición inicial."
+    ],
+    "execution_steps_en": [
+      "Adjust the shoulder press machine seat so the handles are at shoulder height.",
+      "Firmly press your back against the backrest and grip the handles with an overhand grip.",
+      "Inhale, brace your core, and press the handles vertically upward until arms are nearly extended.",
+      "Pause briefly without locking the elbows and squeeze the deltoid.",
+      "Exhale and lower the handles under control to the starting position."
+    ],
+    "common_errors_es": [
+      "No ajustar la altura del asiento, haciendo que las manijas estén demasiado arriba o abajo.",
+      "Separar la espalda del respaldo durante el press.",
+      "Bloquear los codos en el punto más alto.",
+      "Bajar el peso de forma brusca sin control excéntrico."
+    ],
+    "common_errors_en": [
+      "Not adjusting seat height, leaving the handles too high or too low.",
+      "Separating the back from the backrest during the press.",
+      "Locking the elbows at the top of the movement.",
+      "Dropping the weight abruptly without eccentric control."
+    ],
+    "pro_tip_es": "La máquina de press de hombros fija el plano de movimiento; es una excelente herramienta para principiantes y para añadir volumen sin requerir estabilización adicional.",
+    "pro_tip_en": "The shoulder press machine fixes the movement plane; it is an excellent tool for beginners and for adding volume without requiring additional stabilization.",
+    "tertiary_muscles": ["Serratus Anterior", "Core", "Upper Trapezius"]
+  },
+  {
+    "slug": "shoulder-shrug",
+    "execution_steps_es": [
+      "Colocáte en el Smith Machine con la barra frente al cuerpo a la altura de los muslos y agarrala con agarre prono al ancho de los hombros.",
+      "Paráte erguido con los brazos extendidos y los hombros en posición neutra.",
+      "Inspirá y elevá los hombros directamente hacia las orejas sin doblar los codos ni rotar.",
+      "Llegá al rango máximo de elevación y pausá un instante apretando el trapecio superior.",
+      "Espirá y bajá los hombros de forma controlada a la posición inicial."
+    ],
+    "execution_steps_en": [
+      "Position yourself in the Smith Machine with the bar in front of your body at thigh height, gripping it overhand at shoulder width.",
+      "Stand upright with arms extended and shoulders in a neutral position.",
+      "Inhale and shrug your shoulders straight up toward your ears without bending the elbows or rotating.",
+      "Reach the maximum shrug height and pause briefly, squeezing the upper trapezius.",
+      "Exhale and lower your shoulders under control to the starting position."
+    ],
+    "common_errors_es": [
+      "Rotar los hombros durante el encogimiento (hacia adelante o hacia atrás), lo que no añade trabajo al trapecio y puede generar tensión articular.",
+      "Doblar los codos durante el movimiento, convirtiéndolo en un jalón parcial.",
+      "Inclinar el cuello hacia adelante al elevar los hombros.",
+      "Bajar los hombros con caída libre, perdiendo el trabajo excéntrico del trapecio."
+    ],
+    "common_errors_en": [
+      "Rotating the shoulders during the shrug (forward or backward), which adds no work to the trapezius and may create joint stress.",
+      "Bending the elbows during the movement, turning it into a partial pull.",
+      "Leaning the neck forward when shrugging the shoulders.",
+      "Dropping the shoulders without control, losing eccentric trapezius work."
+    ],
+    "pro_tip_es": "El Smith Machine garantiza la verticalidad del movimiento; pensá en elevar las orejas hacia los hombros (no al revés) para maximizar el reclutamiento del trapecio superior.",
+    "pro_tip_en": "The Smith Machine ensures vertical movement; think of bringing your ears toward your shoulders (not the other way around) to maximize upper trapezius recruitment.",
+    "tertiary_muscles": ["Rhomboids", "Deltoid (Medial)", "Supraspinatus"]
+  },
+  {
+    "slug": "shoulder-shrug-2",
+    "execution_steps_es": [
+      "Ajustá la barra en el Smith Machine a la altura de los muslos y agarrala con agarre prono.",
+      "Comenzá como en un remo al mentón: elevá los codos hacia arriba hasta llegar a la altura máxima.",
+      "Desde esa posición alta, extendé los brazos hacia el frente en horizontal, manteniendo el control.",
+      "Bajá el peso con los codos casi extendidos implicando más el deltoides anterior.",
+      "Controlá todo el recorrido descendente antes de volver a la posición inicial."
+    ],
+    "execution_steps_en": [
+      "Set the bar in the Smith Machine at thigh height and grip it overhand.",
+      "Begin as in an upright row: drive the elbows upward to maximum height.",
+      "From that high position, extend the arms forward horizontally, maintaining control.",
+      "Lower the weight with elbows nearly extended, involving the anterior deltoid more.",
+      "Control the entire descent before returning to the starting position."
+    ],
+    "common_errors_es": [
+      "No completar el remo inicial antes de extender los brazos al frente.",
+      "Soltar el control en la transición entre el remo y la extensión frontal.",
+      "Usar demasiado peso que impide el control en la extensión y el descenso.",
+      "Inclinar el torso hacia atrás durante la extensión frontal."
+    ],
+    "common_errors_en": [
+      "Not completing the upright row before extending the arms forward.",
+      "Losing control during the transition between the row and the frontal extension.",
+      "Using too much weight that prevents control during extension and descent.",
+      "Leaning the torso back during the frontal extension."
+    ],
+    "pro_tip_es": "Esta variante combina el encogimiento con un movimiento de extensión frontal; demanda coordinación y control, así que aprendé bien cada fase por separado antes de combinarlas.",
+    "pro_tip_en": "This variant combines the shrug with a frontal extension movement; it demands coordination and control, so learn each phase separately before combining them.",
+    "tertiary_muscles": ["Deltoid (Anterior)", "Serratus Anterior", "Wrist Flexors"]
+  },
+  {
+    "slug": "side-lying-rear-delt-raise",
+    "execution_steps_es": [
+      "Recostáte de costado sobre un banco o colchoneta con el cuerpo alineado.",
+      "Sujetá la mancuerna con la mano de arriba en agarre neutro, con el brazo extendido a lo largo del cuerpo.",
+      "Inspirá y elevá el brazo hacia arriba y ligeramente hacia atrás en el plano del cuerpo hasta la vertical.",
+      "Apretá el deltoides posterior en el punto más alto.",
+      "Espirá y bajá la mancuerna de forma lenta y controlada resistiendo la gravedad."
+    ],
+    "execution_steps_en": [
+      "Lie on your side on a bench or mat with your body aligned.",
+      "Hold the dumbbell with your top hand in a neutral grip, arm extended along your body.",
+      "Inhale and raise your arm upward and slightly backward in the plane of your body to vertical.",
+      "Squeeze the rear deltoid at the top.",
+      "Exhale and lower the dumbbell slowly and under control, resisting gravity."
+    ],
+    "common_errors_es": [
+      "Rotar el tronco hacia atrás para alcanzar mayor rango, sacando el trabajo del deltoides posterior.",
+      "Llevar el codo demasiado cerca del cuerpo, convirtiendo el movimiento en una variante de dorsal.",
+      "No mantener el cuerpo alineado lateralmente durante todo el recorrido.",
+      "Usar demasiado peso y perder el control en la fase excéntrica."
+    ],
+    "common_errors_en": [
+      "Rotating the trunk backward to achieve greater range, taking the work away from the rear delt.",
+      "Bringing the elbow too close to the body, turning the movement into a lat variant.",
+      "Failing to maintain lateral body alignment throughout the range.",
+      "Using too much weight and losing control during the eccentric phase."
+    ],
+    "pro_tip_es": "La posición lateral elimina la compensación del trapecio que suele ocurrir en las elevaciones posteriores de pie; es una variante excelente para aislar el deltoides posterior sin mover la espalda.",
+    "pro_tip_en": "The lateral position eliminates trapezius compensation that often occurs in standing rear delt raises; it is an excellent variant to isolate the posterior deltoid without moving the back.",
+    "tertiary_muscles": ["Infraspinatus", "Teres Minor", "Rhomboids"]
+  },
+  {
+    "slug": "smith-machine-shoulder-press",
+    "execution_steps_es": [
+      "Ajustá el banco con respaldo vertical dentro del Smith Machine y posicioná la barra a la altura de la clavícula.",
+      "Sentáte con la espalda firmemente apoyada y tomá la barra con agarre prono, manos algo más anchas que los hombros.",
+      "Desbloqueá la barra y bajala de forma controlada hasta la clavícula.",
+      "Inspirá, activá el core y empujá la barra verticalmente hasta casi extender los brazos.",
+      "Espirá y volvé a bajar de forma controlada para la siguiente repetición."
+    ],
+    "execution_steps_en": [
+      "Set up a vertical backrest bench inside the Smith Machine and position the bar at collarbone height.",
+      "Sit with your back firmly pressed and grip the bar overhand with hands slightly wider than shoulders.",
+      "Unlock the bar and lower it under control to the collarbone.",
+      "Inhale, brace your core, and press the bar vertically until arms are nearly extended.",
+      "Exhale and lower under control for the next repetition."
+    ],
+    "common_errors_es": [
+      "Arquear la espalda baja de forma exagerada durante el press.",
+      "Dejar que la barra caiga sin control al bajar, perdiendo el trabajo excéntrico.",
+      "No desbloquear y bloquear correctamente la barra antes y después de la serie.",
+      "Usar la guía fija del Smith para forzar rangos de movimiento poco naturales para el hombro."
+    ],
+    "common_errors_en": [
+      "Excessively arching the lower back during the press.",
+      "Letting the bar drop without control on the way down, losing eccentric work.",
+      "Not correctly unlocking and locking the bar before and after the set.",
+      "Using the Smith guide to force unnatural ranges of motion for the shoulder."
+    ],
+    "pro_tip_es": "El Smith Machine elimina el balance lateral pero mantiene la guía vertical; es una opción útil para principiantes o para series con fatiga máxima donde el balance libre compromete la seguridad.",
+    "pro_tip_en": "The Smith Machine eliminates lateral balance but maintains vertical guidance; it is a useful option for beginners or for high-fatigue sets where free-weight balance compromises safety.",
+    "tertiary_muscles": ["Serratus Anterior", "Core", "Upper Pectoralis"]
+  },
+  {
+    "slug": "smith-machine-shoulder-press-2",
+    "execution_steps_es": [
+      "Ajustá el banco con respaldo completamente vertical dentro del Smith Machine y posicioná la barra detrás de la cabeza, a la altura de la nuca.",
+      "Flexioná ligeramente la cabeza hacia adelante y tomá la barra con agarre prono, manos más anchas que los hombros.",
+      "Bajá la barra de forma controlada hasta la altura de la nuca sin bajarla más allá.",
+      "Inspirá, activá el core y empujá la barra verticalmente hasta casi extender los brazos.",
+      "Espirá y volvé a bajar de forma controlada."
+    ],
+    "execution_steps_en": [
+      "Set up a fully vertical backrest bench inside the Smith Machine and position the bar behind your head at nape height.",
+      "Slightly flex your head forward and grip the bar overhand with hands wider than shoulders.",
+      "Lower the bar under control to nape height without going further down.",
+      "Inhale, brace your core, and press the bar vertically until arms are nearly extended.",
+      "Exhale and lower under control."
+    ],
+    "common_errors_es": [
+      "Bajar la barra demasiado, llevándola al nivel del cuello o la espalda media, aumentando el riesgo cervical.",
+      "No flexionar la cabeza hacia adelante, dejándola en la trayectoria de la barra.",
+      "Usar un agarre demasiado cerrado que aumenta la tensión en el manguito rotador.",
+      "Arquear la espalda baja de forma exagerada durante el press."
+    ],
+    "common_errors_en": [
+      "Lowering the bar too far, bringing it to neck or mid-back level, increasing cervical risk.",
+      "Not flexing the head forward, leaving it in the bar's path.",
+      "Using too narrow a grip that increases rotator cuff stress.",
+      "Excessively arching the lower back during the press."
+    ],
+    "pro_tip_es": "El press trasnuca activa las tres cabezas del deltoides de forma intensa; sin embargo, requiere una buena movilidad de hombros y no es recomendable para quienes tienen antecedentes de pinzamiento subacromial.",
+    "pro_tip_en": "The behind-the-neck press intensely activates all three deltoid heads; however, it requires good shoulder mobility and is not recommended for those with a history of subacromial impingement.",
+    "tertiary_muscles": ["Serratus Anterior", "Upper Pectoralis", "Core"]
+  },
+  {
+    "slug": "unilateral-dumbbell-shoulder-press",
+    "execution_steps_es": [
+      "Sentáte en un banco con respaldo vertical o paráte con el core activado, con una mancuerna a la altura del hombro en agarre prono.",
+      "Inspirá y empujá la mancuerna hacia arriba hasta casi extender el brazo, manteniendo el tronco recto.",
+      "Evitá inclinar el torso hacia el lado contrario del brazo que trabaja.",
+      "Pausá un instante en el punto alto y espirá al completar la extensión.",
+      "Bajá la mancuerna de forma controlada hasta la posición de inicio en el hombro."
+    ],
+    "execution_steps_en": [
+      "Sit on a bench with a vertical backrest or stand with your core braced, holding one dumbbell at shoulder height in an overhand grip.",
+      "Inhale and press the dumbbell upward until the arm is nearly extended, keeping the torso upright.",
+      "Avoid tilting the torso toward the opposite side of the working arm.",
+      "Pause briefly at the top and exhale as you complete the extension.",
+      "Lower the dumbbell under control to the starting shoulder-height position."
+    ],
+    "common_errors_es": [
+      "Inclinar el tronco hacia el lado contrario para compensar la asimetría del peso.",
+      "No activar el core, lo que genera inestabilidad lateral de la columna.",
+      "Usar una carga excesiva que fuerza compensaciones posturales.",
+      "Bajar la mancuerna sin control, perdiendo el trabajo excéntrico del deltoides."
+    ],
+    "common_errors_en": [
+      "Tilting the trunk to the opposite side to compensate for the weight asymmetry.",
+      "Not bracing the core, causing lateral spinal instability.",
+      "Using excessive load that forces postural compensations.",
+      "Lowering the dumbbell without control, losing eccentric deltoid work."
+    ],
+    "pro_tip_es": "El press unilateral exige mayor activación del core que el bilateral porque el cuerpo debe resistir la inclinación lateral; usalo para detectar y corregir diferencias de fuerza entre ambos hombros.",
+    "pro_tip_en": "Unilateral pressing demands greater core activation than bilateral because the body must resist lateral tilting; use it to detect and correct strength imbalances between both shoulders.",
+    "tertiary_muscles": ["Core", "Serratus Anterior", "Upper Trapezius"]
+  }
+]
