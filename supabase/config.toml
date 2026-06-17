@@ -19,6 +19,8 @@ sql_paths = [
   "./seed/seed.sql",
   "./seed/exercises.sql",
   "./seed/exercises_descriptions_es.sql",
+  "./seed/exercises_ficha.sql",
+  "./seed/exercises_svg_icons.sql",
   "./seed/smoke-flow.sql"
 ]
 

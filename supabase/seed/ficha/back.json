@@ -1,0 +1,1218 @@
+[
+  {
+    "slug": "assisted-pull-up-machine",
+    "execution_steps_es": [
+      "Ajustá el peso de asistencia en la máquina: cuanto más alto, menor resistencia de tu propio cuerpo.",
+      "Arrodilláte o subí a la plataforma asistida y agarrá la barra con un agarre pronado (palmas al frente) al ancho de hombros.",
+      "Inspirá, apretá el core y tirá los codos hacia abajo y atrás para subir el cuerpo hasta que el mentón supere la barra.",
+      "Pausá brevemente arriba y espirá mientras bajás de forma controlada hasta la extensión completa de brazos.",
+      "Mantené el pecho levemente elevado en todo el recorrido; evitá balancear el torso."
+    ],
+    "execution_steps_en": [
+      "Set the assistance weight: the higher the weight, the lower the resistance from your own body.",
+      "Kneel or stand on the assisted platform and grip the bar with a pronated (palms-forward) shoulder-width grip.",
+      "Inhale, brace your core, and drive your elbows down and back to pull your body up until your chin clears the bar.",
+      "Pause briefly at the top, then exhale as you lower in a controlled manner to full arm extension.",
+      "Keep your chest slightly elevated throughout; avoid swinging the torso."
+    ],
+    "common_errors_es": [
+      "Usar demasiada asistencia y no progresar hacia la dominada libre.",
+      "Dejar que los hombros suban hacia las orejas en lugar de deprimirlos al inicio del tirón.",
+      "Bajar demasiado rápido sin controlar la fase excéntrica.",
+      "Balancear las rodillas para generar impulso."
+    ],
+    "common_errors_en": [
+      "Using too much assistance and failing to progress toward unassisted pull-ups.",
+      "Letting the shoulders shrug toward the ears instead of depressing them at the start of the pull.",
+      "Lowering too quickly without controlling the eccentric phase.",
+      "Swinging the knees to generate momentum."
+    ],
+    "pro_tip_es": "Deprimí los omóplatos (bajálos) antes de doblar los codos: eso activa el dorsal desde el inicio y protege el hombro.",
+    "pro_tip_en": "Depress your shoulder blades (pull them down) before bending your elbows: this activates the lats from the start and protects the shoulder.",
+    "tertiary_muscles": ["Rhomboids", "Infraspinatus", "Serratus Anterior"]
+  },
+  {
+    "slug": "assisted-pull-up-machine-2",
+    "execution_steps_es": [
+      "Seleccioná el agarre neutro (palmas enfrentadas) o supinado si la máquina lo permite, con manos separadas al ancho de hombros.",
+      "Ajustá la asistencia y ubicáte en la plataforma con el cuerpo erguido.",
+      "Inspirá, deprimí los omóplatos y tirá los codos hacia las caderas para subir el cuerpo.",
+      "Subí hasta que el mentón quede a la altura de las manos; pausá un instante.",
+      "Espirá y bajá lentamente hasta la extensión completa de los brazos."
+    ],
+    "execution_steps_en": [
+      "Select a neutral (palms facing each other) or supinated grip if the machine allows, hands shoulder-width apart.",
+      "Set the assistance and stand or kneel on the platform with an upright posture.",
+      "Inhale, depress your shoulder blades, and pull your elbows toward your hips to raise your body.",
+      "Rise until your chin is level with your hands; pause briefly.",
+      "Exhale and lower slowly to full arm extension."
+    ],
+    "common_errors_es": [
+      "Cambiar el ángulo del codo durante el movimiento en lugar de mantenerlo constante.",
+      "No alcanzar la extensión completa en la fase de bajada, limitando el rango de recorrido.",
+      "Usar un peso de asistencia tan alto que elimina toda demanda muscular real.",
+      "Encorvar la espalda alta en lugar de mantener el pecho abierto."
+    ],
+    "common_errors_en": [
+      "Changing elbow angle mid-movement instead of keeping it consistent.",
+      "Not reaching full extension on the way down, limiting range of motion.",
+      "Using so much assistance that real muscular demand is eliminated.",
+      "Rounding the upper back instead of keeping the chest open."
+    ],
+    "pro_tip_es": "El agarre neutro suele sentirse más natural en el hombro y permite mayor recorrido; usálo como puente entre las dominadas en pronación y las en supinación.",
+    "pro_tip_en": "A neutral grip often feels more natural on the shoulder and allows greater range of motion; use it as a bridge between pronated and supinated pull-ups.",
+    "tertiary_muscles": ["Infraspinatus", "Teres Minor", "Core"]
+  },
+  {
+    "slug": "back-extension-machine",
+    "execution_steps_es": [
+      "Ajustá el pad de la máquina para que quede a nivel de las caderas, con los tobillos bien fijados.",
+      "Inspirá y dejá caer el torso hacia adelante de manera controlada hasta que el tronco quede perpendicular al suelo.",
+      "Espirá y extendé la espalda hacia arriba hasta que el cuerpo quede horizontal; no hiperextendas la columna.",
+      "Apretá los glúteos al llegar a la posición horizontal y mantené un segundo.",
+      "Repetí el movimiento de forma fluida, sin rebotar en ninguno de los extremos."
+    ],
+    "execution_steps_en": [
+      "Adjust the machine pad to hip level with your ankles firmly secured.",
+      "Inhale and lower your torso forward in a controlled manner until your trunk is perpendicular to the floor.",
+      "Exhale and extend your back upward until your body is horizontal; do not hyperextend the spine.",
+      "Squeeze your glutes at the horizontal position and hold for one second.",
+      "Repeat the movement fluidly without bouncing at either end of the range."
+    ],
+    "common_errors_es": [
+      "Hiperextender la columna más allá de la horizontal, sobrecargando los discos lumbares.",
+      "Hacer el movimiento con velocidad en lugar de controlar la bajada.",
+      "No fijar bien los tobillos, perdiendo estabilidad en la fase de extensión.",
+      "Flexionar las rodillas durante el recorrido."
+    ],
+    "common_errors_en": [
+      "Hyperextending the spine past horizontal, overloading lumbar discs.",
+      "Performing the movement quickly instead of controlling the descent.",
+      "Not securing the ankles properly, losing stability during the extension phase.",
+      "Bending the knees during the movement."
+    ],
+    "pro_tip_es": "Si querés mayor activación de glúteos, apretálos activamente antes de iniciar la extensión y mantenélos contraídos hasta el punto más alto.",
+    "pro_tip_en": "For greater glute activation, actively squeeze them before starting the extension and keep them contracted to the top position.",
+    "tertiary_muscles": ["Multifidus", "Adductor Magnus", "Core"]
+  },
+  {
+    "slug": "barbell-bent-over-row",
+    "execution_steps_es": [
+      "Paráte con los pies al ancho de cadera, agarrá la barra en pronación con las manos algo más anchas que los hombros.",
+      "Inclinante hacia adelante desde las caderas (no la cintura) hasta que el torso quede casi paralelo al suelo, rodillas levemente flexionadas.",
+      "Inspirá, apretá el core y tirá la barra hacia el abdomen bajo llevando los codos atrás y pegados al torso.",
+      "Espirá, apretá los omóplatos en la contracción máxima y bajá la barra de manera controlada.",
+      "Mantené la columna neutra en todo momento; no curvés la espalda alta."
+    ],
+    "execution_steps_en": [
+      "Stand with feet hip-width apart, grip the bar with a pronated grip slightly wider than shoulders.",
+      "Hinge forward at the hips (not the waist) until the torso is nearly parallel to the floor, knees slightly bent.",
+      "Inhale, brace your core, and row the bar toward your lower abdomen driving elbows back close to your torso.",
+      "Exhale, squeeze your shoulder blades at peak contraction, then lower the bar in a controlled manner.",
+      "Keep your spine neutral throughout; do not round the upper back."
+    ],
+    "common_errors_es": [
+      "Redondear la espalda alta al tirar, aumentando el estrés sobre los discos.",
+      "Usar el impulso del torso (balancear el cuerpo) para mover el peso.",
+      "Tirar la barra hacia el pecho en lugar del abdomen, cambiando el enfoque muscular.",
+      "No llevar la barra a la extensión completa al bajar, acortando el recorrido."
+    ],
+    "common_errors_en": [
+      "Rounding the upper back while pulling, increasing disc stress.",
+      "Using torso momentum (body swinging) to move the weight.",
+      "Rowing the bar toward the chest instead of the abdomen, shifting muscle focus.",
+      "Not lowering the bar to full extension, shortening the range of motion."
+    ],
+    "pro_tip_es": "Pensá en 'llevar los codos al bolsillo trasero' en lugar de 'tirar la barra': esto orienta el movimiento al dorsal y reduce la compensación del bíceps.",
+    "pro_tip_en": "Think of 'driving your elbows to your back pocket' rather than 'pulling the bar': this directs the movement to the lats and reduces bicep compensation.",
+    "tertiary_muscles": ["Infraspinatus", "Subscapularis", "Erector Spinae"]
+  },
+  {
+    "slug": "cable-shrug",
+    "execution_steps_es": [
+      "Conectá un par de manijas a las poleas bajas y paráte en el medio con una manija en cada mano, brazos extendidos a los costados.",
+      "Mantené los brazos rectos y elevá los hombros directamente hacia las orejas sin rotar el cuello.",
+      "Mantené la contracción máxima durante uno o dos segundos.",
+      "Bajá los hombros de manera controlada hasta la posición inicial.",
+      "Espirá al subir, inspirá al bajar; mantenéingás el torso estable en todo momento."
+    ],
+    "execution_steps_en": [
+      "Attach handles to the low pulleys and stand in the middle with a handle in each hand, arms extended at your sides.",
+      "Keep arms straight and elevate your shoulders directly toward your ears without rotating your neck.",
+      "Hold the peak contraction for one to two seconds.",
+      "Lower your shoulders in a controlled manner to the starting position.",
+      "Exhale on the rise, inhale on the descent; keep your torso stable throughout."
+    ],
+    "common_errors_es": [
+      "Rotar los hombros en círculo en lugar de elevarlos en línea recta.",
+      "Doblar los codos durante el movimiento, perdiendo el aislamiento del trapecio.",
+      "Hacer movimientos bruscos en lugar de controlados.",
+      "Inclinar el cuello o mover la cabeza al elevar los hombros."
+    ],
+    "common_errors_en": [
+      "Rolling the shoulders in a circle instead of elevating them in a straight line.",
+      "Bending the elbows during the movement, losing trapezius isolation.",
+      "Performing jerky movements instead of controlled ones.",
+      "Tilting the neck or moving the head when elevating the shoulders."
+    ],
+    "pro_tip_es": "La polea mantiene tensión constante en todo el recorrido a diferencia de las mancuernas; aprovechá eso exagerando la contracción arriba.",
+    "pro_tip_en": "The cable maintains constant tension throughout the range unlike dumbbells; take advantage of this by maximizing the contraction at the top.",
+    "tertiary_muscles": ["Sternocleidomastoid", "Rhomboids", "Supraspinatus"]
+  },
+  {
+    "slug": "cable-straight-arm-pulldown",
+    "execution_steps_es": [
+      "Paráte frente a la polea alta y agarrá la barra recta o cuerda con los brazos extendidos a la altura de los hombros.",
+      "Mantenéingás los codos extendidos (sin bloquearlos) durante todo el movimiento.",
+      "Inspirá y tirá la barra en arco hacia abajo hasta que toque tus muslos.",
+      "Espirá al llegar abajo, apretando el dorsal en la contracción máxima.",
+      "Volvé a la posición inicial de forma lenta y controlada, sintiendo el estiramiento del dorsal."
+    ],
+    "execution_steps_en": [
+      "Stand facing the high pulley and grip the straight bar or rope with arms extended at shoulder height.",
+      "Keep your elbows extended (without locking them) throughout the entire movement.",
+      "Inhale and pull the bar in a downward arc until it touches your thighs.",
+      "Exhale at the bottom, squeezing the lat at peak contraction.",
+      "Return to the starting position slowly and controlled, feeling the lat stretch."
+    ],
+    "common_errors_es": [
+      "Doblar los codos, convirtiendo el ejercicio en un jalón de bíceps.",
+      "Inclinarte hacia adelante en lugar de mantener el torso erguido.",
+      "No extender completamente los brazos al volver, perdiendo el estiramiento del dorsal.",
+      "Usar impulso del torso para mover el peso en lugar del dorsal."
+    ],
+    "common_errors_en": [
+      "Bending the elbows, turning it into a biceps pulldown.",
+      "Leaning forward instead of keeping the torso upright.",
+      "Not fully extending the arms on the return, missing the lat stretch.",
+      "Using torso momentum to move the weight instead of the lat."
+    ],
+    "pro_tip_es": "Este ejercicio aísla el dorsal sin involucrar el bíceps; es ideal para pre-fatigar el músculo antes de remos o para finalizadores de espalda.",
+    "pro_tip_en": "This exercise isolates the lat without involving the biceps; it is ideal for pre-fatiguing the muscle before rows or as a back finisher.",
+    "tertiary_muscles": ["Posterior Deltoid", "Pectoralis Major (Lower)", "Core"]
+  },
+  {
+    "slug": "cable-straight-arm-pulldown-2",
+    "execution_steps_es": [
+      "Conectá la cuerda a la polea alta y paráte con los pies al ancho de cadera.",
+      "Agarrá la cuerda con agarre neutro (palmas enfrentadas) o en ligera pronación.",
+      "Inspirá y bajá los brazos extendidos en arco hasta las caderas, separando los extremos de la cuerda al final.",
+      "Espirá y apretá el dorsal en la contracción; la cuerda permite mayor rango que la barra.",
+      "Volvé a la posición inicial de forma controlada, sin soltar la tensión muscular."
+    ],
+    "execution_steps_en": [
+      "Attach the rope to the high pulley and stand with feet hip-width apart.",
+      "Grip the rope with a neutral (palms facing) or slightly pronated grip.",
+      "Inhale and pull your extended arms in a downward arc to your hips, spreading the rope ends at the bottom.",
+      "Exhale and squeeze the lat at contraction; the rope allows greater range than a bar.",
+      "Return to the starting position in a controlled manner without releasing muscle tension."
+    ],
+    "common_errors_es": [
+      "Doblar los codos durante el descenso en lugar de mantenerlos extendidos.",
+      "No separar los extremos de la cuerda al final, perdiendo el pico de contracción.",
+      "Inclinar excesivamente el torso hacia adelante para compensar el peso.",
+      "Soltar el control en la fase concéntrica y dejar que la polea tire los brazos hacia arriba."
+    ],
+    "common_errors_en": [
+      "Bending the elbows during the descent instead of keeping them extended.",
+      "Not spreading the rope ends at the bottom, missing the peak contraction.",
+      "Excessively leaning the torso forward to compensate for the weight.",
+      "Losing control in the concentric phase and letting the cable pull the arms up."
+    ],
+    "pro_tip_es": "La cuerda te permite llevar el movimiento más allá de las caderas y mayor énfasis en el deltoides posterior; separalas activamente al final del recorrido.",
+    "pro_tip_en": "The rope lets you extend the movement past your hips and gives more emphasis to the rear delt; actively spread them at the end of the range.",
+    "tertiary_muscles": ["Rhomboids", "Serratus Anterior", "Posterior Deltoid"]
+  },
+  {
+    "slug": "cable-t-bar-row",
+    "execution_steps_es": [
+      "Conectá la cuerda o el triángulo a la polea baja y paráte a unos pasos de distancia.",
+      "Inclinante hacia adelante desde las caderas hasta que el torso quede a unos 45° del suelo, rodillas levemente flexionadas.",
+      "Inspirá y tirá el agarre hacia el abdomen bajo, llevando los codos atrás y pegados al torso.",
+      "Espirá y apretá los omóplatos en la posición de máxima contracción.",
+      "Extendé los brazos de manera controlada hasta la posición de partida sin desenganchar el core."
+    ],
+    "execution_steps_en": [
+      "Attach the rope or triangle handle to the low cable and stand a few steps away.",
+      "Hinge forward at the hips until your torso is at roughly 45° to the floor, knees slightly bent.",
+      "Inhale and row the handle toward your lower abdomen, driving elbows back close to your torso.",
+      "Exhale and squeeze your shoulder blades at the peak contraction.",
+      "Extend your arms in a controlled manner back to the start without disengaging the core."
+    ],
+    "common_errors_es": [
+      "Redondear la espalda baja al tirar con peso elevado.",
+      "Usar el impulso del torso para completar la repetición.",
+      "Tirar el agarre hacia el pecho en lugar del abdomen.",
+      "No extender los brazos completamente en la bajada."
+    ],
+    "common_errors_en": [
+      "Rounding the lower back when pulling with heavy weight.",
+      "Using torso momentum to complete the repetition.",
+      "Pulling the handle toward the chest instead of the abdomen.",
+      "Not fully extending the arms on the way down."
+    ],
+    "pro_tip_es": "La polea mantiene tensión constante a diferencia del remo en T con barra libre; aprovechá ese estiramiento en la posición extendida para maximizar el trabajo del dorsal.",
+    "pro_tip_en": "The cable maintains constant tension unlike a free-weight T-bar row; take advantage of that stretch in the extended position to maximize lat work.",
+    "tertiary_muscles": ["Infraspinatus", "Subscapularis", "Posterior Deltoid"]
+  },
+  {
+    "slug": "deadlift",
+    "execution_steps_es": [
+      "Paráte con los pies al ancho de cadera, la barra sobre el mediopié, y agachate para agarrarla con agarre pronado al ancho de hombros.",
+      "Bajá las caderas, sacá pecho y mantené la columna neutra desde la cabeza hasta la cola.",
+      "Inspirá profundo, apretá el core y empujá el suelo hacia abajo con los pies para iniciar el movimiento.",
+      "Extendé caderas y rodillas simultáneamente hasta quedar de pie; no hiperextendas la columna arriba.",
+      "Espirá y volvé la barra al suelo de forma controlada siguiendo la misma trayectoria."
+    ],
+    "execution_steps_en": [
+      "Stand with feet hip-width apart, bar over mid-foot, and hinge down to grip it with a pronated grip at shoulder width.",
+      "Lower your hips, chest up, and maintain a neutral spine from head to tailbone.",
+      "Take a deep breath, brace your core, and push the floor away with your feet to initiate the lift.",
+      "Extend hips and knees simultaneously until fully upright; do not hyperextend the spine at the top.",
+      "Exhale and return the bar to the floor in a controlled manner following the same path."
+    ],
+    "common_errors_es": [
+      "Redondear la espalda baja al iniciar el tirón, sobrecargando los discos lumbares.",
+      "Dejar que la barra se aleje del cuerpo durante el ascenso.",
+      "Tirar con los brazos en lugar de empujar el suelo con las piernas.",
+      "Hiperextender la columna lumbar al llegar a la posición final erguida."
+    ],
+    "common_errors_en": [
+      "Rounding the lower back at the start of the pull, overloading lumbar discs.",
+      "Letting the bar drift away from the body during the ascent.",
+      "Pulling with the arms instead of pushing the floor with the legs.",
+      "Hyperextending the lumbar spine at the lockout position."
+    ],
+    "pro_tip_es": "Antes de arrancar, 'apretá la naranja en la axila': eso crea una tensión en el dorsal que estabiliza la columna y mantiene la barra pegada al cuerpo.",
+    "pro_tip_en": "Before lifting, 'squeeze an orange in your armpit': this creates lat tension that stabilizes the spine and keeps the bar close to your body.",
+    "tertiary_muscles": ["Adductor Magnus", "Quadriceps", "Core"]
+  },
+  {
+    "slug": "dumbbell-bent-over-row",
+    "execution_steps_es": [
+      "Paráte con los pies al ancho de cadera y una mancuerna en cada mano; inclinante desde las caderas hasta que el torso quede a unos 45°.",
+      "Inspirá y tirá ambas mancuernas hacia las caderas simultáneamente, llevando los codos atrás.",
+      "Espirá y apretá los omóplatos en la contracción máxima.",
+      "Bajá las mancuernas de forma controlada hasta la extensión completa de los brazos.",
+      "Mantené la columna neutra durante toda la serie; no curvés la espalda alta."
+    ],
+    "execution_steps_en": [
+      "Stand with feet hip-width apart and a dumbbell in each hand; hinge at the hips until the torso is at roughly 45°.",
+      "Inhale and row both dumbbells toward your hips simultaneously, driving elbows back.",
+      "Exhale and squeeze your shoulder blades at peak contraction.",
+      "Lower the dumbbells in a controlled manner to full arm extension.",
+      "Keep your spine neutral throughout the set; do not round your upper back."
+    ],
+    "common_errors_es": [
+      "Balancear el torso para generar impulso y mover el peso.",
+      "Elevar los hombros hacia las orejas en lugar de deprimirlos.",
+      "No llevar los codos atrás del torso, limitando la activación de romboides.",
+      "Redondear la columna torácica al fatigarse."
+    ],
+    "common_errors_en": [
+      "Swinging the torso to generate momentum and move the weight.",
+      "Elevating the shoulders toward the ears instead of depressing them.",
+      "Not driving elbows behind the torso, limiting rhomboid activation.",
+      "Rounding the thoracic spine as fatigue sets in."
+    ],
+    "pro_tip_es": "Las mancuernas permiten un agarre neutro y mayor recorrido que la barra; usá ese rango extra en la bajada para maximizar el estiramiento del dorsal.",
+    "pro_tip_en": "Dumbbells allow a neutral grip and greater range of motion than a barbell; use that extra range on the way down to maximize lat stretch.",
+    "tertiary_muscles": ["Infraspinatus", "Subscapularis", "Erector Spinae"]
+  },
+  {
+    "slug": "dumbbell-deadlift",
+    "execution_steps_es": [
+      "Paráte con los pies al ancho de cadera y una mancuerna en cada mano frente a los muslos.",
+      "Inclinante hacia adelante desde las caderas manteniendo la columna neutra y la mirada al frente.",
+      "Bajá las mancuernas cerca de las piernas hasta que sientas el estiramiento en los isquiotibiales.",
+      "Inspirá antes de bajar; espirá y extendé las caderas y rodillas para volver a la posición erguida.",
+      "Apretá los glúteos al llegar arriba sin hiperextender la columna lumbar."
+    ],
+    "execution_steps_en": [
+      "Stand with feet hip-width apart and a dumbbell in each hand in front of your thighs.",
+      "Hinge forward at the hips keeping your spine neutral and gaze forward.",
+      "Lower the dumbbells close to your legs until you feel a stretch in your hamstrings.",
+      "Inhale before lowering; exhale and extend your hips and knees to return to the upright position.",
+      "Squeeze your glutes at the top without hyperextending your lumbar spine."
+    ],
+    "common_errors_es": [
+      "Redondear la espalda baja al bajar las mancuernas.",
+      "Alejar las mancuernas del cuerpo en lugar de deslizarlas cerca de las piernas.",
+      "Doblar las rodillas en exceso, convirtiendo el ejercicio en una sentadilla.",
+      "No apoyar los pies de forma pareja y perder el equilibrio."
+    ],
+    "common_errors_en": [
+      "Rounding the lower back when lowering the dumbbells.",
+      "Moving the dumbbells away from the body instead of sliding them close to the legs.",
+      "Bending the knees excessively, turning it into a squat.",
+      "Not planting both feet evenly and losing balance."
+    ],
+    "pro_tip_es": "Imaginá que estás 'empujando el suelo hacia abajo' en lugar de 'subir la mancuerna': eso activa la cadena posterior de forma más efectiva.",
+    "pro_tip_en": "Imagine 'pushing the floor away' rather than 'lifting the dumbbell': this activates the posterior chain more effectively.",
+    "tertiary_muscles": ["Adductor Magnus", "Quadriceps", "Core"]
+  },
+  {
+    "slug": "dumbbell-pullover-3",
+    "execution_steps_es": [
+      "Recostáte transversalmente en el banco con los hombros apoyados y las caderas colgando levemente hacia abajo.",
+      "Sostené las mancuernas sobre el pecho con los codos levemente flexionados.",
+      "Inspirá y bajá las mancuernas lentamente por encima de la cabeza en arco hasta sentir el estiramiento del dorsal y el pectoral.",
+      "Espirá y volvé las mancuernas a la vertical del pecho contrayendo el dorsal.",
+      "Mantené la flexión de codo fija durante todo el arco; no cambies el ángulo."
+    ],
+    "execution_steps_en": [
+      "Lie across the bench with your shoulders supported and your hips hanging slightly lower.",
+      "Hold the dumbbells over your chest with elbows slightly bent.",
+      "Inhale and lower the dumbbells slowly overhead in an arc until you feel a stretch in the lats and chest.",
+      "Exhale and return the dumbbells to chest vertical by contracting the lats.",
+      "Keep elbow bend fixed throughout the arc; do not change the angle."
+    ],
+    "common_errors_es": [
+      "Cambiar el ángulo del codo durante el arco, convirtiendo el movimiento en un press.",
+      "Bajar el peso tan profundamente que la articulación del hombro se ve comprometida.",
+      "No estabilizar las caderas, lo que hace que el torso rote.",
+      "Usar peso excesivo que impide el control en el punto de mayor estiramiento."
+    ],
+    "common_errors_en": [
+      "Changing elbow angle during the arc, turning the movement into a press.",
+      "Lowering the weight so deep that the shoulder joint is compromised.",
+      "Not stabilizing the hips, causing torso rotation.",
+      "Using excessive weight that prevents control at the point of greatest stretch."
+    ],
+    "pro_tip_es": "La variante con dos mancuernas permite mayor individualización de cada lado; priorizá la forma sobre la carga, ya que es un ejercicio de estiramiento y contracción, no de fuerza máxima.",
+    "pro_tip_en": "The two-dumbbell variation allows greater individualization per side; prioritize form over load, as this is a stretch-and-contract exercise, not a max-strength one.",
+    "tertiary_muscles": ["Serratus Anterior", "Rhomboids", "Subscapularis"]
+  },
+  {
+    "slug": "dumbbell-pullover-back-focus",
+    "execution_steps_es": [
+      "Recostáte en el banco plano con los hombros apoyados y una mancuerna sujeta con ambas manos sobre el pecho.",
+      "Extendé los brazos casi completamente (codos apenas flexionados) para maximizar la participación del dorsal.",
+      "Inspirá y bajá la mancuerna lentamente por encima de la cabeza en arco amplio, enfocándote en el estiramiento del dorsal.",
+      "Espirá y tirá la mancuerna de vuelta hacia el pecho pensando en 'bajar los codos hacia las caderas'.",
+      "Controlá la fase excéntrica; no dejes caer el peso."
+    ],
+    "execution_steps_en": [
+      "Lie on a flat bench with shoulders supported and a dumbbell held with both hands over your chest.",
+      "Extend your arms almost fully (elbows barely bent) to maximize lat involvement.",
+      "Inhale and slowly lower the dumbbell overhead in a wide arc, focusing on the lat stretch.",
+      "Exhale and pull the dumbbell back toward your chest thinking of 'driving elbows toward your hips'.",
+      "Control the eccentric phase; do not drop the weight."
+    ],
+    "common_errors_es": [
+      "Doblar demasiado los codos, trasladando el trabajo al pectoral y al tríceps.",
+      "Bajar el peso sin controlar el tempo, poniendo en riesgo el hombro.",
+      "No enfocarse en el dorsal en la fase concéntrica, perdiendo el beneficio del ejercicio.",
+      "Levantar las caderas del banco al volver el peso hacia el pecho."
+    ],
+    "common_errors_en": [
+      "Bending the elbows too much, shifting work to the pectoral and triceps.",
+      "Lowering the weight without controlling tempo, risking the shoulder.",
+      "Not focusing on the lat during the concentric phase, losing the benefit of the exercise.",
+      "Lifting the hips off the bench when returning the weight to chest."
+    ],
+    "pro_tip_es": "Para énfasis en el dorsal, mantené los brazos más extendidos que en la variante para pectoral; el codo casi recto cambia drásticamente qué músculo trabaja más.",
+    "pro_tip_en": "For lat emphasis, keep your arms more extended than in the chest variation; the nearly straight elbow dramatically changes which muscle does more work.",
+    "tertiary_muscles": ["Serratus Anterior", "Posterior Deltoid", "Core"]
+  },
+  {
+    "slug": "dumbbell-renegade-row",
+    "execution_steps_es": [
+      "Colocáte en posición de plancha alta con las manos sobre las mancuernas en el suelo, ligeramente más anchas que los hombros.",
+      "Aseguráte de que el cuerpo esté rígido de cabeza a talones: core apretado, glúteos activos.",
+      "Inspirá y tirá una mancuerna hacia la cadera del mismo lado llevando el codo hacia el techo.",
+      "Espirá y bajá la mancuerna de vuelta al suelo de forma controlada; repetí del otro lado.",
+      "Evitá rotar el torso: el objetivo es que las caderas queden paralelas al suelo en todo momento."
+    ],
+    "execution_steps_en": [
+      "Get into a high plank position with hands on dumbbells on the floor, slightly wider than shoulders.",
+      "Ensure your body is rigid from head to heels: core braced, glutes active.",
+      "Inhale and row one dumbbell toward your hip on the same side, driving the elbow toward the ceiling.",
+      "Exhale and lower the dumbbell back to the floor in a controlled manner; repeat on the other side.",
+      "Avoid rotating the torso: the goal is to keep your hips parallel to the floor throughout."
+    ],
+    "common_errors_es": [
+      "Rotar las caderas al tirar, perdiendo el componente anti-rotación del ejercicio.",
+      "No mantener el cuerpo rígido, dejando que las caderas caigan o suban.",
+      "Abrir los pies demasiado para compensar la inestabilidad en lugar de trabajar el core.",
+      "Tirar la mancuerna hacia el hombro en lugar de la cadera."
+    ],
+    "common_errors_en": [
+      "Rotating the hips when rowing, losing the anti-rotation component of the exercise.",
+      "Not keeping the body rigid, letting the hips sag or rise.",
+      "Spreading the feet too wide to compensate for instability instead of working the core.",
+      "Rowing the dumbbell toward the shoulder instead of the hip."
+    ],
+    "pro_tip_es": "Separás un poco más los pies da más base de sustentación; si recién empezás, hacélo así hasta dominar la posición de plancha bajo carga.",
+    "pro_tip_en": "Spreading your feet slightly wider gives a larger base of support; if you are just starting, do it this way until you master the plank position under load.",
+    "tertiary_muscles": ["Obliques", "Subscapularis", "Anterior Deltoid"]
+  },
+  {
+    "slug": "dumbbell-shrug",
+    "execution_steps_es": [
+      "Paráte con los pies al ancho de cadera y una mancuerna en cada mano, colgando a los costados del cuerpo.",
+      "Mantené los brazos completamente rectos durante todo el movimiento.",
+      "Elevá los hombros directamente hacia las orejas de forma explosiva controlada.",
+      "Mantené la contracción en el punto más alto durante uno o dos segundos.",
+      "Bajá los hombros lentamente hasta la posición de partida; no los dejes caer."
+    ],
+    "execution_steps_en": [
+      "Stand with feet hip-width apart and a dumbbell in each hand hanging at your sides.",
+      "Keep your arms completely straight throughout the entire movement.",
+      "Elevate your shoulders directly toward your ears with controlled explosiveness.",
+      "Hold the contraction at the top for one to two seconds.",
+      "Lower your shoulders slowly to the starting position; do not let them drop."
+    ],
+    "common_errors_es": [
+      "Rotar los hombros hacia adelante o atrás en lugar de elevarlos en línea recta.",
+      "Doblar los codos durante la elevación.",
+      "Usar el impulso del cuerpo para mover el peso.",
+      "No alcanzar la contracción máxima al llegar arriba."
+    ],
+    "common_errors_en": [
+      "Rolling the shoulders forward or backward instead of elevating them straight up.",
+      "Bending the elbows during the elevation.",
+      "Using body momentum to move the weight.",
+      "Not reaching peak contraction at the top."
+    ],
+    "pro_tip_es": "Imaginá que intentás tocar las orejas con los hombros; eso asegura el recorrido completo y máxima contracción del trapecio superior.",
+    "pro_tip_en": "Imagine trying to touch your ears with your shoulders; this ensures full range and maximum upper trapezius contraction.",
+    "tertiary_muscles": ["Levator Scapulae", "Sternocleidomastoid", "Rhomboids"]
+  },
+  {
+    "slug": "dumbbell-single-arm-row",
+    "execution_steps_es": [
+      "Apoyá una rodilla y la mano del mismo lado en el banco; el pie contrario en el suelo y la mancuerna en la mano libre.",
+      "Mantenéingás el torso paralelo al suelo y la columna neutra.",
+      "Inspirá y tirá la mancuerna hacia la cadera, llevando el codo hacia el techo.",
+      "Espirá y apretá el dorsal en la contracción máxima, luego bajá de forma controlada.",
+      "No rotés el torso para generar impulso; el movimiento es solo del brazo y el omóplato."
+    ],
+    "execution_steps_en": [
+      "Place one knee and the same-side hand on the bench; opposite foot on the floor and dumbbell in the free hand.",
+      "Keep your torso parallel to the floor and spine neutral.",
+      "Inhale and row the dumbbell toward your hip, driving your elbow toward the ceiling.",
+      "Exhale and squeeze the lat at peak contraction, then lower in a controlled manner.",
+      "Do not rotate your torso to generate momentum; the movement is only from the arm and shoulder blade."
+    ],
+    "common_errors_es": [
+      "Rotar el torso para ganar impulso, reduciendo el trabajo del dorsal.",
+      "Tirar la mancuerna hacia el hombro en lugar de la cadera.",
+      "No alcanzar la extensión completa al bajar, limitando el rango.",
+      "Encorvar la espalda alta durante el tirón."
+    ],
+    "common_errors_en": [
+      "Rotating the torso to gain momentum, reducing lat work.",
+      "Rowing the dumbbell toward the shoulder instead of the hip.",
+      "Not reaching full extension on the way down, limiting range.",
+      "Rounding the upper back during the pull."
+    ],
+    "pro_tip_es": "Pensá en el brazo como un gancho: el codo arrastra el peso, no la mano. Eso desactiva el bíceps y pone el trabajo en el dorsal.",
+    "pro_tip_en": "Think of your arm as a hook: your elbow pulls the weight, not your hand. This deactivates the biceps and puts the work on the lat.",
+    "tertiary_muscles": ["Infraspinatus", "Teres Minor", "Core"]
+  },
+  {
+    "slug": "dumbbell-single-arm-row-2",
+    "execution_steps_es": [
+      "Colocáte con el torso en posición oblicua (no horizontal), apoyando solo la mano en el banco a menor altura que en la variante básica.",
+      "Agarrá la mancuerna y mantenéingás el codo algo más separado del torso que en el remo unilateral estándar.",
+      "Inspirá y tirá la mancuerna hacia la zona media-alta del torso, con el codo abierto hacia afuera.",
+      "Espirá y apretá el trapecio y los romboides en la contracción; bajá de forma controlada.",
+      "Mantené la columna neutra en todo momento; el torso oblicuo ya de por sí recarga la zona alta."
+    ],
+    "execution_steps_en": [
+      "Position your torso at an oblique angle (not horizontal), resting only your hand on the bench at a lower point than in the standard variation.",
+      "Grip the dumbbell and keep your elbow slightly more flared away from your torso than in the standard unilateral row.",
+      "Inhale and row the dumbbell toward the mid-upper torso with the elbow angled outward.",
+      "Exhale and squeeze the trapezius and rhomboids at contraction; lower in a controlled manner.",
+      "Keep your spine neutral throughout; the oblique torso position already loads the upper back."
+    ],
+    "common_errors_es": [
+      "Volver a la posición horizontal del remo estándar, perdiendo el énfasis en la zona alta.",
+      "Tirar el codo demasiado abierto, lo que sobrecarga el hombro.",
+      "Usar impulso del torso en lugar de activar los romboides y trapecio.",
+      "No controlar el peso en la fase excéntrica."
+    ],
+    "common_errors_en": [
+      "Reverting to the horizontal position of the standard row, losing the upper back emphasis.",
+      "Flaring the elbow too wide, which overloads the shoulder.",
+      "Using torso momentum instead of activating rhomboids and trapezius.",
+      "Not controlling the weight in the eccentric phase."
+    ],
+    "pro_tip_es": "Esta variante es ideal para completar la espalda alta después de los remos estándar; usala al final de la sesión con menor carga y mayor concentración en la contracción.",
+    "pro_tip_en": "This variation is ideal for completing the upper back after standard rows; use it at the end of the session with less weight and more focus on the contraction.",
+    "tertiary_muscles": ["Infraspinatus", "Posterior Deltoid", "Erector Spinae"]
+  },
+  {
+    "slug": "inverted-t-bar-row",
+    "execution_steps_es": [
+      "Paráte de costado a la barra vertical o horizontal con los pies cerca de ella y agarráte con una mano.",
+      "Dejá caer el cuerpo lateralmente de forma rígida hasta que el brazo quede casi extendido.",
+      "Inspirá y tirá del brazo para acercar el cuerpo a la barra, llevando el codo hacia el costado.",
+      "Espirá al alcanzar la contracción máxima y volvé de forma controlada a la posición extendida.",
+      "Mantené el cuerpo rígido de cabeza a pies; no flexiones las rodillas ni muevas las caderas."
+    ],
+    "execution_steps_en": [
+      "Stand sideways to a firm vertical or horizontal bar with feet close to it, gripping it with one hand.",
+      "Drop your body laterally in a rigid position until your arm is almost fully extended.",
+      "Inhale and pull your arm to bring your body toward the bar, driving the elbow toward your side.",
+      "Exhale at peak contraction and return in a controlled manner to the extended position.",
+      "Keep your body rigid from head to feet; do not bend knees or shift hips."
+    ],
+    "common_errors_es": [
+      "Flexionar las rodillas o mover los pies para compensar la falta de fuerza.",
+      "No mantener el cuerpo rígido, dejando que las caderas caigan durante el descenso.",
+      "Usar el impulso del balanceo en lugar del dorsal para subir.",
+      "No llegar a la extensión completa del brazo al bajar."
+    ],
+    "common_errors_en": [
+      "Bending the knees or moving the feet to compensate for lack of strength.",
+      "Not keeping the body rigid, letting the hips drop during the descent.",
+      "Using swinging momentum instead of the lat to pull up.",
+      "Not reaching full arm extension on the way down."
+    ],
+    "pro_tip_es": "Este ejercicio exige coordinación y fuerza de core; si no podés mantener el cuerpo rígido, fortalecé la plancha lateral antes de intentarlo con carga.",
+    "pro_tip_en": "This exercise demands coordination and core strength; if you cannot keep your body rigid, strengthen the side plank before attempting it under load.",
+    "tertiary_muscles": ["Core", "Pectoralis Major", "Triceps Long Head"]
+  },
+  {
+    "slug": "lat-pulldown",
+    "execution_steps_es": [
+      "Sentáte en la máquina, ajustá el pad de rodillas y agarrá la barra con agarre pronado al ancho indicado.",
+      "Inclinante levemente hacia atrás (~15°), sacá pecho e inspirá.",
+      "Tirá la barra hacia el pecho alto llevando los codos hacia abajo y atrás.",
+      "Tocá el pecho alto con la barra y apretá los omóplatos; pausá un instante.",
+      "Espirá y devolvéla de manera controlada hasta la extensión completa de los brazos."
+    ],
+    "execution_steps_en": [
+      "Sit at the machine, adjust the knee pad, and grip the bar with a pronated grip at the indicated width.",
+      "Lean back slightly (~15°), chest up, and inhale.",
+      "Pull the bar toward your upper chest, driving elbows down and back.",
+      "Touch the bar to your upper chest and squeeze your shoulder blades; pause briefly.",
+      "Exhale and return it in a controlled manner to full arm extension."
+    ],
+    "common_errors_es": [
+      "Bajar la barra detrás de la nuca, aumentando el estrés en el cuello y el hombro.",
+      "Inclinar el torso hacia atrás en exceso, convirtiendo el jalón en un remo.",
+      "Usar el peso corporal como impulso para bajar la barra.",
+      "No extender los brazos completamente arriba, perdiendo el estiramiento del dorsal."
+    ],
+    "common_errors_en": [
+      "Pulling the bar behind the neck, increasing stress on the neck and shoulder.",
+      "Leaning the torso too far back, turning the pulldown into a row.",
+      "Using body weight as momentum to pull the bar down.",
+      "Not fully extending the arms at the top, missing the lat stretch."
+    ],
+    "pro_tip_es": "Antes de doblar los codos, iniciá el movimiento deprimiendo los omóplatos: eso asegura que el dorsal lidera el tirón desde el principio.",
+    "pro_tip_en": "Before bending your elbows, initiate the movement by depressing your shoulder blades: this ensures the lats lead the pull from the start.",
+    "tertiary_muscles": ["Infraspinatus", "Subscapularis", "Serratus Anterior"]
+  },
+  {
+    "slug": "lat-pulldown-machine",
+    "execution_steps_es": [
+      "Ajustá el asiento y el pad de rodillas de la máquina de jalón selectorizada.",
+      "Agarrá las manijas o la barra con agarre pronado al ancho de hombros.",
+      "Inspirá, inclináte levemente hacia atrás y deprimí los omóplatos antes de doblar los codos.",
+      "Tirá las manijas hacia el pecho alto, llevando los codos hacia abajo.",
+      "Espirá al llegar a la contracción y volvé de forma controlada hasta la extensión completa."
+    ],
+    "execution_steps_en": [
+      "Adjust the seat and knee pad of the selectorized pulldown machine.",
+      "Grip the handles or bar with a pronated shoulder-width grip.",
+      "Inhale, lean back slightly, and depress your shoulder blades before bending your elbows.",
+      "Pull the handles toward your upper chest, driving elbows downward.",
+      "Exhale at the contraction and return in a controlled manner to full extension."
+    ],
+    "common_errors_es": [
+      "No ajustar el pad de rodillas, permitiendo que el cuerpo se eleve al tirar.",
+      "Iniciar el movimiento con los brazos en lugar del omóplato.",
+      "Inclinar el torso en exceso hacia atrás para usar el peso del cuerpo.",
+      "Soltar la tensión al volver a la posición inicial."
+    ],
+    "common_errors_en": [
+      "Not adjusting the knee pad, allowing the body to rise while pulling.",
+      "Starting the movement with the arms instead of the shoulder blade.",
+      "Leaning the torso too far back to use body weight.",
+      "Releasing tension when returning to the start position."
+    ],
+    "pro_tip_es": "La máquina selectorizada es ideal para principiantes porque la trayectoria guiada reduce la demanda de coordinación; usala para aprender el patrón antes de pasar a la polea libre.",
+    "pro_tip_en": "The selectorized machine is ideal for beginners because the guided path reduces coordination demands; use it to learn the pattern before moving to the free cable.",
+    "tertiary_muscles": ["Infraspinatus", "Posterior Deltoid", "Core"]
+  },
+  {
+    "slug": "lat-pulldown-narrowneutral-grip",
+    "execution_steps_es": [
+      "Conectá el accesorio en V o las manijas neutras a la polea de jalón.",
+      "Sentáte, ajustá el pad y agarrá las manijas con palmas enfrentadas.",
+      "Inspirá, inclináte levemente y deprimí los omóplatos.",
+      "Tirá los codos hacia abajo y hacia los costados del torso hasta que las manijas lleguen al pecho.",
+      "Espirá en la contracción y volvé a la extensión completa de forma controlada."
+    ],
+    "execution_steps_en": [
+      "Attach a V-bar or neutral handles to the pulldown pulley.",
+      "Sit, adjust the pad, and grip the handles with palms facing each other.",
+      "Inhale, lean back slightly, and depress your shoulder blades.",
+      "Pull your elbows downward and toward the sides of your torso until the handles reach your chest.",
+      "Exhale at the contraction and return to full extension in a controlled manner."
+    ],
+    "common_errors_es": [
+      "No mantener las palmas enfrentadas durante todo el recorrido, rotando el antebrazo.",
+      "Llevar los codos hacia afuera en lugar de hacia abajo y los costados del torso.",
+      "No alcanzar la extensión completa de los brazos al volver.",
+      "Inclinar el torso en exceso hacia atrás."
+    ],
+    "common_errors_en": [
+      "Not keeping palms facing each other throughout the range, rotating the forearm.",
+      "Driving elbows outward instead of downward and toward the torso sides.",
+      "Not reaching full arm extension on the return.",
+      "Leaning the torso excessively backward."
+    ],
+    "pro_tip_es": "El agarre neutro estrecho permite mayor recorrido articular y más participación del bíceps; es una excelente variante para sesiones en las que también entrenás bíceps.",
+    "pro_tip_en": "The narrow neutral grip allows greater joint range and more biceps involvement; it is an excellent variation for sessions where you also train biceps.",
+    "tertiary_muscles": ["Teres Minor", "Subscapularis", "Serratus Anterior"]
+  },
+  {
+    "slug": "lat-pulldown-reverseunderhand-grip",
+    "execution_steps_es": [
+      "Agarrá la barra de jalón con agarre supinado (palmas hacia vos), manos separadas al ancho de hombros.",
+      "Sentáte, ajustá el pad de rodillas y mantené el pecho elevado.",
+      "Inspirá, deprimí los omóplatos e iniciá el tirón llevando los codos hacia abajo y hacia atrás.",
+      "Tirá la barra hasta el pecho alto o el mentón; sentís mayor trabajo del bíceps en esta variante.",
+      "Espirá y volvé de forma controlada a la extensión completa de los brazos."
+    ],
+    "execution_steps_en": [
+      "Grip the pulldown bar with a supinated (palms toward you) grip, hands shoulder-width apart.",
+      "Sit, adjust the knee pad, and keep your chest elevated.",
+      "Inhale, depress your shoulder blades, and initiate the pull by driving elbows down and back.",
+      "Pull the bar to your upper chest or chin; you will feel greater biceps work in this variation.",
+      "Exhale and return in a controlled manner to full arm extension."
+    ],
+    "common_errors_es": [
+      "Inclinar el torso hacia atrás para usar el peso del cuerpo.",
+      "No mantener las muñecas neutras, doblándolas hacia atrás bajo la carga.",
+      "Tirar la barra detrás de la nuca, lo que no corresponde a este agarre.",
+      "No alcanzar la extensión completa al volver, acortando el rango del dorsal."
+    ],
+    "common_errors_en": [
+      "Leaning the torso back to use body weight.",
+      "Not keeping wrists neutral, bending them backward under load.",
+      "Pulling the bar behind the neck, which does not apply to this grip.",
+      "Not reaching full extension on the return, shortening the lat range."
+    ],
+    "pro_tip_es": "El agarre supinado cambia la orientación del codo y permite más trabajo conjunto del bíceps y el dorsal; útil si el jalón en pronación genera molestias en los codos.",
+    "pro_tip_en": "The supinated grip changes elbow orientation and allows greater combined work of the biceps and lat; useful if the pronated pulldown causes elbow discomfort.",
+    "tertiary_muscles": ["Teres Minor", "Posterior Deltoid", "Serratus Anterior"]
+  },
+  {
+    "slug": "lat-pulldown-wide-grip",
+    "execution_steps_es": [
+      "Agarrá la barra de jalón con agarre pronado y manos claramente más anchas que los hombros.",
+      "Sentáte, ajustá el pad y mantené el pecho elevado con una leve inclinación hacia atrás.",
+      "Inspirá, deprimí los omóplatos y tirá la barra hacia el pecho alto.",
+      "Llevá los codos hacia abajo y levemente hacia afuera; tocá el pecho con la barra.",
+      "Espirá y volvé de forma controlada a la extensión completa de los brazos."
+    ],
+    "execution_steps_en": [
+      "Grip the pulldown bar with a pronated grip and hands clearly wider than your shoulders.",
+      "Sit, adjust the pad, and keep your chest elevated with a slight backward lean.",
+      "Inhale, depress your shoulder blades, and pull the bar toward your upper chest.",
+      "Drive elbows down and slightly outward; touch the bar to your chest.",
+      "Exhale and return in a controlled manner to full arm extension."
+    ],
+    "common_errors_es": [
+      "Bajar la barra detrás de la nuca, aumentando el estrés cervical y del hombro.",
+      "Inclinar el torso demasiado hacia atrás usando el peso corporal.",
+      "No extender completamente los brazos arriba, perdiendo el estiramiento del dorsal.",
+      "Tirar con los brazos antes de deprimir los omóplatos."
+    ],
+    "common_errors_en": [
+      "Pulling the bar behind the neck, increasing cervical and shoulder stress.",
+      "Leaning the torso too far back using body weight.",
+      "Not fully extending the arms at the top, missing the lat stretch.",
+      "Pulling with the arms before depressing the shoulder blades."
+    ],
+    "pro_tip_es": "El agarre ancho enfatiza el ancho del dorsal; combinalo con un agarre estrecho o neutro en la misma sesión para trabajar el dorsal en su totalidad.",
+    "pro_tip_en": "A wide grip emphasizes lat width; pair it with a narrow or neutral grip in the same session to work the lat completely.",
+    "tertiary_muscles": ["Infraspinatus", "Teres Minor", "Serratus Anterior"]
+  },
+  {
+    "slug": "machine-row",
+    "execution_steps_es": [
+      "Ajustá el asiento de la máquina de remo para que las manijas queden a la altura del abdomen.",
+      "Sentáte con el pecho apoyado en el pad (si existe) y agarrá las manijas con el agarre correspondiente.",
+      "Inspirá y tirá las manijas hacia el abdomen o el pecho, llevando los codos hacia atrás.",
+      "Espirá, apretá los omóplatos y pausá un instante en la contracción máxima.",
+      "Volvé a la posición inicial de forma controlada hasta la extensión completa de los brazos."
+    ],
+    "execution_steps_en": [
+      "Adjust the machine seat so that the handles are at abdomen height.",
+      "Sit with your chest against the pad (if present) and grip the handles with the appropriate grip.",
+      "Inhale and row the handles toward your abdomen or chest, driving elbows back.",
+      "Exhale, squeeze your shoulder blades, and pause briefly at peak contraction.",
+      "Return to the starting position in a controlled manner to full arm extension."
+    ],
+    "common_errors_es": [
+      "Inclinar el torso hacia atrás para usar el impulso del cuerpo.",
+      "No llevar los codos hasta detrás del plano del torso, limitando la activación del dorsal.",
+      "Usar solo la fuerza de los brazos sin involucrar el omóplato.",
+      "Liberar el peso de forma brusca en la fase excéntrica."
+    ],
+    "common_errors_en": [
+      "Leaning the torso backward to use body momentum.",
+      "Not driving the elbows past the plane of the torso, limiting lat activation.",
+      "Using only arm strength without involving the shoulder blade.",
+      "Releasing the weight abruptly in the eccentric phase."
+    ],
+    "pro_tip_es": "En las máquinas con agarre ancho en pronación, enfocáte en llevar los codos hacia atrás y separados del torso para reclutar deltoides posterior y romboides.",
+    "pro_tip_en": "On machines with a wide pronated grip, focus on driving elbows back and away from the torso to recruit the rear delt and rhomboids.",
+    "tertiary_muscles": ["Posterior Deltoid", "Subscapularis", "Core"]
+  },
+  {
+    "slug": "máquina-de-dorsal-jalón-en-máquina",
+    "execution_steps_es": [
+      "Sentáte en la máquina de jalón, ajustá el pad de rodillas y agarrá las palancas o manijas.",
+      "Inspirá, elevá levemente el pecho y deprimí los omóplatos antes de iniciar el tirón.",
+      "Tirá las palancas hacia abajo y hacia los costados del torso hasta alcanzar la contracción máxima.",
+      "Espirá y apretá el dorsal; mantené la posición un instante antes de volver.",
+      "Volvé a la posición inicial de forma lenta y controlada hasta la extensión completa de los brazos."
+    ],
+    "execution_steps_en": [
+      "Sit at the lat pulldown machine, adjust the knee pad, and grip the levers or handles.",
+      "Inhale, slightly elevate your chest, and depress your shoulder blades before starting the pull.",
+      "Pull the levers downward and toward the sides of your torso until you reach peak contraction.",
+      "Exhale and squeeze the lat; hold the position briefly before returning.",
+      "Return to the starting position slowly and controlled to full arm extension."
+    ],
+    "common_errors_es": [
+      "No ajustar el asiento a la altura correcta, limitando el rango de movimiento.",
+      "Iniciar el movimiento con el codo en lugar del omóplato.",
+      "Inclinar el torso excesivamente hacia atrás.",
+      "Volver a la posición inicial de forma rápida sin controlar la tensión."
+    ],
+    "common_errors_en": [
+      "Not adjusting the seat to the correct height, limiting range of motion.",
+      "Initiating the movement with the elbow instead of the shoulder blade.",
+      "Leaning the torso excessively backward.",
+      "Returning to the starting position quickly without controlling tension."
+    ],
+    "pro_tip_es": "Si la máquina tiene palancas independientes, podés hacerlo a una mano manteniendo la otra en isométrico; eso obliga al core a estabilizar y mejora la concentración muscular.",
+    "pro_tip_en": "If the machine has independent levers, you can perform it one arm at a time while keeping the other in isometric hold; this forces the core to stabilize and improves muscle focus.",
+    "tertiary_muscles": ["Infraspinatus", "Serratus Anterior", "Core"]
+  },
+  {
+    "slug": "neutral-grip-lat-pulldown",
+    "execution_steps_es": [
+      "Paráte entre las dos poleas laterales con las piernas semiflexionadas y el core apretado.",
+      "Agarrá los cables con los codos semiflexionados y los brazos en cruz.",
+      "Inspirá y, sin variar la flexión del codo, tirá los brazos hacia atrás y abajo juntando los codos detrás del torso.",
+      "Espirá en la contracción máxima, donde los codos quedan detrás del plano del cuerpo.",
+      "Volvé los brazos a la posición en cruz de forma controlada, sintiendo el estiramiento del dorsal."
+    ],
+    "execution_steps_en": [
+      "Stand between two lateral pulleys with legs slightly bent and core braced.",
+      "Grip the cables with elbows slightly bent and arms extended out to the sides.",
+      "Inhale and, without changing the elbow angle, pull your arms back and downward, bringing elbows behind your torso.",
+      "Exhale at peak contraction, where elbows are behind the plane of your body.",
+      "Return your arms to the outstretched position in a controlled manner, feeling the lat stretch."
+    ],
+    "common_errors_es": [
+      "Cambiar la flexión del codo durante el movimiento, convirtiendo el ejercicio en un jalón.",
+      "Inclinar el torso hacia adelante en lugar de mantenerlo erguido.",
+      "No llevar los codos detrás del torso, reduciendo la aducción del dorsal.",
+      "Usar peso excesivo que impide el rango completo."
+    ],
+    "common_errors_en": [
+      "Changing elbow flexion during the movement, turning it into a pulldown.",
+      "Leaning the torso forward instead of keeping it upright.",
+      "Not driving elbows behind the torso, reducing lat adduction.",
+      "Using excessive weight that prevents full range."
+    ],
+    "pro_tip_es": "Este ejercicio es muy similar al cruce de poleas para pectoral pero en dirección contraria; si ya dominás ese movimiento, el patrón motor te resultará familiar.",
+    "pro_tip_en": "This exercise is very similar to the cable crossover for chest but in the opposite direction; if you already master that movement, the motor pattern will feel familiar.",
+    "tertiary_muscles": ["Posterior Deltoid", "Teres Major", "Core"]
+  },
+  {
+    "slug": "pull-ups-chin-ups",
+    "execution_steps_es": [
+      "Colgáte de la barra con agarre pronado (dominadas) o supinado (chin-ups) al ancho de hombros.",
+      "Deprimí los omóplatos antes de doblar los codos para activar el dorsal desde el inicio.",
+      "Inspirá y tirá los codos hacia abajo y atrás hasta que el mentón supere la barra.",
+      "Espirá en la contracción, apretando el dorsal y los omóplatos al llegar arriba.",
+      "Bajá de forma lenta y controlada hasta la extensión completa de los brazos."
+    ],
+    "execution_steps_en": [
+      "Hang from the bar with a pronated (pull-up) or supinated (chin-up) grip at shoulder width.",
+      "Depress your shoulder blades before bending your elbows to activate the lats from the start.",
+      "Inhale and drive your elbows down and back until your chin clears the bar.",
+      "Exhale at the contraction, squeezing lats and shoulder blades at the top.",
+      "Lower slowly and in a controlled manner to full arm extension."
+    ],
+    "common_errors_es": [
+      "Balancear el cuerpo para generar impulso y subir con inercia.",
+      "No bajar hasta la extensión completa de los brazos, limitando el rango.",
+      "Encoger los hombros en lugar de deprimirlos al iniciar el tirón.",
+      "Usar solo la fuerza del brazo sin activar el dorsal."
+    ],
+    "common_errors_en": [
+      "Swinging the body to generate momentum and rise with inertia.",
+      "Not lowering to full arm extension, limiting the range.",
+      "Shrugging the shoulders instead of depressing them when starting the pull.",
+      "Using only arm strength without activating the lat."
+    ],
+    "pro_tip_es": "La fase excéntrica (bajar lento) es tan importante como la concéntrica; controlá la bajada al menos 3 segundos para maximizar las ganancias de fuerza.",
+    "pro_tip_en": "The eccentric phase (slow lowering) is as important as the concentric; control the descent for at least 3 seconds to maximize strength gains.",
+    "tertiary_muscles": ["Infraspinatus", "Subscapularis", "Serratus Anterior"]
+  },
+  {
+    "slug": "remo-en-polea-gironda",
+    "execution_steps_es": [
+      "Sentáte frente a la polea baja y agarrá la barra o las manijas con agarre pronado o neutro.",
+      "Inclinante levemente hacia atrás, manteniendo la columna neutra.",
+      "Inspirá y tirá el agarre hacia el abdomen, llevando los codos atrás y pegados al torso.",
+      "Espirá y apretá el dorsal y los romboides en la contracción máxima.",
+      "Volvé a la posición inicial de forma controlada hasta la extensión completa de los brazos."
+    ],
+    "execution_steps_en": [
+      "Sit facing the low pulley and grip the bar or handles with a pronated or neutral grip.",
+      "Lean back slightly, keeping your spine neutral.",
+      "Inhale and row the handle toward your abdomen, driving elbows back close to your torso.",
+      "Exhale and squeeze the lat and rhomboids at peak contraction.",
+      "Return to the starting position in a controlled manner to full arm extension."
+    ],
+    "common_errors_es": [
+      "Inclinar el torso demasiado hacia atrás, convirtiendo el remo en un tirón de espalda baja.",
+      "Tirar el agarre hacia el pecho en lugar del abdomen.",
+      "No llevar los codos detrás del plano del torso.",
+      "Liberar la tensión de forma brusca en la fase excéntrica."
+    ],
+    "common_errors_en": [
+      "Leaning the torso too far back, turning the row into a lower back pull.",
+      "Rowing the handle toward the chest instead of the abdomen.",
+      "Not driving elbows behind the plane of the torso.",
+      "Releasing tension abruptly in the eccentric phase."
+    ],
+    "pro_tip_es": "Si el remo en Gironda se realiza desde la polea alta, el torso debe quedar más erguido; eso reduce la carga lumbar pero también el peso posible.",
+    "pro_tip_en": "If the Gironda row is performed from the high pulley, the torso should be more upright; this reduces lumbar load but also the possible weight.",
+    "tertiary_muscles": ["Posterior Deltoid", "Subscapularis", "Erector Spinae"]
+  },
+  {
+    "slug": "roman-chair-back-extension",
+    "execution_steps_es": [
+      "Ajustá el banco romano para que el pad quede a nivel de las caderas y los pies estén bien anclados.",
+      "Cruzá los brazos sobre el pecho o posicionalos detrás de la cabeza.",
+      "Inspirá y dejá caer el torso hacia abajo de forma controlada hasta que el cuerpo forme un ángulo de 90°.",
+      "Espirá y extendé la espalda hasta que el cuerpo quede horizontal; no hiperextendas.",
+      "Apretá los glúteos al llegar arriba y repetí sin usar impulso."
+    ],
+    "execution_steps_en": [
+      "Adjust the Roman chair so the pad is at hip level with your feet firmly anchored.",
+      "Cross your arms over your chest or position them behind your head.",
+      "Inhale and lower your torso in a controlled manner until your body forms a 90° angle.",
+      "Exhale and extend your back until your body is horizontal; do not hyperextend.",
+      "Squeeze your glutes at the top and repeat without using momentum."
+    ],
+    "common_errors_es": [
+      "Hiperextender la columna más allá de la horizontal, comprimiendo los discos lumbares.",
+      "Realizar el movimiento con velocidad en lugar de controlar el tempo.",
+      "No anclar bien los pies, perdiendo estabilidad.",
+      "Poner las manos detrás de la cabeza y jalarse el cuello hacia adelante."
+    ],
+    "common_errors_en": [
+      "Hyperextending the spine past horizontal, compressing lumbar discs.",
+      "Performing the movement quickly instead of controlling the tempo.",
+      "Not securing the feet properly, losing stability.",
+      "Placing hands behind the head and pulling the neck forward."
+    ],
+    "pro_tip_es": "Podés agregar una leve rotación al llegar arriba para trabajar el cuadrado lumbar de forma unilateral; hacélo sin peso adicional hasta dominar el movimiento básico.",
+    "pro_tip_en": "You can add a slight rotation at the top to work the quadratus lumborum unilaterally; do it without added weight until you master the basic movement.",
+    "tertiary_muscles": ["Multifidus", "Quadratus Lumborum", "Adductor Magnus"]
+  },
+  {
+    "slug": "seated-cable-row",
+    "execution_steps_es": [
+      "Sentáte en el banco de remo en polea y apoyá los pies en los soportes con las rodillas levemente flexionadas.",
+      "Agarrá el triángulo o las manijas y mantené el torso erguido.",
+      "Inspirá y tirá el agarre hacia el abdomen, llevando los codos atrás y pegados al torso.",
+      "Espirá, apretá los omóplatos y pausá un instante en la contracción máxima.",
+      "Extendé los brazos de forma controlada hasta la posición inicial sin redondear la espalda."
+    ],
+    "execution_steps_en": [
+      "Sit on the cable row bench and place your feet on the supports with knees slightly bent.",
+      "Grip the triangle or handles and keep your torso upright.",
+      "Inhale and row the handle toward your abdomen, driving elbows back close to your torso.",
+      "Exhale, squeeze your shoulder blades, and pause briefly at peak contraction.",
+      "Extend your arms in a controlled manner to the starting position without rounding your back."
+    ],
+    "common_errors_es": [
+      "Inclinar el torso hacia atrás en exceso para usar el impulso del cuerpo.",
+      "Redondear la espalda baja al extender los brazos en la fase excéntrica.",
+      "No llegar a la extensión completa de los brazos al volver.",
+      "Tirar el agarre hacia el pecho en lugar del abdomen."
+    ],
+    "common_errors_en": [
+      "Leaning the torso back excessively to use body momentum.",
+      "Rounding the lower back when extending the arms in the eccentric phase.",
+      "Not reaching full arm extension on the return.",
+      "Rowing the handle toward the chest instead of the abdomen."
+    ],
+    "pro_tip_es": "Mantené el torso perfectamente vertical durante toda la serie; si necesitás inclinar el cuerpo para mover el peso, reducí la carga.",
+    "pro_tip_en": "Keep your torso perfectly vertical throughout the entire set; if you need to lean your body to move the weight, reduce the load.",
+    "tertiary_muscles": ["Erector Spinae", "Posterior Deltoid", "Core"]
+  },
+  {
+    "slug": "seated-row-machine",
+    "execution_steps_es": [
+      "Ajustá el asiento para que las manijas queden a la altura del abdomen y el pecho esté apoyado si el diseño lo permite.",
+      "Agarrá las manijas con el agarre indicado y mantenéingás el torso erguido.",
+      "Inspirá y tirá las manijas hacia el torso, llevando los codos atrás.",
+      "Espirá, apretá los omóplatos y pausá en la contracción máxima.",
+      "Volvé a la posición inicial de forma controlada hasta la extensión completa de los brazos."
+    ],
+    "execution_steps_en": [
+      "Adjust the seat so the handles are at abdomen height and your chest is supported if the design allows.",
+      "Grip the handles with the indicated grip and keep your torso upright.",
+      "Inhale and row the handles toward your torso, driving elbows back.",
+      "Exhale, squeeze your shoulder blades, and pause at peak contraction.",
+      "Return to the starting position in a controlled manner to full arm extension."
+    ],
+    "common_errors_es": [
+      "Inclinar el torso hacia atrás usando el impulso del cuerpo.",
+      "No ajustar el asiento a la altura correcta, alterando el ángulo del movimiento.",
+      "Liberar el peso de forma brusca en la fase excéntrica.",
+      "No alcanzar la extensión completa de los brazos, reduciendo el rango."
+    ],
+    "common_errors_en": [
+      "Leaning the torso backward using body momentum.",
+      "Not adjusting the seat to the correct height, altering the movement angle.",
+      "Releasing the weight abruptly in the eccentric phase.",
+      "Not reaching full arm extension, reducing range."
+    ],
+    "pro_tip_es": "La máquina de remo sentado reduce el estrés lumbar comparado con el remo libre; es una opción segura para quienes tienen molestias en la espalda baja.",
+    "pro_tip_en": "The seated row machine reduces lumbar stress compared to free-weight rows; it is a safe option for those with lower back discomfort.",
+    "tertiary_muscles": ["Posterior Deltoid", "Subscapularis", "Core"]
+  },
+  {
+    "slug": "single-arm-cable-pulldown",
+    "execution_steps_es": [
+      "Conectá una manija a la polea alta y sentáte en el suelo o arrodilláte frente a la máquina.",
+      "Agarrá la manija con una mano y extendé el brazo completamente hacia arriba.",
+      "Inspirá, deprimí el omóplato del lado que trabaja y tirá el codo hacia abajo y hacia la cadera.",
+      "Espirá en la contracción máxima, donde el codo queda junto al torso.",
+      "Volvé a la extensión completa de forma controlada; completá la serie y cambiá de lado."
+    ],
+    "execution_steps_en": [
+      "Attach a handle to the high pulley and sit on the floor or kneel in front of the machine.",
+      "Grip the handle with one hand and extend your arm fully upward.",
+      "Inhale, depress the shoulder blade on the working side, and pull your elbow down toward your hip.",
+      "Exhale at peak contraction, where your elbow is close to your torso.",
+      "Return to full extension in a controlled manner; complete the set and switch sides."
+    ],
+    "common_errors_es": [
+      "Doblar el codo en exceso, convirtiendo el ejercicio en un curl de bíceps.",
+      "No deprimir el omóplato antes de tirar, perdiendo la activación del dorsal.",
+      "Inclinar el torso hacia el lado contrario al trabajar, en lugar de mantenerse erguido.",
+      "Usar el impulso del cuerpo para completar la repetición."
+    ],
+    "common_errors_en": [
+      "Bending the elbow too much, turning it into a biceps curl.",
+      "Not depressing the shoulder blade before pulling, losing lat activation.",
+      "Leaning the torso to the opposite side when working, instead of staying upright.",
+      "Using body momentum to complete the repetition."
+    ],
+    "pro_tip_es": "Sentáte en el suelo o arrodilláte para eliminar el balanceo del cuerpo y aislar mejor el dorsal de cada lado de forma independiente.",
+    "pro_tip_en": "Sit on the floor or kneel to eliminate body sway and better isolate each lat independently.",
+    "tertiary_muscles": ["Posterior Deltoid", "Teres Minor", "Core"]
+  },
+  {
+    "slug": "smith-machine-bent-over-row",
+    "execution_steps_es": [
+      "Colocá la barra del Smith a la altura adecuada y posiciónate debajo de ella con agarre pronado.",
+      "Inclinante hacia adelante desde las caderas hasta que el torso quede casi paralelo al suelo.",
+      "Inspirá, desbloquéa la barra y tirala hacia el abdomen bajo llevando los codos atrás.",
+      "Espirá, apretá los omóplatos en la contracción y volvé a la posición inicial de forma controlada.",
+      "La trayectoria guiada del Smith mantiene la barra en la misma línea vertical en todo el recorrido."
+    ],
+    "execution_steps_en": [
+      "Set the Smith machine bar to the appropriate height and position yourself underneath with a pronated grip.",
+      "Hinge forward at the hips until your torso is nearly parallel to the floor.",
+      "Inhale, unrack the bar, and row it toward your lower abdomen driving elbows back.",
+      "Exhale, squeeze your shoulder blades at the contraction, and return in a controlled manner.",
+      "The Smith machine's guided path keeps the bar on the same vertical line throughout the movement."
+    ],
+    "common_errors_es": [
+      "Redondear la espalda baja al tirar la barra.",
+      "Usar el impulso del torso para mover el peso.",
+      "No llevar los codos detrás del plano del torso en la contracción.",
+      "Bloquear la barra en la fase excéntrica en lugar de controlar el descenso."
+    ],
+    "common_errors_en": [
+      "Rounding the lower back when rowing the bar.",
+      "Using torso momentum to move the weight.",
+      "Not driving elbows behind the plane of the torso at the contraction.",
+      "Locking the bar in the eccentric phase instead of controlling the descent."
+    ],
+    "pro_tip_es": "La trayectoria fija del Smith reduce la demanda de coordinación; es ideal para aprender el patrón del remo inclinado antes de pasar a la barra libre.",
+    "pro_tip_en": "The fixed Smith path reduces coordination demands; it is ideal for learning the bent-over row pattern before moving to a free barbell.",
+    "tertiary_muscles": ["Infraspinatus", "Erector Spinae", "Core"]
+  },
+  {
+    "slug": "smith-machine-romanian-deadlift",
+    "execution_steps_es": [
+      "Colocá la barra del Smith a la altura de la cadera y posiciónate con los pies al ancho de cadera.",
+      "Agarrá la barra con agarre pronado al ancho de hombros y desbloquéala.",
+      "Inclinante hacia adelante desde las caderas, deslizando la barra cerca de los muslos, con la espalda recta.",
+      "Inspirá antes de bajar; bajá hasta sentir el estiramiento en los isquiotibiales (a la altura de la rodilla o por debajo si la movilidad lo permite).",
+      "Espirá y extendé las caderas para volver a la posición erguida; apretá los glúteos al llegar arriba."
+    ],
+    "execution_steps_en": [
+      "Set the Smith bar at hip height and position yourself with feet hip-width apart.",
+      "Grip the bar with a pronated shoulder-width grip and unrack it.",
+      "Hinge forward at the hips, sliding the bar close to your thighs, with a straight back.",
+      "Inhale before lowering; descend until you feel a hamstring stretch (knee level or below if mobility allows).",
+      "Exhale and extend your hips to return to the upright position; squeeze your glutes at the top."
+    ],
+    "common_errors_es": [
+      "Redondear la espalda baja durante el descenso.",
+      "Doblar las rodillas en exceso, convirtiendo el movimiento en una sentadilla.",
+      "Alejar la barra del cuerpo en lugar de deslizarla cerca de los muslos.",
+      "Hiperextender la columna lumbar al llegar a la posición erguida."
+    ],
+    "common_errors_en": [
+      "Rounding the lower back during the descent.",
+      "Bending the knees excessively, turning it into a squat.",
+      "Moving the bar away from the body instead of sliding it close to the thighs.",
+      "Hyperextending the lumbar spine at the upright position."
+    ],
+    "pro_tip_es": "La guía del Smith elimina el componente de equilibrio; usálo para aprender el patrón de bisagra de cadera con cargas moderadas antes de pasar al peso libre.",
+    "pro_tip_en": "The Smith guide eliminates the balance component; use it to learn the hip hinge pattern with moderate loads before transitioning to free weight.",
+    "tertiary_muscles": ["Adductor Magnus", "Quadriceps", "Core"]
+  },
+  {
+    "slug": "smith-machine-row",
+    "execution_steps_es": [
+      "Colocá la barra del Smith a la altura adecuada e inclinante hacia adelante con el torso casi paralelo al suelo.",
+      "Agarrá la barra en pronación con las manos algo más anchas que los hombros y desbloquéala.",
+      "Inspirá y tirá la barra hacia el abdomen, con los codos abiertos y paralelos al suelo.",
+      "Espirá, apretá los omóplatos en la contracción máxima y volvé a la posición inicial.",
+      "Mantené la columna neutra en todo momento; no redondeés la espalda alta."
+    ],
+    "execution_steps_en": [
+      "Set the Smith bar to the appropriate height and hinge forward with torso nearly parallel to the floor.",
+      "Grip the bar with a pronated grip slightly wider than shoulders and unrack it.",
+      "Inhale and row the bar toward your abdomen with elbows flared and parallel to the floor.",
+      "Exhale, squeeze your shoulder blades at peak contraction, and return to the starting position.",
+      "Keep your spine neutral throughout; do not round your upper back."
+    ],
+    "common_errors_es": [
+      "Inclinar el torso demasiado erguido, perdiendo el estímulo del remo.",
+      "Tirar la barra hacia el pecho en lugar del abdomen.",
+      "Usar el impulso del torso para completar la repetición.",
+      "Redondear la espalda alta al fatigarse."
+    ],
+    "common_errors_en": [
+      "Keeping the torso too upright, losing the rowing stimulus.",
+      "Rowing the bar toward the chest instead of the abdomen.",
+      "Using torso momentum to complete the repetition.",
+      "Rounding the upper back as fatigue sets in."
+    ],
+    "pro_tip_es": "El remo en Smith permite cargar más que en barra libre porque la trayectoria está guiada; aseguráte de compensar eso con mayor enfoque en la contracción muscular.",
+    "pro_tip_en": "The Smith row allows more load than free barbell because the path is guided; make sure to compensate by focusing more on muscle contraction.",
+    "tertiary_muscles": ["Infraspinatus", "Erector Spinae", "Posterior Deltoid"]
+  },
+  {
+    "slug": "standing-low-cable-row",
+    "execution_steps_es": [
+      "Conectá las manijas a la polea baja y paráte a unos pasos de distancia con los pies al ancho de cadera.",
+      "Inclinante levemente hacia adelante desde las caderas (torso a unos 30-45° del suelo) y agarrá las manijas.",
+      "Inspirá y tirá las manijas hacia el abdomen, llevando los codos atrás y pegados al torso.",
+      "Espirá y apretá los omóplatos en la contracción; pausá un instante.",
+      "Extendé los brazos de forma controlada hasta la posición de partida."
+    ],
+    "execution_steps_en": [
+      "Attach handles to the low pulley and stand a few steps away with feet hip-width apart.",
+      "Hinge slightly forward at the hips (torso at about 30-45° to the floor) and grip the handles.",
+      "Inhale and row the handles toward your abdomen, driving elbows back close to your torso.",
+      "Exhale and squeeze your shoulder blades at the contraction; pause briefly.",
+      "Extend your arms in a controlled manner back to the starting position."
+    ],
+    "common_errors_es": [
+      "Inclinar el torso demasiado erguido, convirtiéndolo en un jalón de espalda.",
+      "Tirar con los brazos usando impulso en lugar de activar el dorsal.",
+      "No mantener el core activo, dejando que la espalda baja absorba el estrés.",
+      "Usar peso excesivo que obliga a desequilibrar el cuerpo hacia atrás."
+    ],
+    "common_errors_en": [
+      "Keeping the torso too upright, turning it into a back pulldown.",
+      "Pulling with arm momentum instead of activating the lat.",
+      "Not keeping the core active, letting the lower back absorb the stress.",
+      "Using excessive weight that forces the body to lean backward."
+    ],
+    "pro_tip_es": "Este ejercicio está a mitad de camino entre el remo y el jalón; usálo en superserie con el pullover en polea alta para un finalizador completo de dorsal.",
+    "pro_tip_en": "This exercise is halfway between a row and a pulldown; use it in a superset with the high-pulley pullover for a complete lat finisher.",
+    "tertiary_muscles": ["Posterior Deltoid", "Rhomboids", "Core"]
+  },
+  {
+    "slug": "t-bar-row",
+    "execution_steps_es": [
+      "Colocáte sobre la plataforma del remo en punta con los pies al ancho de cadera y agarrá las manijas.",
+      "Inclinante hacia adelante desde las caderas hasta que el torso quede casi paralelo al suelo.",
+      "Inspirá y tirá las manijas hacia el pecho, llevando los codos hacia arriba y afuera.",
+      "Espirá, apretá los omóplatos en la contracción y pausá un instante.",
+      "Volvé a la posición inicial de forma controlada hasta la extensión completa de los brazos."
+    ],
+    "execution_steps_en": [
+      "Stand on the T-bar row platform with feet hip-width apart and grip the handles.",
+      "Hinge forward at the hips until your torso is nearly parallel to the floor.",
+      "Inhale and row the handles toward your chest, driving elbows up and outward.",
+      "Exhale, squeeze your shoulder blades at the contraction, and pause briefly.",
+      "Return to the starting position in a controlled manner to full arm extension."
+    ],
+    "common_errors_es": [
+      "Usar el impulso del torso para mover el peso en lugar del dorsal y los romboides.",
+      "No llevar los codos más allá del plano del torso en la contracción.",
+      "Redondear la espalda alta al fatigarse.",
+      "No llegar a la extensión completa de los brazos al bajar."
+    ],
+    "common_errors_en": [
+      "Using torso momentum to move the weight instead of the lats and rhomboids.",
+      "Not driving elbows past the plane of the torso at the contraction.",
+      "Rounding the upper back as fatigue sets in.",
+      "Not lowering to full arm extension."
+    ],
+    "pro_tip_es": "El agarre ancho en T desplaza el trabajo hacia la zona alta de la espalda (deltoides posterior y romboides); combinalo con el remo en punta de agarre estrecho para cobertura completa.",
+    "pro_tip_en": "The wide T-bar grip shifts work to the upper back (rear delt and rhomboids); pair it with a narrow-grip T-bar row for complete coverage.",
+    "tertiary_muscles": ["Posterior Deltoid", "Infraspinatus", "Erector Spinae"]
+  },
+  {
+    "slug": "t-bar-row-machine",
+    "execution_steps_es": [
+      "Subí a la plataforma de la máquina de remo en T, colocá los pies en los soportes y agarrá las manijas.",
+      "Inclinante hacia adelante hasta que el pecho quede cerca del soporte o el torso casi paralelo al suelo.",
+      "Inspirá y tirá las manijas hacia el pecho llevando los codos hacia arriba.",
+      "Espirá, apretá los omóplatos y pausá brevemente en la contracción máxima.",
+      "Volvé a la posición inicial de forma lenta y controlada."
+    ],
+    "execution_steps_en": [
+      "Step on the T-bar row machine platform, place your feet on the supports, and grip the handles.",
+      "Hinge forward until your chest is near the support or your torso is nearly parallel to the floor.",
+      "Inhale and row the handles toward your chest, driving elbows upward.",
+      "Exhale, squeeze your shoulder blades, and pause briefly at peak contraction.",
+      "Return to the starting position slowly and in a controlled manner."
+    ],
+    "common_errors_es": [
+      "Usar el impulso del torso para iniciar el tirón.",
+      "No mantener el torso en el ángulo correcto durante toda la serie.",
+      "No llegar a la contracción máxima, quedándose a mitad del recorrido.",
+      "Dejar caer el peso de forma brusca en la fase excéntrica."
+    ],
+    "common_errors_en": [
+      "Using torso momentum to initiate the pull.",
+      "Not maintaining the correct torso angle throughout the set.",
+      "Not reaching peak contraction, stopping halfway through the range.",
+      "Dropping the weight abruptly in the eccentric phase."
+    ],
+    "pro_tip_es": "La máquina de remo en T con plataforma estabiliza el torso y permite cargas más altas que la versión libre; es una buena opción para periodizar volumen de espalda.",
+    "pro_tip_en": "The T-bar row machine with a platform stabilizes the torso and allows higher loads than the free-weight version; it is a good option for periodizing back volume.",
+    "tertiary_muscles": ["Posterior Deltoid", "Infraspinatus", "Core"]
+  }
+]

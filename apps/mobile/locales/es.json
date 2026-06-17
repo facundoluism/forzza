@@ -174,12 +174,18 @@
   "exercisePreview": {
     "tabs": {
       "execution": "Ejecución",
-      "muscles": "Músculos",
-      "info": "Info"
+      "errors": "Errores",
+      "muscles": "Músculos"
     },
     "primaryMuscles": "Músculos principales",
     "secondaryMuscles": "Músculos secundarios",
+    "tertiaryMuscles": "Músculos terciarios",
+    "primaryPill": "PRINCIPAL",
     "noDescription": "Sin descripción disponible.",
+    "noSteps": "Sin pasos de ejecución disponibles.",
+    "noErrors": "Sin errores comunes registrados.",
+    "proTipLabel": "PRO TIP",
+    "errorsWarning": "Evitá estos errores comunes para prevenir lesiones y maximizar resultados.",
     "equipment": "Equipamiento",
     "movementPattern": "Patrón de movimiento",
     "difficulty": "Dificultad",

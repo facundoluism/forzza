@@ -9,11 +9,11 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import type { Database } from "@forzza/db-types";
-import { Sheet, Tabs, Pill, ErrorState } from "@forzza/ui/native";
-import { colors, spacing, fontSize, typography } from "@forzza/ui/tokens";
+import { Sheet, Tabs, Pill, ErrorState, ExerciseIcon } from "@forzza/ui/native";
+import { colors, spacing, fontSize, typography, radius } from "@forzza/ui/tokens";
 import { supabase } from "@/lib/supabase";
-import { useLanguageStore } from "@/stores/languageStore";
-import { getExerciseIcon } from "@/constants/exerciseIcons";
+import { useLanguageStore, type AppLanguage } from "@/stores/languageStore";
+import { getExerciseIconKey } from "@/constants/exerciseIcons";
 import { localizeMeta } from "@/constants/exerciseI18n";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
@@ -23,6 +23,10 @@ type ExerciseLibraryRow = Database["public"]["Tables"]["exercise_library"]["Row"
 export interface ExercisePreviewSheetProps {
   exerciseId: string | null; // null = cerrado
   onClose: () => void;
+  /** Props opcionales de la rutina: se muestran en el header si están presentes. */
+  sets?: number | null;
+  reps?: string | null;
+  weightKg?: number | null;
 }
 
 // ─── Fetch ────────────────────────────────────────────────────────────────────
@@ -38,96 +42,195 @@ async function fetchExerciseDetail(id: string): Promise<ExerciseLibraryRow> {
   return data;
 }
 
+// ─── Helpers de localización ──────────────────────────────────────────────────
+
+/**
+ * Devuelve un array de strings JSONB localizado, con fallback robusto:
+ * - si el campo del idioma activo tiene items → úsalo
+ * - si no, intenta el otro idioma
+ * - si tampoco, devuelve []
+ */
+function localizeJsonbArray(
+  esField: unknown,
+  enField: unknown,
+  language: string,
+): string[] {
+  const pick = (field: unknown): string[] | null => {
+    if (Array.isArray(field) && field.length > 0) {
+      return field as string[];
+    }
+    return null;
+  };
+  if (language === "es") {
+    return pick(esField) ?? pick(enField) ?? [];
+  }
+  return pick(enField) ?? pick(esField) ?? [];
+}
+
 // ─── Tab: Ejecución ───────────────────────────────────────────────────────────
 
+interface EjecucionTabProps {
+  executionStepsEs: unknown;
+  executionStepsEn: unknown;
+  descriptionEs: string | null;
+  descriptionEn: string | null;
+  proTipEs: string | null;
+  proTipEn: string | null;
+  language: AppLanguage;
+}
+
 function EjecucionTab({
-  description,
-}: {
-  description: string | null;
-}): React.JSX.Element {
+  executionStepsEs,
+  executionStepsEn,
+  descriptionEs,
+  descriptionEn,
+  proTipEs,
+  proTipEn,
+  language,
+}: EjecucionTabProps): React.JSX.Element {
   const { t } = useTranslation();
+
+  const steps = localizeJsonbArray(executionStepsEs, executionStepsEn, language);
+
+  // Fallback a description cuando no hay steps
+  const fallbackDesc =
+    language === "es"
+      ? (descriptionEs ?? descriptionEn ?? null)
+      : (descriptionEn ?? descriptionEs ?? null);
+
+  const proTip =
+    language === "es"
+      ? (proTipEs ?? proTipEn ?? null)
+      : (proTipEn ?? proTipEs ?? null);
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.tabContent}
     >
-      <Text style={styles.descriptionText}>
-        {description ?? t("exercisePreview.noDescription")}
-      </Text>
+      {steps.length > 0 ? (
+        <View style={styles.stepsList} testID="execution-steps-list">
+          {steps.map((step, i) => (
+            <View key={i} style={styles.stepRow}>
+              <View style={styles.stepNumber}>
+                <Text style={styles.stepNumberText}>{i + 1}</Text>
+              </View>
+              <Text style={styles.stepText}>{step}</Text>
+            </View>
+          ))}
+        </View>
+      ) : (
+        <Text style={styles.emptyText} testID="execution-empty">
+          {fallbackDesc ?? t("exercisePreview.noSteps")}
+        </Text>
+      )}
+
+      {proTip !== null && (
+        <View style={styles.proTipBox} testID="pro-tip-box">
+          <Text style={styles.proTipEmoji}>🧠</Text>
+          <View style={styles.proTipContent}>
+            <Text style={styles.proTipLabel}>{t("exercisePreview.proTipLabel")}</Text>
+            <Text style={styles.proTipText}>{proTip}</Text>
+          </View>
+        </View>
+      )}
+    </ScrollView>
+  );
+}
+
+// ─── Tab: Errores ─────────────────────────────────────────────────────────────
+
+interface ErroresTabProps {
+  commonErrorsEs: unknown;
+  commonErrorsEn: unknown;
+  language: AppLanguage;
+}
+
+function ErroresTab({
+  commonErrorsEs,
+  commonErrorsEn,
+  language,
+}: ErroresTabProps): React.JSX.Element {
+  const { t } = useTranslation();
+
+  const errors = localizeJsonbArray(commonErrorsEs, commonErrorsEn, language);
+
+  return (
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={styles.tabContent}
+    >
+      {/* Banner de advertencia */}
+      <View style={styles.errorsWarningBox} testID="errors-warning-banner">
+        <Text style={styles.errorsWarningText}>{t("exercisePreview.errorsWarning")}</Text>
+      </View>
+
+      {errors.length > 0 ? (
+        <View style={styles.errorsList} testID="errors-list">
+          {errors.map((err, i) => (
+            <View key={i} style={styles.errorRow}>
+              <View style={styles.errorIconBox}>
+                <Text style={styles.errorIconText}>✕</Text>
+              </View>
+              <Text style={styles.errorText}>{err}</Text>
+            </View>
+          ))}
+        </View>
+      ) : (
+        <Text style={styles.emptyText} testID="errors-empty">
+          {t("exercisePreview.noErrors")}
+        </Text>
+      )}
     </ScrollView>
   );
 }
 
 // ─── Tab: Músculos ────────────────────────────────────────────────────────────
 
+interface MusculosTabProps {
+  primaryMuscles: string[];
+  secondaryMuscles: string[];
+  tertiaryMuscles: string[] | null;
+  iconKey: string;
+  language: AppLanguage;
+}
+
 function MusculosTab({
   primaryMuscles,
   secondaryMuscles,
-}: {
-  primaryMuscles: string[];
-  secondaryMuscles: string[];
-}): React.JSX.Element {
+  tertiaryMuscles,
+  iconKey,
+  language,
+}: MusculosTabProps): React.JSX.Element {
   const { t } = useTranslation();
-  const language = useLanguageStore((s) => s.language);
-  return (
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.tabContent}
-    >
-      <Text style={styles.muscleGroupTitle}>{t("exercisePreview.primaryMuscles")}</Text>
-      {primaryMuscles.length > 0 ? (
-        <View style={styles.pillRow}>
-          {primaryMuscles.map((m) => (
-            <Pill key={m} label={localizeMeta(m, "muscle", language)} variant="active" />
-          ))}
-        </View>
-      ) : (
-        <Text style={styles.musclePlaceholder}>—</Text>
-      )}
 
-      <Text style={[styles.muscleGroupTitle, styles.muscleGroupTitleSecondary]}>
-        {t("exercisePreview.secondaryMuscles")}
-      </Text>
-      {secondaryMuscles.length > 0 ? (
-        <View style={styles.pillRow}>
-          {secondaryMuscles.map((m) => (
-            <Pill key={m} label={localizeMeta(m, "muscle", language)} variant="default" />
-          ))}
-        </View>
-      ) : (
-        <Text style={styles.musclePlaceholder}>—</Text>
-      )}
-    </ScrollView>
-  );
-}
+  const tertiary = tertiaryMuscles ?? [];
 
-// ─── Tab: Info ────────────────────────────────────────────────────────────────
+  type MuscleGroup = {
+    muscles: string[];
+    dotColor: string;
+    isPrimary: boolean;
+    sectionLabel: string;
+  };
 
-function InfoTab({ exercise }: { exercise: ExerciseLibraryRow }): React.JSX.Element {
-  const { t } = useTranslation();
-  const language = useLanguageStore((s) => s.language);
-
-  const infoRows: { label: string; value: string }[] = [
+  const groups: MuscleGroup[] = [
     {
-      label: t("exercisePreview.equipment"),
-      value:
-        exercise.equipment && exercise.equipment.length > 0
-          ? exercise.equipment
-              .map((e) => localizeMeta(e, "equipment", language))
-              .join(", ")
-          : t("exercisePreview.noEquipment"),
+      muscles: primaryMuscles,
+      dotColor: colors.lime,
+      isPrimary: true,
+      sectionLabel: t("exercisePreview.primaryMuscles"),
     },
     {
-      label: t("exercisePreview.movementPattern"),
-      value: exercise.movement_pattern
-        ? localizeMeta(exercise.movement_pattern, "movement", language)
-        : "—",
+      muscles: secondaryMuscles,
+      dotColor: colors.info,
+      isPrimary: false,
+      sectionLabel: t("exercisePreview.secondaryMuscles"),
     },
     {
-      label: t("exercisePreview.difficulty"),
-      value: exercise.difficulty
-        ? localizeMeta(exercise.difficulty, "difficulty", language)
-        : "—",
+      muscles: tertiary,
+      dotColor: colors.muted,
+      isPrimary: false,
+      sectionLabel: t("exercisePreview.tertiaryMuscles"),
     },
   ];
 
@@ -136,24 +239,29 @@ function InfoTab({ exercise }: { exercise: ExerciseLibraryRow }): React.JSX.Elem
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.tabContent}
     >
-      {infoRows.map(({ label, value }) => (
-        <View key={label} style={styles.infoRow}>
-          <Text style={styles.infoLabel}>{label}</Text>
-          <Text style={styles.infoValue}>{value}</Text>
-        </View>
-      ))}
+      <View style={styles.muscleGroupList} testID="muscles-list">
+        {groups.map((group) =>
+          group.muscles.map((muscle, idx) => (
+            <View
+              key={`${group.sectionLabel}-${idx}`}
+              style={styles.muscleRow}
+            >
+              <View style={[styles.muscleDot, { backgroundColor: group.dotColor }]} />
+              <Text style={styles.muscleRowText}>
+                {localizeMeta(muscle, "muscle", language)}
+              </Text>
+              {group.isPrimary && idx === 0 && (
+                <Pill label={t("exercisePreview.primaryPill")} variant="active" />
+              )}
+            </View>
+          ))
+        )}
+      </View>
 
-      {exercise.tags && exercise.tags.length > 0 && (
-        <View style={styles.tagsSection}>
-          {/* tags: keywords de búsqueda técnica, no se traducen (ver exerciseI18n.ts) */}
-          <Text style={styles.infoLabel}>{t("exercisePreview.tags")}</Text>
-          <View style={styles.pillRow}>
-            {exercise.tags.map((tag) => (
-              <Pill key={tag} label={tag} variant="default" />
-            ))}
-          </View>
-        </View>
-      )}
+      {/* Ícono grande al pie */}
+      <View style={styles.muscleIconBox} testID="muscles-icon-box">
+        <ExerciseIcon icon={iconKey} size={100} color={colors.lime} />
+      </View>
     </ScrollView>
   );
 }
@@ -162,72 +270,125 @@ function InfoTab({ exercise }: { exercise: ExerciseLibraryRow }): React.JSX.Elem
 
 function ExerciseDetailContent({
   exercise,
+  sets,
+  reps,
+  weightKg,
 }: {
   exercise: ExerciseLibraryRow;
+  sets?: number | null | undefined;
+  reps?: string | null | undefined;
+  weightKg?: number | null | undefined;
 }): React.JSX.Element {
   const { t } = useTranslation();
-  // Tabs dinámicos para que las etiquetas respondan al cambio de idioma
+  const language = useLanguageStore((s) => s.language);
+
   const DETAIL_TABS = [
     { key: "ejecucion", label: t("exercisePreview.tabs.execution") },
-    { key: "musculos", label: t("exercisePreview.tabs.muscles") },
-    { key: "info", label: t("exercisePreview.tabs.info") },
+    { key: "errores",   label: t("exercisePreview.tabs.errors") },
+    { key: "musculos",  label: t("exercisePreview.tabs.muscles") },
   ] as const;
 
   type DetailTabKey = (typeof DETAIL_TABS)[number]["key"];
   const [activeTab, setActiveTab] = useState<DetailTabKey>("ejecucion");
 
-  const icon = getExerciseIcon(exercise.icon_id);
-
-  const language = useLanguageStore((s) => s.language);
-
   // Nombre según idioma: name_en cuando EN, fallback a name si null.
   const displayName =
     language === "en" && exercise.name_en ? exercise.name_en : exercise.name;
 
-  // Descripción localizada con fallback robusto al campo original.
-  // description_en puede ser null en db:reset fresco para ejercicios cuyo
-  // `description` ya está en inglés; en ese caso usamos description directamente.
-  const localizedDescription =
-    language === "es"
-      ? (exercise.description_es ?? exercise.description)
-      : (exercise.description_en ?? exercise.description);
+  // Grupo localizado para el pill del header
+  const groupLabel = exercise.primary_group
+    ? localizeMeta(exercise.primary_group, "muscle", language)
+    : "—";
+
+  // Key de ícono SVG: prioridad svg_icon DB → resolución dinámica → fallback
+  const iconKey = getExerciseIconKey(
+    exercise.svg_icon,
+    exercise.movement_pattern,
+    exercise.equipment,
+    exercise.primary_group,
+    exercise.icon_id,
+  );
+
+  const hasSetsReps = sets != null || reps != null || weightKg != null;
 
   return (
     <>
-      {/* Header */}
+      {/* ── Header ── */}
       <View style={styles.detailHeader}>
-        <Text style={styles.detailEmoji}>{icon.emoji}</Text>
-        <Text style={styles.detailName}>{displayName}</Text>
-        {/* Mostrar el nombre en el otro idioma como subtítulo si existe */}
-        {language === "es" && exercise.name_en ? (
-          <Text style={styles.detailNameAlt}>{exercise.name_en}</Text>
-        ) : language === "en" && exercise.name !== displayName ? (
-          <Text style={styles.detailNameAlt}>{exercise.name}</Text>
-        ) : null}
-        <View style={styles.detailPillRow}>
-          <Pill label={icon.label} variant="active" />
+        <View style={styles.detailIconBox} testID="detail-icon-box">
+          <ExerciseIcon icon={iconKey} size={58} color={colors.lime} />
+        </View>
+
+        <View style={styles.detailHeaderText}>
+          <Text style={styles.detailName} testID="detail-exercise-name">
+            {displayName}
+          </Text>
+
+          <View style={styles.detailPillRow}>
+            <Pill label={groupLabel} variant="active" />
+          </View>
+
+          {hasSetsReps && (
+            <View style={styles.setsRepsRow} testID="sets-reps-row">
+              {sets != null && (
+                <View style={styles.setsRepsItem}>
+                  <Text style={styles.setsRepsValue}>{sets}</Text>
+                  <Text style={styles.setsRepsLabel}>Sets</Text>
+                </View>
+              )}
+              {reps != null && (
+                <View style={styles.setsRepsItem}>
+                  <Text style={styles.setsRepsValue}>{reps}</Text>
+                  <Text style={styles.setsRepsLabel}>Reps</Text>
+                </View>
+              )}
+              {weightKg != null && (
+                <View style={styles.setsRepsItem}>
+                  <Text style={styles.setsRepsValue}>{weightKg}kg</Text>
+                  <Text style={styles.setsRepsLabel}>Peso</Text>
+                </View>
+              )}
+            </View>
+          )}
         </View>
       </View>
 
-      {/* Tabs */}
+      {/* ── Tabs ── */}
       <Tabs
         tabs={DETAIL_TABS as unknown as { key: string; label: string }[]}
         activeKey={activeTab}
         onTabChange={(key) => setActiveTab(key as DetailTabKey)}
       />
 
-      {/* Cuerpo del tab activo */}
+      {/* ── Cuerpo del tab activo ── */}
       <View style={styles.tabBody}>
         {activeTab === "ejecucion" && (
-          <EjecucionTab description={localizedDescription} />
+          <EjecucionTab
+            executionStepsEs={exercise.execution_steps_es}
+            executionStepsEn={exercise.execution_steps_en}
+            descriptionEs={exercise.description_es ?? null}
+            descriptionEn={exercise.description_en ?? null}
+            proTipEs={exercise.pro_tip_es ?? null}
+            proTipEn={exercise.pro_tip_en ?? null}
+            language={language}
+          />
+        )}
+        {activeTab === "errores" && (
+          <ErroresTab
+            commonErrorsEs={exercise.common_errors_es}
+            commonErrorsEn={exercise.common_errors_en}
+            language={language}
+          />
         )}
         {activeTab === "musculos" && (
           <MusculosTab
-            primaryMuscles={exercise.primary_muscles}
-            secondaryMuscles={exercise.secondary_muscles}
+            primaryMuscles={exercise.primary_muscles ?? []}
+            secondaryMuscles={exercise.secondary_muscles ?? []}
+            tertiaryMuscles={exercise.tertiary_muscles ?? null}
+            iconKey={iconKey}
+            language={language}
           />
         )}
-        {activeTab === "info" && <InfoTab exercise={exercise} />}
       </View>
     </>
   );
@@ -238,6 +399,9 @@ function ExerciseDetailContent({
 export function ExercisePreviewSheet({
   exerciseId,
   onClose,
+  sets,
+  reps,
+  weightKg,
 }: ExercisePreviewSheetProps): React.JSX.Element {
   const { t } = useTranslation();
   const {
@@ -255,7 +419,7 @@ export function ExercisePreviewSheet({
   const renderBody = (): React.JSX.Element => {
     if (isLoading) {
       return (
-        <View style={styles.loadingContainer}>
+        <View style={styles.loadingContainer} testID="exercise-preview-loading">
           <ActivityIndicator color={colors.lime} size="large" />
         </View>
       );
@@ -273,14 +437,21 @@ export function ExercisePreviewSheet({
       );
     }
 
-    return <ExerciseDetailContent exercise={exercise} />;
+    return (
+      <ExerciseDetailContent
+        exercise={exercise}
+        sets={sets}
+        reps={reps}
+        weightKg={weightKg}
+      />
+    );
   };
 
   return (
     <Sheet
       visible={exerciseId !== null}
       onClose={onClose}
-      snapPoints={[620]}
+      snapPoints={[640]}
       testID="exercise-preview-sheet"
     >
       {renderBody()}
@@ -298,105 +469,235 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[10],
   },
 
-  // Header del detalle
+  // ── Header ──
   detailHeader: {
+    flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: spacing[4],
-    paddingTop: spacing[2],
+    gap: spacing[4],
+    paddingHorizontal: spacing[5],
+    paddingTop: spacing[3],
     paddingBottom: spacing[4],
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
-  detailEmoji: {
-    fontSize: 48,
-    marginBottom: spacing[3],
+  detailIconBox: {
+    width: 72,
+    height: 72,
+    backgroundColor: colors.surface3,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.surface4,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  detailHeaderText: {
+    flex: 1,
+    gap: spacing[2],
   },
   detailName: {
     fontFamily: typography.heading,
     color: colors.text,
     fontSize: fontSize["2xl"],
-    textTransform: "uppercase",
     letterSpacing: 0.5,
-    textAlign: "center",
-    marginBottom: spacing[1],
-  },
-  detailNameAlt: {
-    fontFamily: typography.body,
-    color: colors.muted,
-    fontSize: fontSize.sm,
-    textAlign: "center",
-    marginBottom: spacing[3],
+    lineHeight: 28,
   },
   detailPillRow: {
+    flexDirection: "row",
+  },
+  setsRepsRow: {
+    flexDirection: "row",
+    gap: spacing[3],
+    marginTop: spacing[1],
+  },
+  setsRepsItem: {
     alignItems: "center",
   },
+  setsRepsValue: {
+    fontFamily: typography.mono,
+    color: colors.lime,
+    fontSize: fontSize.md,
+    fontWeight: "700",
+  },
+  setsRepsLabel: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.xs,
+  },
 
-  // Tabs body
+  // ── Tabs body ──
   tabBody: {
     flex: 1,
   },
   tabContent: {
-    paddingHorizontal: spacing[4],
+    paddingHorizontal: spacing[5],
     paddingTop: spacing[4],
     paddingBottom: spacing[8],
+    gap: spacing[3],
   },
 
-  // Tab ejecución
-  descriptionText: {
-    fontFamily: typography.body,
-    color: colors.text,
-    fontSize: fontSize.base,
-    lineHeight: 26,
-  },
-
-  // Tab músculos
-  muscleGroupTitle: {
-    fontFamily: typography.body,
-    color: colors.muted,
-    fontSize: fontSize.sm,
-    textTransform: "uppercase",
-    letterSpacing: 1,
-    marginBottom: spacing[3],
-  },
-  muscleGroupTitleSecondary: {
-    marginTop: spacing[5],
-  },
-  pillRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing[2],
-  },
-  musclePlaceholder: {
+  // ── Texto vacío genérico ──
+  emptyText: {
     fontFamily: typography.body,
     color: colors.muted,
     fontSize: fontSize.base,
+    lineHeight: 24,
   },
 
-  // Tab info
-  infoRow: {
+  // ── Tab Ejecución: pasos ──
+  stepsList: {
+    gap: spacing[3],
+  },
+  stepRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "flex-start",
-    paddingVertical: spacing[3],
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    gap: spacing[4],
+    gap: spacing[3],
   },
-  infoLabel: {
-    fontFamily: typography.body,
-    color: colors.muted,
-    fontSize: fontSize.sm,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
+  stepNumber: {
+    width: 26,
+    height: 26,
+    borderRadius: radius.sm + 2,
+    backgroundColor: colors.lime,
+    alignItems: "center",
+    justifyContent: "center",
     flexShrink: 0,
+    marginTop: 1,
   },
-  infoValue: {
+  stepNumberText: {
+    fontFamily: typography.mono,
+    fontSize: fontSize.xs,
+    color: colors.bg,
+    fontWeight: "700",
+  },
+  stepText: {
     fontFamily: typography.body,
     color: colors.text,
-    fontSize: fontSize.base,
-    textAlign: "right",
+    fontSize: fontSize.md,
+    lineHeight: 22,
     flex: 1,
   },
-  tagsSection: {
-    marginTop: spacing[4],
+
+  // ── Tab Ejecución: PRO TIP ──
+  proTipBox: {
+    flexDirection: "row",
+    backgroundColor: colors.limeGlow,
+    borderWidth: 1,
+    borderColor: `${colors.lime}30`,
+    borderRadius: radius.lg,
+    padding: spacing[4],
     gap: spacing[3],
+    marginTop: spacing[2],
+  },
+  proTipEmoji: {
+    fontSize: fontSize.lg,
+    flexShrink: 0,
+  },
+  proTipContent: {
+    flex: 1,
+    gap: spacing[1],
+  },
+  proTipLabel: {
+    fontFamily: typography.body,
+    color: colors.lime,
+    fontSize: fontSize.xs,
+    fontWeight: "700",
+    letterSpacing: 0.5,
+  },
+  proTipText: {
+    fontFamily: typography.body,
+    color: colors.text,
+    fontSize: fontSize.sm,
+    lineHeight: 20,
+  },
+
+  // ── Tab Errores ──
+  errorsWarningBox: {
+    backgroundColor: `${colors.error}08`,
+    borderWidth: 1,
+    borderColor: `${colors.error}25`,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[3],
+  },
+  errorsWarningText: {
+    fontFamily: typography.body,
+    color: colors.error,
+    fontSize: fontSize.sm,
+    fontWeight: "600",
+    lineHeight: 18,
+  },
+  errorsList: {
+    gap: spacing[3],
+  },
+  errorRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: spacing[3],
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    padding: spacing[3],
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  errorIconBox: {
+    width: 26,
+    height: 26,
+    borderRadius: radius.sm + 2,
+    backgroundColor: `${colors.error}15`,
+    borderWidth: 1,
+    borderColor: `${colors.error}40`,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  errorIconText: {
+    fontFamily: typography.body,
+    color: colors.error,
+    fontSize: fontSize.sm,
+    fontWeight: "700",
+  },
+  errorText: {
+    fontFamily: typography.body,
+    color: colors.text,
+    fontSize: fontSize.md,
+    lineHeight: 22,
+    flex: 1,
+  },
+
+  // ── Tab Músculos ──
+  muscleGroupList: {
+    gap: spacing[3],
+  },
+  muscleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing[3],
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[3],
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  muscleDot: {
+    width: 10,
+    height: 10,
+    borderRadius: radius.full,
+    flexShrink: 0,
+  },
+  muscleRowText: {
+    fontFamily: typography.body,
+    color: colors.text,
+    fontSize: fontSize.md,
+    flex: 1,
+  },
+  muscleIconBox: {
+    backgroundColor: colors.surface3,
+    borderRadius: radius.lg,
+    padding: spacing[4],
+    alignItems: "center",
+    justifyContent: "center",
+    height: 130,
+    marginTop: spacing[2],
   },
 });

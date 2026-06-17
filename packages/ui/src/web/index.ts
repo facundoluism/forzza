@@ -18,3 +18,4 @@ export * from "./LineChart";
 export * from "./Sheet";
 export * from "./DataTable";
 export * from "./CalendarMonth";
+export * from "./ExerciseIcon";
