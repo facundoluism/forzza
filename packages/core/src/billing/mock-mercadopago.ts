@@ -22,7 +22,7 @@ import {
   type MpPreapprovalPlanResponse,
   type MpPreapprovalResponse,
   type MpPreapprovalStatus,
-} from "./mp.js";
+} from "./mp";
 
 // ─── Almacén en memoria ───────────────────────────────────────────────────────
 

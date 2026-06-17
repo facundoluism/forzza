@@ -17,9 +17,9 @@
 
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import pg from "pg";
-import { handleMpWebhook, type WebhookDbClient } from "../mp-webhook-handler.js";
-import { MockMercadoPago } from "../mock-mercadopago.js";
-import { validateMpSignature } from "../mp.js";
+import { handleMpWebhook, type WebhookDbClient } from "../mp-webhook-handler";
+import { MockMercadoPago } from "../mock-mercadopago";
+import { validateMpSignature } from "../mp";
 
 const { Pool } = pg;
 

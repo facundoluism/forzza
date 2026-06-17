@@ -16,8 +16,8 @@ import {
   mapMpStatus,
   extractMpEventId,
   MP_STATUS_MAP,
-} from "../mp.js";
-import { MockMercadoPago } from "../mock-mercadopago.js";
+} from "../mp";
+import { MockMercadoPago } from "../mock-mercadopago";
 
 // ─── parseMpSignatureHeader ───────────────────────────────────────────────────
 

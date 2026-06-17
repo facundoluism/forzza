@@ -1,9 +1,9 @@
 // billing — core financial rules (pure, testeable, no floats)
 
 // Re-export Mercado Pago pure logic and mock (for use in tests and adapters)
-export * from "./mp.js";
-export * from "./mock-mercadopago.js";
-export * from "./mp-webhook-handler.js";
+export * from "./mp";
+export * from "./mock-mercadopago";
+export * from "./mp-webhook-handler";
 export type CommissionRate = number; // 0.20 para AR/CL — siempre leído de country_config
 
 export interface SettlementInput {

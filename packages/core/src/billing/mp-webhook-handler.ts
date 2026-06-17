@@ -18,7 +18,7 @@ import {
   extractMpEventId,
   type MpWebhookBody,
   type MpPreapprovalResponse,
-} from "./mp.js";
+} from "./mp";
 
 // ─── Interfaz de dependencias (inversión de control) ─────────────────────────
 
