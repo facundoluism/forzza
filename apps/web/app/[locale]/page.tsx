@@ -6,6 +6,7 @@ import { PRO_FEATURES } from "@/lib/plans";
 import { Link } from "@/i18n/navigation";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import type { Locale } from "@/i18n/routing";
+import { quoteOfTheDay, quoteText } from "@forzza/core";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +64,13 @@ export default async function HomePage({
   ];
 
   const steps = ["step1", "step2", "step3"] as const;
+
+  // Frase motivacional del día — determinística por epoch day, pura (sin deps).
+  const epochDay = Math.floor(Date.now() / 86400000);
+  const quote = quoteOfTheDay(epochDay);
+  const quoteLang = (locale === "en" ? "en" : "es") as "es" | "en";
+  const quoteDisplayText = quoteText(quote, quoteLang);
+  const tLanding = await getTranslations({ locale, namespace: "landing.quote" });
 
   return (
     <main
@@ -281,6 +289,86 @@ export default async function HomePage({
         >
           {t("hero.disclaimer")}
         </p>
+      </section>
+
+      {/* QUOTE MOTIVACIONAL */}
+      <section
+        style={{
+          padding: "0 24px 64px",
+          maxWidth: "720px",
+          margin: "0 auto",
+        }}
+      >
+        <figure
+          style={{
+            margin: 0,
+            padding: "28px 32px",
+            background: "var(--color-surface)",
+            borderRadius: "16px",
+            border: "1px solid var(--color-border)",
+            borderLeft: "3px solid var(--color-lime)",
+            position: "relative",
+          }}
+        >
+          {/* Comilla decorativa */}
+          <span
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              top: "12px",
+              left: "20px",
+              fontSize: "48px",
+              lineHeight: 1,
+              color: "var(--color-lime)",
+              opacity: 0.25,
+              fontFamily: "var(--font-display)",
+              fontWeight: 900,
+              userSelect: "none",
+            }}
+          >
+            &ldquo;
+          </span>
+          <blockquote
+            style={{
+              margin: "0 0 12px",
+              paddingLeft: "8px",
+              fontStyle: "italic",
+              fontSize: "clamp(16px, 2.2vw, 20px)",
+              lineHeight: 1.6,
+              color: "var(--color-text)",
+              fontFamily: "var(--font-body)",
+            }}
+          >
+            {quoteDisplayText}
+          </blockquote>
+          <figcaption
+            style={{
+              paddingLeft: "8px",
+              fontSize: "13px",
+              fontFamily: "var(--font-mono)",
+              color: "var(--color-lime)",
+              letterSpacing: "0.5px",
+            }}
+          >
+            &mdash; {quote.author}
+            <span style={{ color: "var(--color-muted)", marginLeft: "6px" }}>
+              &middot; {quote.sport}
+            </span>
+            {!quote.verified && (
+              <span
+                title={tLanding("unverifiedNote")}
+                style={{
+                  marginLeft: "8px",
+                  color: "var(--color-muted)",
+                  fontSize: "11px",
+                  opacity: 0.6,
+                }}
+              >
+                *
+              </span>
+            )}
+          </figcaption>
+        </figure>
       </section>
 
       {/* STATS STRIP */}

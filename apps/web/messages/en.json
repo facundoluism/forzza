@@ -117,6 +117,9 @@
         "privacy": "Privacy"
       },
       "copy": "© 2026 Forzza · Argentina"
+    },
+    "quote": {
+      "unverifiedNote": "Attribution pending verification"
     }
   },
   "languageSwitcher": {
@@ -139,7 +142,11 @@
       "errorNoUser": "Could not retrieve the authenticated user. Please try again.",
       "errorInvalid": "Invalid data",
       "devBannerTitle": "DEV MODE",
-      "devBannerBody": "Any email/password works. Use \"admin@test.com\" for admin or \"coach@test.com\" for coach."
+      "devBannerBody": "Any email/password works. Use \"admin@test.com\" for admin or \"coach@test.com\" for coach.",
+      "ssoOr": "or continue with",
+      "ssoGoogle": "Continue with Google",
+      "ssoApple": "Continue with Apple",
+      "ssoError": "Could not sign in with that provider. Please try again."
     },
     "forgotPassword": {
       "title": "Reset your password",

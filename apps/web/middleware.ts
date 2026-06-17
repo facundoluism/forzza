@@ -36,6 +36,7 @@ export async function middleware(request: NextRequest) {
   // but api, sw.js and manifest need an explicit guard here too.
   const isPublicFile =
     pathname.startsWith("/api/") ||
+    pathname.startsWith("/auth/") ||
     pathname === "/sw.js" ||
     pathname === "/manifest.json" ||
     pathname === "/offline" ||
