@@ -91,7 +91,17 @@
     "deleteAccount": "Eliminá tu cuenta",
     "deleteAccount_confirm_title": "Eliminar cuenta",
     "deleteAccount_confirm_msg": "¿Estás seguro? Esta acción no se puede deshacer. Se cancelarán todas tus suscripciones.",
-    "deleteAccount_confirm_btn": "Eliminar"
+    "deleteAccount_confirm_btn": "Eliminar",
+    "planFree": "FREE",
+    "planPro": "PRO",
+    "planElite": "ELITE",
+    "statSessions": "Sesiones",
+    "statStreak": "Racha",
+    "statCoach": "Coach",
+    "sectionPlan": "Plan",
+    "sectionCoach": "Tu coach",
+    "coachNone": "Sin coach asignado",
+    "coachActive": "Coach activo"
   },
   "exercisePicker": {
     "title": "Biblioteca de ejercicios",
@@ -356,6 +366,7 @@
     "errorPurchaseDesc": "No se pudo completar la compra. Intentá de nuevo.",
     "errorRestoreTitle": "No se pudo restaurar",
     "errorRestoreDesc": "No encontramos compras previas asociadas a tu cuenta.",
-    "restoreSuccess": "Tus compras fueron restauradas exitosamente."
+    "restoreSuccess": "Tus compras fueron restauradas exitosamente.",
+    "activateProSuccess": "¡Plan PRO activado! Ya podés disfrutar de todas las funciones."
   }
 }

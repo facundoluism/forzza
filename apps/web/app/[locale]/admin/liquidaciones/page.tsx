@@ -1,6 +1,7 @@
 import { requireAdmin } from "@/lib/auth/admin";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { SettlementActionButtons } from "./SettlementActionButtons";
+import { ErrorState } from "@forzza/ui/web";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -78,6 +79,12 @@ export default async function AdminLiquidacionesPage({ params }: Props) {
 
   if (error) {
     console.error("Error fetching settlements:", error);
+    return (
+      <ErrorState
+        title={t("liquidaciones.errorTitle")}
+        description={t("liquidaciones.errorDesc")}
+      />
+    );
   }
 
   const rows = (settlements ?? []) as SettlementRow[];

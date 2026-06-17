@@ -19,7 +19,7 @@ import { useEntitlements } from "@/hooks/useEntitlements";
 import { TRACKED_EVENTS } from "@forzza/core";
 import { track } from "@/lib/analytics";
 import { ExercisePreviewSheet } from "@/components/ExercisePreviewSheet";
-import { Button, Card, AutopromoOverlay } from "@forzza/ui/native";
+import { Button, Card, AutopromoOverlay, RestTimer } from "@forzza/ui/native";
 import { colors, spacing, radius, typography } from "@forzza/ui/tokens";
 
 const AUTOPROMO_SECONDS = 10;
@@ -52,55 +52,6 @@ function NumberInput({ label, value, onChangeText, placeholder = "0", testID }: 
   );
 }
 
-function RestTimer({ seconds, onDone, restingLabel, skipLabel }: { seconds: number; onDone: () => void; restingLabel: string; skipLabel: string }): React.JSX.Element {
-  const [remaining, setRemaining] = useState(seconds);
-  const glowAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    // Pulse glow animation while resting
-    const pulse = Animated.loop(
-      Animated.sequence([
-        Animated.timing(glowAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
-        Animated.timing(glowAnim, { toValue: 0.4, duration: 800, useNativeDriver: true }),
-      ])
-    );
-    pulse.start();
-    return () => pulse.stop();
-  }, [glowAnim]);
-
-  useEffect(() => {
-    if (remaining <= 0) {
-      onDone();
-      return;
-    }
-    const timer = setTimeout(() => setRemaining((r) => r - 1), 1000);
-    return () => clearTimeout(timer);
-  }, [remaining, onDone]);
-
-  const glowOpacity = glowAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.08, 0.25],
-  });
-
-  return (
-    <View style={styles.restTimerWrapper}>
-      <Animated.View style={[styles.restGlowBg, { opacity: glowOpacity }]} />
-      <Card style={styles.restTimerCard}>
-        <Text style={styles.restTimerTitle}>{restingLabel}</Text>
-        <Text style={styles.restTimerCount}>{remaining}s</Text>
-        <Pressable
-          testID="skip-rest-button"
-          accessibilityLabel={skipLabel}
-          style={styles.restSkipBtn}
-          onPress={onDone}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Text style={styles.restSkipText}>{skipLabel}</Text>
-        </Pressable>
-      </Card>
-    </View>
-  );
-}
 
 function LogSetButton({ onPress, label }: { onPress: () => void; label: string }): React.JSX.Element {
   const scale = useRef(new Animated.Value(1)).current;
@@ -417,8 +368,8 @@ export default function SessionScreen(): React.JSX.Element | null {
         {showRestTimer && (
           <RestTimer
             seconds={currentRestSeconds}
-            onDone={handleRestDone}
-            restingLabel={t('session.resting')}
+            onComplete={handleRestDone}
+            onSkip={handleRestDone}
             skipLabel={t('session.skipRest')}
           />
         )}
@@ -723,56 +674,6 @@ const styles = StyleSheet.create({
     fontFamily: typography.mono,
     color: colors.text,
     fontSize: 14,
-  },
-  // Rest timer
-  restTimerWrapper: {
-    position: "relative",
-    borderRadius: radius.lg,
-    overflow: "hidden",
-  },
-  restGlowBg: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: colors.limeGlow,
-  },
-  restTimerCard: {
-    alignItems: "center",
-    paddingVertical: spacing[8],
-    borderColor: colors.lime,
-    borderWidth: 1,
-    backgroundColor: "transparent",
-  },
-  restTimerTitle: {
-    fontFamily: typography.body,
-    color: colors.muted,
-    fontSize: 12,
-    textTransform: "uppercase",
-    letterSpacing: 2,
-    fontWeight: "700",
-    marginBottom: spacing[2],
-  },
-  restTimerCount: {
-    fontFamily: typography.mono,
-    color: colors.lime,
-    fontSize: 80,
-    fontWeight: "900",
-    letterSpacing: -2,
-    shadowColor: colors.lime,
-    shadowOpacity: 0.5,
-    shadowRadius: 20,
-    shadowOffset: { width: 0, height: 0 },
-  },
-  restSkipBtn: {
-    marginTop: spacing[4],
-    paddingHorizontal: spacing[4],
-    paddingVertical: spacing[2],
-    minHeight: 44,
-    justifyContent: "center",
-  },
-  restSkipText: {
-    fontFamily: typography.body,
-    color: colors.muted,
-    fontSize: 14,
-    textDecorationLine: "underline",
   },
   // Input card
   inputCard: {

@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import { View, Text, StyleSheet, Animated } from "react-native";
+import { View, Text, Pressable, StyleSheet, Animated } from "react-native";
 import { colors, typography, fontSize, radius } from "../tokens";
 
 export interface RestTimerProps {
   seconds: number;
   onComplete?: () => void;
+  /** Called when user taps the skip button. If omitted, no skip button is rendered. */
+  onSkip?: () => void;
+  /** Accessible label for the skip button */
+  skipLabel?: string;
   size?: number;
   color?: string;
 }
@@ -12,6 +16,8 @@ export interface RestTimerProps {
 export function RestTimer({
   seconds,
   onComplete,
+  onSkip,
+  skipLabel = "Saltar",
   size = 160,
   color = colors.lime,
 }: RestTimerProps) {
@@ -85,6 +91,18 @@ export function RestTimer({
           ]}
         />
       </View>
+      {/* Optional skip button */}
+      {onSkip && (
+        <Pressable
+          testID="skip-rest-button"
+          accessibilityLabel={skipLabel}
+          onPress={onSkip}
+          style={styles.skipBtn}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Text style={[styles.skipText, { color }]}>{skipLabel}</Text>
+        </Pressable>
+      )}
     </View>
   );
 }
@@ -124,5 +142,18 @@ const styles = StyleSheet.create({
   fillBar: {
     height: "100%",
     borderRadius: radius.full,
+  },
+  skipBtn: {
+    marginTop: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    minHeight: 44,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  skipText: {
+    fontSize: fontSize.sm,
+    fontFamily: typography.body,
+    textDecorationLine: "underline",
   },
 });

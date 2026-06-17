@@ -142,9 +142,12 @@ export default function RoutineDetailScreen() {
     : [];
 
   // Extraer IDs para el batch fetch a exercise_library
-  const exerciseIds = exercises
-    .map((ex) => ex.exercise_id)
-    .filter((eid): eid is string => typeof eid === "string" && eid.length > 0);
+  const exerciseIds = exercises.reduce<string[]>((ids, ex) => {
+    if (ex.exercise_id && ex.exercise_id.length > 0) {
+      ids.push(ex.exercise_id);
+    }
+    return ids;
+  }, []);
 
   const { data: libraryEntries } = useQuery({
     queryKey: ["exercise_library_batch", exerciseIds.join(",")],

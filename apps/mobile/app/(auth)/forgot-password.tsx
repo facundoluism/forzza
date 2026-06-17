@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
@@ -11,6 +10,8 @@ import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import { forgotPasswordSchema } from "@forzza/core";
+import { Input } from "@forzza/ui/native";
+import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
 
 type PageState = "idle" | "loading" | "success" | "error";
 
@@ -41,15 +42,11 @@ export default function ForgotPasswordScreen() {
 
   if (state === "success") {
     return (
-      <View style={[styles.container, { justifyContent: "center", alignItems: "center", padding: 24 }]}>
-        <Text style={{ fontSize: 64, marginBottom: 24 }}>✅</Text>
-        <Text style={{ color: "#FAFAFA", fontSize: 22, fontWeight: "bold", marginBottom: 12, textAlign: "center" }}>
-          {t('auth.forgotPassword.successTitle')}
-        </Text>
-        <Text style={{ color: "#AAAAAA", textAlign: "center" }}>
-          {t('auth.forgotPassword.successDesc')}
-        </Text>
-        <TouchableOpacity onPress={() => router.back()} style={[styles.button, { marginTop: 32 }]}>
+      <View style={[styles.container, styles.successContainer]}>
+        <Text style={styles.successEmoji}>✅</Text>
+        <Text style={styles.successTitle}>{t('auth.forgotPassword.successTitle')}</Text>
+        <Text style={styles.successDesc}>{t('auth.forgotPassword.successDesc')}</Text>
+        <TouchableOpacity onPress={() => router.back()} style={[styles.button, styles.successButton]}>
           <Text style={styles.buttonText}>{t('auth.forgotPassword.back')}</Text>
         </TouchableOpacity>
       </View>
@@ -59,24 +56,19 @@ export default function ForgotPasswordScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Text style={{ fontSize: 32, color: "#FAFAFA", fontWeight: "bold", marginBottom: 8 }}>
-          {t('auth.forgotPassword.title')}
-        </Text>
-        <Text style={{ color: "#AAAAAA", marginBottom: 32 }}>
-          {t('auth.forgotPassword.placeholder')}
-        </Text>
+        <Text style={styles.title}>{t('auth.forgotPassword.title')}</Text>
+        <Text style={styles.desc}>{t('auth.forgotPassword.placeholder')}</Text>
 
-        <TextInput
-          style={styles.input}
+        <Input
           placeholder={t('auth.forgotPassword.emailPlaceholder')}
-          placeholderTextColor="#6A6A6A"
           value={email}
           onChangeText={setEmail}
           autoCapitalize="none"
           keyboardType="email-address"
+          state={error ? "error" : "default"}
         />
 
-        {error && <Text style={{ color: "#FF4444", marginBottom: 12, fontSize: 14 }}>{error}</Text>}
+        {error && <Text style={styles.error}>{error}</Text>}
 
         <TouchableOpacity
           style={[styles.button, state === "loading" && styles.buttonDisabled]}
@@ -84,13 +76,13 @@ export default function ForgotPasswordScreen() {
           disabled={state === "loading"}
         >
           {state === "loading"
-            ? <ActivityIndicator color="#0A0A0A" />
+            ? <ActivityIndicator color={colors.black} />
             : <Text style={styles.buttonText}>{t('auth.forgotPassword.submit')}</Text>
           }
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => router.back()} style={{ alignItems: "center", paddingTop: 16 }}>
-          <Text style={{ color: "#6A6A6A", fontSize: 14 }}>{t('auth.forgotPassword.back')}</Text>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backLink}>
+          <Text style={styles.backLinkText}>{t('auth.forgotPassword.back')}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -98,24 +90,24 @@ export default function ForgotPasswordScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0A0A0A" },
-  content: { flex: 1, padding: 24, paddingTop: 80 },
-  input: {
-    backgroundColor: "#1A1A1A",
-    borderWidth: 1,
-    borderColor: "#3A3A3A",
-    borderRadius: 8,
-    padding: 14,
-    color: "#FAFAFA",
-    fontSize: 16,
-    marginBottom: 16,
-  },
+  container: { flex: 1, backgroundColor: colors.bg },
+  successContainer: { justifyContent: "center", alignItems: "center", padding: spacing[6] },
+  successEmoji: { fontSize: fontSize["5xl"], marginBottom: spacing[6] },
+  successTitle: { color: colors.white, fontSize: fontSize.xl, fontFamily: typography.body, fontWeight: "700", marginBottom: spacing[3], textAlign: "center" },
+  successDesc: { color: colors.muted, textAlign: "center" },
+  successButton: { marginTop: spacing[8] },
+  content: { flex: 1, padding: spacing[6], paddingTop: spacing[20] },
+  title: { fontSize: fontSize["2xl"], fontFamily: typography.heading, color: colors.text, fontWeight: "700", marginBottom: spacing[2] },
+  desc: { color: colors.muted, marginBottom: spacing[8] },
+  error: { color: colors.error, marginBottom: spacing[3], fontSize: fontSize.sm },
   button: {
-    backgroundColor: "#C8FF00",
-    padding: 16,
-    borderRadius: 8,
+    backgroundColor: colors.lime,
+    padding: spacing[4],
+    borderRadius: radius.md,
     alignItems: "center",
   },
-  buttonDisabled: { backgroundColor: "#4A4A4A" },
-  buttonText: { color: "#0A0A0A", fontWeight: "bold", fontSize: 16 },
+  buttonDisabled: { backgroundColor: colors.gray700 },
+  buttonText: { color: colors.black, fontFamily: typography.body, fontWeight: "700", fontSize: fontSize.base },
+  backLink: { alignItems: "center", paddingTop: spacing[4] },
+  backLinkText: { color: colors.gray, fontSize: fontSize.sm },
 });

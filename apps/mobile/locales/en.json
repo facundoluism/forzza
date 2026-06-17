@@ -91,7 +91,17 @@
     "deleteAccount": "Delete account",
     "deleteAccount_confirm_title": "Delete account",
     "deleteAccount_confirm_msg": "Are you sure? This action cannot be undone. All your subscriptions will be cancelled.",
-    "deleteAccount_confirm_btn": "Delete"
+    "deleteAccount_confirm_btn": "Delete",
+    "planFree": "FREE",
+    "planPro": "PRO",
+    "planElite": "ELITE",
+    "statSessions": "Sessions",
+    "statStreak": "Streak",
+    "statCoach": "Coach",
+    "sectionPlan": "Plan",
+    "sectionCoach": "Your coach",
+    "coachNone": "No coach assigned",
+    "coachActive": "Active coach"
   },
   "exercisePicker": {
     "title": "Exercise Library",
@@ -356,6 +366,7 @@
     "errorPurchaseDesc": "Could not complete purchase. Please try again.",
     "errorRestoreTitle": "Could not restore",
     "errorRestoreDesc": "No previous purchases found associated with your account.",
-    "restoreSuccess": "Your purchases were restored successfully."
+    "restoreSuccess": "Your purchases were restored successfully.",
+    "activateProSuccess": "PRO plan activated! You can now enjoy all features."
   }
 }

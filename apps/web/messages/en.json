@@ -398,7 +398,9 @@
       "roleStudent": "Student",
       "roleCoach": "Coach",
       "roleOwner": "Owner",
-      "rolePromoter": "Promoter"
+      "rolePromoter": "Promoter",
+      "errorTitle": "Could not load metrics",
+      "errorDesc": "Check your connection and try again."
     },
     "coaches": {
       "metaTitle": "Coaches — Forzza Admin",
@@ -518,7 +520,9 @@
       "dialogBody": "The reason will be visible to operations and recorded in the audit log.",
       "dialogPlaceholder": "E.g.: The amount does not match the settlement.",
       "errorUpdate": "Could not update the settlement.",
-      "errorNetwork": "Network error."
+      "errorNetwork": "Network error.",
+      "errorTitle": "Could not load settlements",
+      "errorDesc": "Check your connection and try again."
     },
     "tickets": {
       "metaTitle": "Tickets — Forzza Admin",
@@ -584,6 +588,7 @@
       "emptyState": "You have no assigned students.",
       "emptySubtitle": "Students who purchase your packages will appear here.",
       "colStudent": "Student",
+      "colPackage": "Package",
       "colStatus": "Status",
       "colSince": "Since",
       "colAction": "Action",
@@ -591,6 +596,8 @@
       "statusActive": "Active",
       "statusPaused": "Paused",
       "statusCancelled": "Cancelled",
+      "errorTitle": "Could not load students",
+      "errorDesc": "Check your connection and try again.",
       "detail": {
         "notFound": "Student not found",
         "goals": "Goals",
@@ -617,6 +624,8 @@
       "emptySubtitle": "Create your first routine and assign it to a student.",
       "exercises": "exercises",
       "viewDetail": "View →",
+      "errorTitle": "Could not load routines",
+      "errorDesc": "Check your connection and try again.",
       "nueva": {
         "title": "New routine",
         "fieldName": "Routine name",
@@ -695,6 +704,8 @@
       "pending": "Pending",
       "emptyState": "No settlements yet.",
       "emptySubtitle": "When billing periods are generated, they will appear here.",
+      "errorTitle": "Could not load payouts",
+      "errorDesc": "Check your connection and try again.",
       "colPeriod": "Period",
       "colGross": "Gross",
       "colCommission": "Commission",

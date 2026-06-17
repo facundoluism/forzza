@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
@@ -14,6 +13,8 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import { loginSchema, TRACKED_EVENTS } from "@forzza/core";
 import { track } from "@/lib/analytics";
+import { Input } from "@forzza/ui/native";
+import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
 
 export default function LoginScreen() {
   const { t } = useTranslation();
@@ -55,25 +56,22 @@ export default function LoginScreen() {
         <Text style={styles.logo}>FORZZA</Text>
         <Text style={styles.subtitle}>{t('auth.login.title')}</Text>
 
-        <TextInput
+        <Input
           testID="email-input"
           accessibilityLabel={t('auth.login.email')}
-          style={styles.input}
           placeholder={t('auth.login.email')}
-          placeholderTextColor="#6A6A6A"
           value={email}
           onChangeText={setEmail}
           autoCapitalize="none"
           keyboardType="email-address"
           editable={!loading}
+          state={error ? "error" : "default"}
         />
 
-        <TextInput
+        <Input
           testID="password-input"
           accessibilityLabel={t('auth.login.password')}
-          style={styles.input}
           placeholder={t('auth.login.password')}
-          placeholderTextColor="#6A6A6A"
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -90,7 +88,7 @@ export default function LoginScreen() {
           disabled={loading}
         >
           {loading
-            ? <ActivityIndicator color="#0A0A0A" />
+            ? <ActivityIndicator color={colors.black} />
             : <Text style={styles.buttonText}>{t('auth.login.submit')}</Text>
           }
         </TouchableOpacity>
@@ -114,31 +112,22 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0A0A0A" },
-  content: { flex: 1, padding: 24, justifyContent: "center" },
-  logo: { fontSize: 48, color: "#C8FF00", fontWeight: "bold", marginBottom: 8 },
-  subtitle: { fontSize: 16, color: "#AAAAAA", marginBottom: 32 },
-  input: {
-    backgroundColor: "#1A1A1A",
-    borderWidth: 1,
-    borderColor: "#3A3A3A",
-    borderRadius: 8,
-    padding: 14,
-    color: "#FAFAFA",
-    fontSize: 16,
-    marginBottom: 16,
-  },
-  error: { color: "#FF4444", marginBottom: 12, fontSize: 14 },
+  container: { flex: 1, backgroundColor: colors.bg },
+  content: { flex: 1, padding: spacing[6], justifyContent: "center" },
+  logo: { fontSize: fontSize["5xl"], color: colors.lime, fontFamily: typography.heading, marginBottom: spacing[2] },
+  subtitle: { fontSize: fontSize.base, color: colors.muted, marginBottom: spacing[8] },
+  error: { color: colors.error, marginBottom: spacing[3], fontSize: fontSize.sm },
   button: {
-    backgroundColor: "#C8FF00",
-    padding: 16,
-    borderRadius: 8,
+    backgroundColor: colors.lime,
+    padding: spacing[4],
+    borderRadius: radius.md,
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: spacing[4],
+    marginTop: spacing[2],
   },
-  buttonDisabled: { backgroundColor: "#4A4A4A" },
-  buttonText: { color: "#0A0A0A", fontWeight: "bold", fontSize: 16 },
-  link: { alignItems: "center", paddingVertical: 8 },
-  linkText: { color: "#C8FF00", fontSize: 14 },
-  linkTextMuted: { color: "#6A6A6A", fontSize: 14 },
+  buttonDisabled: { backgroundColor: colors.gray700 },
+  buttonText: { color: colors.black, fontFamily: typography.body, fontWeight: "700", fontSize: fontSize.base },
+  link: { alignItems: "center", paddingVertical: spacing[2] },
+  linkText: { color: colors.lime, fontSize: fontSize.sm },
+  linkTextMuted: { color: colors.gray, fontSize: fontSize.sm },
 });

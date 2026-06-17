@@ -1,5 +1,6 @@
 import { requireAdmin } from "@/lib/auth/admin";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ErrorState } from "@forzza/ui/web";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -90,6 +91,17 @@ export default async function AdminDashboardPage({ params }: Props) {
       .order("created_at", { ascending: false })
       .limit(10),
   ]);
+
+  const criticalError = usersResult.error ?? recentUsersResult.error;
+  if (criticalError) {
+    console.error("Error fetching dashboard data:", criticalError);
+    return (
+      <ErrorState
+        title={t("dashboard.errorTitle")}
+        description={t("dashboard.errorDesc")}
+      />
+    );
+  }
 
   const totalUsers = usersResult.count ?? 0;
   const approvedCoaches = approvedCoachesResult.count ?? 0;

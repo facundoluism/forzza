@@ -2,6 +2,7 @@ import { requireCoach } from "@/lib/auth/coach";
 import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ErrorState } from "@forzza/ui/web";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -50,6 +51,12 @@ export default async function RutinasPage({ params }: Props) {
 
   if (error) {
     console.error("Error fetching routines:", error);
+    return (
+      <ErrorState
+        title={t("rutinas.errorTitle")}
+        description={t("rutinas.errorDesc")}
+      />
+    );
   }
 
   const rows = (routines ?? []) as unknown as Routine[];

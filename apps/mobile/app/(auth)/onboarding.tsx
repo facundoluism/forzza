@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
@@ -14,6 +13,8 @@ import { supabase } from "@/lib/supabase";
 import { isMinor, TRACKED_EVENTS } from "@forzza/core";
 import { track } from "@/lib/analytics";
 import type { TablesInsert } from "@forzza/db-types";
+import { Input } from "@forzza/ui/native";
+import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
 
 type Step = 1 | 2 | 3;
 
@@ -151,19 +152,15 @@ export default function OnboardingScreen() {
             <Text style={styles.subtitle}>{t('auth.onboarding.labelName')}</Text>
 
             <Text style={styles.label}>{t('auth.onboarding.labelName')}</Text>
-            <TextInput
-              style={styles.input}
+            <Input
               placeholder={t('auth.onboarding.placeholderName')}
-              placeholderTextColor="#6A6A6A"
               value={displayName}
               onChangeText={setDisplayName}
             />
 
             <Text style={styles.label}>{t('auth.onboarding.labelAge')}</Text>
-            <TextInput
-              style={styles.input}
+            <Input
               placeholder={t('auth.onboarding.placeholderBirthDate')}
-              placeholderTextColor="#6A6A6A"
               value={birthDate}
               onChangeText={setBirthDate}
               keyboardType="numeric"
@@ -235,10 +232,10 @@ export default function OnboardingScreen() {
                 ]}
                 onPress={() => setLevel(lvl.value)}
               >
-                <Text style={[styles.levelTitle, level === lvl.value && { color: "#0A0A0A" }]}>
+                <Text style={[styles.levelTitle, level === lvl.value && styles.levelTitleSelected]}>
                   {lvl.label}
                 </Text>
-                <Text style={[styles.levelDesc, level === lvl.value && { color: "#2A2A2A" }]}>
+                <Text style={[styles.levelDesc, level === lvl.value && styles.levelDescSelected]}>
                   {lvl.description}
                 </Text>
               </TouchableOpacity>
@@ -251,10 +248,8 @@ export default function OnboardingScreen() {
                 <Text style={styles.parentalText}>
                   {t('auth.onboarding.parentalDesc')}
                 </Text>
-                <TextInput
-                  style={styles.input}
+                <Input
                   placeholder={t('auth.onboarding.placeholderParentalEmail')}
-                  placeholderTextColor="#6A6A6A"
                   value={parentalEmail}
                   onChangeText={setParentalEmail}
                   keyboardType="email-address"
@@ -280,7 +275,7 @@ export default function OnboardingScreen() {
               disabled={loading}
             >
               {loading
-                ? <ActivityIndicator color="#0A0A0A" />
+                ? <ActivityIndicator color={colors.black} />
                 : <Text style={styles.buttonText}>{t('auth.onboarding.btnFinish')}</Text>
               }
             </TouchableOpacity>
@@ -292,70 +287,62 @@ export default function OnboardingScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0A0A0A" },
-  progressContainer: { flexDirection: "row", gap: 8, padding: 24, paddingBottom: 0 },
-  progressBar: { flex: 1, height: 4, backgroundColor: "#2A2A2A", borderRadius: 2 },
-  progressBarActive: { backgroundColor: "#C8FF00" },
-  content: { padding: 24, paddingBottom: 48 },
-  title: { fontSize: 28, color: "#FAFAFA", fontWeight: "bold", marginBottom: 8, marginTop: 16 },
-  subtitle: { fontSize: 16, color: "#AAAAAA", marginBottom: 24 },
-  label: { color: "#AAAAAA", marginBottom: 8, fontSize: 14 },
-  input: {
-    backgroundColor: "#1A1A1A",
-    borderWidth: 1,
-    borderColor: "#3A3A3A",
-    borderRadius: 8,
-    padding: 14,
-    color: "#FAFAFA",
-    fontSize: 16,
-    marginBottom: 16,
-  },
-  error: { color: "#FF4444", marginBottom: 12, fontSize: 14 },
+  container: { flex: 1, backgroundColor: colors.bg },
+  progressContainer: { flexDirection: "row", gap: spacing[2], padding: spacing[6], paddingBottom: 0 },
+  progressBar: { flex: 1, height: 4, backgroundColor: colors.surface3, borderRadius: radius.sm },
+  progressBarActive: { backgroundColor: colors.lime },
+  content: { padding: spacing[6], paddingBottom: spacing[12] },
+  title: { fontSize: fontSize["3xl"], fontFamily: typography.heading, color: colors.text, fontWeight: "700", marginBottom: spacing[2], marginTop: spacing[4] },
+  subtitle: { fontSize: fontSize.base, color: colors.muted, marginBottom: spacing[6] },
+  label: { color: colors.muted, marginBottom: spacing[2], fontSize: fontSize.sm },
+  error: { color: colors.error, marginBottom: spacing[3], fontSize: fontSize.sm },
   button: {
-    backgroundColor: "#C8FF00",
-    padding: 16,
-    borderRadius: 8,
+    backgroundColor: colors.lime,
+    padding: spacing[4],
+    borderRadius: radius.md,
     alignItems: "center",
-    marginTop: 8,
+    marginTop: spacing[2],
   },
-  buttonDisabled: { backgroundColor: "#4A4A4A" },
-  buttonText: { color: "#0A0A0A", fontWeight: "bold", fontSize: 16 },
-  chipsContainer: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginBottom: 24 },
+  buttonDisabled: { backgroundColor: colors.gray700 },
+  buttonText: { color: colors.black, fontFamily: typography.body, fontWeight: "700", fontSize: fontSize.base },
+  chipsContainer: { flexDirection: "row", flexWrap: "wrap", gap: spacing[2], marginBottom: spacing[6] },
   chip: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 20,
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2],
+    borderRadius: radius.full,
     borderWidth: 1,
-    borderColor: "#3A3A3A",
-    backgroundColor: "#1A1A1A",
+    borderColor: colors.surface4,
+    backgroundColor: colors.surface,
   },
-  chipSelected: { backgroundColor: "#C8FF00", borderColor: "#C8FF00" },
-  chipText: { color: "#FAFAFA", fontSize: 14 },
-  chipTextSelected: { color: "#0A0A0A", fontWeight: "bold" },
+  chipSelected: { backgroundColor: colors.lime, borderColor: colors.lime },
+  chipText: { color: colors.text, fontSize: fontSize.sm },
+  chipTextSelected: { color: colors.black, fontWeight: "700" },
   levelCard: {
-    padding: 16,
-    borderRadius: 8,
+    padding: spacing[4],
+    borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: "#3A3A3A",
-    backgroundColor: "#1A1A1A",
-    marginBottom: 12,
+    borderColor: colors.surface4,
+    backgroundColor: colors.surface,
+    marginBottom: spacing[3],
   },
-  levelCardSelected: { backgroundColor: "#C8FF00", borderColor: "#C8FF00" },
-  levelTitle: { color: "#FAFAFA", fontWeight: "bold", fontSize: 16, marginBottom: 4 },
-  levelDesc: { color: "#AAAAAA", fontSize: 14 },
+  levelCardSelected: { backgroundColor: colors.lime, borderColor: colors.lime },
+  levelTitle: { color: colors.text, fontFamily: typography.body, fontWeight: "700", fontSize: fontSize.base, marginBottom: spacing[1] },
+  levelTitleSelected: { color: colors.black },
+  levelDesc: { color: colors.muted, fontSize: fontSize.sm },
+  levelDescSelected: { color: colors.surface3 },
   parentalBox: {
-    backgroundColor: "#1A1A1A",
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: "#FFAA00",
-    borderRadius: 8,
-    padding: 16,
-    marginTop: 16,
-    marginBottom: 16,
+    borderColor: colors.warning,
+    borderRadius: radius.md,
+    padding: spacing[4],
+    marginTop: spacing[4],
+    marginBottom: spacing[4],
   },
-  parentalTitle: { color: "#FFAA00", fontWeight: "bold", marginBottom: 8 },
-  parentalText: { color: "#AAAAAA", fontSize: 13, marginBottom: 12, lineHeight: 18 },
-  checkboxRow: { flexDirection: "row", alignItems: "flex-start", gap: 10 },
-  checkbox: { width: 20, height: 20, borderRadius: 4, borderWidth: 2, borderColor: "#6A6A6A", marginTop: 2 },
-  checkboxChecked: { backgroundColor: "#C8FF00", borderColor: "#C8FF00" },
-  checkboxLabel: { color: "#AAAAAA", flex: 1, fontSize: 13, lineHeight: 18 },
+  parentalTitle: { color: colors.warning, fontFamily: typography.body, fontWeight: "700", marginBottom: spacing[2] },
+  parentalText: { color: colors.muted, fontSize: 13, marginBottom: spacing[3], lineHeight: 18 },
+  checkboxRow: { flexDirection: "row", alignItems: "flex-start", gap: spacing[2] },
+  checkbox: { width: 20, height: 20, borderRadius: radius.sm, borderWidth: 2, borderColor: colors.gray, marginTop: 2 },
+  checkboxChecked: { backgroundColor: colors.lime, borderColor: colors.lime },
+  checkboxLabel: { color: colors.muted, flex: 1, fontSize: 13, lineHeight: 18 },
 });

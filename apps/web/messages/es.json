@@ -398,7 +398,9 @@
       "roleStudent": "Alumno",
       "roleCoach": "Coach",
       "roleOwner": "Owner",
-      "rolePromoter": "Promotor"
+      "rolePromoter": "Promotor",
+      "errorTitle": "No se pudieron cargar las métricas",
+      "errorDesc": "Revisá tu conexión e intentá de nuevo."
     },
     "coaches": {
       "metaTitle": "Coaches — Forzza Admin",
@@ -518,7 +520,9 @@
       "dialogBody": "El motivo queda visible para operación y registrado en auditoría.",
       "dialogPlaceholder": "Ej: el monto no coincide con la liquidación.",
       "errorUpdate": "No se pudo actualizar la liquidación.",
-      "errorNetwork": "Error de red."
+      "errorNetwork": "Error de red.",
+      "errorTitle": "No se pudieron cargar las liquidaciones",
+      "errorDesc": "Revisá tu conexión e intentá de nuevo."
     },
     "tickets": {
       "metaTitle": "Tickets — Forzza Admin",
@@ -584,6 +588,7 @@
       "emptyState": "No tenés alumnos asignados.",
       "emptySubtitle": "Los alumnos que contraten tus paquetes aparecerán acá.",
       "colStudent": "Alumno",
+      "colPackage": "Paquete",
       "colStatus": "Estado",
       "colSince": "Desde",
       "colAction": "Acción",
@@ -591,6 +596,8 @@
       "statusActive": "Activo",
       "statusPaused": "Pausado",
       "statusCancelled": "Cancelado",
+      "errorTitle": "No se pudieron cargar los alumnos",
+      "errorDesc": "Revisá tu conexión e intentá de nuevo.",
       "detail": {
         "notFound": "Alumno no encontrado",
         "goals": "Objetivos",
@@ -617,6 +624,8 @@
       "emptySubtitle": "Creá tu primera rutina y asignala a un alumno.",
       "exercises": "ejercicios",
       "viewDetail": "Ver →",
+      "errorTitle": "No se pudieron cargar las rutinas",
+      "errorDesc": "Revisá tu conexión e intentá de nuevo.",
       "nueva": {
         "title": "Nueva rutina",
         "fieldName": "Nombre de la rutina",
@@ -695,6 +704,8 @@
       "pending": "Pendiente",
       "emptyState": "No hay liquidaciones todavía.",
       "emptySubtitle": "Cuando se generen períodos de cobro, aparecerán acá.",
+      "errorTitle": "No se pudieron cargar los cobros",
+      "errorDesc": "Revisá tu conexión e intentá de nuevo.",
       "colPeriod": "Período",
       "colGross": "Bruto",
       "colCommission": "Comisión",

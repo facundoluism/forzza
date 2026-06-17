@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { InvoiceUploadButton } from "./InvoiceUploadButton";
 import { InvoiceViewButton } from "./InvoiceViewButton";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ErrorState } from "@forzza/ui/web";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -88,6 +89,12 @@ export default async function CobrosPage({ params }: Props) {
 
   if (error) {
     console.error("Error fetching settlements:", error);
+    return (
+      <ErrorState
+        title={t("cobros.errorTitle")}
+        description={t("cobros.errorDesc")}
+      />
+    );
   }
 
   const rawRows = (settlements ?? []) as Settlement[];

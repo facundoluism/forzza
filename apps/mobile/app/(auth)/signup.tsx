@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
@@ -15,6 +14,8 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import { signupSchema, TRACKED_EVENTS } from "@forzza/core";
 import { track } from "@/lib/analytics";
+import { Input } from "@forzza/ui/native";
+import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
 
 export default function SignupScreen() {
   const { t } = useTranslation();
@@ -52,15 +53,11 @@ export default function SignupScreen() {
 
   if (success) {
     return (
-      <View style={[styles.container, { justifyContent: "center", alignItems: "center", padding: 24 }]}>
-        <Text style={{ fontSize: 64, marginBottom: 24 }}>📧</Text>
-        <Text style={{ color: "#FAFAFA", fontSize: 24, fontWeight: "bold", marginBottom: 12, textAlign: "center" }}>
-          {t('auth.signup.successTitle')}
-        </Text>
-        <Text style={{ color: "#AAAAAA", textAlign: "center", lineHeight: 22 }}>
-          {t('auth.signup.successDesc')}
-        </Text>
-        <TouchableOpacity onPress={() => router.push("/(auth)/login")} style={[styles.button, { marginTop: 32 }]}>
+      <View style={[styles.container, styles.successContainer]}>
+        <Text style={styles.successEmoji}>📧</Text>
+        <Text style={styles.successTitle}>{t('auth.signup.successTitle')}</Text>
+        <Text style={styles.successDesc}>{t('auth.signup.successDesc')}</Text>
+        <TouchableOpacity onPress={() => router.push("/(auth)/login")} style={[styles.button, styles.successButton]}>
           <Text style={styles.buttonText}>{t('auth.signup.goToLogin')}</Text>
         </TouchableOpacity>
       </View>
@@ -76,29 +73,23 @@ export default function SignupScreen() {
         <Text style={styles.logo}>FORZZA</Text>
         <Text style={styles.subtitle}>{t('auth.signup.title')}</Text>
 
-        <TextInput
-          style={styles.input}
+        <Input
           placeholder={t('auth.login.email')}
-          placeholderTextColor="#6A6A6A"
           value={email}
           onChangeText={setEmail}
           autoCapitalize="none"
           keyboardType="email-address"
           editable={!loading}
         />
-        <TextInput
-          style={styles.input}
+        <Input
           placeholder={t('auth.signup.passwordPlaceholder')}
-          placeholderTextColor="#6A6A6A"
           value={password}
           onChangeText={setPassword}
           secureTextEntry
           editable={!loading}
         />
-        <TextInput
-          style={styles.input}
+        <Input
           placeholder={t('auth.signup.confirmPasswordPlaceholder')}
-          placeholderTextColor="#6A6A6A"
           value={confirmPassword}
           onChangeText={setConfirmPassword}
           secureTextEntry
@@ -113,7 +104,7 @@ export default function SignupScreen() {
           disabled={loading}
         >
           {loading
-            ? <ActivityIndicator color="#0A0A0A" />
+            ? <ActivityIndicator color={colors.black} />
             : <Text style={styles.buttonText}>{t('auth.signup.submit')}</Text>
           }
         </TouchableOpacity>
@@ -127,30 +118,26 @@ export default function SignupScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0A0A0A" },
-  content: { padding: 24, paddingTop: 80 },
-  logo: { fontSize: 48, color: "#C8FF00", fontWeight: "bold", marginBottom: 8 },
-  subtitle: { fontSize: 16, color: "#AAAAAA", marginBottom: 32 },
-  input: {
-    backgroundColor: "#1A1A1A",
-    borderWidth: 1,
-    borderColor: "#3A3A3A",
-    borderRadius: 8,
-    padding: 14,
-    color: "#FAFAFA",
-    fontSize: 16,
-    marginBottom: 16,
-  },
-  error: { color: "#FF4444", marginBottom: 12, fontSize: 14 },
+  container: { flex: 1, backgroundColor: colors.bg },
+  successContainer: { justifyContent: "center", alignItems: "center", padding: spacing[6] },
+  successEmoji: { fontSize: fontSize["5xl"], marginBottom: spacing[6] },
+  successTitle: { color: colors.white, fontSize: fontSize["2xl"], fontFamily: typography.body, fontWeight: "700", marginBottom: spacing[3], textAlign: "center" },
+  successDesc: { color: colors.muted, textAlign: "center", lineHeight: 22 },
+  successButton: { marginTop: spacing[8] },
+  content: { padding: spacing[6], paddingTop: spacing[20] },
+  logo: { fontSize: fontSize["5xl"], color: colors.lime, fontFamily: typography.heading, marginBottom: spacing[2] },
+  subtitle: { fontSize: fontSize.base, color: colors.muted, marginBottom: spacing[8] },
+  error: { color: colors.error, marginBottom: spacing[3], fontSize: fontSize.sm },
   button: {
-    backgroundColor: "#C8FF00",
-    padding: 16,
-    borderRadius: 8,
+    backgroundColor: colors.lime,
+    padding: spacing[4],
+    borderRadius: radius.md,
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: spacing[4],
+    marginTop: spacing[2],
   },
-  buttonDisabled: { backgroundColor: "#4A4A4A" },
-  buttonText: { color: "#0A0A0A", fontWeight: "bold", fontSize: 16 },
-  link: { alignItems: "center", paddingVertical: 8 },
-  linkTextMuted: { color: "#6A6A6A", fontSize: 14 },
+  buttonDisabled: { backgroundColor: colors.gray700 },
+  buttonText: { color: colors.black, fontFamily: typography.body, fontWeight: "700", fontSize: fontSize.base },
+  link: { alignItems: "center", paddingVertical: spacing[2] },
+  linkTextMuted: { color: colors.gray, fontSize: fontSize.sm },
 });

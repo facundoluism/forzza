@@ -2,6 +2,7 @@ import { requireCoach } from "@/lib/auth/coach";
 import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ErrorState } from "@forzza/ui/web";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -67,6 +68,12 @@ export default async function AlumnosPage({ params }: Props) {
 
   if (error) {
     console.error("Error fetching assignments:", error);
+    return (
+      <ErrorState
+        title={t("alumnos.errorTitle")}
+        description={t("alumnos.errorDesc")}
+      />
+    );
   }
 
   const rows = (assignments ?? []) as unknown as StudentAssignment[];
@@ -102,7 +109,7 @@ export default async function AlumnosPage({ params }: Props) {
             <thead>
               <tr className="border-b border-border text-muted text-xs uppercase tracking-wider">
                 <th className="text-left px-6 py-3">{t("alumnos.colStudent")}</th>
-                <th className="text-left px-6 py-3 hidden md:table-cell">{t("alumnos.colStatus")}</th>
+                <th className="text-left px-6 py-3 hidden md:table-cell">{t("alumnos.colPackage")}</th>
                 <th className="text-left px-6 py-3 hidden sm:table-cell">{t("alumnos.colSince")}</th>
                 <th className="text-left px-6 py-3">{t("alumnos.colStatus")}</th>
                 <th className="text-right px-6 py-3"></th>

@@ -8,9 +8,14 @@ import {
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/providers/AuthProvider";
 import { router } from "expo-router";
 import { useLanguage, type AppLanguage } from "@/stores/languageStore";
+import { useEntitlements } from "@/hooks/useEntitlements";
+import { useWorkoutStore } from "@/stores/workoutStore";
+import { supabase } from "@/lib/supabase";
+import { Pill, Skeleton } from "@forzza/ui/native";
 import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
 
 const LANGUAGES: { code: AppLanguage; label: string; native: string }[] = [
@@ -23,6 +28,38 @@ export default function ProfileTab() {
   const { user, signOut } = useAuth();
   const { language, setLanguage } = useLanguage();
   const insets = useSafeAreaInsets();
+  const { plan, hasCoach, coachId, isLoading: entitlementsLoading } = useEntitlements();
+  const syncQueue = useWorkoutStore((s) => s.syncQueue);
+
+  // Completed sessions count from local sync queue (source of truth until F3 history query)
+  const completedSessions = syncQueue.length;
+
+  // Coach display name — only fetched if coachId is known
+  const { data: coachName, isLoading: coachLoading } = useQuery<string | null>({
+    queryKey: ["coach-name", coachId],
+    queryFn: async () => {
+      if (!coachId) return null;
+      const { data } = await supabase
+        .from("coach_profiles")
+        .select("display_name")
+        .eq("id", coachId)
+        .single();
+      return (data as { display_name: string | null } | null)?.display_name ?? null;
+    },
+    enabled: !!coachId,
+    staleTime: 10 * 60 * 1000,
+  });
+
+  function planLabel(): string {
+    if (plan === "elite") return t("profile.planElite");
+    if (plan === "pro") return t("profile.planPro");
+    return t("profile.planFree");
+  }
+
+  function planPillVariant(): "active" | "default" | "success" {
+    if (plan === "elite" || plan === "pro") return "active";
+    return "default";
+  }
 
   async function handleSignOut() {
     await signOut();
@@ -59,7 +96,50 @@ export default function ProfileTab() {
         <Text style={styles.email}>{user.email}</Text>
       )}
 
-      <Text style={styles.muted}>{t("profile.placeholder")}</Text>
+      {/* ── Badge de plan ── */}
+      <View style={styles.planRow}>
+        {entitlementsLoading
+          ? <Skeleton width={64} height={24} />
+          : <Pill label={planLabel()} variant={planPillVariant()} />
+        }
+      </View>
+
+      {/* ── Stats básicas ── */}
+      <View style={styles.statsRow}>
+        <View style={styles.statCard}>
+          <Text style={styles.statValue}>{completedSessions}</Text>
+          <Text style={styles.statLabel}>{t("profile.statSessions")}</Text>
+        </View>
+        {/* Streak: sin fuente de datos aún — TODO Fase 3 */}
+        {hasCoach && (
+          <View style={styles.statCard}>
+            <Text style={styles.statValue}>
+              {coachLoading ? "—" : (coachName ? "✓" : "—")}
+            </Text>
+            <Text style={styles.statLabel}>{t("profile.statCoach")}</Text>
+          </View>
+        )}
+      </View>
+
+      {/* ── Sección Coach ── */}
+      {(hasCoach || coachId) && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t("profile.sectionCoach")}</Text>
+          <View style={styles.coachCard}>
+            {coachLoading
+              ? <Skeleton width="60%" height={16} />
+              : (
+                <View style={styles.coachCardContent}>
+                  <Text style={styles.coachName}>
+                    {coachName ?? t("profile.coachNone")}
+                  </Text>
+                  <Pill label={t("profile.coachActive")} variant="success" />
+                </View>
+              )
+            }
+          </View>
+        </View>
+      )}
 
       {/* ── Sección Idioma ── */}
       <View style={styles.section}>
@@ -73,7 +153,6 @@ export default function ProfileTab() {
                 style={[styles.langButton, isActive && styles.langButtonActive]}
                 onPress={() => setLanguage(lang.code)}
                 activeOpacity={0.7}
-                // Tap target mínimo 44×44
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
                 <Text style={[styles.langCode, isActive && styles.langCodeActive]}>
@@ -129,13 +208,60 @@ const styles = StyleSheet.create({
     fontFamily: typography.body,
     color: colors.muted,
     fontSize: 14,
-    marginBottom: spacing[2],
+    marginBottom: spacing[3],
   },
-  muted: {
+  planRow: {
+    marginBottom: spacing[4],
+  },
+  // Stats row
+  statsRow: {
+    flexDirection: "row",
+    gap: spacing[3],
+    marginBottom: spacing[6],
+  },
+  statCard: {
+    flex: 1,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing[3],
+    alignItems: "center",
+    minHeight: 64,
+    justifyContent: "center",
+  },
+  statValue: {
+    fontFamily: typography.mono,
+    color: colors.lime,
+    fontSize: fontSize.lg,
+    fontWeight: "700",
+  },
+  statLabel: {
     fontFamily: typography.body,
-    color: colors.gray700,
-    fontSize: 13,
-    marginBottom: spacing[8],
+    color: colors.muted,
+    fontSize: 10,
+    marginTop: spacing[1],
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  // Coach card
+  coachCard: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing[4],
+  },
+  coachCardContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  coachName: {
+    fontFamily: typography.body,
+    color: colors.text,
+    fontSize: fontSize.base,
+    fontWeight: "600",
   },
   // Sección de idioma
   section: {
@@ -156,7 +282,6 @@ const styles = StyleSheet.create({
   },
   langButton: {
     flex: 1,
-    // Garantiza tap target ≥44px
     minHeight: 64,
     alignItems: "center",
     justifyContent: "center",
