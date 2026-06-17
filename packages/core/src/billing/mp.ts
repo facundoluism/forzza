@@ -21,7 +21,7 @@ export type MpPreapprovalStatus =
   | "paused"
   | "cancelled"
   | "pending"
-  | string; // pass-through para status desconocidos
+  | (string & {}); // pass-through para status desconocidos
 
 /**
  * Status interno de suscripción en Forzza (enum subscription_status en DB).

@@ -114,7 +114,7 @@ export async function handleMpWebhook(
   let signatureValid: boolean;
   try {
     signatureValid = await validateMpSignature(secret, xSignature, xRequestId, dataId);
-  } catch (_err) {
+  } catch {
     return { status: 500, body: "Internal configuration error" };
   }
 

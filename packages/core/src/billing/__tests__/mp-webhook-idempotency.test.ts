@@ -131,7 +131,7 @@ async function makeHandlerOpts(
     `req-${eventId}`,    // requestId explícito
   );
 
-  mp.setPreapprovalStatus(preapprovalId, mpStatus as never);
+  mp.setPreapprovalStatus(preapprovalId, mpStatus);
 
   return {
     secret: mp.getWebhookSecret(),
@@ -139,7 +139,7 @@ async function makeHandlerOpts(
     xRequestId,
     dataId,
     body,
-    fetchPreapproval: async (id: string) => mp.getPreapproval(id),
+    fetchPreapproval: (id: string) => Promise.resolve(mp.getPreapproval(id)),
     db,
   };
 }
@@ -149,9 +149,9 @@ async function makeHandlerOpts(
 describe("Firma HMAC-SHA256", () => {
   it("firma válida → handler devuelve 200", async () => {
     const dbClient: WebhookDbClient = {
-      async insertProcessedEvent() { return "ok"; },
-      async updateSubscription() {},
-      async insertAuditLog() {},
+      insertProcessedEvent() { return Promise.resolve("ok" as const); },
+      updateSubscription() { return Promise.resolve(); },
+      insertAuditLog() { return Promise.resolve(); },
     };
 
     const plan = mp.createPreapprovalPlan({
@@ -168,9 +168,9 @@ describe("Firma HMAC-SHA256", () => {
 
   it("sin x-signature → 401 Unauthorized", async () => {
     const dbClient: WebhookDbClient = {
-      async insertProcessedEvent() { return "ok"; },
-      async updateSubscription() {},
-      async insertAuditLog() {},
+      insertProcessedEvent() { return Promise.resolve("ok" as const); },
+      updateSubscription() { return Promise.resolve(); },
+      insertAuditLog() { return Promise.resolve(); },
     };
 
     const result = await handleMpWebhook({
@@ -178,7 +178,7 @@ describe("Firma HMAC-SHA256", () => {
       xSignature: null,
       xRequestId: "req-123",
       body: { id: "evt-001", type: "preapproval" },
-      fetchPreapproval: async (id) => mp.getPreapproval(id),
+      fetchPreapproval: (id) => Promise.resolve(mp.getPreapproval(id)),
       db: dbClient,
     });
 
@@ -188,9 +188,9 @@ describe("Firma HMAC-SHA256", () => {
 
   it("x-signature ausente completamente → 401", async () => {
     const dbClient: WebhookDbClient = {
-      async insertProcessedEvent() { return "ok"; },
-      async updateSubscription() {},
-      async insertAuditLog() {},
+      insertProcessedEvent() { return Promise.resolve("ok" as const); },
+      updateSubscription() { return Promise.resolve(); },
+      insertAuditLog() { return Promise.resolve(); },
     };
 
     const result = await handleMpWebhook({
@@ -198,7 +198,7 @@ describe("Firma HMAC-SHA256", () => {
       xSignature: null,
       xRequestId: null,
       body: { id: "evt-002" },
-      fetchPreapproval: async (id) => mp.getPreapproval(id),
+      fetchPreapproval: (id) => Promise.resolve(mp.getPreapproval(id)),
       db: dbClient,
     });
 
@@ -207,9 +207,9 @@ describe("Firma HMAC-SHA256", () => {
 
   it("x-signature con hash incorrecto → 401", async () => {
     const dbClient: WebhookDbClient = {
-      async insertProcessedEvent() { return "ok"; },
-      async updateSubscription() {},
-      async insertAuditLog() {},
+      insertProcessedEvent() { return Promise.resolve("ok" as const); },
+      updateSubscription() { return Promise.resolve(); },
+      insertAuditLog() { return Promise.resolve(); },
     };
 
     const result = await handleMpWebhook({
@@ -218,7 +218,7 @@ describe("Firma HMAC-SHA256", () => {
         "ts=1704067200,v1=0000000000000000000000000000000000000000000000000000000000000000",
       xRequestId: "req-123",
       body: { id: "evt-003" },
-      fetchPreapproval: async (id) => mp.getPreapproval(id),
+      fetchPreapproval: (id) => Promise.resolve(mp.getPreapproval(id)),
       db: dbClient,
     });
 
@@ -227,9 +227,9 @@ describe("Firma HMAC-SHA256", () => {
 
   it("x-signature firmado con secret diferente → 401", async () => {
     const dbClient: WebhookDbClient = {
-      async insertProcessedEvent() { return "ok"; },
-      async updateSubscription() {},
-      async insertAuditLog() {},
+      insertProcessedEvent() { return Promise.resolve("ok" as const); },
+      updateSubscription() { return Promise.resolve(); },
+      insertAuditLog() { return Promise.resolve(); },
     };
 
     // Generar firma con el secret del mock
@@ -242,7 +242,7 @@ describe("Firma HMAC-SHA256", () => {
       xRequestId,
       dataId,
       body: { id: "evt-004" },
-      fetchPreapproval: async (id) => mp.getPreapproval(id),
+      fetchPreapproval: (id) => Promise.resolve(mp.getPreapproval(id)),
       db: dbClient,
     });
 
@@ -251,9 +251,9 @@ describe("Firma HMAC-SHA256", () => {
 
   it("secret vacío → 500 Internal configuration error", async () => {
     const dbClient: WebhookDbClient = {
-      async insertProcessedEvent() { return "ok"; },
-      async updateSubscription() {},
-      async insertAuditLog() {},
+      insertProcessedEvent() { return Promise.resolve("ok" as const); },
+      updateSubscription() { return Promise.resolve(); },
+      insertAuditLog() { return Promise.resolve(); },
     };
 
     const result = await handleMpWebhook({
@@ -261,7 +261,7 @@ describe("Firma HMAC-SHA256", () => {
       xSignature: "ts=1,v1=abc",
       xRequestId: "req",
       body: { id: "evt-005" },
-      fetchPreapproval: async (id) => mp.getPreapproval(id),
+      fetchPreapproval: (id) => Promise.resolve(mp.getPreapproval(id)),
       db: dbClient,
     });
 
@@ -279,11 +279,12 @@ describe("Mapeo de status MP → Forzza (stub DB)", () => {
 
   function makeCapturingDb(capture: StatusCapture): WebhookDbClient {
     return {
-      async insertProcessedEvent() { return "ok"; },
-      async updateSubscription(_id, status) {
+      insertProcessedEvent() { return Promise.resolve("ok" as const); },
+      updateSubscription(_id, status) {
         capture.lastStatus = status;
+        return Promise.resolve();
       },
-      async insertAuditLog() {},
+      insertAuditLog() { return Promise.resolve(); },
     };
   }
 
@@ -326,6 +327,7 @@ describe.runIf(process.env["RUN_DB_TESTS"] === "1")(
   "Idempotencia real contra Postgres local (constraint UNIQUE)",
   () => {
     // Pool y hooks de DB DENTRO del describe para no contaminar los describe puros.
+    type CntRow = { cnt: string };
     let pool: pg.Pool;
 
     beforeAll(async () => {
@@ -373,11 +375,11 @@ describe.runIf(process.env["RUN_DB_TESTS"] === "1")(
       }
 
       // Solo 1 fila en processed_events
-      const { rows } = await pool.query(
+      const { rows } = await pool.query<CntRow>(
         `SELECT COUNT(*) as cnt FROM processed_events WHERE event_id = $1`,
         [eventId]
       );
-      expect(Number(rows[0].cnt)).toBe(1);
+      expect(Number(rows[0]!.cnt)).toBe(1);
     });
 
     it("mismo evento ×3 → 1 solo insert en audit_log", async () => {
@@ -397,12 +399,12 @@ describe.runIf(process.env["RUN_DB_TESTS"] === "1")(
       }
 
       // Solo 1 entrada en audit_log para este event_id
-      const { rows } = await pool.query(
+      const { rows } = await pool.query<CntRow>(
         `SELECT COUNT(*) as cnt FROM audit_log
          WHERE payload->>'event_id' = $1`,
         [eventId]
       );
-      expect(Number(rows[0].cnt)).toBe(1);
+      expect(Number(rows[0]!.cnt)).toBe(1);
     });
 
     it("eventos diferentes → filas independientes en processed_events", async () => {
@@ -423,12 +425,12 @@ describe.runIf(process.env["RUN_DB_TESTS"] === "1")(
         expect(result.status).toBe(200);
       }
 
-      const { rows } = await pool.query(
+      const { rows } = await pool.query<CntRow>(
         `SELECT COUNT(*) as cnt FROM processed_events
          WHERE event_id = ANY($1::text[])`,
         [eventIds]
       );
-      expect(Number(rows[0].cnt)).toBe(3);
+      expect(Number(rows[0]!.cnt)).toBe(3);
     });
 
     it("evento duplicado no modifica la suscripción la 2ª vez", async () => {
@@ -437,15 +439,15 @@ describe.runIf(process.env["RUN_DB_TESTS"] === "1")(
       const realPgDb = makePgDbClient(pool);
 
       const wrappedDb: WebhookDbClient = {
-        async insertProcessedEvent(eventId, gateway) {
+        insertProcessedEvent(eventId, gateway) {
           insertCallCount++;
           return realPgDb.insertProcessedEvent(eventId, gateway);
         },
-        async updateSubscription(id, status, start, end) {
+        updateSubscription(id, status, start, end) {
           updateCalls.push(status);
           return realPgDb.updateSubscription(id, status, start, end);
         },
-        async insertAuditLog(entry) {
+        insertAuditLog(entry) {
           return realPgDb.insertAuditLog(entry);
         },
       };
@@ -501,11 +503,11 @@ describe.runIf(process.env["RUN_DB_TESTS"] === "1")(
       }
 
       // Solo 1 fila en processed_events a pesar de los 5 intentos simultáneos
-      const { rows } = await pool.query(
+      const { rows } = await pool.query<CntRow>(
         `SELECT COUNT(*) as cnt FROM processed_events WHERE event_id = $1`,
         [eventId]
       );
-      expect(Number(rows[0].cnt)).toBe(1);
+      expect(Number(rows[0]!.cnt)).toBe(1);
     });
   }
 );
@@ -514,9 +516,9 @@ describe.runIf(process.env["RUN_DB_TESTS"] === "1")(
 
 describe("Comportamiento del handler (stub DB)", () => {
   const stubDb: WebhookDbClient = {
-    async insertProcessedEvent() { return "ok"; },
-    async updateSubscription() {},
-    async insertAuditLog() {},
+    insertProcessedEvent() { return Promise.resolve("ok" as const); },
+    updateSubscription() { return Promise.resolve(); },
+    insertAuditLog() { return Promise.resolve(); },
   };
 
   it("body sin id ni data.id → 200 sin procesar nada", async () => {
@@ -528,7 +530,7 @@ describe("Comportamiento del handler (stub DB)", () => {
       xRequestId,
       dataId,
       body: { type: "preapproval" }, // sin id en body
-      fetchPreapproval: async (id) => mp.getPreapproval(id),
+      fetchPreapproval: (id) => Promise.resolve(mp.getPreapproval(id)),
       db: stubDb,
     });
 
@@ -541,9 +543,9 @@ describe("Comportamiento del handler (stub DB)", () => {
 
     let fetchCalled = false;
     const trackingDb: WebhookDbClient = {
-      async insertProcessedEvent() { return "ok"; },
-      async updateSubscription() {},
-      async insertAuditLog() {},
+      insertProcessedEvent() { return Promise.resolve("ok" as const); },
+      updateSubscription() { return Promise.resolve(); },
+      insertAuditLog() { return Promise.resolve(); },
     };
 
     const result = await handleMpWebhook({
@@ -552,9 +554,9 @@ describe("Comportamiento del handler (stub DB)", () => {
       xRequestId,
       dataId,
       body: { id: eventId, type: "payment" }, // no es preapproval
-      fetchPreapproval: async (id) => {
+      fetchPreapproval: (id) => {
         fetchCalled = true;
-        return mp.getPreapproval(id);
+        return Promise.resolve(mp.getPreapproval(id));
       },
       db: trackingDb,
     });
@@ -565,9 +567,9 @@ describe("Comportamiento del handler (stub DB)", () => {
 
   it("error de DB → 500 Internal error", async () => {
     const errorDb: WebhookDbClient = {
-      async insertProcessedEvent() { return "error"; },
-      async updateSubscription() {},
-      async insertAuditLog() {},
+      insertProcessedEvent() { return Promise.resolve("error" as const); },
+      updateSubscription() { return Promise.resolve(); },
+      insertAuditLog() { return Promise.resolve(); },
     };
 
     const eventId = "evt-db-error";
@@ -579,7 +581,7 @@ describe("Comportamiento del handler (stub DB)", () => {
       xRequestId,
       dataId,
       body: { id: eventId, type: "preapproval" },
-      fetchPreapproval: async (id) => mp.getPreapproval(id),
+      fetchPreapproval: (id) => Promise.resolve(mp.getPreapproval(id)),
       db: errorDb,
     });
 
@@ -590,12 +592,12 @@ describe("Comportamiento del handler (stub DB)", () => {
   it("el gateway se registra correctamente en processed_events", async () => {
     const capturedGateway: string[] = [];
     const capturingDb: WebhookDbClient = {
-      async insertProcessedEvent(_, gateway) {
+      insertProcessedEvent(_, gateway) {
         capturedGateway.push(gateway);
-        return "ok";
+        return Promise.resolve("ok" as const);
       },
-      async updateSubscription() {},
-      async insertAuditLog() {},
+      updateSubscription() { return Promise.resolve(); },
+      insertAuditLog() { return Promise.resolve(); },
     };
 
     const eventId = "evt-gateway-check";
@@ -607,7 +609,7 @@ describe("Comportamiento del handler (stub DB)", () => {
       xRequestId,
       dataId,
       body: { id: eventId },
-      fetchPreapproval: async (id) => mp.getPreapproval(id),
+      fetchPreapproval: (id) => Promise.resolve(mp.getPreapproval(id)),
       db: capturingDb,
       gateway: "mercadopago",
     });
