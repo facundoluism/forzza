@@ -6,13 +6,12 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
-  Linking,
 } from "react-native";
 import { useNavigation } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import { restorePurchases } from "@/services/revenuecat";
+import { purchasePro, restorePurchases } from "@/services/revenuecat";
 import { colors, spacing, radius, typography } from "@forzza/ui/tokens";
 import { useState, useEffect, useLayoutEffect } from "react";
 import { TRACKED_EVENTS } from "@forzza/core";
@@ -110,20 +109,24 @@ export default function UpgradeScreen() {
     track(TRACKED_EVENTS.UPGRADE_CTA_TAPPED);
     setActivating(true);
     try {
-      const { data, error } = await supabase.functions.invoke<{
-        init_point: string;
-        subscription_id: string;
-      }>("mp-create-preapproval");
+      const result = await purchasePro();
 
-      if (error || !data?.init_point) {
+      if (result.userCancelled) {
+        // User dismissed the sheet — no alert needed
+        return;
+      }
+
+      if (!result.success) {
         Alert.alert(
           t('upgrade.errorPurchaseTitle'),
-          error?.message ?? t('upgrade.errorPurchaseDesc')
+          result.error ?? t('upgrade.errorPurchaseDesc')
         );
         return;
       }
 
-      await Linking.openURL(data.init_point);
+      // Success: navigate back and let the PRO entitlement propagate via
+      // RevenueCat listener / next getCustomerInfo call.
+      Alert.alert(t('upgrade.screenTitle'), t('upgrade.activateProSuccess'));
     } catch {
       Alert.alert(t('upgrade.errorPurchaseTitle'), t('upgrade.errorPurchaseDesc'));
     } finally {
