@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Pressable,
   Animated,
+  TouchableOpacity,
 } from "react-native";
 import { useRef } from "react";
 import { useRouter } from "expo-router";
@@ -15,6 +16,8 @@ import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
 import { useWorkoutStore } from "@/stores/workoutStore";
 import { useEntitlements } from "@/hooks/useEntitlements";
+import { useLanguageStore } from "@/stores/languageStore";
+import { quoteOfTheDay, quoteText } from "@forzza/core";
 import { EmptyState, ErrorState, Card, Skeleton } from "@forzza/ui/native";
 import { colors, fontSize, spacing, radius, typography } from "@forzza/ui/tokens";
 
@@ -52,6 +55,8 @@ interface CoachAssignment {
   // TODO: regenerar db-types
   coach_profiles: { display_name: string } | null;
 }
+
+const WEEK_DAYS = ["L", "M", "X", "J", "V", "S", "D"] as const;
 
 function SkeletonCard(): React.JSX.Element {
   return (
@@ -133,6 +138,50 @@ function estimateRoutineMinutes(exercises: RoutineExercise[]): number {
   return Math.max(5, Math.ceil(seconds / 60));
 }
 
+interface CoachMessageCardProps { coachId: string; }
+
+function CoachMessageCard({ coachId }: CoachMessageCardProps): React.JSX.Element {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const { user } = useAuth();
+
+  const { data: lastMessage, isLoading } = useQuery({
+    queryKey: ["coach_last_message", coachId, user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
+        .from("messages")
+        .select("id, body, created_at, sender_id")
+        .eq("coach_id", coachId)
+        .eq("student_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (error) return null;
+      return data as { id: string; body: string; created_at: string; sender_id: string } | null;
+    },
+    enabled: !!user && !!coachId,
+    staleTime: 60_000,
+  });
+
+  if (isLoading) return <Skeleton width="100%" height={80} />;
+  if (!lastMessage) return <></>;
+
+  return (
+    <Card style={styles.coachMsgCard}>
+      <Text style={styles.coachMsgBody} numberOfLines={2}>{lastMessage.body}</Text>
+      <TouchableOpacity
+        style={styles.coachMsgBtn}
+        onPress={() => router.push("/(tabs)/chat" as never)}
+        testID="coach-message-reply"
+      >
+        <Text style={styles.coachMsgBtnText}>{t("home.coachMessageReply")}</Text>
+      </TouchableOpacity>
+    </Card>
+  );
+}
+
 export default function HomeTab(): React.JSX.Element {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -140,6 +189,7 @@ export default function HomeTab(): React.JSX.Element {
   const syncQueue = useWorkoutStore((s) => s.syncQueue);
   const { isPro } = useEntitlements();
   const insets = useSafeAreaInsets();
+  const language = useLanguageStore((s) => s.language);
 
   const tenDaysAgo = new Date(Date.now() - TEN_DAYS_MS).toISOString();
 
@@ -223,6 +273,43 @@ export default function HomeTab(): React.JSX.Element {
     ? allRecentSessions
     : allRecentSessions.filter((s) => s.started_at >= tenDaysAgo);
 
+  // Racha semanal: días L-M-X-J-V-S-D de la semana actual con entreno
+  const today = new Date();
+  const dayOfWeek = today.getDay(); // 0=Dom,1=Lun,...,6=Sáb
+  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() + mondayOffset);
+  monday.setHours(0, 0, 0, 0);
+
+  const completedThisWeek = syncQueue.filter((item) => {
+    if (item.payload?.status !== "completed") return false;
+    const d = new Date(item.payload.started_at ?? "");
+    return d >= monday;
+  });
+
+  const trainedDayIndices = new Set<number>(
+    completedThisWeek.map((item) => {
+      const d = new Date(item.payload!.started_at!);
+      const dow = d.getDay(); // 0=Dom,1=Lun
+      return dow === 0 ? 6 : dow - 1; // convert to 0=Lun..6=Dom
+    })
+  );
+  const streakCount = completedThisWeek.length;
+
+  // Frase del día
+  const epochDay = Math.floor(Date.now() / 86400000);
+  const dailyQuote = quoteOfTheDay(epochDay);
+
+  // Meta mensual: sesiones del mes actual vs objetivo 20
+  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const monthSessions = syncQueue.filter((item) => {
+    if (item.payload?.status !== "completed") return false;
+    const d = new Date(item.payload.started_at ?? "");
+    return d >= firstDayOfMonth;
+  }).length;
+  const monthGoal = 20;
+  const monthProgress = Math.min(1, monthSessions / monthGoal);
+
   const isLoading = profileLoading || routineLoading || assignmentLoading;
   const isError = profileError || routineError;
   const hasCoach = activeAssignment !== null;
@@ -251,6 +338,56 @@ export default function HomeTab(): React.JSX.Element {
         <Text style={styles.greeting}>{t(greetingKey)},</Text>
         <Text style={styles.displayName}>{displayName}</Text>
       </View>
+
+      {/* Racha semanal */}
+      <View style={styles.section}>
+        <View style={styles.streakHeader}>
+          <Text style={styles.sectionTitle}>{t("home.weeklyStreak")}</Text>
+          <Text style={styles.streakCount}>{streakCount} {t("home.days")} 🔥</Text>
+        </View>
+        <View style={styles.streakGrid}>
+          {WEEK_DAYS.map((day, i) => (
+            <View key={day} style={styles.streakDayCol}>
+              <View style={[styles.streakDayBox, trainedDayIndices.has(i) && styles.streakDayBoxActive]}>
+                {trainedDayIndices.has(i) && (
+                  <Text style={styles.streakDayCheck}>✓</Text>
+                )}
+              </View>
+              <Text style={[styles.streakDayLabel, trainedDayIndices.has(i) && styles.streakDayLabelActive]}>{day}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      {/* Banner contextual */}
+      {hasCoach ? (
+        <View style={[styles.banner, styles.bannerCoach]}>
+          <Text style={styles.bannerCoachLabel}>{t("home.bannerCoachLabel")}</Text>
+          <Text style={styles.bannerCoachName}>{activeAssignment?.coach_profiles?.display_name ?? "Tu coach"}</Text>
+        </View>
+      ) : isPro ? (
+        <TouchableOpacity
+          style={[styles.banner, styles.bannerPro]}
+          onPress={() => router.push("/marketplace/index" as never)}
+        >
+          <View style={styles.bannerTextCol}>
+            <Text style={styles.bannerProTitle}>{t("home.bannerProTitle")}</Text>
+            <Text style={styles.bannerProSub}>{t("home.bannerProSub")}</Text>
+          </View>
+          <Text style={styles.bannerArrow}>›</Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          style={[styles.banner, styles.bannerFree]}
+          onPress={() => router.push("/upgrade" as never)}
+        >
+          <View style={styles.bannerTextCol}>
+            <Text style={styles.bannerFreeTitle}>{t("home.bannerFreeTitle")}</Text>
+            <Text style={styles.bannerFreeSub}>{t("home.bannerFreeSub")}</Text>
+          </View>
+          <Text style={styles.bannerArrow}>›</Text>
+        </TouchableOpacity>
+      )}
 
       {/* Rutina de hoy */}
       <View style={styles.section}>
@@ -346,6 +483,85 @@ export default function HomeTab(): React.JSX.Element {
           </Card>
         )}
       </View>
+
+      {/* Frase del día */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{t("home.quoteOfTheDay")}</Text>
+        <Card style={styles.quoteCard}>
+          <Text style={styles.quoteText}>"{quoteText(dailyQuote, language)}"</Text>
+          <Text style={styles.quoteAuthor}>— {dailyQuote.author}</Text>
+          <Text style={styles.quoteSport}>{dailyQuote.sport}</Text>
+        </Card>
+      </View>
+
+      {/* Meta mensual */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{t("home.monthlyGoal")}</Text>
+        <Card style={styles.goalCard}>
+          <View style={styles.goalRow}>
+            <View style={styles.goalProgressBar}>
+              <View style={[styles.goalProgressFill, { width: `${Math.round(monthProgress * 100)}%` as `${number}%` }]} />
+            </View>
+            <Text style={styles.goalCount}>
+              {monthSessions}/{monthGoal}
+            </Text>
+          </View>
+          <Text style={styles.goalSub}>{t("home.monthlyGoalSub", { done: monthSessions, total: monthGoal })}</Text>
+        </Card>
+      </View>
+
+      {/* Acciones rápidas */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{t("home.quickActions")}</Text>
+        <View style={styles.quickGrid}>
+          {/* TODO Fase 3: ruta /tabata no existe aún */}
+          <TouchableOpacity
+            style={styles.quickTile}
+            onPress={() => router.push("/tabata" as never)}
+            testID="quick-tabata"
+          >
+            <Text style={styles.quickIcon}>⏱</Text>
+            <Text style={styles.quickLabel}>{t("home.quickTabata")}</Text>
+            <Text style={styles.quickSub}>{t("home.quickTabataSub")}</Text>
+          </TouchableOpacity>
+          {/* TODO Fase 3: ruta /register-workout no existe aún */}
+          <TouchableOpacity
+            style={styles.quickTile}
+            onPress={() => router.push("/register-workout" as never)}
+            testID="quick-register"
+          >
+            <Text style={styles.quickIcon}>📝</Text>
+            <Text style={styles.quickLabel}>{t("home.quickRegister")}</Text>
+            <Text style={styles.quickSub}>{t("home.quickRegisterSub")}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.quickTile}
+            onPress={() => router.push("/routine/new" as never)}
+            testID="quick-new-routine"
+          >
+            <Text style={styles.quickIcon}>➕</Text>
+            <Text style={styles.quickLabel}>{t("home.quickNewRoutine")}</Text>
+            <Text style={styles.quickSub}>{t("home.quickNewRoutineSub")}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.quickTile}
+            onPress={() => router.push("/(tabs)/progress" as never)}
+            testID="quick-progress"
+          >
+            <Text style={styles.quickIcon}>📈</Text>
+            <Text style={styles.quickLabel}>{t("home.quickProgress")}</Text>
+            <Text style={styles.quickSub}>{t("home.quickProgressSub")}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Mensaje del coach */}
+      {hasCoach && activeAssignment && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t("home.coachMessage")}</Text>
+          <CoachMessageCard coachId={activeAssignment.coach_id} />
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -390,6 +606,30 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
     marginBottom: spacing[3],
   },
+  // Racha semanal
+  streakHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: spacing[3] },
+  streakCount: { fontFamily: typography.mono, color: colors.lime, fontSize: fontSize.sm, fontWeight: "700" },
+  streakGrid: { flexDirection: "row", gap: spacing[1] },
+  streakDayCol: { flex: 1, alignItems: "center", gap: spacing[1] },
+  streakDayBox: { width: 32, height: 32, borderRadius: radius.md, backgroundColor: colors.surface3, alignItems: "center", justifyContent: "center" },
+  streakDayBoxActive: { backgroundColor: colors.lime },
+  streakDayCheck: { fontFamily: typography.body, color: colors.black, fontSize: fontSize.sm, fontWeight: "700" },
+  streakDayLabel: { fontFamily: typography.body, color: colors.muted, fontSize: fontSize.xs, fontWeight: "600" },
+  streakDayLabelActive: { color: colors.text },
+  // Banner contextual
+  banner: { borderRadius: radius.lg, padding: spacing[3], marginBottom: spacing[4], flexDirection: "row", alignItems: "center" },
+  bannerCoach: { backgroundColor: colors.surface2, borderWidth: 1, borderColor: colors.border },
+  bannerPro: { backgroundColor: colors.surface2, borderWidth: 1, borderColor: colors.info },
+  bannerFree: { backgroundColor: colors.surface2, borderWidth: 1, borderColor: colors.lime },
+  bannerTextCol: { flex: 1 },
+  bannerCoachLabel: { fontFamily: typography.body, color: colors.muted, fontSize: fontSize.xs, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.8 },
+  bannerCoachName: { fontFamily: typography.body, color: colors.text, fontSize: fontSize.md, fontWeight: "700" },
+  bannerProTitle: { fontFamily: typography.body, color: colors.info, fontSize: fontSize.sm, fontWeight: "700", marginBottom: 2 },
+  bannerProSub: { fontFamily: typography.body, color: colors.muted, fontSize: fontSize.sm },
+  bannerFreeTitle: { fontFamily: typography.body, color: colors.lime, fontSize: fontSize.sm, fontWeight: "700", marginBottom: 2 },
+  bannerFreeSub: { fontFamily: typography.body, color: colors.muted, fontSize: fontSize.sm },
+  bannerArrow: { fontFamily: typography.body, color: colors.muted, fontSize: 20, marginLeft: spacing[2] },
+  // Rutina de hoy
   routineCard: {
     gap: spacing[2],
     paddingTop: spacing[5],
@@ -570,4 +810,27 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: "center",
   },
+  // Frase del día
+  quoteCard: { gap: spacing[2] },
+  quoteText: { fontFamily: typography.body, color: colors.text, fontSize: fontSize.md, fontStyle: "italic", lineHeight: 22 },
+  quoteAuthor: { fontFamily: typography.body, color: colors.lime, fontSize: fontSize.sm, fontWeight: "700" },
+  quoteSport: { fontFamily: typography.body, color: colors.muted, fontSize: fontSize.xs },
+  // Meta mensual
+  goalCard: { gap: spacing[2] },
+  goalRow: { flexDirection: "row", alignItems: "center", gap: spacing[3] },
+  goalProgressBar: { flex: 1, height: 8, backgroundColor: colors.surface3, borderRadius: radius.full, overflow: "hidden" },
+  goalProgressFill: { height: 8, backgroundColor: colors.lime, borderRadius: radius.full },
+  goalCount: { fontFamily: typography.mono, color: colors.lime, fontSize: fontSize.md, fontWeight: "700", minWidth: 48, textAlign: "right" },
+  goalSub: { fontFamily: typography.body, color: colors.muted, fontSize: fontSize.sm },
+  // Acciones rápidas
+  quickGrid: { flexDirection: "row", flexWrap: "wrap", gap: spacing[3] },
+  quickTile: { width: "47%", backgroundColor: colors.surface2, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing[4], gap: spacing[1] },
+  quickIcon: { fontSize: 24 },
+  quickLabel: { fontFamily: typography.body, color: colors.text, fontSize: fontSize.md, fontWeight: "700" },
+  quickSub: { fontFamily: typography.body, color: colors.muted, fontSize: fontSize.xs },
+  // Coach message
+  coachMsgCard: { gap: spacing[3] },
+  coachMsgBody: { fontFamily: typography.body, color: colors.text, fontSize: fontSize.md, lineHeight: 20 },
+  coachMsgBtn: { backgroundColor: colors.lime, borderRadius: radius.md, paddingVertical: spacing[3], alignItems: "center" },
+  coachMsgBtnText: { fontFamily: typography.heading, color: colors.black, fontSize: fontSize.base, letterSpacing: 0.5 },
 });

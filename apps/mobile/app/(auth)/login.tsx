@@ -7,14 +7,17 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
 import { router } from "expo-router";
+import * as Linking from "expo-linking";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import { loginSchema, TRACKED_EVENTS } from "@forzza/core";
 import { track } from "@/lib/analytics";
 import { Input } from "@forzza/ui/native";
 import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
+import { FEATURE_FLAGS } from "@forzza/config";
 
 export default function LoginScreen() {
   const { t } = useTranslation();
@@ -22,6 +25,8 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const redirectTo = Linking.createURL("/(auth)/login");
 
   async function handleLogin() {
     setError(null);
@@ -45,6 +50,26 @@ export default function LoginScreen() {
 
     track(TRACKED_EVENTS.LOGIN, { role: 'student' });
     router.replace("/(tabs)");
+  }
+
+  async function handleAppleSignIn() {
+    const { error: authError } = await supabase.auth.signInWithOAuth({
+      provider: "apple",
+      options: { redirectTo },
+    });
+    if (authError) {
+      Alert.alert(t("auth.login.ssoErrorTitle"), t("auth.login.ssoErrorDesc"));
+    }
+  }
+
+  async function handleGoogleSignIn() {
+    const { error: authError } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo },
+    });
+    if (authError) {
+      Alert.alert(t("auth.login.ssoErrorTitle"), t("auth.login.ssoErrorDesc"));
+    }
   }
 
   return (
@@ -93,6 +118,34 @@ export default function LoginScreen() {
           }
         </TouchableOpacity>
 
+        {/* Divider SSO */}
+        <View style={styles.divider}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>{t("auth.login.orContinueWith")}</Text>
+          <View style={styles.dividerLine} />
+        </View>
+
+        {/* Apple primero en iOS */}
+        {Platform.OS === "ios" && FEATURE_FLAGS.APPLE_SIGN_IN && (
+          <TouchableOpacity
+            testID="apple-signin-button"
+            style={styles.ssoButton}
+            onPress={() => { void handleAppleSignIn(); }}
+          >
+            <Text style={styles.ssoButtonText}>{t("auth.login.continueWithApple")}</Text>
+          </TouchableOpacity>
+        )}
+
+        {FEATURE_FLAGS.GOOGLE_SIGN_IN && (
+          <TouchableOpacity
+            testID="google-signin-button"
+            style={styles.ssoButton}
+            onPress={() => { void handleGoogleSignIn(); }}
+          >
+            <Text style={styles.ssoButtonText}>{t("auth.login.continueWithGoogle")}</Text>
+          </TouchableOpacity>
+        )}
+
         <TouchableOpacity
           onPress={() => router.push("/(auth)/signup")}
           style={styles.link}
@@ -130,4 +183,9 @@ const styles = StyleSheet.create({
   link: { alignItems: "center", paddingVertical: spacing[2] },
   linkText: { color: colors.lime, fontSize: fontSize.sm },
   linkTextMuted: { color: colors.gray, fontSize: fontSize.sm },
+  divider: { flexDirection: "row", alignItems: "center", marginVertical: spacing[4] },
+  dividerLine: { flex: 1, height: 1, backgroundColor: colors.border },
+  dividerText: { fontFamily: typography.body, color: colors.muted, fontSize: fontSize.sm, marginHorizontal: spacing[3] },
+  ssoButton: { backgroundColor: colors.surface2, borderWidth: 1, borderColor: colors.border, borderRadius: radius.md, paddingVertical: spacing[4], alignItems: "center", marginBottom: spacing[3] },
+  ssoButtonText: { fontFamily: typography.body, color: colors.text, fontSize: fontSize.base, fontWeight: "500" },
 });

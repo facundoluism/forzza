@@ -42,7 +42,28 @@
     "series_one": "serie",
     "series_other": "series",
     "error_title": "No pudimos cargar tu inicio",
-    "error_desc": "Revisá tu conexión e intentá de nuevo."
+    "error_desc": "Revisá tu conexión e intentá de nuevo.",
+    "weeklyStreak": "Racha semanal",
+    "days": "días",
+    "bannerCoachLabel": "TU COACH",
+    "bannerProTitle": "Contratá un coach",
+    "bannerProSub": "Accedé al marketplace y encontrá tu coach ideal",
+    "bannerFreeTitle": "Actualizate a PRO",
+    "bannerFreeSub": "Rutinas ilimitadas, historial completo y más",
+    "quoteOfTheDay": "Frase del día",
+    "monthlyGoal": "Meta mensual",
+    "monthlyGoalSub": "{{done}} de {{total}} sesiones este mes",
+    "quickActions": "Acciones rápidas",
+    "quickTabata": "Tabata",
+    "quickTabataSub": "HIIT 20/10",
+    "quickRegister": "Registrar entreno",
+    "quickRegisterSub": "Cargá lo que hiciste",
+    "quickNewRoutine": "Nueva rutina",
+    "quickNewRoutineSub": "Diseñá tu entrenamiento",
+    "quickProgress": "Mi progreso",
+    "quickProgressSub": "Ver estadísticas",
+    "coachMessage": "Mensaje del coach",
+    "coachMessageReply": "Responder"
   },
   "routines": {
     "title": "Mis Rutinas",
@@ -176,7 +197,12 @@
       "noAccount": "¿No tenés cuenta? Registrate",
       "forgotPassword": "Olvidé mi contraseña",
       "errorInvalidCredentials": "Email o contraseña incorrectos",
-      "errorInvalidData": "Datos inválidos"
+      "errorInvalidData": "Datos inválidos",
+      "orContinueWith": "o continuá con",
+      "continueWithApple": "Continuar con Apple",
+      "continueWithGoogle": "Continuar con Google",
+      "ssoErrorTitle": "Error de autenticación",
+      "ssoErrorDesc": "No se pudo conectar con el proveedor. Intentá de nuevo."
     },
     "signup": {
       "title": "Creá tu cuenta gratis",
