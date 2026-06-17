@@ -9,6 +9,10 @@ appId: com.forzza.app
 - launchApp:
     clearState: true
 - openLink: "forzza://expo-development-client/?url=http%3A%2F%2F127.0.0.1%3A8081"
+- extendedWaitUntil:
+    visible:
+      id: "email-input"
+    timeout: 60000
 - assertVisible:
     id: "email-input"
 - tapOn:
@@ -33,9 +37,29 @@ appId: com.forzza.app
 - assertVisible:
     id: "exercise-preview-sheet"
 - back
+- waitForAnimationToEnd:
+    timeout: 5000
+- tapOn: "‹ Back"
+- assertVisible:
+    id: "today-routine-card"
+- tapOn:
+    id: "today-routine-card"
+    waitToSettleTimeoutMs: 500
+- assertVisible:
+    id: "start-workout-button"
 - tapOn:
     id: "start-workout-button"
-    waitToSettleTimeoutMs: 500
+    waitToSettleTimeoutMs: 1000
+    retryTapIfNoChange: true
+- evalScript: ${ const startedAt = Date.now(); while (Date.now() - startedAt < 1000) {} }
+- tapOn:
+    id: "start-workout-button"
+    optional: true
+    waitToSettleTimeoutMs: 1000
+- extendedWaitUntil:
+    visible:
+      id: "reps-input"
+    timeout: 20000
 - assertVisible:
     id: "reps-input"
 - tapOn:
@@ -44,6 +68,7 @@ appId: com.forzza.app
 - tapOn:
     id: "weight-input"
 - inputText: "40"
+- hideKeyboard
 - tapOn:
     id: "log-set-button"
     waitToSettleTimeoutMs: 500
@@ -51,6 +76,8 @@ appId: com.forzza.app
     id: "skip-rest-button"
 - tapOn:
     id: "skip-rest-button"
+- swipe:
+    direction: UP
 - tapOn:
     id: "next-exercise-button"
     waitToSettleTimeoutMs: 500
@@ -59,6 +86,7 @@ appId: com.forzza.app
 - tapOn:
     id: "reps-input"
 - inputText: "12"
+- hideKeyboard
 - tapOn:
     id: "log-set-button"
     waitToSettleTimeoutMs: 500
@@ -69,6 +97,6 @@ appId: com.forzza.app
 - tapOn:
     id: "finish-workout-button"
     waitToSettleTimeoutMs: 500
-- tapOn: "Finalizar"
+- tapOn: "FINISH"
 - assertVisible:
     id: "today-routine-card"

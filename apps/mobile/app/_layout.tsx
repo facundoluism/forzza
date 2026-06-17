@@ -12,6 +12,7 @@ import {
 } from "@expo-google-fonts/dm-sans";
 import { SpaceMono_400Regular } from "@expo-google-fonts/space-mono";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { LogBox } from "react-native";
 import { AuthProvider, useAuth } from "@/providers/AuthProvider";
 import { initSentry } from "@/lib/sentry";
 import { colors } from "@forzza/ui/tokens";
@@ -25,6 +26,10 @@ import { useLanguageStore } from "@/stores/languageStore";
 // Zustand crea el store en el módulo (singleton).
 const persistedLanguage = useLanguageStore.getState().language;
 initI18n(persistedLanguage);
+
+LogBox.ignoreLogs([
+  "The app is running using the Legacy Architecture",
+]);
 
 // Evitar que el splash se oculte antes de que las fuentes carguen
 void SplashScreen.preventAutoHideAsync();
