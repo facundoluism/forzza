@@ -5,10 +5,11 @@ import {
   StyleSheet,
   Alert,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/providers/AuthProvider";
 import { router } from "expo-router";
 import { useLanguage, type AppLanguage } from "@/stores/languageStore";
@@ -22,6 +23,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import { Pill, Skeleton } from "@forzza/ui/native";
 import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
+import { useState } from "react";
 
 const LANGUAGES: { code: AppLanguage; label: string; native: string }[] = [
   { code: "es", label: "ES", native: "Español" },
@@ -33,8 +35,14 @@ export default function ProfileTab() {
   const { user, signOut } = useAuth();
   const { language, setLanguage } = useLanguage();
   const insets = useSafeAreaInsets();
-  const { plan, hasCoach, coachId, isLoading: entitlementsLoading } = useEntitlements();
+  const { plan, hasCoach, coachId, isPro, isLoading: entitlementsLoading } = useEntitlements();
   const syncQueue = useWorkoutStore((s) => s.syncQueue);
+  const queryClient = useQueryClient();
+
+  // Delete account state
+  const [deletingAccount, setDeletingAccount] = useState(false);
+  // Cancel coach plan state
+  const [cancelingCoach, setCancelingCoach] = useState(false);
 
   const localCompletedSessions = completedSessionsFromQueue(syncQueue, user?.id);
   const { data: remoteCompletedSessions = [], isLoading: sessionsLoading } = useQuery({
@@ -67,6 +75,24 @@ export default function ProfileTab() {
     staleTime: 10 * 60 * 1000,
   });
 
+  // Active coach assignment — only fetched when user has a coach
+  const { data: activeAssignment } = useQuery<{ id: string } | null>({
+    queryKey: ["active-coach-assignment", coachId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("coach_assignments")
+        .select("id")
+        .eq("status", "active")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (error) throw error;
+      return data as { id: string } | null;
+    },
+    enabled: hasCoach,
+    staleTime: 5 * 60 * 1000,
+  });
+
   function planLabel(): string {
     if (plan === "elite") return t("profile.planElite");
     if (plan === "pro") return t("profile.planPro");
@@ -83,6 +109,7 @@ export default function ProfileTab() {
     router.replace("/(auth)/login");
   }
 
+  // Step-1 confirmation for delete account
   function handleDeleteAccount() {
     Alert.alert(
       t("profile.deleteAccount_confirm_title"),
@@ -93,12 +120,88 @@ export default function ProfileTab() {
           text: t("profile.deleteAccount_confirm_btn"),
           style: "destructive",
           onPress: () => {
-            // TODO: Edge Function delete-account (Fase 3 completa)
-            void handleSignOut();
+            // Step 2: second destructive confirmation before calling Edge Function
+            Alert.alert(
+              t("profile.deleteAccount_confirm2_title"),
+              t("profile.deleteAccount_confirm2_msg"),
+              [
+                { text: t("common.cancel"), style: "cancel" },
+                {
+                  text: t("profile.deleteAccount_confirm2_btn"),
+                  style: "destructive",
+                  onPress: () => { void executeDeletion(); },
+                },
+              ]
+            );
           },
         },
       ]
     );
+  }
+
+  async function executeDeletion() {
+    setDeletingAccount(true);
+    try {
+      const { error } = await supabase.functions.invoke("delete-account");
+      if (error) throw error;
+      Alert.alert(
+        t("profile.deleteAccount_scheduled_title"),
+        t("profile.deleteAccount_scheduled_msg"),
+        [{ text: t("common.close"), onPress: () => { void handleSignOut(); } }]
+      );
+    } catch {
+      Alert.alert(
+        t("profile.deleteAccount_error_title"),
+        t("profile.deleteAccount_error_msg")
+      );
+    } finally {
+      setDeletingAccount(false);
+    }
+  }
+
+  // Cancel coach plan
+  function handleCancelCoachPlan() {
+    if (!activeAssignment) {
+      Alert.alert(t("profile.cancelCoach_noAssignment"));
+      return;
+    }
+    Alert.alert(
+      t("profile.cancelCoach_confirm_title"),
+      t("profile.cancelCoach_confirm_msg"),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("profile.cancelCoach_confirm_btn"),
+          style: "destructive",
+          onPress: () => { void executeCancelCoach(); },
+        },
+      ]
+    );
+  }
+
+  async function executeCancelCoach() {
+    if (!activeAssignment) return;
+    setCancelingCoach(true);
+    try {
+      const { error } = await supabase.functions.invoke("cancel-coach-plan", {
+        body: { assignment_id: activeAssignment.id },
+      });
+      if (error) throw error;
+      Alert.alert(
+        t("profile.cancelCoach_success_title"),
+        t("profile.cancelCoach_success_msg")
+      );
+      // Refetch entitlements so hasCoach reflects the updated state
+      await queryClient.invalidateQueries({ queryKey: ["entitlements"] });
+      await queryClient.invalidateQueries({ queryKey: ["active-coach-assignment", coachId] });
+    } catch {
+      Alert.alert(
+        t("profile.cancelCoach_error_title"),
+        t("profile.cancelCoach_error_msg")
+      );
+    } finally {
+      setCancelingCoach(false);
+    }
   }
 
   return (
@@ -118,6 +221,17 @@ export default function ProfileTab() {
           ? <Skeleton width={64} height={24} />
           : <Pill label={planLabel()} variant={planPillVariant()} />
         }
+        {/* Gestionar suscripción PRO — visible solo cuando isPro */}
+        {!entitlementsLoading && isPro && (
+          <TouchableOpacity
+            style={styles.managePlanLink}
+            onPress={() => { router.push("/manage-subscription"); }}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            testID="profile-manage-subscription-btn"
+          >
+            <Text style={styles.managePlanLinkText}>{t("profile.managePlan")}</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* ── Stats básicas ── */}
@@ -154,6 +268,19 @@ export default function ProfileTab() {
               )
             }
           </View>
+          {/* Cancelar plan del coach */}
+          <TouchableOpacity
+            style={[styles.cancelCoachButton, cancelingCoach && styles.buttonDisabled]}
+            onPress={handleCancelCoachPlan}
+            disabled={cancelingCoach}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            testID="profile-cancel-coach-btn"
+          >
+            {cancelingCoach
+              ? <ActivityIndicator color={colors.warning} size="small" />
+              : <Text style={styles.cancelCoachText}>{t("profile.cancelCoachPlan")}</Text>
+            }
+          </TouchableOpacity>
         </View>
       )}
 
@@ -193,10 +320,15 @@ export default function ProfileTab() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.deleteButton}
+          style={[styles.deleteButton, deletingAccount && styles.buttonDisabled]}
           onPress={handleDeleteAccount}
+          disabled={deletingAccount}
+          testID="profile-delete-account-btn"
         >
-          <Text style={styles.deleteText}>{t("profile.deleteAccount")}</Text>
+          {deletingAccount
+            ? <ActivityIndicator color={colors.error} size="small" />
+            : <Text style={styles.deleteText}>{t("profile.deleteAccount")}</Text>
+          }
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -228,6 +360,17 @@ const styles = StyleSheet.create({
   },
   planRow: {
     marginBottom: spacing[4],
+    gap: spacing[2],
+  },
+  managePlanLink: {
+    paddingVertical: spacing[1],
+    alignSelf: "flex-start",
+  },
+  managePlanLinkText: {
+    fontFamily: typography.body,
+    color: colors.lime,
+    fontSize: fontSize.sm,
+    textDecorationLine: "underline",
   },
   // Stats row
   statsRow: {
@@ -328,6 +471,24 @@ const styles = StyleSheet.create({
   },
   langNativeActive: {
     color: colors.lime,
+  },
+  cancelCoachButton: {
+    marginTop: spacing[3],
+    padding: spacing[3],
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.warning,
+    alignItems: "center",
+    minHeight: 44,
+    justifyContent: "center",
+  },
+  cancelCoachText: {
+    fontFamily: typography.body,
+    color: colors.warning,
+    fontSize: fontSize.md,
+  },
+  buttonDisabled: {
+    opacity: 0.5,
   },
   // Acciones
   actions: {
