@@ -106,10 +106,9 @@ export class RealYouTubeClient implements YouTubeSearchClient {
       throw new Error("RealYouTubeClient requiere una apiKey no vacía.");
     }
     this.apiKey = config.apiKey;
-    // El cast es seguro: el `fetch` global de Node 18+/Deno es compatible
-    // estructuralmente con FetchLike (solo usamos ok/status/json()).
-    this.fetchImpl =
-      config.fetchImpl ?? (globalThis.fetch as unknown as FetchLike);
+    // El `fetch` global de Node 18+/Deno es compatible estructuralmente con
+    // FetchLike (solo usamos ok/status/json()), así que no requiere cast.
+    this.fetchImpl = config.fetchImpl ?? globalThis.fetch;
     if (typeof this.fetchImpl !== "function") {
       throw new Error(
         "RealYouTubeClient: no hay fetch disponible. Pasá fetchImpl en runtimes sin fetch global.",

@@ -127,7 +127,7 @@ export default function ProgressPhotosScreen(): React.JSX.Element {
 // Split into inner component so hooks always run (isPro check is above the hook calls)
 function ProgressPhotosContent({
   userId,
-  insets,
+  insets: _insets,
   queryClient,
   pendingImageUri,
   setPendingImageUri,
