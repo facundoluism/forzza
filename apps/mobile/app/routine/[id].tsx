@@ -198,9 +198,14 @@ export default function RoutineDetailScreen() {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator color={colors.lime} size="large" />
-        <Text style={styles.loadingText}>{t('routineDetail.loadingText')}</Text>
+      <View style={styles.container}>
+        <View style={[styles.header, { paddingTop: insets.top + spacing[2] }]}>
+          <ScreenHeader title={t("routineDetail.screenTitle")} onBack={() => router.back()} />
+        </View>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator color={colors.lime} size="large" />
+          <Text style={styles.loadingText}>{t('routineDetail.loadingText')}</Text>
+        </View>
       </View>
     );
   }

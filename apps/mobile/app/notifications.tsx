@@ -254,8 +254,13 @@ export default function NotificationsScreen(): React.JSX.Element {
 
   if (loading) {
     return (
-      <View style={[styles.centered, { paddingTop: insets.top }]}>
-        <ActivityIndicator color={colors.lime} size="large" />
+      <View style={styles.container}>
+        <View style={[styles.header, { paddingTop: insets.top + spacing[4] }]}>
+          <ScreenHeader title={t("notifications.screenTitle")} onBack={() => router.back()} />
+        </View>
+        <View style={styles.centered}>
+          <ActivityIndicator color={colors.lime} size="large" />
+        </View>
       </View>
     );
   }

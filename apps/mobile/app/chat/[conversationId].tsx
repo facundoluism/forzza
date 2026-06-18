@@ -214,8 +214,13 @@ export default function ConversationScreen(): React.JSX.Element {
   // ── Loading ───────────────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator color={colors.lime} size="large" />
+      <View style={styles.container}>
+        <View style={[styles.chatHeader, { paddingTop: insets.top + spacing[4] }]}>
+          <ScreenHeader title={t("conversation.screenTitle")} onBack={() => router.back()} />
+        </View>
+        <View style={styles.centered}>
+          <ActivityIndicator color={colors.lime} size="large" />
+        </View>
       </View>
     );
   }

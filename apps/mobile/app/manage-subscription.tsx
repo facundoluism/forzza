@@ -132,13 +132,19 @@ export default function ManageSubscriptionScreen() {
   // Empty / non-PRO state
   if (!isPro) {
     return (
-      <View style={[styles.centered, { paddingTop: insets.top + spacing[4] }]}>
-        <EmptyState
-          title={t("manageSubscription.notPro_title")}
-          description={t("manageSubscription.notPro_desc")}
-          actionLabel={t("manageSubscription.notPro_cta")}
-          onAction={() => { router.replace("/upgrade"); }}
-        />
+      <View style={styles.scroll}>
+        <View style={[styles.headerBlock, { paddingTop: insets.top + spacing[4] }]}>
+          <ScreenHeader title={t("manageSubscription.screenTitle")} onBack={() => nav.back()} />
+          <Text style={styles.headerSubtitle}>{t("manageSubscription.subtitle")}</Text>
+        </View>
+        <View style={styles.centered}>
+          <EmptyState
+            title={t("manageSubscription.notPro_title")}
+            description={t("manageSubscription.notPro_desc")}
+            actionLabel={t("manageSubscription.notPro_cta")}
+            onAction={() => { router.replace("/upgrade"); }}
+          />
+        </View>
       </View>
     );
   }
@@ -146,12 +152,18 @@ export default function ManageSubscriptionScreen() {
   // Error state
   if (isError) {
     return (
-      <View style={[styles.centered, { paddingTop: insets.top + spacing[4] }]}>
-        <ErrorState
-          title={t("manageSubscription.error_title")}
-          description={t("manageSubscription.error_desc")}
-          onRetry={() => { void refetch(); }}
-        />
+      <View style={styles.scroll}>
+        <View style={[styles.headerBlock, { paddingTop: insets.top + spacing[4] }]}>
+          <ScreenHeader title={t("manageSubscription.screenTitle")} onBack={() => nav.back()} />
+          <Text style={styles.headerSubtitle}>{t("manageSubscription.subtitle")}</Text>
+        </View>
+        <View style={styles.centered}>
+          <ErrorState
+            title={t("manageSubscription.error_title")}
+            description={t("manageSubscription.error_desc")}
+            onRetry={() => { void refetch(); }}
+          />
+        </View>
       </View>
     );
   }

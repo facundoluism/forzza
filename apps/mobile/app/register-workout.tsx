@@ -268,7 +268,13 @@ export default function RegisterWorkoutScreen(): React.JSX.Element {
 
   if (saved) {
     return (
-      <View style={[styles.container, { paddingTop: insets.top + spacing[4] }]}>
+      <View style={styles.container}>
+        <View style={[styles.headerBar, { paddingTop: insets.top }]}>
+          <ScreenHeader
+            title={t("registerWorkout.screenTitle")}
+            onBack={() => router.back()}
+          />
+        </View>
         <Confetti active duration={3000} />
         <View style={styles.savedContainer}>
           <Text style={styles.savedEmoji}>💾</Text>
@@ -301,14 +307,12 @@ export default function RegisterWorkoutScreen(): React.JSX.Element {
 
   return (
     <View style={styles.container}>
-      {step === 1 && (
-        <View style={[styles.headerBar, { paddingTop: insets.top }]}>
-          <ScreenHeader
-            title={t("registerWorkout.screenTitle")}
-            onBack={() => router.back()}
-          />
-        </View>
-      )}
+      <View style={[styles.headerBar, { paddingTop: insets.top }]}>
+        <ScreenHeader
+          title={t("registerWorkout.screenTitle")}
+          onBack={step === 1 ? () => router.back() : () => setStep(1)}
+        />
+      </View>
       <ScrollView contentContainerStyle={styles.content}>
 
         {/* ── Step 1 ── */}
@@ -423,14 +427,6 @@ export default function RegisterWorkoutScreen(): React.JSX.Element {
         {/* ── Step 2 ── */}
         {step === 2 && (
           <View>
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => setStep(1)}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            >
-              <Text style={styles.backButtonText}>{t("registerWorkout.back")}</Text>
-            </TouchableOpacity>
-
             <Text style={styles.stepTitle}>{t("registerWorkout.step2Title")}</Text>
 
             {exercises.map((exercise, exerciseIndex) => (

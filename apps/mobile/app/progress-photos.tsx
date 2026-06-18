@@ -66,8 +66,13 @@ export default function ProgressPhotosScreen(): React.JSX.Element {
   // ── Loading ───────────────────────────────────────────────────────────────────
   if (entitlementsLoading) {
     return (
-      <View style={[styles.container, styles.centered, { paddingTop: insets.top }]}>
-        <ActivityIndicator color={colors.lime} size="large" />
+      <View style={styles.container}>
+        <View style={[styles.header, { paddingTop: insets.top + spacing[4] }]}>
+          <ScreenHeader title={t("progressPhotos.screenTitle")} onBack={() => router.back()} />
+        </View>
+        <View style={styles.centered}>
+          <ActivityIndicator color={colors.lime} size="large" />
+        </View>
       </View>
     );
   }
@@ -255,8 +260,13 @@ function ProgressPhotosContent({
   // ── Loading ───────────────────────────────────────────────────────────────────
   if (photosLoading) {
     return (
-      <View style={[styles.container, styles.centered]}>
-        <ActivityIndicator color={colors.lime} size="large" />
+      <View style={styles.container}>
+        <View style={[styles.header, { paddingTop: spacing[4] }]}>
+          <ScreenHeader title={t("progressPhotos.screenTitle")} onBack={() => router.back()} />
+        </View>
+        <View style={styles.centered}>
+          <ActivityIndicator color={colors.lime} size="large" />
+        </View>
       </View>
     );
   }
