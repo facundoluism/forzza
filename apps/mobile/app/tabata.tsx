@@ -7,559 +7,66 @@ import {
   Alert,
   ScrollView,
   ActivityIndicator,
+  AppState,
+  type AppStateStatus,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as Haptics from "expo-haptics";
+import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import { useEntitlements } from "@/hooks/useEntitlements";
+import { useTabataPlans, type TabataPlanRecord } from "@/hooks/useTabataPlans";
 import { track } from "@/lib/analytics";
-import { TRACKED_EVENTS } from "@forzza/core";
-import { AutopromoOverlay, Confetti, Card } from "@forzza/ui/native";
+import {
+  TRACKED_EVENTS,
+  buildSimplePlan,
+  validatePlan,
+  planTotals,
+  computeRuntimeState,
+  formatTabataTime,
+  WARNING_MS,
+  TABATA_LIMITS,
+} from "@forzza/core";
+import type {
+  TabataMode,
+  TabataSegment,
+  SimpleConfig,
+  TabataPlan,
+  VisualState,
+} from "@forzza/core";
+import { tabataColors } from "@forzza/ui/tokens";
 import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
+import {
+  AutopromoOverlay,
+  Confetti,
+  Card,
+  Tabs,
+  Input,
+  Sheet,
+} from "@forzza/ui/native";
+
+// ── Constantes ────────────────────────────────────────────────────────────────
 
 const AUTOPROMO_SECONDS = 10;
+const TICK_INTERVAL_MS = 50;
 
-// ── Anillo circular (sin react-native-svg) ───────────────────────────────────
-// Implementación con dos mitades rotadas, standard en React Native puro.
-const RING_SIZE = 220;
-const RING_STROKE = 14;
-const RING_INNER = RING_SIZE - RING_STROKE * 2;
+// ── Tipos ─────────────────────────────────────────────────────────────────────
 
-interface RingProgressProps {
-  /** Fracción 0–1 del progreso (1 = lleno) */
-  progress: number;
-  /** Color del arco de progreso */
-  color: string;
-  /** Segundos a mostrar en el centro */
-  seconds: number;
-}
+type Phase = "config" | "running" | "done";
+type TabMode = "simple" | "advanced";
 
-function RingProgress({ progress, color, seconds }: RingProgressProps): React.JSX.Element {
-  // Convertimos progreso (0–1) a grados (0–360).
-  // El anillo se dibuja con dos mitades: izquierda y derecha.
-  // Cada mitad es un View con borderRadius = RING_SIZE/2 que actúa como
-  // una semicircunferencia; se rota para revelar el porcentaje correcto.
-  const deg = Math.min(progress, 1) * 360;
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-  // Rotación de la mitad derecha (progreso 0–180°)
-  const rightDeg = Math.min(deg, 180);
-  // La mitad izquierda sólo se activa cuando superamos 180°
-  const leftDeg = deg > 180 ? deg - 180 : 0;
-
-  return (
-    <View style={ringStyles.container}>
-      {/* Track (pista vacía) */}
-      <View style={[ringStyles.ring, { borderColor: colors.surface3 }]} />
-
-      {/* Progreso: mitad izquierda (>180°) */}
-      <View style={[ringStyles.halfBox, ringStyles.halfLeft]}>
-        <View
-          style={[
-            ringStyles.halfRing,
-            {
-              borderColor: leftDeg > 0 ? color : "transparent",
-              transform: [{ rotate: `${leftDeg}deg` }],
-            },
-          ]}
-        />
-      </View>
-
-      {/* Progreso: mitad derecha (0–180°) */}
-      <View style={[ringStyles.halfBox, ringStyles.halfRight]}>
-        <View
-          style={[
-            ringStyles.halfRing,
-            {
-              borderColor: rightDeg > 0 ? color : "transparent",
-              transform: [{ rotate: `${rightDeg}deg` }],
-            },
-          ]}
-        />
-      </View>
-
-      {/* Centro del anillo — número grande */}
-      <View style={[ringStyles.center, { width: RING_INNER, height: RING_INNER }]}>
-        <Text style={[ringStyles.countdown, { color }]}>{seconds}</Text>
-        <Text style={ringStyles.secsLabel}>seg</Text>
-      </View>
-    </View>
-  );
-}
-
-const ringStyles = StyleSheet.create({
-  container: {
-    width: RING_SIZE,
-    height: RING_SIZE,
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
-  },
-  ring: {
-    position: "absolute",
-    width: RING_SIZE,
-    height: RING_SIZE,
-    borderRadius: RING_SIZE / 2,
-    borderWidth: RING_STROKE,
-  },
-  halfBox: {
-    position: "absolute",
-    width: RING_SIZE / 2,
-    height: RING_SIZE,
-    overflow: "hidden",
-  },
-  halfLeft: {
-    left: 0,
-  },
-  halfRight: {
-    right: 0,
-  },
-  halfRing: {
-    position: "absolute",
-    width: RING_SIZE,
-    height: RING_SIZE,
-    borderRadius: RING_SIZE / 2,
-    borderWidth: RING_STROKE,
-    // Empezamos con el inicio a las 12 (-90°) pero la rotación base del clip
-    // ya posiciona el arco correctamente; partimos desde las 12 restando 90°.
-    // La mitad derecha parte de 0°→ arriba-derecha.
-    // La mitad izquierda parte de 0° → arriba-izquierda (cuando >180°).
-    transform: [{ rotate: "-90deg" }],
-  },
-  center: {
-    position: "absolute",
-    borderRadius: RING_INNER / 2,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.bg,
-  },
-  countdown: {
-    fontFamily: typography.mono,
-    fontSize: 56,
-    fontWeight: "700",
-    lineHeight: 60,
-  },
-  secsLabel: {
-    fontFamily: typography.body,
-    color: colors.muted,
-    fontSize: fontSize.sm,
-  },
-});
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
-
-function formatMmSs(totalSecs: number): string {
+function formatMmSs(totalMs: number): string {
+  const totalSecs = Math.ceil(totalMs / 1000);
   const m = Math.floor(totalSecs / 60);
   const s = totalSecs % 60;
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
-// ── Tipos ────────────────────────────────────────────────────────────────────
-
-type Phase = "config" | "running" | "done";
-type IntervalPhase = "work" | "rest";
-
-// ── Pantalla principal ───────────────────────────────────────────────────────
-
-export default function TabataScreen(): React.JSX.Element {
-  const router = useRouter();
-  const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
-  const { isPro, hasCoach, isLoading: entitlementsLoading } = useEntitlements();
-
-  // Config state
-  const [workSecs, setWorkSecs] = useState(20);
-  const [restSecs, setRestSecs] = useState(10);
-  const [totalRounds, setTotalRounds] = useState(8);
-
-  // Phase state
-  const [phase, setPhase] = useState<Phase>("config");
-  const [intervalPhase, setIntervalPhase] = useState<IntervalPhase>("work");
-  const [currentRound, setCurrentRound] = useState(1);
-  const [secondsLeft, setSecondsLeft] = useState(0);
-  const [paused, setPaused] = useState(false);
-
-  // Autopromo
-  const [showAutopromo, setShowAutopromo] = useState(false);
-  const [autopromoSeconds, setAutopromoSeconds] = useState(AUTOPROMO_SECONDS);
-  const [pendingStart, setPendingStart] = useState(false);
-
-  // Timer ref
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  // Track done state for confetti
-  const [showConfetti, setShowConfetti] = useState(false);
-
-  // ── Timer logic ─────────────────────────────────────────────────────────────
-  const stopTimer = useCallback(() => {
-    if (timerRef.current !== null) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-  }, []);
-
-  const startRunning = useCallback(() => {
-    setPhase("running");
-    setIntervalPhase("work");
-    setCurrentRound(1);
-    setSecondsLeft(workSecs);
-    setPaused(false);
-    track(TRACKED_EVENTS.WORKOUT_STARTED, {});
-  }, [workSecs]);
-
-  const resetToConfig = useCallback(() => {
-    stopTimer();
-    setPhase("config");
-    setIntervalPhase("work");
-    setCurrentRound(1);
-    setSecondsLeft(0);
-    setPaused(false);
-    setShowConfetti(false);
-  }, [stopTimer]);
-
-  // ── Autopromo logic ─────────────────────────────────────────────────────────
-  useEffect(() => {
-    if (!pendingStart) return;
-    if (entitlementsLoading) return;
-    if (!isPro && !hasCoach) {
-      setShowAutopromo(true);
-      setAutopromoSeconds(AUTOPROMO_SECONDS);
-    } else {
-      setPendingStart(false);
-      startRunning();
-    }
-  }, [pendingStart, entitlementsLoading, isPro, hasCoach, startRunning]);
-
-  useEffect(() => {
-    if (!showAutopromo) return;
-    if (autopromoSeconds <= 0) {
-      setShowAutopromo(false);
-      setPendingStart(false);
-      startRunning();
-      return;
-    }
-    const timer = setTimeout(() => setAutopromoSeconds((s) => s - 1), 1000);
-    return () => clearTimeout(timer);
-  }, [showAutopromo, autopromoSeconds, startRunning]);
-
-  // Tick effect — runs when phase=running and not paused
-  useEffect(() => {
-    if (phase !== "running") return;
-    if (paused) {
-      stopTimer();
-      return;
-    }
-
-    timerRef.current = setInterval(() => {
-      setSecondsLeft((prev) => {
-        if (prev > 1) return prev - 1;
-
-        // Transition to next phase/round
-        setIntervalPhase((currentIntervalPhase) => {
-          setCurrentRound((currentRoundVal) => {
-            if (currentIntervalPhase === "work") {
-              // work → rest
-              setTimeout(() => setSecondsLeft(restSecs), 0);
-              return currentRoundVal;
-            } else {
-              // rest → next round or done
-              const nextRound = currentRoundVal + 1;
-              if (nextRound > totalRounds) {
-                // Done!
-                stopTimer();
-                setPhase("done");
-                setShowConfetti(true);
-                track(TRACKED_EVENTS.WORKOUT_COMPLETED, {});
-                return currentRoundVal;
-              }
-              setTimeout(() => setSecondsLeft(workSecs), 0);
-              return nextRound;
-            }
-          });
-          return currentIntervalPhase === "work" ? "rest" : "work";
-        });
-
-        return 0;
-      });
-    }, 1000);
-
-    return () => stopTimer();
-  }, [phase, paused, stopTimer, workSecs, restSecs, totalRounds]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => stopTimer();
-  }, [stopTimer]);
-
-  function handleStart() {
-    if (entitlementsLoading) return;
-    if (!isPro && !hasCoach) {
-      setPendingStart(true);
-    } else {
-      startRunning();
-    }
-  }
-
-  function handlePauseResume() {
-    setPaused((p) => !p);
-  }
-
-  function handleExit() {
-    Alert.alert(
-      t("tabata.exit_confirm_title"),
-      t("tabata.exit_confirm_msg"),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("tabata.exit_confirm_btn"),
-          style: "destructive",
-          onPress: () => {
-            stopTimer();
-            track(TRACKED_EVENTS.WORKOUT_ABANDONED, {});
-            router.replace("/(tabs)");
-          },
-        },
-      ]
-    );
-  }
-
-  // Derived progress
-  const currentPhaseDuration = intervalPhase === "work" ? workSecs : restSecs;
-  const progressFraction =
-    currentPhaseDuration > 0
-      ? (currentPhaseDuration - secondsLeft) / currentPhaseDuration
-      : 0;
-  const roundProgress = totalRounds > 0 ? (currentRound - 1) / totalRounds : 0;
-
-  const totalWorkTime = workSecs * totalRounds;
-  const totalRestTime = restSecs * totalRounds;
-  const totalDurationSecs = totalRounds * (workSecs + restSecs);
-  const estimatedKcal = Math.round((totalDurationSecs / 60) * 10);
-
-  // ── Config phase ─────────────────────────────────────────────────────────────
-  if (phase === "config") {
-    return (
-      <View style={[styles.container, { paddingTop: insets.top + spacing[4] }]}>
-        <AutopromoOverlay
-          visible={showAutopromo}
-          onDismiss={() => {
-            setShowAutopromo(false);
-            setPendingStart(false);
-            track(TRACKED_EVENTS.AUTOPROMO_SKIPPED, {});
-          }}
-          secondsLeft={autopromoSeconds}
-        />
-
-        <ScrollView contentContainerStyle={styles.configContent} showsVerticalScrollIndicator={false}>
-          <Text style={styles.screenTitle}>{t("tabata.screenTitle")}</Text>
-          <Text style={styles.screenSubtitle}>{t("tabata.subtitle")}</Text>
-
-          {/* Card educativa */}
-          <View style={styles.infoCard}>
-            <Text style={styles.infoCardTitle}>{t("tabata.info_title")}</Text>
-            <Text style={styles.infoCardBody}>{t("tabata.info_body")}</Text>
-          </View>
-
-          {/* Steppers */}
-          <View style={styles.configSection}>
-            <Text style={styles.configSectionLabel}>{t("tabata.config_section")}</Text>
-
-            <ConfigRow
-              label={t("tabata.config_workSec")}
-              value={workSecs}
-              subtotal={t("tabata.config_total", { secs: workSecs * totalRounds })}
-              valueColor={colors.lime}
-              onDecrement={() => setWorkSecs((v) => Math.max(5, v - 5))}
-              onIncrement={() => setWorkSecs((v) => Math.min(120, v + 5))}
-            />
-            <ConfigRow
-              label={t("tabata.config_restSec")}
-              value={restSecs}
-              subtotal={t("tabata.config_total", { secs: restSecs * totalRounds })}
-              valueColor={colors.info}
-              onDecrement={() => setRestSecs((v) => Math.max(5, v - 5))}
-              onIncrement={() => setRestSecs((v) => Math.min(60, v + 5))}
-            />
-            <ConfigRow
-              label={t("tabata.config_rounds")}
-              value={totalRounds}
-              subtotal={t("tabata.config_total", { secs: totalRounds * (workSecs + restSecs) })}
-              valueColor={colors.orange}
-              onDecrement={() => setTotalRounds((v) => Math.max(1, v - 1))}
-              onIncrement={() => setTotalRounds((v) => Math.min(30, v + 1))}
-              step={1}
-            />
-          </View>
-
-          {/* Card resumen */}
-          <View style={styles.summaryGrid}>
-            <SummaryStatCell
-              value={formatMmSs(totalDurationSecs)}
-              label={t("tabata.summary_totalDuration")}
-            />
-            <SummaryStatCell
-              value={`${totalWorkTime}s`}
-              label={t("tabata.summary_totalWork")}
-            />
-            <SummaryStatCell
-              value={`~${estimatedKcal} kcal`}
-              label={t("tabata.summary_calories")}
-            />
-          </View>
-
-          <TouchableOpacity
-            style={[styles.startButton, entitlementsLoading && styles.buttonDisabled]}
-            onPress={handleStart}
-            disabled={entitlementsLoading}
-            testID="tabata-start-btn"
-            accessibilityLabel={t("tabata.config_start")}
-          >
-            {entitlementsLoading ? (
-              <ActivityIndicator color={colors.bg} />
-            ) : (
-              <Text style={styles.startButtonText}>{t("tabata.config_start")}</Text>
-            )}
-          </TouchableOpacity>
-        </ScrollView>
-      </View>
-    );
-  }
-
-  // ── Done phase ────────────────────────────────────────────────────────────────
-  if (phase === "done") {
-    return (
-      <View style={[styles.container, { paddingTop: insets.top + spacing[4] }]}>
-        <Confetti active={showConfetti} duration={3000} />
-        <ScrollView contentContainerStyle={styles.doneContent} showsVerticalScrollIndicator={false}>
-          <Text style={styles.doneTrophy}>🏆</Text>
-          <Text style={styles.doneTitle}>{t("tabata.done_title")}</Text>
-          <Text style={styles.doneSubtitle}>
-            {totalRounds} {t("tabata.done_rounds_label")} · {formatMmSs(totalDurationSecs)} min
-          </Text>
-
-          <Card style={styles.summaryCard}>
-            <SummaryRow label={t("tabata.done_rounds")} value={String(totalRounds)} />
-            <SummaryRow
-              label={t("tabata.done_workTime")}
-              value={`${totalWorkTime} ${t("tabata.done_seconds")}`}
-            />
-            <SummaryRow
-              label={t("tabata.done_restTime")}
-              value={`${totalRestTime} ${t("tabata.done_seconds")}`}
-            />
-          </Card>
-
-          {/* Botón primario: repetir */}
-          <TouchableOpacity
-            style={styles.startButton}
-            onPress={resetToConfig}
-            testID="tabata-repeat-btn"
-            accessibilityLabel={t("tabata.done_repeat")}
-          >
-            <Text style={styles.startButtonText}>{t("tabata.done_repeat")}</Text>
-          </TouchableOpacity>
-
-          {/* Botón secundario: volver al inicio */}
-          <TouchableOpacity
-            style={styles.secondaryButton}
-            onPress={() => router.replace("/(tabs)")}
-            testID="tabata-done-back-btn"
-            accessibilityLabel={t("tabata.done_back")}
-          >
-            <Text style={styles.secondaryButtonText}>{t("tabata.done_back")}</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </View>
-    );
-  }
-
-  // ── Running phase ─────────────────────────────────────────────────────────────
-  const isWork = intervalPhase === "work";
-  const ringColor = isWork ? colors.lime : colors.info;
-
-  // Progreso del anillo = fracción consumida de la fase actual
-  const ringProgress = progressFraction;
-
-  // Porcentaje general
-  const elapsed =
-    (currentRound - 1) * (workSecs + restSecs) +
-    (isWork ? workSecs - secondsLeft : workSecs + restSecs - secondsLeft);
-  const overallPct = totalDurationSecs > 0
-    ? Math.min(100, Math.round((elapsed / totalDurationSecs) * 100))
-    : 0;
-
-  return (
-    <View style={[styles.container, { paddingTop: insets.top + spacing[4] }]}>
-      <View style={styles.runningContent}>
-        {/* Encabezado de fase */}
-        <Text style={[styles.phaseLabel, { color: ringColor }]}>
-          {isWork ? t("tabata.phase_work") : t("tabata.phase_rest")}
-        </Text>
-        <Text style={styles.roundText}>
-          {t("tabata.round")} {currentRound} {t("tabata.roundOf")} {totalRounds}
-        </Text>
-
-        {/* Anillo circular con countdown */}
-        <View style={styles.ringWrapper}>
-          <RingProgress
-            progress={ringProgress}
-            color={ringColor}
-            seconds={secondsLeft}
-          />
-        </View>
-
-        {/* Barra de progreso general */}
-        <View style={styles.overallProgressSection}>
-          <View style={styles.overallProgressRow}>
-            <Text style={styles.overallLabel}>{t("tabata.progress_overall")}</Text>
-            <Text style={[styles.overallPct, { color: ringColor }]}>{overallPct}%</Text>
-          </View>
-          <View style={styles.progressBarContainer}>
-            <View
-              style={[
-                styles.progressBarFill,
-                {
-                  width: `${overallPct}%`,
-                  backgroundColor: ringColor,
-                },
-              ]}
-            />
-          </View>
-          {/* Barras de rondas mini */}
-          <View style={styles.progressBarContainerSmall}>
-            <View
-              style={[
-                styles.progressBarFillRound,
-                { width: `${Math.round(roundProgress * 100)}%` },
-              ]}
-            />
-          </View>
-        </View>
-
-        {/* Controles */}
-        <View style={styles.controlsRow}>
-          <TouchableOpacity
-            style={[styles.pauseButton, paused && styles.pauseButtonActive]}
-            onPress={handlePauseResume}
-            testID="tabata-pause-btn"
-            accessibilityLabel={paused ? t("tabata.resume") : t("tabata.pause")}
-          >
-            <Text style={[styles.pauseButtonText, paused && styles.pauseButtonTextActive]}>
-              {paused ? `▶ ${t("tabata.resume")}` : `⏸ ${t("tabata.pause")}`}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.exitButton}
-            onPress={handleExit}
-            testID="tabata-exit-btn"
-            accessibilityLabel={t("tabata.exit")}
-          >
-            <Text style={styles.exitButtonText}>{t("tabata.exit")}</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
-  );
+function generateSegmentId(): string {
+  return `seg-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
 // ── Sub-componentes ───────────────────────────────────────────────────────────
@@ -571,7 +78,6 @@ function ConfigRow({
   valueColor,
   onDecrement,
   onIncrement,
-  step = 5,
 }: {
   label: string;
   value: number;
@@ -579,9 +85,7 @@ function ConfigRow({
   valueColor: string;
   onDecrement: () => void;
   onIncrement: () => void;
-  step?: number;
 }): React.JSX.Element {
-  void step; // usado externamente para decidir incremento; tipado por completitud
   return (
     <View style={styles.configRow}>
       <View style={styles.configLabelWrapper}>
@@ -627,6 +131,944 @@ function SummaryRow({ label, value }: { label: string; value: string }): React.J
   );
 }
 
+// ── Pantalla principal ────────────────────────────────────────────────────────
+
+export default function TabataScreen(): React.JSX.Element {
+  const router = useRouter();
+  const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
+  const { isPro, hasCoach, isLoading: entitlementsLoading } = useEntitlements();
+  const { plans, isLoading: plansLoading, isError: plansError, savePlan, isSaving, deletePlan } =
+    useTabataPlans();
+
+  // ── Fase general ─────────────────────────────────────────────────────────────
+  const [phase, setPhase] = useState<Phase>("config");
+  const [tabMode, setTabMode] = useState<TabMode>("simple");
+
+  // ── Config SIMPLE ─────────────────────────────────────────────────────────────
+  const [workSecs, setWorkSecs] = useState(20);
+  const [restSecs, setRestSecs] = useState(10);
+  const [totalRounds, setTotalRounds] = useState(8);
+  const [prepSecs, setPrepSecs] = useState(10);
+
+  // ── Config AVANZADO ───────────────────────────────────────────────────────────
+  const [advancedSegments, setAdvancedSegments] = useState<TabataSegment[]>([
+    { id: generateSegmentId(), kind: "work", durationMs: 20000 },
+    { id: generateSegmentId(), kind: "rest", durationMs: 10000 },
+  ]);
+
+  // ── Autopromo ─────────────────────────────────────────────────────────────────
+  const [showAutopromo, setShowAutopromo] = useState(false);
+  const [autopromoSeconds, setAutopromoSeconds] = useState(AUTOPROMO_SECONDS);
+  const [pendingStart, setPendingStart] = useState(false);
+
+  // ── Running: plan activo ──────────────────────────────────────────────────────
+  const [activePlan, setActivePlan] = useState<TabataPlan | null>(null);
+  const [elapsedMs, setElapsedMs] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  // deadline-based refs
+  const startTsRef = useRef<number>(0);
+  const pausedAccumRef = useRef<number>(0);
+  const pauseStartRef = useRef<number | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const prevVisualStateRef = useRef<VisualState | null>(null);
+
+  // ── Sheet para guardar preset ─────────────────────────────────────────────────
+  const [showSaveSheet, setShowSaveSheet] = useState(false);
+  const [presetName, setPresetName] = useState("");
+
+  // ── Validación avanzada ───────────────────────────────────────────────────────
+  const advancedPlan: TabataPlan = {
+    mode: "advanced",
+    prepMs: prepSecs * 1000,
+    segments: advancedSegments,
+  };
+  const validation = validatePlan(advancedPlan);
+  const totalsAdvanced = planTotals(advancedPlan);
+
+  // ── Timer helpers ─────────────────────────────────────────────────────────────
+  const stopInterval = useCallback(() => {
+    if (intervalRef.current !== null) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  }, []);
+
+  const startInterval = useCallback(() => {
+    stopInterval();
+    intervalRef.current = setInterval(() => {
+      const elapsed = Date.now() - startTsRef.current - pausedAccumRef.current;
+      setElapsedMs(elapsed);
+    }, TICK_INTERVAL_MS);
+  }, [stopInterval]);
+
+  // ── Háptica en transiciones de estado ─────────────────────────────────────────
+  useEffect(() => {
+    if (phase !== "running" || activePlan === null) return;
+    const runtime = computeRuntimeState(activePlan, elapsedMs);
+    const vs = runtime.visualState;
+
+    if (vs !== prevVisualStateRef.current) {
+      prevVisualStateRef.current = vs;
+
+      if (vs === "work" || vs === "rest") {
+        void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      } else if (vs === "prep-ending" || vs === "work-ending" || vs === "rest-ending") {
+        void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      } else if (vs === "finished") {
+        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        stopInterval();
+        setPhase("done");
+        setShowConfetti(true);
+        track(TRACKED_EVENTS.WORKOUT_COMPLETED, {});
+        void deactivateKeepAwake();
+      }
+    }
+
+    // Tick de cuenta regresiva en estados "-ending" (cada ~1s)
+    if (
+      (vs === "prep-ending" || vs === "work-ending" || vs === "rest-ending") &&
+      runtime.remainingMs <= WARNING_MS &&
+      runtime.remainingMs > 0 &&
+      Math.ceil(runtime.remainingMs / 1000) !==
+        Math.ceil((runtime.remainingMs + TICK_INTERVAL_MS) / 1000)
+    ) {
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+  }, [elapsedMs, activePlan, phase, stopInterval]);
+
+  // ── AppState: vuelve del background ──────────────────────────────────────────
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", (nextState: AppStateStatus) => {
+      if (nextState === "active" && phase === "running" && !paused) {
+        // El elapsed se recalcula en el próximo tick naturalmente
+        // (startTsRef no cambia, Date.now() es real)
+        startInterval();
+      } else if (nextState === "background" && phase === "running" && !paused) {
+        stopInterval();
+      }
+    });
+    return () => sub.remove();
+  }, [phase, paused, startInterval, stopInterval]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      stopInterval();
+      void deactivateKeepAwake();
+    };
+  }, [stopInterval]);
+
+  // ── Autopromo countdown ───────────────────────────────────────────────────────
+  useEffect(() => {
+    if (!pendingStart || entitlementsLoading) return;
+    if (!isPro && !hasCoach) {
+      setShowAutopromo(true);
+      setAutopromoSeconds(AUTOPROMO_SECONDS);
+      track(TRACKED_EVENTS.AUTOPROMO_SHOWN, {});
+    } else {
+      setPendingStart(false);
+      // startRunning se llama desde el efecto de pendingStart=false → lo manejamos abajo
+    }
+  }, [pendingStart, entitlementsLoading, isPro, hasCoach]);
+
+  useEffect(() => {
+    if (!showAutopromo) return;
+    if (autopromoSeconds <= 0) {
+      setShowAutopromo(false);
+      setPendingStart(false);
+      doStartRunning();
+      return;
+    }
+    const timer = setTimeout(() => setAutopromoSeconds((s) => s - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [showAutopromo, autopromoSeconds]);
+
+  // ── Lógica de inicio ──────────────────────────────────────────────────────────
+  function buildCurrentPlan(): TabataPlan {
+    if (tabMode === "advanced") {
+      return advancedPlan;
+    }
+    const cfg: SimpleConfig = { workSecs, restSecs, rounds: totalRounds, prepSecs };
+    return buildSimplePlan(cfg);
+  }
+
+  function doStartRunning() {
+    const plan = buildCurrentPlan();
+    setActivePlan(plan);
+    setElapsedMs(0);
+    setPaused(false);
+    setShowConfetti(false);
+    prevVisualStateRef.current = null;
+    pausedAccumRef.current = 0;
+    pauseStartRef.current = null;
+    startTsRef.current = Date.now();
+    setPhase("running");
+    void activateKeepAwakeAsync();
+    startInterval();
+    track(TRACKED_EVENTS.WORKOUT_STARTED, {});
+  }
+
+  function handleStart() {
+    if (entitlementsLoading) return;
+    if (tabMode === "advanced" && !validation.ok) return;
+    if (!isPro && !hasCoach) {
+      setPendingStart(true);
+    } else {
+      doStartRunning();
+    }
+  }
+
+  function handlePauseResume() {
+    if (paused) {
+      // Reanudar
+      if (pauseStartRef.current !== null) {
+        pausedAccumRef.current += Date.now() - pauseStartRef.current;
+        pauseStartRef.current = null;
+      }
+      setPaused(false);
+      startInterval();
+      void activateKeepAwakeAsync();
+    } else {
+      // Pausar
+      pauseStartRef.current = Date.now();
+      setPaused(true);
+      stopInterval();
+      void deactivateKeepAwake();
+    }
+  }
+
+  function handleExit() {
+    Alert.alert(
+      t("tabata.exit_confirm_title"),
+      t("tabata.exit_confirm_msg"),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("tabata.exit_confirm_btn"),
+          style: "destructive",
+          onPress: () => {
+            stopInterval();
+            void deactivateKeepAwake();
+            track(TRACKED_EVENTS.WORKOUT_ABANDONED, {});
+            router.replace("/(tabs)");
+          },
+        },
+      ]
+    );
+  }
+
+  function resetToConfig() {
+    stopInterval();
+    void deactivateKeepAwake();
+    setPhase("config");
+    setElapsedMs(0);
+    setPaused(false);
+    setShowConfetti(false);
+    setActivePlan(null);
+    prevVisualStateRef.current = null;
+    pausedAccumRef.current = 0;
+    pauseStartRef.current = null;
+  }
+
+  // ── Segmentos avanzados ───────────────────────────────────────────────────────
+  function addSegment(kind: "work" | "rest") {
+    setAdvancedSegments((prev) => [
+      ...prev,
+      { id: generateSegmentId(), kind, durationMs: kind === "work" ? 20000 : 10000 },
+    ]);
+  }
+
+  function removeSegment(id: string) {
+    setAdvancedSegments((prev) => prev.filter((s) => s.id !== id));
+  }
+
+  function moveSegment(id: string, direction: "up" | "down") {
+    setAdvancedSegments((prev) => {
+      const idx = prev.findIndex((s) => s.id === id);
+      if (idx === -1) return prev;
+      const next = [...prev];
+      const targetIdx = direction === "up" ? idx - 1 : idx + 1;
+      if (targetIdx < 0 || targetIdx >= next.length) return prev;
+      const tmp = next[idx]!;
+      next[idx] = next[targetIdx]!;
+      next[targetIdx] = tmp;
+      return next;
+    });
+  }
+
+  function duplicateSegment(id: string) {
+    setAdvancedSegments((prev) => {
+      const idx = prev.findIndex((s) => s.id === id);
+      if (idx === -1) return prev;
+      const original = prev[idx]!;
+      const copy: TabataSegment = { ...original, id: generateSegmentId() };
+      const next = [...prev];
+      next.splice(idx + 1, 0, copy);
+      return next;
+    });
+  }
+
+  function updateSegmentKind(id: string, kind: "work" | "rest") {
+    setAdvancedSegments((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, kind } : s))
+    );
+  }
+
+  function updateSegmentDuration(id: string, deltaSecs: number) {
+    setAdvancedSegments((prev) =>
+      prev.map((s) => {
+        if (s.id !== id) return s;
+        const newMs = Math.max(
+          TABATA_LIMITS.minSegmentMs,
+          Math.min(TABATA_LIMITS.maxSegmentMs, s.durationMs + deltaSecs * 1000)
+        );
+        return { ...s, durationMs: newMs };
+      })
+    );
+  }
+
+  function updateSegmentLabel(id: string, label: string) {
+    setAdvancedSegments((prev) =>
+      prev.map((s): TabataSegment => {
+        if (s.id !== id) return s;
+        if (label) {
+          return { ...s, label };
+        }
+        const { label: _dropped, ...rest } = s;
+        void _dropped;
+        return rest;
+      })
+    );
+  }
+
+  function loadPreset(plan: TabataPlanRecord) {
+    if (Array.isArray(plan.config)) {
+      setAdvancedSegments(plan.config as TabataSegment[]);
+    }
+    setTabMode("advanced");
+  }
+
+  async function handleSavePreset() {
+    if (!presetName.trim()) return;
+    try {
+      const config: TabataSegment[] | SimpleConfig =
+        tabMode === "advanced"
+          ? advancedSegments
+          : ({ workSecs, restSecs, rounds: totalRounds, prepSecs } satisfies SimpleConfig);
+      const mode: TabataMode = tabMode === "advanced" ? "advanced" : "simple";
+      await savePlan({ name: presetName.trim(), mode, config });
+      setShowSaveSheet(false);
+      setPresetName("");
+    } catch {
+      // La mutation ya gestiona el error — no bloqueamos la UI
+    }
+  }
+
+  // ── FASE RUNNING ──────────────────────────────────────────────────────────────
+  if (phase === "running" && activePlan !== null) {
+    const runtime = computeRuntimeState(activePlan, elapsedMs);
+    const vs = runtime.visualState;
+    const phaseColors = tabataColors[vs];
+    const countdownText = formatTabataTime(runtime.remainingMs);
+    const totalSegs = activePlan.segments.length;
+    const segLabel =
+      vs === "prep" || vs === "prep-ending"
+        ? t("tabata.phase_prep")
+        : vs === "finished"
+          ? ""
+          : runtime.phaseKind === "work"
+            ? t("tabata.phase_work")
+            : t("tabata.phase_rest");
+
+    const isEnding =
+      vs === "prep-ending" || vs === "work-ending" || vs === "rest-ending";
+    const displayPhaseLabel = isEnding ? t("tabata.phase_ending") : segLabel;
+
+    const overallPct = Math.round(runtime.overallProgress * 100);
+
+    return (
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: phaseColors.bg }]}>
+        <View style={[styles.runningRoot, { paddingTop: insets.top + spacing[5] }]}>
+          {/* Fase actual */}
+          <Text style={[styles.phaseLabel, { color: phaseColors.fg }]}>
+            {displayPhaseLabel}
+          </Text>
+
+          {/* Label del ejercicio */}
+          {runtime.currentSegment?.label != null && (
+            <Text style={[styles.exerciseLabel, { color: phaseColors.fg }]}>
+              {runtime.currentSegment.label}
+            </Text>
+          )}
+
+          {/* Número gigante */}
+          <Text style={[styles.countdown, { color: phaseColors.fg }]}>
+            {countdownText}
+          </Text>
+
+          {/* Segmento actual / total */}
+          {vs !== "prep" && vs !== "prep-ending" && vs !== "finished" && (
+            <Text style={[styles.segmentCounter, { color: phaseColors.fg, opacity: 0.7 }]}>
+              {runtime.segmentIndex + 1} {t("tabata.segment_of")} {totalSegs}
+            </Text>
+          )}
+
+          {/* Sigue */}
+          {runtime.nextSegment != null && (
+            <Text style={[styles.nextLabel, { color: phaseColors.fg, opacity: 0.6 }]}>
+              {t("tabata.next_segment")}:{" "}
+              {runtime.nextSegment.label ??
+                (runtime.nextSegment.kind === "work"
+                  ? t("tabata.phase_work")
+                  : t("tabata.phase_rest"))}
+            </Text>
+          )}
+
+          {/* Barra de progreso general */}
+          <View style={styles.progressSection}>
+            <View style={styles.progressBarTrack}>
+              <View
+                style={[
+                  styles.progressBarFill,
+                  {
+                    width: `${overallPct}%` as `${number}%`,
+                    backgroundColor: phaseColors.accent,
+                  },
+                ]}
+              />
+            </View>
+            <Text style={[styles.progressPct, { color: phaseColors.fg, opacity: 0.7 }]}>
+              {overallPct}%
+            </Text>
+          </View>
+
+          {/* Controles */}
+          <View style={styles.controlsRow}>
+            <TouchableOpacity
+              style={[
+                styles.pauseBtn,
+                { borderColor: phaseColors.fg },
+                paused && { backgroundColor: phaseColors.fg },
+              ]}
+              onPress={handlePauseResume}
+              testID="tabata-pause-btn"
+              accessibilityLabel={paused ? t("tabata.resume") : t("tabata.pause")}
+            >
+              <Text
+                style={[
+                  styles.pauseBtnText,
+                  { color: paused ? phaseColors.bg : phaseColors.fg },
+                ]}
+              >
+                {paused ? `▶ ${t("tabata.resume")}` : `⏸ ${t("tabata.pause")}`}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.exitBtn, { borderColor: `${phaseColors.fg}50` }]}
+              onPress={handleExit}
+              testID="tabata-exit-btn"
+              accessibilityLabel={t("tabata.exit")}
+            >
+              <Text style={[styles.exitBtnText, { color: phaseColors.fg, opacity: 0.7 }]}>
+                {t("tabata.exit")}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    );
+  }
+
+  // ── FASE DONE ─────────────────────────────────────────────────────────────────
+  if (phase === "done" && activePlan !== null) {
+    const totals = planTotals(activePlan);
+
+    return (
+      <View style={[styles.container, { paddingTop: insets.top + spacing[4] }]}>
+        <Confetti active={showConfetti} duration={3000} />
+        <ScrollView
+          contentContainerStyle={styles.doneContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <Text style={styles.doneTrophy}>🏆</Text>
+          <Text style={styles.doneTitle}>{t("tabata.done_title")}</Text>
+          {activePlan.name != null && (
+            <Text style={styles.donePresetName}>{activePlan.name}</Text>
+          )}
+          <Text style={styles.doneSubtitle}>{formatMmSs(totals.totalMs)} min</Text>
+
+          <Card style={styles.summaryCard}>
+            <SummaryRow
+              label={t("tabata.done_total")}
+              value={formatMmSs(totals.totalMs)}
+            />
+            <SummaryRow
+              label={t("tabata.done_work")}
+              value={formatMmSs(totals.workMs)}
+            />
+            <SummaryRow
+              label={t("tabata.done_rest")}
+              value={formatMmSs(totals.restMs)}
+            />
+            <SummaryRow
+              label={t("tabata.done_segments")}
+              value={String(totals.segmentCount)}
+            />
+          </Card>
+
+          <TouchableOpacity
+            style={styles.startButton}
+            onPress={resetToConfig}
+            testID="tabata-repeat-btn"
+            accessibilityLabel={t("tabata.done_repeat")}
+          >
+            <Text style={styles.startButtonText}>{t("tabata.done_repeat")}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={() => router.replace("/(tabs)")}
+            testID="tabata-done-back-btn"
+            accessibilityLabel={t("tabata.done_back")}
+          >
+            <Text style={styles.secondaryButtonText}>{t("tabata.done_back")}</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </View>
+    );
+  }
+
+  // ── FASE CONFIG ───────────────────────────────────────────────────────────────
+  const simpleTotals = planTotals(buildSimplePlan({ workSecs, restSecs, rounds: totalRounds, prepSecs }));
+
+  return (
+    <View style={[styles.container, { paddingTop: insets.top + spacing[4] }]}>
+      <AutopromoOverlay
+        visible={showAutopromo}
+        onDismiss={() => {
+          setShowAutopromo(false);
+          setPendingStart(false);
+          track(TRACKED_EVENTS.AUTOPROMO_SKIPPED, {});
+        }}
+        secondsLeft={autopromoSeconds}
+      />
+
+      {/* Sheet guardar preset */}
+      <Sheet
+        visible={showSaveSheet}
+        onClose={() => setShowSaveSheet(false)}
+        testID="save-preset-sheet"
+      >
+        <View style={styles.sheetContent}>
+          <Text style={styles.sheetTitle}>{t("tabata.save_preset")}</Text>
+          <Input
+            label={t("tabata.preset_name")}
+            value={presetName}
+            onChangeText={setPresetName}
+            placeholder={t("tabata.preset_name")}
+            placeholderTextColor={colors.muted}
+            autoFocus
+          />
+          <TouchableOpacity
+            style={[
+              styles.startButton,
+              { marginTop: spacing[3] },
+              (!presetName.trim() || isSaving) && styles.buttonDisabled,
+            ]}
+            onPress={handleSavePreset}
+            disabled={!presetName.trim() || isSaving}
+          >
+            <Text style={styles.startButtonText}>
+              {isSaving ? t("tabata.saving") : t("tabata.save_preset")}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </Sheet>
+
+      <ScrollView contentContainerStyle={styles.configContent} showsVerticalScrollIndicator={false}>
+        <Text style={styles.screenTitle}>{t("tabata.screenTitle")}</Text>
+        <Text style={styles.screenSubtitle}>{t("tabata.subtitle")}</Text>
+
+        {/* Tabs Simple / Avanzado */}
+        <Tabs
+          tabs={[
+            { key: "simple", label: t("tabata.mode_simple") },
+            { key: "advanced", label: t("tabata.mode_advanced") },
+          ]}
+          activeKey={tabMode}
+          onTabChange={(key) => {
+            const mode = key as TabMode;
+            setTabMode(mode);
+            if (mode === "advanced" && isPro) {
+              track(TRACKED_EVENTS.TABATA_ADVANCED_USED, {});
+            }
+          }}
+          style={styles.tabsBar}
+        />
+
+        {/* ── TAB SIMPLE ── */}
+        {tabMode === "simple" && (
+          <>
+            <View style={styles.infoCard}>
+              <Text style={styles.infoCardTitle}>{t("tabata.info_title")}</Text>
+              <Text style={styles.infoCardBody}>{t("tabata.info_body")}</Text>
+            </View>
+
+            <View style={styles.configSection}>
+              <Text style={styles.configSectionLabel}>{t("tabata.config_section")}</Text>
+
+              <ConfigRow
+                label={t("tabata.config_workSec")}
+                value={workSecs}
+                subtotal={t("tabata.config_total", { secs: workSecs * totalRounds })}
+                valueColor={colors.lime}
+                onDecrement={() => setWorkSecs((v) => Math.max(5, v - 5))}
+                onIncrement={() => setWorkSecs((v) => Math.min(120, v + 5))}
+              />
+              <ConfigRow
+                label={t("tabata.config_restSec")}
+                value={restSecs}
+                subtotal={t("tabata.config_total", { secs: restSecs * totalRounds })}
+                valueColor={colors.info}
+                onDecrement={() => setRestSecs((v) => Math.max(5, v - 5))}
+                onIncrement={() => setRestSecs((v) => Math.min(60, v + 5))}
+              />
+              <ConfigRow
+                label={t("tabata.config_rounds")}
+                value={totalRounds}
+                subtotal={t("tabata.config_total", { secs: totalRounds * (workSecs + restSecs) })}
+                valueColor={colors.orange}
+                onDecrement={() => setTotalRounds((v) => Math.max(1, v - 1))}
+                onIncrement={() => setTotalRounds((v) => Math.min(30, v + 1))}
+              />
+              <ConfigRow
+                label={t("tabata.config_prep")}
+                value={prepSecs}
+                subtotal={t("tabata.config_total", { secs: prepSecs })}
+                valueColor={colors.warning}
+                onDecrement={() => setPrepSecs((v) => Math.max(0, v - 5))}
+                onIncrement={() => setPrepSecs((v) => Math.min(60, v + 5))}
+              />
+            </View>
+
+            <View style={styles.summaryGrid}>
+              <SummaryStatCell
+                value={formatMmSs(simpleTotals.totalMs)}
+                label={t("tabata.summary_totalDuration")}
+              />
+              <SummaryStatCell
+                value={formatMmSs(simpleTotals.workMs)}
+                label={t("tabata.summary_totalWork")}
+              />
+              <SummaryStatCell
+                value={String(activePlan?.segments.length ?? totalRounds * 2 - 1)}
+                label={t("tabata.done_segments")}
+              />
+            </View>
+          </>
+        )}
+
+        {/* ── TAB AVANZADO ── */}
+        {tabMode === "advanced" && (
+          <>
+            {entitlementsLoading ? (
+              <View style={styles.gatingLoader}>
+                <ActivityIndicator color={colors.lime} size="large" />
+              </View>
+            ) : !isPro ? (
+              // Paywall
+              <View style={styles.paywallCard}>
+                <Text style={styles.paywallTitle}>{t("tabata.paywall_title")}</Text>
+                <Text style={styles.paywallBody}>{t("tabata.paywall_body")}</Text>
+                <TouchableOpacity
+                  style={styles.paywallCta}
+                  onPress={() => router.push("/upgrade")}
+                  testID="tabata-upgrade-btn"
+                >
+                  <Text style={styles.paywallCtaText}>{t("tabata.paywall_cta")}</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              // Editor avanzado
+              <>
+                {/* Errores de validación */}
+                {!validation.ok && (
+                  <View style={styles.validationErrors}>
+                    <Text style={styles.validationErrorTitle}>
+                      {t("tabata.validate_error")}
+                    </Text>
+                    {validation.errors.map((err) => (
+                      <Text key={err} style={styles.validationErrorItem}>
+                        • {err}
+                      </Text>
+                    ))}
+                  </View>
+                )}
+
+                {/* Stats plan avanzado */}
+                <View style={[styles.summaryGrid, { marginTop: spacing[3] }]}>
+                  <SummaryStatCell
+                    value={formatMmSs(totalsAdvanced.totalMs)}
+                    label={t("tabata.summary_totalDuration")}
+                  />
+                  <SummaryStatCell
+                    value={formatMmSs(totalsAdvanced.workMs)}
+                    label={t("tabata.summary_totalWork")}
+                  />
+                  <SummaryStatCell
+                    value={formatMmSs(totalsAdvanced.restMs)}
+                    label={t("tabata.done_rest")}
+                  />
+                </View>
+
+                {/* Prep stepper */}
+                <View style={[styles.configSection, { marginTop: spacing[3] }]}>
+                  <ConfigRow
+                    label={t("tabata.config_prep")}
+                    value={prepSecs}
+                    subtotal={t("tabata.config_total", { secs: prepSecs })}
+                    valueColor={colors.warning}
+                    onDecrement={() => setPrepSecs((v) => Math.max(0, v - 5))}
+                    onIncrement={() => setPrepSecs((v) => Math.min(60, v + 5))}
+                  />
+                </View>
+
+                {/* Lista de segmentos */}
+                <View style={styles.configSection}>
+                  {advancedSegments.map((seg, idx) => (
+                    <View key={seg.id} style={styles.segmentRow}>
+                      {/* Toggle work/rest */}
+                      <View style={styles.segmentKindToggle}>
+                        <TouchableOpacity
+                          style={[
+                            styles.kindBtn,
+                            seg.kind === "work" && styles.kindBtnWorkActive,
+                          ]}
+                          onPress={() => updateSegmentKind(seg.id, "work")}
+                        >
+                          <Text
+                            style={[
+                              styles.kindBtnText,
+                              seg.kind === "work" && styles.kindBtnWorkActiveText,
+                            ]}
+                          >
+                            {t("tabata.segment_work")}
+                          </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={[
+                            styles.kindBtn,
+                            seg.kind === "rest" && styles.kindBtnRestActive,
+                          ]}
+                          onPress={() => updateSegmentKind(seg.id, "rest")}
+                        >
+                          <Text
+                            style={[
+                              styles.kindBtnText,
+                              seg.kind === "rest" && styles.kindBtnRestActiveText,
+                            ]}
+                          >
+                            {t("tabata.segment_rest")}
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+
+                      {/* Label opcional */}
+                      <View style={styles.segmentLabelInput}>
+                        <Input
+                          placeholder={t("tabata.segment_label")}
+                          value={seg.label ?? ""}
+                          onChangeText={(text) => updateSegmentLabel(seg.id, text)}
+                          placeholderTextColor={colors.muted}
+                        />
+                      </View>
+
+                      {/* Duración */}
+                      <View style={styles.segmentDurationRow}>
+                        <Text style={styles.segmentDurationLabel}>
+                          {t("tabata.segment_duration")}
+                        </Text>
+                        <View style={styles.configControls}>
+                          <TouchableOpacity
+                            style={styles.configBtn}
+                            onPress={() => updateSegmentDuration(seg.id, -5)}
+                          >
+                            <Text style={styles.configBtnText}>−</Text>
+                          </TouchableOpacity>
+                          <Text
+                            style={[
+                              styles.configValue,
+                              {
+                                color:
+                                  seg.kind === "work" ? colors.lime : colors.info,
+                              },
+                            ]}
+                          >
+                            {seg.durationMs / 1000}
+                          </Text>
+                          <TouchableOpacity
+                            style={styles.configBtn}
+                            onPress={() => updateSegmentDuration(seg.id, 5)}
+                          >
+                            <Text style={styles.configBtnText}>+</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+
+                      {/* Acciones del segmento */}
+                      <View style={styles.segmentActions}>
+                        <TouchableOpacity
+                          style={styles.segActBtn}
+                          onPress={() => moveSegment(seg.id, "up")}
+                          disabled={idx === 0}
+                        >
+                          <Text
+                            style={[styles.segActText, idx === 0 && { opacity: 0.3 }]}
+                          >
+                            ↑
+                          </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={styles.segActBtn}
+                          onPress={() => moveSegment(seg.id, "down")}
+                          disabled={idx === advancedSegments.length - 1}
+                        >
+                          <Text
+                            style={[
+                              styles.segActText,
+                              idx === advancedSegments.length - 1 && { opacity: 0.3 },
+                            ]}
+                          >
+                            ↓
+                          </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={styles.segActBtn}
+                          onPress={() => duplicateSegment(seg.id)}
+                        >
+                          <Text style={styles.segActText}>⊕</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={styles.segActBtn}
+                          onPress={() => removeSegment(seg.id)}
+                        >
+                          <Text style={[styles.segActText, { color: colors.error }]}>
+                            ✕
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  ))}
+
+                  {/* Agregar segmentos */}
+                  <View style={styles.addSegmentRow}>
+                    <TouchableOpacity
+                      style={[styles.addSegBtn, { borderColor: colors.lime }]}
+                      onPress={() => addSegment("work")}
+                      disabled={advancedSegments.length >= TABATA_LIMITS.maxSegments}
+                    >
+                      <Text style={[styles.addSegText, { color: colors.lime }]}>
+                        {t("tabata.add_work")}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.addSegBtn, { borderColor: colors.info }]}
+                      onPress={() => addSegment("rest")}
+                      disabled={advancedSegments.length >= TABATA_LIMITS.maxSegments}
+                    >
+                      <Text style={[styles.addSegText, { color: colors.info }]}>
+                        {t("tabata.add_rest")}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                {/* Guardar preset */}
+                <TouchableOpacity
+                  style={styles.savePresetBtn}
+                  onPress={() => setShowSaveSheet(true)}
+                >
+                  <Text style={styles.savePresetText}>{t("tabata.save_preset")}</Text>
+                </TouchableOpacity>
+
+                {/* Mis Tabatas (presets guardados) */}
+                <View style={[styles.configSection, { marginTop: spacing[3] }]}>
+                  <Text style={styles.configSectionLabel}>{t("tabata.my_tabatas")}</Text>
+
+                  {plansLoading && (
+                    <ActivityIndicator color={colors.lime} style={{ marginVertical: spacing[3] }} />
+                  )}
+                  {plansError && !plansLoading && (
+                    <Text style={styles.plansErrorText}>{t("common.error")}</Text>
+                  )}
+                  {!plansLoading && !plansError && plans.length === 0 && (
+                    <Text style={styles.plansEmptyText}>{t("common.comingSoon")}</Text>
+                  )}
+                  {!plansLoading &&
+                    plans.map((plan) => (
+                      <View key={plan.id} style={styles.presetRow}>
+                        <Text style={styles.presetName} numberOfLines={1}>
+                          {plan.name}
+                        </Text>
+                        <View style={styles.presetActions}>
+                          <TouchableOpacity
+                            style={styles.presetBtn}
+                            onPress={() => loadPreset(plan)}
+                          >
+                            <Text style={styles.presetBtnText}>
+                              {t("tabata.load_preset")}
+                            </Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={[styles.presetBtn, styles.presetBtnDelete]}
+                            onPress={() => void deletePlan(plan.id)}
+                          >
+                            <Text style={[styles.presetBtnText, { color: colors.error }]}>
+                              {t("tabata.delete_preset")}
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    ))}
+                </View>
+              </>
+            )}
+          </>
+        )}
+
+        {/* Botón iniciar */}
+        {(tabMode === "simple" || isPro) && (
+          <TouchableOpacity
+            style={[
+              styles.startButton,
+              (entitlementsLoading ||
+                (tabMode === "advanced" && !validation.ok)) &&
+                styles.buttonDisabled,
+            ]}
+            onPress={handleStart}
+            disabled={
+              entitlementsLoading ||
+              (tabMode === "advanced" && !validation.ok)
+            }
+            testID="tabata-start-btn"
+            accessibilityLabel={t("tabata.config_start")}
+          >
+            {entitlementsLoading ? (
+              <ActivityIndicator color={colors.bg} />
+            ) : (
+              <Text style={styles.startButtonText}>{t("tabata.config_start")}</Text>
+            )}
+          </TouchableOpacity>
+        )}
+      </ScrollView>
+    </View>
+  );
+}
+
 // ── Estilos ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
@@ -656,8 +1098,11 @@ const styles = StyleSheet.create({
     marginBottom: spacing[4],
     marginTop: spacing[1],
   },
+  tabsBar: {
+    marginBottom: spacing[4],
+  },
 
-  // Card educativa
+  // Info card
   infoCard: {
     backgroundColor: colors.limeGlow,
     borderWidth: 1,
@@ -680,7 +1125,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
 
-  // Sección steppers
+  // Config section
   configSection: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
@@ -748,7 +1193,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-  // Grid de stats resumen
+  // Summary grid
   summaryGrid: {
     flexDirection: "row",
     backgroundColor: colors.surface,
@@ -757,7 +1202,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     paddingVertical: spacing[4],
     paddingHorizontal: spacing[2],
-    marginBottom: spacing[5],
+    marginBottom: spacing[3],
     gap: spacing[2],
   },
   summaryStatCell: {
@@ -799,121 +1244,249 @@ const styles = StyleSheet.create({
   buttonDisabled: {
     opacity: 0.5,
   },
-
-  // ── Running ──
-  runningContent: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "space-around",
-    padding: spacing[5],
-  },
-  phaseLabel: {
-    fontFamily: typography.heading,
-    fontSize: 36,
-    letterSpacing: 4,
-    textTransform: "uppercase",
-    lineHeight: 40,
-  },
-  roundText: {
-    fontFamily: typography.body,
-    color: colors.muted,
-    fontSize: fontSize.lg,
-    marginTop: -spacing[2],
-  },
-  ringWrapper: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  // Barra de progreso general
-  overallProgressSection: {
+  secondaryButton: {
     width: "100%",
-    gap: spacing[2],
-  },
-  overallProgressRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  overallLabel: {
-    fontFamily: typography.body,
-    color: colors.muted,
-    fontSize: fontSize.xs,
-  },
-  overallPct: {
-    fontFamily: typography.mono,
-    fontSize: fontSize.xs,
-  },
-  progressBarContainer: {
-    width: "100%",
-    height: 8,
-    backgroundColor: colors.surface3,
-    borderRadius: radius.full,
-    overflow: "hidden",
-  },
-  progressBarFill: {
-    height: "100%",
-    borderRadius: radius.full,
-  },
-  progressBarContainerSmall: {
-    width: "100%",
-    height: 4,
-    backgroundColor: colors.surface3,
-    borderRadius: radius.full,
-    overflow: "hidden",
-  },
-  progressBarFillRound: {
-    height: "100%",
-    backgroundColor: colors.purple,
-    borderRadius: radius.full,
-  },
-
-  // Controles running
-  controlsRow: {
-    flexDirection: "row",
-    gap: spacing[3],
-    width: "100%",
-  },
-  pauseButton: {
-    flex: 1,
-    backgroundColor: colors.surface3,
+    backgroundColor: "transparent",
     borderRadius: radius.lg,
-    paddingVertical: spacing[4],
+    paddingVertical: spacing[3],
     alignItems: "center",
-    minHeight: 52,
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: colors.border,
+    marginTop: spacing[2],
   },
-  pauseButtonActive: {
-    backgroundColor: colors.lime,
-    borderColor: colors.lime,
-  },
-  pauseButtonText: {
+  secondaryButtonText: {
     fontFamily: typography.body,
     color: colors.muted,
     fontSize: fontSize.base,
-    fontWeight: "700",
+    fontWeight: "600",
   },
-  pauseButtonTextActive: {
-    color: colors.bg,
-  },
-  exitButton: {
-    flex: 0.5,
-    backgroundColor: "transparent",
-    borderRadius: radius.lg,
-    paddingVertical: spacing[4],
+
+  // Paywall
+  gatingLoader: {
+    paddingVertical: spacing[8],
     alignItems: "center",
-    minHeight: 52,
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: `${colors.error}40`,
   },
-  exitButtonText: {
+  paywallCard: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing[5],
+    alignItems: "center",
+    marginVertical: spacing[4],
+    gap: spacing[3],
+  },
+  paywallTitle: {
+    fontFamily: typography.heading,
+    color: colors.text,
+    fontSize: fontSize["4xl"],
+    letterSpacing: 1,
+    textAlign: "center",
+  },
+  paywallBody: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.base,
+    textAlign: "center",
+    lineHeight: 22,
+  },
+  paywallCta: {
+    backgroundColor: colors.lime,
+    borderRadius: radius.lg,
+    paddingHorizontal: spacing[6],
+    paddingVertical: spacing[3],
+  },
+  paywallCtaText: {
+    fontFamily: typography.heading,
+    color: colors.bg,
+    fontSize: fontSize["2xl"],
+    letterSpacing: 2,
+  },
+
+  // Validación
+  validationErrors: {
+    backgroundColor: `${colors.error}20`,
+    borderWidth: 1,
+    borderColor: `${colors.error}60`,
+    borderRadius: radius.lg,
+    padding: spacing[3],
+    marginVertical: spacing[3],
+    gap: spacing[1],
+  },
+  validationErrorTitle: {
     fontFamily: typography.body,
     color: colors.error,
     fontSize: fontSize.sm,
+    fontWeight: "700",
+  },
+  validationErrorItem: {
+    fontFamily: typography.body,
+    color: colors.error,
+    fontSize: fontSize.sm,
+  },
+
+  // Segmentos avanzados
+  segmentRow: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    padding: spacing[3],
+    marginBottom: spacing[3],
+    gap: spacing[2],
+  },
+  segmentKindToggle: {
+    flexDirection: "row",
+    gap: spacing[2],
+  },
+  kindBtn: {
+    flex: 1,
+    paddingVertical: spacing[2],
+    borderRadius: radius.sm,
+    alignItems: "center",
+    backgroundColor: colors.surface3,
+  },
+  kindBtnWorkActive: {
+    backgroundColor: colors.lime,
+  },
+  kindBtnRestActive: {
+    backgroundColor: colors.info,
+  },
+  kindBtnText: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.sm,
     fontWeight: "600",
+  },
+  kindBtnWorkActiveText: {
+    color: colors.bg,
+  },
+  kindBtnRestActiveText: {
+    color: colors.white,
+  },
+  segmentLabelInput: {
+    marginTop: spacing[1],
+  },
+  segmentDurationRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  segmentDurationLabel: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.sm,
+  },
+  segmentActions: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: spacing[3],
+    marginTop: spacing[1],
+  },
+  segActBtn: {
+    width: 32,
+    height: 32,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  segActText: {
+    fontFamily: typography.mono,
+    color: colors.muted,
+    fontSize: fontSize.lg,
+  },
+  addSegmentRow: {
+    flexDirection: "row",
+    gap: spacing[2],
+    marginBottom: spacing[3],
+    marginTop: spacing[1],
+  },
+  addSegBtn: {
+    flex: 1,
+    borderWidth: 1,
+    borderRadius: radius.md,
+    paddingVertical: spacing[3],
+    alignItems: "center",
+  },
+  addSegText: {
+    fontFamily: typography.body,
+    fontSize: fontSize.sm,
+    fontWeight: "700",
+  },
+
+  // Guardar preset
+  savePresetBtn: {
+    borderWidth: 1,
+    borderColor: colors.lime,
+    borderRadius: radius.lg,
+    paddingVertical: spacing[3],
+    alignItems: "center",
+    marginBottom: spacing[3],
+  },
+  savePresetText: {
+    fontFamily: typography.body,
+    color: colors.lime,
+    fontSize: fontSize.base,
+    fontWeight: "700",
+  },
+
+  // Mis Tabatas
+  plansEmptyText: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.sm,
+    textAlign: "center",
+    paddingVertical: spacing[4],
+  },
+  plansErrorText: {
+    fontFamily: typography.body,
+    color: colors.error,
+    fontSize: fontSize.sm,
+    textAlign: "center",
+    paddingVertical: spacing[4],
+  },
+  presetRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: spacing[3],
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    gap: spacing[2],
+  },
+  presetName: {
+    flex: 1,
+    fontFamily: typography.body,
+    color: colors.text,
+    fontSize: fontSize.base,
+  },
+  presetActions: {
+    flexDirection: "row",
+    gap: spacing[2],
+  },
+  presetBtn: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing[2],
+    paddingVertical: spacing[1],
+  },
+  presetBtnDelete: {
+    borderColor: `${colors.error}40`,
+  },
+  presetBtnText: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.xs,
+    fontWeight: "600",
+  },
+
+  // Sheet
+  sheetContent: {
+    padding: spacing[5],
+    gap: spacing[3],
+  },
+  sheetTitle: {
+    fontFamily: typography.heading,
+    color: colors.text,
+    fontSize: fontSize["2xl"],
+    letterSpacing: 1,
   },
 
   // ── Done ──
@@ -934,7 +1507,14 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
     textTransform: "uppercase",
     textAlign: "center",
-    marginBottom: spacing[2],
+    marginBottom: spacing[1],
+  },
+  donePresetName: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.base,
+    textAlign: "center",
+    marginBottom: spacing[1],
   },
   doneSubtitle: {
     fontFamily: typography.body,
@@ -965,18 +1545,98 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontSize: fontSize.lg,
   },
-  secondaryButton: {
-    width: "100%",
-    backgroundColor: "transparent",
-    borderRadius: radius.lg,
-    paddingVertical: spacing[3],
+
+  // ── Running ──
+  runningRoot: {
+    flex: 1,
     alignItems: "center",
-    marginTop: spacing[2],
+    justifyContent: "space-evenly",
+    paddingHorizontal: spacing[5],
+    paddingBottom: spacing[5],
   },
-  secondaryButtonText: {
+  phaseLabel: {
+    fontFamily: typography.heading,
+    fontSize: 40,
+    letterSpacing: 4,
+    textTransform: "uppercase",
+    textAlign: "center",
+  },
+  exerciseLabel: {
     fontFamily: typography.body,
-    color: colors.muted,
+    fontSize: fontSize.lg,
+    fontWeight: "600",
+    textAlign: "center",
+    opacity: 0.85,
+  },
+  countdown: {
+    fontFamily: typography.mono,
+    fontSize: 96,
+    fontWeight: "700",
+    textAlign: "center",
+    lineHeight: 100,
+  },
+  segmentCounter: {
+    fontFamily: typography.body,
+    fontSize: fontSize.xl,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  nextLabel: {
+    fontFamily: typography.body,
     fontSize: fontSize.base,
+    textAlign: "center",
+  },
+  progressSection: {
+    width: "100%",
+    gap: spacing[2],
+    alignItems: "flex-end",
+  },
+  progressBarTrack: {
+    width: "100%",
+    height: 10,
+    backgroundColor: "rgba(0,0,0,0.2)",
+    borderRadius: radius.full,
+    overflow: "hidden",
+  },
+  progressBarFill: {
+    height: "100%",
+    borderRadius: radius.full,
+  },
+  progressPct: {
+    fontFamily: typography.mono,
+    fontSize: fontSize.xs,
+  },
+  controlsRow: {
+    flexDirection: "row",
+    gap: spacing[3],
+    width: "100%",
+  },
+  pauseBtn: {
+    flex: 1,
+    borderWidth: 2,
+    borderRadius: radius.lg,
+    paddingVertical: spacing[4],
+    alignItems: "center",
+    minHeight: 52,
+    justifyContent: "center",
+  },
+  pauseBtnText: {
+    fontFamily: typography.body,
+    fontSize: fontSize.base,
+    fontWeight: "700",
+  },
+  exitBtn: {
+    flex: 0.5,
+    borderWidth: 1,
+    borderRadius: radius.lg,
+    paddingVertical: spacing[4],
+    alignItems: "center",
+    minHeight: 52,
+    justifyContent: "center",
+  },
+  exitBtnText: {
+    fontFamily: typography.body,
+    fontSize: fontSize.sm,
     fontWeight: "600",
   },
 });

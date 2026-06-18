@@ -33,7 +33,7 @@
 
 BEGIN;
 
-SELECT plan(43);
+SELECT plan(48);
 
 -- =============================================================================
 -- FIXTURES: insertados como superusuario (bypassa RLS y REVOKE).
@@ -139,7 +139,17 @@ BEGIN
     ('9900aa01-0000-4000-8000-000000000001'::uuid, 'd1d00001-0000-4000-8000-000000000001'::uuid, 'a3a00003-0000-4000-8000-000000000003'::uuid, 'c1c00001-0000-4000-8000-000000000001'::uuid, 'e1e00001-0000-4000-8000-000000000001'::uuid, '2026-07-01', 'Sesion RLS test coach1', now(), now()),
     ('9900bb02-0000-4000-8000-000000000002'::uuid, 'd2d00002-0000-4000-8000-000000000002'::uuid, 'a4a00004-0000-4000-8000-000000000004'::uuid, 'c2c00002-0000-4000-8000-000000000002'::uuid, 'e2e00002-0000-4000-8000-000000000002'::uuid, '2026-07-01', 'Sesion RLS test coach2', now(), now())
   ON CONFLICT (id) DO NOTHING;
+
+  -- 13. tabata_plans: un plan de student1 y otro de student2 (para tests T43-T47)
+  --   7ab00001 => plan simple de student1
+  --   7ab00002 => plan avanzado de student2
+  INSERT INTO tabata_plans (id, student_id, name, mode, config, created_at, updated_at)
+  VALUES
+    ('7ab00001-0000-4000-8000-000000000001'::uuid, 'a3a00003-0000-4000-8000-000000000003'::uuid, 'Tabata RLS Plan Student1', 'simple',   '{"workSecs":20,"restSecs":10,"rounds":8,"prepSecs":10}'::jsonb, now(), now()),
+    ('7ab00002-0000-4000-8000-000000000002'::uuid, 'a4a00004-0000-4000-8000-000000000004'::uuid, 'Tabata RLS Plan Student2', 'advanced',  '[{"id":"s1","kind":"work","label":"Squats","durationMs":20000}]'::jsonb, now(), now())
+  ON CONFLICT (id) DO NOTHING;
 END $setup$;
+-- (UUIDs de tabata_plans corregidos a hex válido: 7ab… en lugar de tab…)
 
 -- =============================================================================
 -- T01: auth_role() no lanza excepcion como superusuario (devuelve NULL sin claims)
@@ -926,6 +936,103 @@ BEGIN
 END $t42$;
 
 SELECT ok(true, 'T42: anon ve 0 filas en routine_schedule (default-deny)');
+
+-- =============================================================================
+-- T43: RLS habilitado en tabla tabata_plans
+-- =============================================================================
+SELECT ok(
+  (SELECT rowsecurity FROM pg_tables WHERE tablename = 'tabata_plans' AND schemaname = 'public'),
+  'T43: RLS habilitado en tabla tabata_plans'
+);
+
+-- =============================================================================
+-- T44: student1 puede SELECT su propio plan de tabata (ownership, permitido)
+-- =============================================================================
+DO $t44$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a3a00003-0000-4000-8000-000000000003', 'role', 'authenticated')::text,
+    true);
+  SELECT COUNT(*) INTO v_count
+  FROM tabata_plans
+  WHERE id = '7ab00001-0000-4000-8000-000000000001'::uuid;
+  RESET ROLE;
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'T44 FALLO: student1 vio 0 planes propios en tabata_plans (esperado 1)';
+  END IF;
+END $t44$;
+
+SELECT ok(true, 'T44: student1 puede SELECT su propio plan de tabata (ownership, permitido)');
+
+-- =============================================================================
+-- T45: student2 NO puede SELECT el plan de tabata de student1 (prohibido)
+-- =============================================================================
+DO $t45$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a4a00004-0000-4000-8000-000000000004', 'role', 'authenticated')::text,
+    true);
+  SELECT COUNT(*) INTO v_count
+  FROM tabata_plans
+  WHERE student_id = 'a3a00003-0000-4000-8000-000000000003'::uuid;
+  RESET ROLE;
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'T45 FALLO: student2 vio % planes de student1 en tabata_plans (esperado 0)', v_count;
+  END IF;
+END $t45$;
+
+SELECT ok(true, 'T45: student2 NO puede SELECT planes de student1 en tabata_plans (prohibido)');
+
+-- =============================================================================
+-- T46: student2 NO puede UPDATE el plan de tabata de student1 (0 filas afectadas)
+-- =============================================================================
+DO $t46$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a4a00004-0000-4000-8000-000000000004', 'role', 'authenticated')::text,
+    true);
+  UPDATE tabata_plans
+    SET name = 'Modificacion no autorizada'
+  WHERE id = '7ab00001-0000-4000-8000-000000000001'::uuid;
+  GET DIAGNOSTICS v_count = ROW_COUNT;
+  RESET ROLE;
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'T46 FALLO: student2 pudo UPDATE % filas del plan de student1 (esperado 0)', v_count;
+  END IF;
+END $t46$;
+
+SELECT ok(true, 'T46: student2 NO puede UPDATE el plan de tabata de student1 (0 filas afectadas)');
+
+-- =============================================================================
+-- T47: student2 NO puede DELETE el plan de tabata de student1 (0 filas afectadas)
+-- =============================================================================
+DO $t47$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a4a00004-0000-4000-8000-000000000004', 'role', 'authenticated')::text,
+    true);
+  DELETE FROM tabata_plans
+  WHERE id = '7ab00001-0000-4000-8000-000000000001'::uuid;
+  GET DIAGNOSTICS v_count = ROW_COUNT;
+  RESET ROLE;
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'T47 FALLO: student2 pudo DELETE % filas del plan de student1 (esperado 0)', v_count;
+  END IF;
+END $t47$;
+
+SELECT ok(true, 'T47: student2 NO puede DELETE el plan de tabata de student1 (0 filas afectadas)');
 
 SELECT * FROM finish();
 

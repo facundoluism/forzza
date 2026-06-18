@@ -13,6 +13,9 @@ export const TRACKED_EVENTS = {
   WORKOUT_STARTED: 'workout_started',
   WORKOUT_COMPLETED: 'workout_completed',
   WORKOUT_ABANDONED: 'workout_abandoned',
+  // Tabata
+  TABATA_ADVANCED_USED: 'tabata_advanced_used',
+  TABATA_PLAN_SAVED: 'tabata_plan_saved',
   // Gating
   UPGRADE_MODAL_SHOWN: 'upgrade_modal_shown',
   UPGRADE_CTA_TAPPED: 'upgrade_cta_tapped',

@@ -4,5 +4,6 @@ export * from "./billing";
 export * from "./content";
 export * from "./gating";
 export * from "./schemas";
+export * from "./tabata";
 export * from "./videos";
 export * from "./workout";

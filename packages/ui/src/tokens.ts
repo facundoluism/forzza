@@ -56,6 +56,69 @@ export const tipoColors = {
   fullbody: "#A78BFA",
 } as const;
 
+// Colores semánticos para la pantalla de Tabata inteligente.
+// Cada estado visual tiene bg (fondo full-bleed), fg (texto principal) y accent (barras/bordes).
+// Uso: tabataColors['work'].bg, etc.
+export type TabataPhase =
+  | "prep"
+  | "prep-ending"
+  | "work"
+  | "work-ending"
+  | "rest"
+  | "rest-ending"
+  | "finished";
+
+export type TabataPhaseColors = {
+  bg: string;
+  fg: string;
+  accent: string;
+};
+
+export const tabataColors: Record<TabataPhase, TabataPhaseColors> = {
+  /** Preparación inicial: ámbar/naranja para señal de aviso. fg oscuro para contraste. */
+  prep: {
+    bg: colors.warning,
+    fg: colors.bg,
+    accent: colors.orange,
+  },
+  /** Últimos segundos del prep: rojo para urgencia antes del arranque. */
+  "prep-ending": {
+    bg: colors.error,
+    fg: colors.white,
+    accent: colors.warning,
+  },
+  /** Ejercicio activo: verde Forza que resalta a distancia. fg oscuro. */
+  work: {
+    bg: colors.lime,
+    fg: colors.bg,
+    accent: colors.limeDark,
+  },
+  /** Últimos 5 s del ejercicio: rojo para alertar que termina. */
+  "work-ending": {
+    bg: colors.error,
+    fg: colors.white,
+    accent: colors.lime,
+  },
+  /** Descanso: azul tranquilo. fg claro. */
+  rest: {
+    bg: colors.info,
+    fg: colors.white,
+    accent: colors.surface3,
+  },
+  /** Últimos 5 s del descanso: rojo para preparar el siguiente bloque. */
+  "rest-ending": {
+    bg: colors.error,
+    fg: colors.white,
+    accent: colors.info,
+  },
+  /** Completado: verde Forza de celebración. fg oscuro. */
+  finished: {
+    bg: colors.lime,
+    fg: colors.bg,
+    accent: colors.limeDark,
+  },
+} as const;
+
 export const spacing = {
   0: 0,
   1: 4,

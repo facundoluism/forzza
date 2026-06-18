@@ -1459,6 +1459,44 @@ export type Database = {
           },
         ]
       }
+      tabata_plans: {
+        Row: {
+          config: Json
+          created_at: string
+          id: string
+          mode: string
+          name: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          config: Json
+          created_at?: string
+          id?: string
+          mode: string
+          name: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          id?: string
+          mode?: string
+          name?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tabata_plans_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tickets: {
         Row: {
           body: string
@@ -1803,6 +1841,7 @@ export const Constants = {
   },
 } as const
 
+
 // Alias de conveniencia de los enums de la DB.
 // DERIVADOS de Database para no perderlos ni driftear al regenerar tipos (pnpm db:types).
 export type UserRole = Database["public"]["Enums"]["user_role"];
@@ -1819,4 +1858,3 @@ export type LegalEntityType = Database["public"]["Enums"]["legal_entity_type"];
 export type NotificationChannel = Database["public"]["Enums"]["notification_channel"];
 // No existe enum en DB: plan de suscripción es un literal de dominio.
 export type SubscriptionPlan = "free" | "pro" | "elite";
-
