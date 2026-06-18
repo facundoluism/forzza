@@ -33,7 +33,7 @@
 
 BEGIN;
 
-SELECT plan(32);
+SELECT plan(43);
 
 -- =============================================================================
 -- FIXTURES: insertados como superusuario (bypassa RLS y REVOKE).
@@ -89,11 +89,21 @@ BEGIN
     ('e1e00001-0000-4000-8000-000000000001'::uuid, 'a3a00003-0000-4000-8000-000000000003'::uuid, 'c1c00001-0000-4000-8000-000000000001'::uuid, 'Rutina RLS Test', '[]'::jsonb, true, now(), now())
   ON CONFLICT (id) DO NOTHING;
 
+  -- 6b. routine de student2 creada por coach2
+  INSERT INTO routines (id, student_id, coach_id, title, exercises, active, created_at, updated_at)
+  VALUES
+    ('e2e00002-0000-4000-8000-000000000002'::uuid, 'a4a00004-0000-4000-8000-000000000004'::uuid, 'c2c00002-0000-4000-8000-000000000002'::uuid, 'Rutina RLS Test Coach2', '[]'::jsonb, true, now(), now())
+  ON CONFLICT (id) DO NOTHING;
+
   -- 7. vincular rutina al assignment (UPDATE directo bypassa trigger de columnas
   --    porque current_user = 'postgres' => trigger hace RETURN NEW sin restriccion)
   UPDATE coach_assignments
     SET routine_id = 'e1e00001-0000-4000-8000-000000000001'::uuid
   WHERE id = 'd1d00001-0000-4000-8000-000000000001'::uuid;
+
+  UPDATE coach_assignments
+    SET routine_id = 'e2e00002-0000-4000-8000-000000000002'::uuid
+  WHERE id = 'd2d00002-0000-4000-8000-000000000002'::uuid;
 
   -- 8. workout_sessions
   INSERT INTO workout_sessions (id, student_id, routine_id, client_uuid, status, started_at, created_at, updated_at)
@@ -119,6 +129,15 @@ BEGIN
   INSERT INTO student_profiles (id, user_id, display_name, created_at, updated_at)
   VALUES
     ('0cc00001-0000-4000-8000-000000000001'::uuid, 'a3a00003-0000-4000-8000-000000000003'::uuid, 'Alumno Uno RLS', now(), now())
+  ON CONFLICT (id) DO NOTHING;
+
+  -- 12. routine_schedule: una fila por coach (para tests T33-T41)
+  --   9900aa01 => coach1 asigna rutina e1 a student1 el 2026-07-01
+  --   9900bb02 => coach2 asigna rutina e2 a student2 el 2026-07-01
+  INSERT INTO routine_schedule (id, assignment_id, student_id, coach_id, routine_id, scheduled_date, notes, created_at, updated_at)
+  VALUES
+    ('9900aa01-0000-4000-8000-000000000001'::uuid, 'd1d00001-0000-4000-8000-000000000001'::uuid, 'a3a00003-0000-4000-8000-000000000003'::uuid, 'c1c00001-0000-4000-8000-000000000001'::uuid, 'e1e00001-0000-4000-8000-000000000001'::uuid, '2026-07-01', 'Sesion RLS test coach1', now(), now()),
+    ('9900bb02-0000-4000-8000-000000000002'::uuid, 'd2d00002-0000-4000-8000-000000000002'::uuid, 'a4a00004-0000-4000-8000-000000000004'::uuid, 'c2c00002-0000-4000-8000-000000000002'::uuid, 'e2e00002-0000-4000-8000-000000000002'::uuid, '2026-07-01', 'Sesion RLS test coach2', now(), now())
   ON CONFLICT (id) DO NOTHING;
 END $setup$;
 
@@ -629,6 +648,284 @@ SELECT ok(
      AND id IN ('progress-photos', 'fiscal-docs', 'invoices', 'videos')),
   'T31: los 4 buckets de storage existen y son privados'
 );
+
+-- =============================================================================
+-- T32: RLS habilitado en tabla routine_schedule
+-- =============================================================================
+SELECT ok(
+  (SELECT rowsecurity FROM pg_tables WHERE tablename = 'routine_schedule' AND schemaname = 'public'),
+  'T32: RLS habilitado en tabla routine_schedule'
+);
+
+-- =============================================================================
+-- T33: coach1 puede SELECT su propia fila en routine_schedule (permitido)
+-- =============================================================================
+DO $t33$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a1a00001-0000-4000-8000-000000000001', 'role', 'authenticated')::text,
+    true);
+  SELECT COUNT(*) INTO v_count
+  FROM routine_schedule
+  WHERE id = '9900aa01-0000-4000-8000-000000000001'::uuid;
+  RESET ROLE;
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'T33 FALLO: coach1 vio 0 filas propias en routine_schedule (esperado 1)';
+  END IF;
+END $t33$;
+
+SELECT ok(true, 'T33: coach1 puede SELECT su propia fila en routine_schedule (permitido)');
+
+-- =============================================================================
+-- T34: coach2 NO puede ver filas de coach1 en routine_schedule (prohibido)
+-- =============================================================================
+DO $t34$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a2a00002-0000-4000-8000-000000000002', 'role', 'authenticated')::text,
+    true);
+  SELECT COUNT(*) INTO v_count
+  FROM routine_schedule
+  WHERE coach_id = 'c1c00001-0000-4000-8000-000000000001'::uuid;
+  RESET ROLE;
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'T34 FALLO: coach2 vio % filas de coach1 en routine_schedule (esperado 0)', v_count;
+  END IF;
+END $t34$;
+
+SELECT ok(true, 'T34: coach2 NO puede ver filas de coach1 en routine_schedule (prohibido)');
+
+-- =============================================================================
+-- T35: coach1 puede INSERT una nueva fila con su propio coach_id (permitido)
+-- =============================================================================
+DO $t35$
+DECLARE
+  v_inserted UUID;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a1a00001-0000-4000-8000-000000000001', 'role', 'authenticated')::text,
+    true);
+  INSERT INTO routine_schedule (assignment_id, student_id, coach_id, routine_id, scheduled_date, notes, created_at, updated_at)
+  VALUES (
+    'd1d00001-0000-4000-8000-000000000001'::uuid,
+    'a3a00003-0000-4000-8000-000000000003'::uuid,
+    'c1c00001-0000-4000-8000-000000000001'::uuid,
+    'e1e00001-0000-4000-8000-000000000001'::uuid,
+    '2026-08-01',
+    'Nuevo INSERT coach1 test T35',
+    now(), now()
+  )
+  RETURNING id INTO v_inserted;
+  RESET ROLE;
+  IF v_inserted IS NULL THEN
+    RAISE EXCEPTION 'T35 FALLO: coach1 no pudo insertar en routine_schedule';
+  END IF;
+END $t35$;
+
+SELECT ok(true, 'T35: coach1 puede INSERT una fila con su propio coach_id (permitido)');
+
+-- =============================================================================
+-- T36: coach2 NO puede INSERT una fila con coach_id de coach1 (prohibido)
+-- Con RLS default-deny y WITH CHECK, el INSERT devuelve 0 filas sin excepcion
+-- (PostgREST devolveria 0 rows returned; aqui capturamos excepcion o 0 rows).
+-- =============================================================================
+DO $t36$
+DECLARE
+  v_ok BOOLEAN := false;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a2a00002-0000-4000-8000-000000000002', 'role', 'authenticated')::text,
+    true);
+  BEGIN
+    INSERT INTO routine_schedule (assignment_id, student_id, coach_id, routine_id, scheduled_date, notes, created_at, updated_at)
+    VALUES (
+      'd1d00001-0000-4000-8000-000000000001'::uuid,
+      'a3a00003-0000-4000-8000-000000000003'::uuid,
+      'c1c00001-0000-4000-8000-000000000001'::uuid,
+      'e1e00001-0000-4000-8000-000000000001'::uuid,
+      '2026-09-01',
+      'INSERT coach2 con coach_id de coach1 — debe fallar',
+      now(), now()
+    );
+  EXCEPTION WHEN OTHERS THEN
+    v_ok := true;
+  END;
+  RESET ROLE;
+  -- Si no hubo excepcion, verificar que no se inserto nada con coach_id de coach1
+  -- por parte de coach2 (WITH CHECK lo rechaza silenciosamente en algunos contextos)
+  IF NOT v_ok THEN
+    -- el INSERT no lanzo excepcion pero RLS WITH CHECK pudo rechazarlo sin error
+    -- (comportamiento Postgres: INSERT sin filas que pasen WITH CHECK no es error)
+    v_ok := true;  -- aceptamos ambos comportamientos: excepcion O 0 filas insertadas
+  END IF;
+  IF NOT v_ok THEN
+    RAISE EXCEPTION 'T36 FALLO: coach2 pudo insertar fila con coach_id de coach1';
+  END IF;
+END $t36$;
+
+-- Verificar a nivel superusuario que no existe la fila fraudulenta
+SELECT ok(
+  NOT EXISTS (
+    SELECT 1 FROM routine_schedule
+    WHERE coach_id = 'c1c00001-0000-4000-8000-000000000001'::uuid
+      AND scheduled_date = '2026-09-01'
+      AND notes = 'INSERT coach2 con coach_id de coach1 — debe fallar'
+  ),
+  'T36: coach2 NO pudo insertar fila con coach_id de coach1 (WITH CHECK prohibido)'
+);
+
+-- =============================================================================
+-- T37: coach1 puede UPDATE su propia fila en routine_schedule (permitido)
+-- =============================================================================
+DO $t37$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a1a00001-0000-4000-8000-000000000001', 'role', 'authenticated')::text,
+    true);
+  UPDATE routine_schedule
+    SET notes = 'Nota actualizada por coach1 T37'
+  WHERE id = '9900aa01-0000-4000-8000-000000000001'::uuid;
+  GET DIAGNOSTICS v_count = ROW_COUNT;
+  RESET ROLE;
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'T37 FALLO: coach1 no pudo UPDATE su propia fila en routine_schedule';
+  END IF;
+END $t37$;
+
+SELECT ok(true, 'T37: coach1 puede UPDATE su propia fila en routine_schedule (permitido)');
+
+-- =============================================================================
+-- T38: coach2 NO puede UPDATE filas de coach1 en routine_schedule (prohibido)
+-- =============================================================================
+DO $t38$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a2a00002-0000-4000-8000-000000000002', 'role', 'authenticated')::text,
+    true);
+  UPDATE routine_schedule
+    SET notes = 'Modificacion no autorizada de coach2'
+  WHERE id = '9900aa01-0000-4000-8000-000000000001'::uuid;
+  GET DIAGNOSTICS v_count = ROW_COUNT;
+  RESET ROLE;
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'T38 FALLO: coach2 pudo UPDATE % filas de coach1 en routine_schedule (esperado 0)', v_count;
+  END IF;
+END $t38$;
+
+SELECT ok(true, 'T38: coach2 NO puede UPDATE filas de coach1 en routine_schedule (prohibido)');
+
+-- =============================================================================
+-- T39: alumno (student1) puede SELECT su propia fila en routine_schedule (permitido)
+-- =============================================================================
+DO $t39$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a3a00003-0000-4000-8000-000000000003', 'role', 'authenticated')::text,
+    true);
+  SELECT COUNT(*) INTO v_count
+  FROM routine_schedule
+  WHERE student_id = 'a3a00003-0000-4000-8000-000000000003'::uuid;
+  RESET ROLE;
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'T39 FALLO: student1 vio 0 filas propias en routine_schedule (esperado >= 1)';
+  END IF;
+END $t39$;
+
+SELECT ok(true, 'T39: student1 puede SELECT sus propias filas en routine_schedule (permitido)');
+
+-- =============================================================================
+-- T40: alumno (student1) NO puede INSERT en routine_schedule (prohibido)
+-- La politica student_read_own es FOR SELECT: no cubre INSERT.
+-- Con RLS default-deny, INSERT como alumno devuelve error 42501 o falla la
+-- WITH CHECK implicita. En Postgres con RLS sin politica FOR INSERT para el rol,
+-- el INSERT se rechaza con "new row violates row-level security policy".
+-- =============================================================================
+DO $t40$
+DECLARE
+  v_ok BOOLEAN := false;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a3a00003-0000-4000-8000-000000000003', 'role', 'authenticated')::text,
+    true);
+  BEGIN
+    INSERT INTO routine_schedule (assignment_id, student_id, coach_id, routine_id, scheduled_date, notes, created_at, updated_at)
+    VALUES (
+      'd1d00001-0000-4000-8000-000000000001'::uuid,
+      'a3a00003-0000-4000-8000-000000000003'::uuid,
+      'c1c00001-0000-4000-8000-000000000001'::uuid,
+      'e1e00001-0000-4000-8000-000000000001'::uuid,
+      '2026-10-01',
+      'INSERT no autorizado de alumno',
+      now(), now()
+    );
+  EXCEPTION WHEN OTHERS THEN
+    v_ok := true;
+  END;
+  RESET ROLE;
+  IF NOT v_ok THEN
+    RAISE EXCEPTION 'T40 FALLO: student1 pudo insertar en routine_schedule (debe ser prohibido)';
+  END IF;
+END $t40$;
+
+SELECT ok(true, 'T40: student1 NO puede INSERT en routine_schedule (prohibido)');
+
+-- =============================================================================
+-- T41: student2 NO puede ver filas de student1 en routine_schedule (prohibido)
+-- =============================================================================
+DO $t41$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a4a00004-0000-4000-8000-000000000004', 'role', 'authenticated')::text,
+    true);
+  SELECT COUNT(*) INTO v_count
+  FROM routine_schedule
+  WHERE student_id = 'a3a00003-0000-4000-8000-000000000003'::uuid;
+  RESET ROLE;
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'T41 FALLO: student2 vio % filas de student1 en routine_schedule (esperado 0)', v_count;
+  END IF;
+END $t41$;
+
+SELECT ok(true, 'T41: student2 NO puede ver filas de student1 en routine_schedule (prohibido)');
+
+-- =============================================================================
+-- T42: anon ve 0 filas en routine_schedule (default-deny)
+-- =============================================================================
+DO $t42$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE anon;
+  PERFORM set_config('request.jwt.claims', '', true);
+  SELECT COUNT(*) INTO v_count FROM routine_schedule;
+  RESET ROLE;
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'T42 FALLO: anon vio % filas en routine_schedule (esperado 0)', v_count;
+  END IF;
+END $t42$;
+
+SELECT ok(true, 'T42: anon ve 0 filas en routine_schedule (default-deny)');
 
 SELECT * FROM finish();
 
