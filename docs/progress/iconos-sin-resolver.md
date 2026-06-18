@@ -1,10 +1,8 @@
 # Iconos de ejercicio sin resolver (machine-generic)
 
-Generado: 2026-06-18T19:54:45.217Z  
+Generado: 2026-06-18T20:42:11.476Z  
 Total ejercicios: 234  
-Resueltos por resolver: 133  
-Resueltos por override español: 101  
-Resueltos por fallback de grupo: 0  
+Resueltos por resolver: 234  
 Sin resolver (machine-generic): 0  
 
 ## Distribución por key

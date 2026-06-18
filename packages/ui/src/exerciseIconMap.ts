@@ -501,6 +501,103 @@ const EQUIPMENT_HINT_MAP: Array<[string, ExerciseIconKey]> = [
 ];
 
 // ---------------------------------------------------------------------------
+// Resolución de patrones en español / mixtos ES-EN
+//
+// Se aplica SOLO cuando:
+//   (a) la resolución por pattern (exacto + prefijo) NO produjo resultado, Y
+//   (b) el pattern contiene marcadores de español o formato bilingüe.
+//
+// Esto replica exactamente la semántica de applySpanishOverride() del script
+// backfill-svg-icons.ts, de modo que el resolver de runtime también entienda
+// los movement_pattern reales de la DB ("Jalón / Pull", "Empuje / Push", etc.).
+// ---------------------------------------------------------------------------
+
+/**
+ * Detecta si el movement_pattern (ya normalizado a lowercase) es en español
+ * o formato bilingüe ES/EN.  Mismo criterio que isSpanishPattern() del script.
+ */
+function isSpanishPattern(pattern: string): boolean {
+  if (pattern.includes(" / ")) return true;
+  const spanishKeywords = [
+    "jalón", "empuje", "sentadilla", "bisagra", "extensión",
+    "elevación", "apertura", "compuesto", "contracción", "rotación",
+    "aducción", "abducción", "flexión", "talones",
+  ];
+  return spanishKeywords.some((kw) => pattern.includes(kw));
+}
+
+// Mapa: keyword española (lowercase) → key base.
+// Orden de más específico a más general — igual que SPANISH_PATTERN_OVERRIDES del script.
+const SPANISH_PATTERN_OVERRIDES: Array<[string, ExerciseIconKey]> = [
+  ["jalón / pull",        "row"],
+  ["jalón",               "row"],
+  ["bisagra de cadera",   "deadlift"],
+  ["bisagra",             "deadlift"],
+  ["sentadilla",          "squat"],
+  ["empuje / push",       "bench-press"],
+  ["empuje",              "bench-press"],
+  ["apertura / fly",      "chest-fly"],
+  ["apertura",            "chest-fly"],
+  ["elevación de talones","lunge"],
+  ["elevación / raise",   "lateral-raise"],
+  ["elevación",           "lateral-raise"],
+  ["contracción / crunch","core-plank"],
+  ["contracción",         "core-plank"],
+  ["rotación / twist",    "core-plank"],
+  ["rotación",            "core-plank"],
+  ["extensión de cadera", "leg-curl"],
+  ["extensión",           "triceps-ext"],
+  ["flexión",             "biceps-curl"],
+  ["compuesto / compound","bench-press"],
+  ["compuesto",           "bench-press"],
+  ["aducción / abducción","hip-thrust"],
+  ["aducción",            "hip-thrust"],
+  ["abducción",           "hip-thrust"],
+];
+
+// Refinamiento de la key base por primary_group — igual que GROUP_REFINEMENTS del script.
+// Se aplica solo cuando la key base es demasiado genérica para el grupo muscular.
+const SPANISH_GROUP_REFINEMENTS: Record<string, Partial<Record<ExerciseIconKey, ExerciseIconKey>>> = {
+  shoulders: { "bench-press": "overhead-press" },
+  arms:      { "bench-press": "triceps-ext" },
+  legs:      { "bench-press": "squat", "lateral-raise": "lunge", "triceps-ext": "leg-extension" },
+  back:      { "bench-press": "row" },
+  core:      { "lateral-raise": "core-plank" },
+};
+
+// Keys que el resolver produce cuando "no supo" resolver por patrón y cayó en
+// equipment hint — mismo conjunto que GENERIC_RESOLVER_KEYS del script.
+const GENERIC_RESOLVER_KEYS = new Set<ExerciseIconKey>([
+  "biceps-curl",
+  "cable",
+  "machine-generic",
+  "bench-press",
+]);
+
+/**
+ * Intenta resolver un movement_pattern en español o bilingüe.
+ * Solo actúa cuando el resolver principal devolvió una key "genérica"
+ * (cayó en equipment hint en lugar de pattern hint).
+ *
+ * @returns la key refinada, o null si no hubo match español.
+ */
+function resolveSpanishPattern(
+  pattern: string,
+  group: string | null
+): ExerciseIconKey | null {
+  if (!isSpanishPattern(pattern)) return null;
+
+  for (const [keyword, baseKey] of SPANISH_PATTERN_OVERRIDES) {
+    if (pattern.includes(keyword)) {
+      const refinement = group ? SPANISH_GROUP_REFINEMENTS[group] : undefined;
+      return (refinement?.[baseKey] ?? baseKey);
+    }
+  }
+
+  return null;
+}
+
+// ---------------------------------------------------------------------------
 // Fallback por primary_group (todos los valores posibles, en lowercase)
 // ---------------------------------------------------------------------------
 
@@ -555,12 +652,27 @@ export function resolveExerciseIconKey(
   }
 
   // 3. Hint por equipment
+  let equipKey: ExerciseIconKey | null = null;
   if (equipNorm.length > 0) {
     const equipStr = equipNorm.join(" ");
     for (const [hint, key] of EQUIPMENT_HINT_MAP) {
-      if (equipStr.includes(hint)) return key;
+      if (equipStr.includes(hint)) {
+        equipKey = key;
+        break;
+      }
     }
   }
+
+  // 3b. Override para patrones en español / bilingüe:
+  // Si el equipment hint devolvió una key "genérica" (o no hubo equipamento),
+  // intentar resolver por keyword española en el movement_pattern.
+  // Esto es el equivalente runtime de applySpanishOverride() del script de backfill.
+  if (pattern && (equipKey === null || GENERIC_RESOLVER_KEYS.has(equipKey))) {
+    const spanishKey = resolveSpanishPattern(pattern, group);
+    if (spanishKey !== null) return spanishKey;
+  }
+
+  if (equipKey !== null) return equipKey;
 
   // 4. Fallback por primary_group
   if (group) {

@@ -11,24 +11,9 @@
  *   pnpm icons:backfill
  *   pnpm icons:backfill --dry-run   (imprime reporte, no escribe archivos)
  *
- * Decisión de diseño (IMPORTANTE):
- *   El resolver resolveExerciseIconKey() está optimizado para movement_pattern en inglés.
- *   En la DB existen ~80 ejercicios con patrones en español o mixtos ("Jalón / Pull",
- *   "Empuje / Push", "Bisagra de cadera / Hinge") que el EXACT_PATTERN_MAP y PREFIX_MAP
- *   del resolver no cubren → el resolver cae en el hint de equipment (nivel 3).
- *
- *   Problema: equipment como "Dumbbell" → "biceps-curl" aunque sea un remo,
- *   o "Smith Machine" → "machine-generic" aunque sea una sentadilla.
- *
- *   Solución en este script (post-proceso, sin reimplementar el resolver):
- *   Cuando el resolver devuelve una key "genérica" (biceps-curl por equipment-hint,
- *   cable, machine-generic) Y el movement_pattern contiene una keyword en español que
- *   indica un movimiento específico, se aplica un override semántico basado en esa
- *   keyword + primary_group. Esto NO reemplaza al resolver: el resolver corre primero
- *   y su resultado se acepta si es específico (bench-press, squat, deadlift, etc.).
- *
- *   El listado de machine-generic en el reporte refleja los ejercicios donde ni el
- *   resolver ni el override pudieron asignar una key semánticamente correcta.
+ * El resolver resolveExerciseIconKey() maneja tanto patrones en inglés como en
+ * español / bilingüe ("Jalón / Pull", "Empuje / Push", "Bisagra de cadera / Hinge").
+ * La resolución de español vive en packages/ui/src/exerciseIconMap.ts — no aquí.
  */
 
 import "dotenv/config";
@@ -63,147 +48,8 @@ type IconAssignment = {
   movement_pattern: string | null;
   primary_group: string | null;
   icon: ExerciseIconKey;
-  resolved_by: "resolver" | "spanish-override" | "group-fallback";
+  resolved_by: "resolver" | "machine-generic";
 };
-
-// ─── Keys que el resolver devuelve cuando "no supo" (cayó en equipment hint genérico)
-// Estas keys son válidas cuando el resolver las asignó por patrón de movimiento real,
-// pero problemáticas cuando las asignó solo por el tipo de equipo.
-// La heurística: si el movement_pattern contiene texto en español, el resolver
-// probablemente cayó en equipment-hint en lugar de movement-pattern.
-const GENERIC_RESOLVER_KEYS = new Set<ExerciseIconKey>([
-  "biceps-curl",   // equipment dumbbell/barbell → a veces asignado a no-curls
-  "cable",         // equipment cable → a veces asignado a no-cable-exercises
-  "machine-generic", // equipment machine/smith → siempre problemático con español
-  "bench-press",   // equipment barbell → asignado a ejercicios de espalda/pierna
-]);
-
-// ─── Detectar si el movement_pattern es en español o mixto ───────────────────
-
-/**
- * Retorna true si el movement_pattern parece ser en español (o mixto ES/EN).
- * Criterio: contiene "/" bilinge, o contiene palabras españolas exclusivas.
- */
-function isSpanishPattern(pattern: string | null): boolean {
-  if (!pattern) return false;
-  const p = pattern.toLowerCase();
-  // Patrones bilínges con "/"
-  if (p.includes(" / ")) return true;
-  // Palabras exclusivamente españolas en patrones de la DB
-  const spanishKeywords = [
-    "jalón", "empuje", "sentadilla", "bisagra", "extensión",
-    "elevación", "apertura", "compuesto", "contracción", "rotación",
-    "aducción", "abducción", "flexión", "talones",
-  ];
-  return spanishKeywords.some((kw) => p.includes(kw));
-}
-
-// ─── Override semántico para patrones en español ─────────────────────────────
-
-// Mapa: keyword en español (lowercase, en el pattern) → icon key base
-// Orden de preferencia: de más específico a más general dentro del override.
-const SPANISH_PATTERN_OVERRIDES: Array<[string, ExerciseIconKey]> = [
-  // Jalón / Pull → row (remo) o pulldown según contexto de grupo
-  ["jalón / pull", "row"],
-  ["jalón", "row"],
-  // Bisagra de cadera / Hinge → deadlift
-  ["bisagra de cadera", "deadlift"],
-  ["bisagra", "deadlift"],
-  // Sentadilla / Squat → squat
-  ["sentadilla", "squat"],
-  // Empuje / Push → bench-press genérico (se refina con primary_group abajo)
-  ["empuje / push", "bench-press"],
-  ["empuje", "bench-press"],
-  // Apertura / Fly → chest-fly
-  ["apertura / fly", "chest-fly"],
-  ["apertura", "chest-fly"],
-  // Elevación de talones / Calf Raise → lunge
-  ["elevación de talones", "lunge"],
-  // Elevación / Raise (hombros) → lateral-raise
-  ["elevación / raise", "lateral-raise"],
-  ["elevación", "lateral-raise"],
-  // Contracción / Crunch → core-plank
-  ["contracción / crunch", "core-plank"],
-  ["contracción", "core-plank"],
-  // Rotación / Twist → core-plank
-  ["rotación / twist", "core-plank"],
-  ["rotación", "core-plank"],
-  // Extensión de cadera → leg-curl (hip extension)
-  ["extensión de cadera", "leg-curl"],
-  // Extensión (genérica) — refined por group abajo
-  ["extensión", "triceps-ext"],
-  // Flexión (genérica)
-  ["flexión", "biceps-curl"],
-  // Compuesto / Compound — refined por group
-  ["compuesto / compound", "bench-press"],
-  ["compuesto", "bench-press"],
-  // Aducción / Abducción → hip-thrust
-  ["aducción / abducción", "hip-thrust"],
-  ["aducción", "hip-thrust"],
-  ["abducción", "hip-thrust"],
-];
-
-// Refinamiento adicional por primary_group cuando el override base es demasiado genérico
-// Se aplica SOLO cuando el override base es bench-press/row/triceps-ext/biceps-curl/lateral-raise
-const GROUP_REFINEMENTS: Record<string, Partial<Record<ExerciseIconKey, ExerciseIconKey>>> = {
-  // Para "empuje" (bench-press base): Shoulders → overhead-press; Arms → triceps-ext
-  shoulders: { "bench-press": "overhead-press" },
-  arms: { "bench-press": "triceps-ext" },
-  legs: { "bench-press": "squat", "lateral-raise": "lunge", "triceps-ext": "leg-extension" },
-  back: { "bench-press": "row", "row": "row" },
-  core: { "lateral-raise": "core-plank" },
-  // Para "extensión" (triceps-ext base): Legs → leg-extension; Back → deadlift
-  // se maneja arriba con keys específicas
-};
-
-/**
- * Override semántico para ejercicios donde el resolver cayó en equipment hint.
- * Solo se aplica si:
- *  (a) el resolver devolvió una key "genérica" (GENERIC_RESOLVER_KEYS), Y
- *  (b) el movement_pattern es en español o mixto.
- */
-function applySpanishOverride(
-  ex: ExerciseRow,
-  resolverKey: ExerciseIconKey
-): { icon: ExerciseIconKey; resolved_by: "resolver" | "spanish-override" | "group-fallback" } {
-  // Si el resolver ya asignó una key específica y el patrón es en inglés → aceptar
-  if (!GENERIC_RESOLVER_KEYS.has(resolverKey) || !isSpanishPattern(ex.movement_pattern)) {
-    return { icon: resolverKey, resolved_by: "resolver" };
-  }
-
-  const pattern = (ex.movement_pattern ?? "").toLowerCase();
-  const group = (ex.primary_group ?? "").toLowerCase();
-
-  // Buscar override de patrón en español
-  for (const [keyword, baseKey] of SPANISH_PATTERN_OVERRIDES) {
-    if (pattern.includes(keyword)) {
-      // Aplicar refinamiento por grupo
-      const refinement = GROUP_REFINEMENTS[group];
-      const refined = refinement?.[baseKey] ?? baseKey;
-      return { icon: refined, resolved_by: "spanish-override" };
-    }
-  }
-
-  // Sin override de patrón → usar fallback de primary_group
-  const GROUP_FALLBACK: Record<string, ExerciseIconKey> = {
-    chest: "bench-press",
-    back: "row",
-    legs: "squat",
-    shoulders: "overhead-press",
-    arms: "biceps-curl",
-    core: "core-plank",
-    glutes: "hip-thrust",
-    cardio: "cardio",
-    full_body: "deadlift",
-  };
-  const fallbackKey = group ? GROUP_FALLBACK[group] : undefined;
-  if (fallbackKey) {
-    return { icon: fallbackKey, resolved_by: "group-fallback" };
-  }
-
-  // Sin fallback posible → aceptar lo que dijo el resolver
-  return { icon: resolverKey, resolved_by: "resolver" };
-}
 
 // ─── Helpers SQL ──────────────────────────────────────────────────────────────
 
@@ -258,17 +104,14 @@ function generateSql(assignments: IconAssignment[]): string {
 function generateReport(
   machineGeneric: IconAssignment[],
   distribution: Map<ExerciseIconKey, number>,
-  total: number,
-  byResolution: { resolver: number; spanish: number; fallback: number }
+  total: number
 ): string {
   const lines: string[] = [
     "# Iconos de ejercicio sin resolver (machine-generic)",
     "",
     `Generado: ${new Date().toISOString()}  `,
     `Total ejercicios: ${total}  `,
-    `Resueltos por resolver: ${byResolution.resolver}  `,
-    `Resueltos por override español: ${byResolution.spanish}  `,
-    `Resueltos por fallback de grupo: ${byResolution.fallback}  `,
+    `Resueltos por resolver: ${total - machineGeneric.length}  `,
     `Sin resolver (machine-generic): ${machineGeneric.length}  `,
     "",
     "## Distribución por key",
@@ -289,8 +132,7 @@ function generateReport(
     lines.push("_Todos los ejercicios tienen una key resuelta._");
   } else {
     lines.push(
-      "Estos ejercicios no tienen un patrón de movimiento reconocido por el resolver",
-      "ni un override semántico aplicable.",
+      "Estos ejercicios no tienen un patrón de movimiento reconocido por el resolver.",
       "Acción: editar `packages/ui/src/exerciseIconMap.ts` con el patrón/equipo",
       "y luego regenerar con `pnpm icons:backfill`.",
       "",
@@ -346,21 +188,18 @@ async function main(): Promise<void> {
 
   console.log(`Total ejercicios: ${exercises.length}`);
 
-  // 3) Correr el resolver + override sobre cada ejercicio
+  // 3) Resolver cada ejercicio con el resolver unificado
   const assignments: IconAssignment[] = [];
   const distribution = new Map<ExerciseIconKey, number>();
-  const byResolution = { resolver: 0, spanish: 0, fallback: 0 };
 
   for (const ex of exercises as ExerciseRow[]) {
-    // 3a. Resolver real
-    const resolverKey = resolveExerciseIconKey(
+    const icon = resolveExerciseIconKey(
       ex.movement_pattern,
       ex.equipment,
       ex.primary_group
     );
-
-    // 3b. Override para patrones en español
-    const { icon, resolved_by } = applySpanishOverride(ex, resolverKey);
+    const resolved_by: "resolver" | "machine-generic" =
+      icon === "machine-generic" ? "machine-generic" : "resolver";
 
     assignments.push({
       slug: ex.slug,
@@ -372,9 +211,6 @@ async function main(): Promise<void> {
     });
 
     distribution.set(icon, (distribution.get(icon) ?? 0) + 1);
-    if (resolved_by === "resolver") byResolution.resolver++;
-    else if (resolved_by === "spanish-override") byResolution.spanish++;
-    else byResolution.fallback++;
   }
 
   // 4) Separar los machine-generic
@@ -390,11 +226,9 @@ async function main(): Promise<void> {
   }
 
   console.log(`\n=== TOTALES ===`);
-  console.log(`  Total ejercicios:        ${exercises.length}`);
-  console.log(`  Por resolver (inglés):   ${byResolution.resolver}`);
-  console.log(`  Por override español:    ${byResolution.spanish}`);
-  console.log(`  Por fallback de grupo:   ${byResolution.fallback}`);
-  console.log(`  machine-generic:         ${machineGeneric.length}`);
+  console.log(`  Total ejercicios:  ${exercises.length}`);
+  console.log(`  Resueltos:         ${exercises.length - machineGeneric.length}`);
+  console.log(`  machine-generic:   ${machineGeneric.length}`);
 
   if (machineGeneric.length > 0) {
     console.log("\n=== EJERCICIOS machine-generic ===");
@@ -420,7 +254,7 @@ async function main(): Promise<void> {
   if (!fs.existsSync(reportDir)) {
     fs.mkdirSync(reportDir, { recursive: true });
   }
-  const report = generateReport(machineGeneric, distribution, exercises.length, byResolution);
+  const report = generateReport(machineGeneric, distribution, exercises.length);
   fs.writeFileSync(REPORT_PATH, report, "utf8");
   console.log(`Escrito: ${REPORT_PATH}`);
 }

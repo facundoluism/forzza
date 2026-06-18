@@ -473,3 +473,205 @@ describe("resolveExerciseIconKey — patrones de core nuevos", () => {
     expect(resolveExerciseIconKey("dead bug", [], null)).toBe("core-plank");
   });
 });
+
+// =============================================================================
+// Tests para patrones en español / bilingüe (keywords reales de la DB).
+// Verifican que resolveExerciseIconKey() produzca el mismo resultado que el
+// script backfill-svg-icons.ts producía con applySpanishOverride().
+// =============================================================================
+
+describe("resolveExerciseIconKey — patrones español: jalón / pull", () => {
+  it("'Jalón / Pull' con equipo Dumbbell → row (no biceps-curl por equipo)", () => {
+    expect(resolveExerciseIconKey("Jalón / Pull", ["Dumbbell"], "back")).toBe("row");
+  });
+
+  it("'Jalón / Pull' con cable → row", () => {
+    expect(resolveExerciseIconKey("Jalón / Pull", ["Cable"], "back")).toBe("row");
+  });
+
+  it("'jalón / pull' lowercase → row", () => {
+    expect(resolveExerciseIconKey("jalón / pull", [], "back")).toBe("row");
+  });
+
+  it("'Jalón' solo → row", () => {
+    expect(resolveExerciseIconKey("Jalón", ["Barbell"], "back")).toBe("row");
+  });
+});
+
+describe("resolveExerciseIconKey — patrones español: bisagra / hinge", () => {
+  it("'Bisagra de cadera / Hinge' con Dumbbell → deadlift (no biceps-curl)", () => {
+    expect(
+      resolveExerciseIconKey("Bisagra de cadera / Hinge", ["Dumbbell"], "back")
+    ).toBe("deadlift");
+  });
+
+  it("'Bisagra de cadera / Hinge' con Smith Machine → deadlift (no machine-generic)", () => {
+    expect(
+      resolveExerciseIconKey("Bisagra de cadera / Hinge", ["Smith Machine"], "legs")
+    ).toBe("deadlift");
+  });
+
+  it("'bisagra' minúscula → deadlift", () => {
+    expect(resolveExerciseIconKey("bisagra", [], "legs")).toBe("deadlift");
+  });
+});
+
+describe("resolveExerciseIconKey — patrones español: sentadilla / squat", () => {
+  it("'Sentadilla / Squat' con Smith Machine → squat (no machine-generic)", () => {
+    expect(
+      resolveExerciseIconKey("Sentadilla / Squat", ["Smith Machine"], "legs")
+    ).toBe("squat");
+  });
+
+  it("'Sentadilla' con Barbell → squat (no bench-press por equipo)", () => {
+    expect(resolveExerciseIconKey("Sentadilla", ["Barbell"], "legs")).toBe("squat");
+  });
+});
+
+describe("resolveExerciseIconKey — patrones español: empuje / push + refinamiento de grupo", () => {
+  it("'Empuje / Push' grupo chest → bench-press", () => {
+    expect(
+      resolveExerciseIconKey("Empuje / Push", ["Dumbbell"], "chest")
+    ).toBe("bench-press");
+  });
+
+  it("'Empuje / Push' grupo shoulders → overhead-press", () => {
+    expect(
+      resolveExerciseIconKey("Empuje / Push", ["Dumbbell"], "shoulders")
+    ).toBe("overhead-press");
+  });
+
+  it("'Empuje / Push' grupo arms → triceps-ext", () => {
+    expect(
+      resolveExerciseIconKey("Empuje / Push", ["Cable"], "arms")
+    ).toBe("triceps-ext");
+  });
+
+  it("'Empuje / Push' grupo legs → squat", () => {
+    expect(
+      resolveExerciseIconKey("Empuje / Push", ["Smith Machine"], "legs")
+    ).toBe("squat");
+  });
+
+  it("'Empuje / Push' grupo back → row", () => {
+    expect(
+      resolveExerciseIconKey("Empuje / Push", ["Barbell"], "back")
+    ).toBe("row");
+  });
+});
+
+describe("resolveExerciseIconKey — patrones español: apertura / fly", () => {
+  it("'Apertura / Fly' con Dumbbell → chest-fly (no biceps-curl)", () => {
+    expect(
+      resolveExerciseIconKey("Apertura / Fly", ["Dumbbell"], "chest")
+    ).toBe("chest-fly");
+  });
+
+  it("'apertura' sola → chest-fly", () => {
+    expect(resolveExerciseIconKey("apertura", [], "chest")).toBe("chest-fly");
+  });
+});
+
+describe("resolveExerciseIconKey — patrones español: elevación / raise", () => {
+  it("'Elevación / Raise' grupo shoulders → lateral-raise", () => {
+    expect(
+      resolveExerciseIconKey("Elevación / Raise", ["Dumbbell"], "shoulders")
+    ).toBe("lateral-raise");
+  });
+
+  it("'Elevación de talones' → lunge (calf raise)", () => {
+    expect(
+      resolveExerciseIconKey("Elevación de talones", ["Machine"], "legs")
+    ).toBe("lunge");
+  });
+
+  it("'Elevación / Raise' grupo core → core-plank (refinamiento GROUP_REFINEMENTS)", () => {
+    expect(
+      resolveExerciseIconKey("Elevación / Raise", ["Cable"], "core")
+    ).toBe("core-plank");
+  });
+
+  it("'Elevación / Raise' grupo legs → lunge (refinamiento GROUP_REFINEMENTS)", () => {
+    expect(
+      resolveExerciseIconKey("Elevación / Raise", ["Dumbbell"], "legs")
+    ).toBe("lunge");
+  });
+});
+
+describe("resolveExerciseIconKey — patrones español: contracción, rotación", () => {
+  it("'Contracción / Crunch' → core-plank", () => {
+    expect(
+      resolveExerciseIconKey("Contracción / Crunch", ["Cable"], "core")
+    ).toBe("core-plank");
+  });
+
+  it("'contracción' minúscula → core-plank", () => {
+    expect(resolveExerciseIconKey("contracción", [], "core")).toBe("core-plank");
+  });
+
+  it("'Rotación / Twist' → core-plank", () => {
+    expect(
+      resolveExerciseIconKey("Rotación / Twist", ["Cable"], "core")
+    ).toBe("core-plank");
+  });
+
+  it("'rotación' minúscula → core-plank", () => {
+    expect(resolveExerciseIconKey("rotación", [], "core")).toBe("core-plank");
+  });
+});
+
+describe("resolveExerciseIconKey — patrones español: extensión de cadera / extensión", () => {
+  it("'Extensión de cadera' → leg-curl (hip extension)", () => {
+    expect(
+      resolveExerciseIconKey("Extensión de cadera", ["Cable"], "glutes")
+    ).toBe("leg-curl");
+  });
+
+  it("'Extensión' grupo legs → leg-extension (refinamiento)", () => {
+    expect(
+      resolveExerciseIconKey("Extensión", ["Machine"], "legs")
+    ).toBe("leg-extension");
+  });
+
+  it("'Extensión' grupo arms → triceps-ext (base sin refinamiento arms)", () => {
+    expect(
+      resolveExerciseIconKey("Extensión", ["Cable"], "arms")
+    ).toBe("triceps-ext");
+  });
+});
+
+describe("resolveExerciseIconKey — patrones español: aducción/abducción", () => {
+  it("'Aducción / Abducción' → hip-thrust", () => {
+    expect(
+      resolveExerciseIconKey("Aducción / Abducción", ["Machine"], "legs")
+    ).toBe("hip-thrust");
+  });
+
+  it("'aducción' sola → hip-thrust", () => {
+    expect(resolveExerciseIconKey("aducción", [], "legs")).toBe("hip-thrust");
+  });
+
+  it("'abducción' sola → hip-thrust", () => {
+    expect(resolveExerciseIconKey("abducción", [], "legs")).toBe("hip-thrust");
+  });
+});
+
+describe("resolveExerciseIconKey — español no activa cuando el resolver ya fue específico", () => {
+  it("patrón inglés específico (hinge – full) con barbell → deadlift, no bench-press", () => {
+    // El resolver lo resuelve en nivel 1 (exacto), no llega al español
+    expect(resolveExerciseIconKey("Hinge – Full", ["Barbell"], "back")).toBe("deadlift");
+  });
+
+  it("patrón inglés específico (pull – vertical) con dumbbell → pulldown, no biceps-curl", () => {
+    expect(
+      resolveExerciseIconKey("Pull – Vertical", ["Dumbbell"], "back")
+    ).toBe("pulldown");
+  });
+
+  it("equipo cable con patrón inglés pull – horizontal → row (sin override español)", () => {
+    // cable es GENERIC_RESOLVER_KEY pero el patrón es inglés → no activa español
+    expect(
+      resolveExerciseIconKey("Pull – Horizontal", ["Cable"], "back")
+    ).toBe("row");
+  });
+});
