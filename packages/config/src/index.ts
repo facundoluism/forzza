@@ -69,6 +69,12 @@ export const EXERCISE_VIDEO_CHANNEL_ALLOWLIST: readonly string[] = [
   "fersfit",
   "mmigueltraining",
   "saludablemente",
+  // Sumados tras la 1ra/2da tanda: canales ES vistos produciendo contenido
+  // de técnica relevante (ATHLEAN-X Español y Jeremy Ethier en Español ya
+  // matchean por includes vía "athleanx"/"jeremy ethier").
+  "bluegym animation",
+  "fitness by vivi",
+  "zonapablo",
 ] as const;
 
 /**
