@@ -82,18 +82,6 @@ function tokenize(value: string): Set<string> {
   return tokens;
 }
 
-/** Similitud Jaccard entre dos conjuntos de tokens, en [0, 1]. */
-function jaccard(a: Set<string>, b: Set<string>): number {
-  if (a.size === 0 || b.size === 0) return 0;
-  let intersection = 0;
-  for (const token of a) {
-    if (b.has(token)) intersection += 1;
-  }
-  const union = a.size + b.size - intersection;
-  if (union === 0) return 0;
-  return intersection / union;
-}
-
 /** Acota un número al rango [0, 1]. */
 function clamp01(value: number): number {
   if (Number.isNaN(value)) return 0;
