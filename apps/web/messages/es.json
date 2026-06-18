@@ -606,7 +606,14 @@
       "statusNeedsReview": "Pendiente",
       "statusPublished": "Publicado",
       "langEs": "ES",
-      "langEn": "EN"
+      "langEn": "EN",
+      "rankingTitle": "Más pedidos sin video",
+      "rankingSubtitle": "Ejercicios sin video publicado, ordenados por cantidad de pedidos",
+      "rankingRequests": "{count} pedido(s)",
+      "rankingEmpty": "Todavía no hay pedidos de video",
+      "rankingEmptyDesc": "Cuando los alumnos pidan videos de ejercicios, aparecerán acá.",
+      "rankingErrorTitle": "Error al cargar los pedidos",
+      "rankingShowing": "Mostrando los {shown} más pedidos de {total} ejercicios sin video"
     },
     "configuracion": {
       "metaTitle": "Configuración — Forzza Admin",

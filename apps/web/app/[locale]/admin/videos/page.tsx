@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { EmptyState, ErrorState } from "@forzza/ui/web";
 import { Link } from "@/i18n/navigation";
 import { VideoReviewActions } from "./VideoReviewActions";
+import { VideoRequestRanking } from "./VideoRequestRanking";
 import type { Metadata } from "next";
 import type { Database } from "@forzza/db-types";
 
@@ -229,6 +230,9 @@ export default async function VideosPage({ params, searchParams }: Props) {
           </div>
         )}
       </div>
+
+      {/* Ranking: most requested exercises without a published video */}
+      <VideoRequestRanking adminClient={adminClient} locale={locale} />
     </div>
   );
 }

@@ -7,13 +7,14 @@ import {
   ActivityIndicator,
   Dimensions,
 } from "react-native";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import YoutubePlayer from "react-native-youtube-iframe";
 import type { Database } from "@forzza/db-types";
-import { Sheet, Tabs, Pill, ErrorState, EmptyState, ExerciseIcon } from "@forzza/ui/native";
+import { Sheet, Tabs, Pill, ErrorState, EmptyState, ExerciseIcon, Button } from "@forzza/ui/native";
 import { colors, spacing, fontSize, typography, radius } from "@forzza/ui/tokens";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/providers/AuthProvider";
 import { useLanguageStore, type AppLanguage } from "@/stores/languageStore";
 import { getExerciseIconKey } from "@/constants/exerciseIcons";
 import { localizeMeta } from "@/constants/exerciseI18n";
@@ -307,8 +308,30 @@ interface VideoTabProps {
   language: AppLanguage;
 }
 
+async function fetchVideoRequest(exerciseId: string): Promise<boolean> {
+  const { data, error } = await supabase
+    .from("exercise_video_requests")
+    .select("id")
+    .eq("exercise_id", exerciseId)
+    .maybeSingle();
+  if (error) throw error;
+  return data !== null;
+}
+
+async function insertVideoRequest(exerciseId: string, userId: string): Promise<void> {
+  const { error } = await supabase
+    .from("exercise_video_requests")
+    .upsert(
+      { exercise_id: exerciseId, user_id: userId },
+      { onConflict: "exercise_id,user_id", ignoreDuplicates: true }
+    );
+  if (error) throw error;
+}
+
 function VideoTab({ exerciseId, language }: VideoTabProps): React.JSX.Element {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const {
     data: video,
@@ -320,6 +343,29 @@ function VideoTab({ exerciseId, language }: VideoTabProps): React.JSX.Element {
     queryFn: () => fetchExerciseVideo(exerciseId, language),
     enabled: true,
     staleTime: 1000 * 60 * 10, // 10 min
+  });
+
+  const requestQueryKey = ["exercise_video_request", exerciseId];
+
+  const {
+    data: alreadyRequested,
+    isLoading: isRequestLoading,
+  } = useQuery({
+    queryKey: requestQueryKey,
+    queryFn: () => fetchVideoRequest(exerciseId),
+    // Solo cargar si no hay video y hay usuario autenticado
+    enabled: !isLoading && !video && user !== null,
+    staleTime: 1000 * 60 * 5, // 5 min
+  });
+
+  const requestMutation = useMutation({
+    mutationFn: () => {
+      if (!user) return Promise.reject(new Error("not_authenticated"));
+      return insertVideoRequest(exerciseId, user.id);
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: requestQueryKey });
+    },
   });
 
   if (isLoading) {
@@ -343,12 +389,63 @@ function VideoTab({ exerciseId, language }: VideoTabProps): React.JSX.Element {
   }
 
   if (!video) {
+    const isRequested = alreadyRequested === true || requestMutation.isSuccess;
+    const isMutating = requestMutation.isPending;
+
     return (
-      <EmptyState
-        title={t("exercisePreview.video_empty_title")}
-        description={t("exercisePreview.video_empty_desc")}
-        icon="🎬"
-      />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.tabContent}
+        testID="video-tab-empty"
+      >
+        <EmptyState
+          title={t("exercisePreview.video_empty_title")}
+          description={t("exercisePreview.video_empty_desc")}
+          icon="🎬"
+        />
+
+        {user !== null && (
+          <View style={styles.videoRequestContainer}>
+            {isRequested ? (
+              <View style={styles.videoRequestedBox} testID="video-requested-state">
+                <Text style={styles.videoRequestedTitle}>
+                  {t("exercisePreview.video_requested_title")}
+                </Text>
+                <Text style={styles.videoRequestedDesc}>
+                  {t("exercisePreview.video_requested_desc")}
+                </Text>
+              </View>
+            ) : (
+              <>
+                {requestMutation.isError && (
+                  <View style={styles.videoRequestErrorBox}>
+                    <Text style={styles.videoRequestErrorText}>
+                      {t("exercisePreview.video_request_error_title")}
+                    </Text>
+                    <Text style={styles.videoRequestErrorSubtext}>
+                      {t("exercisePreview.video_request_error_desc")}
+                    </Text>
+                  </View>
+                )}
+                <Button
+                  label={
+                    isMutating
+                      ? t("exercisePreview.video_requesting")
+                      : t("exercisePreview.video_request_btn")
+                  }
+                  variant="secondary"
+                  size="md"
+                  fullWidth
+                  loading={isMutating || isRequestLoading}
+                  disabled={isMutating || isRequestLoading}
+                  onPress={() => { requestMutation.mutate(); }}
+                  testID="request-video-button"
+                />
+              </>
+            )}
+          </View>
+        )}
+      </ScrollView>
     );
   }
 
@@ -838,5 +935,53 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     height: 130,
     marginTop: spacing[2],
+  },
+
+  // ── Tab Video: solicitar video ──
+  videoRequestContainer: {
+    gap: spacing[3],
+    marginTop: spacing[2],
+  },
+  videoRequestedBox: {
+    backgroundColor: colors.limeGlow,
+    borderWidth: 1,
+    borderColor: `${colors.lime}30`,
+    borderRadius: radius.lg,
+    padding: spacing[4],
+    gap: spacing[2],
+    alignItems: "center",
+  },
+  videoRequestedTitle: {
+    fontFamily: typography.heading,
+    color: colors.lime,
+    fontSize: fontSize.md,
+    fontWeight: "700",
+  },
+  videoRequestedDesc: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.sm,
+    textAlign: "center",
+    lineHeight: 20,
+  },
+  videoRequestErrorBox: {
+    backgroundColor: `${colors.error}08`,
+    borderWidth: 1,
+    borderColor: `${colors.error}25`,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[3],
+    gap: spacing[1],
+  },
+  videoRequestErrorText: {
+    fontFamily: typography.body,
+    color: colors.error,
+    fontSize: fontSize.sm,
+    fontWeight: "600",
+  },
+  videoRequestErrorSubtext: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.xs,
   },
 });
