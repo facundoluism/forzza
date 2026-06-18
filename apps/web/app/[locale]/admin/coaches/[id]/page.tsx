@@ -5,6 +5,7 @@ import { ErrorState, EmptyState } from "@forzza/ui/web";
 import { notFound } from "next/navigation";
 import { ApproveRejectButtons } from "../ApproveRejectButtons";
 import type { Metadata } from "next";
+import { cache } from "react";
 
 type Props = {
   params: Promise<{ locale: string; id: string }>;
@@ -69,17 +70,28 @@ const statusColors: Record<string, string> = {
   suspended: "bg-orange-500/10 text-orange-400 border border-orange-500/20",
 };
 
+// requireAdmin y la carga del coach se memoizan por request (React cache):
+// generateMetadata y la página comparten una sola validación owner y un solo
+// query al service role, en vez de duplicarlos.
+const getAdmin = cache(async () => requireAdmin());
+
+const loadCoach = cache(async (id: string) => {
+  const { adminClient } = await getAdmin();
+  return adminClient
+    .from("coach_profiles")
+    .select(
+      "id, user_id, display_name, status, country, billing_model, constancia_path, specialties, legal_entity_type, fiscal_id, bank_account, active_student_count, avg_rating, rating_count, created_at, updated_at"
+    )
+    .eq("id", id)
+    .single();
+});
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, id } = await params;
   const t = await getTranslations({ locale, namespace: "admin" });
-  const { adminClient } = await requireAdmin();
-  const { data } = await adminClient
-    .from("coach_profiles")
-    .select("display_name")
-    .eq("id", id)
-    .single();
-  const name = data?.display_name ?? id;
-  return { title: t("coaches.detail.metaTitle", { name }) };
+  const { data } = await loadCoach(id);
+  if (!data) return { title: t("coaches.metaTitle") };
+  return { title: t("coaches.detail.metaTitle", { name: data.display_name }) };
 }
 
 export default async function AdminCoachDetailPage({ params }: Props) {
@@ -87,16 +99,10 @@ export default async function AdminCoachDetailPage({ params }: Props) {
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "admin" });
 
-  const { adminClient } = await requireAdmin();
+  const { adminClient } = await getAdmin();
 
-  // Fetch coach profile
-  const { data: profileData, error: profileError } = await adminClient
-    .from("coach_profiles")
-    .select(
-      "id, user_id, display_name, status, country, billing_model, constancia_path, specialties, legal_entity_type, fiscal_id, bank_account, active_student_count, avg_rating, rating_count, created_at, updated_at"
-    )
-    .eq("id", id)
-    .single();
+  // Reusa el query cacheado (mismo que generateMetadata): un solo hit al service role.
+  const { data: profileData, error: profileError } = await loadCoach(id);
 
   if (profileError) {
     if (profileError.code === "PGRST116") {
