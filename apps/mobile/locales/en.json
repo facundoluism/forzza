@@ -69,6 +69,7 @@
   },
   "routines": {
     "title": "My Routines",
+    "subtitle": "Your personal routines",
     "freeLimit": "Free plan limit: {{count}} routines",
     "empty_title": "No routines yet",
     "empty_desc": "Create your first routine by tapping «+» or wait for your coach to assign one.",
@@ -80,7 +81,9 @@
     "upgradeFeature": "create more than 3 routines"
   },
   "progress": {
-    "title": "Your Progress",
+    "title": "My Progress",
+    "subtitle_one": "{{count}} session logged",
+    "subtitle_other": "{{count}} sessions logged",
     "thisWeek": "This week",
     "streakDay_one": "Day streak",
     "streakDay_other": "Day streak",
@@ -96,10 +99,14 @@
     "proGated_desc": "Feature available on the Pro plan. Coming soon.",
     "upgradeFeature": "full session history",
     "series_one": "set",
-    "series_other": "sets"
+    "series_other": "sets",
+    "tabGraficos": "Charts",
+    "tabMedidas": "Measures",
+    "tabHistorial": "History"
   },
   "chat": {
     "title": "Messages",
+    "subtitle": "Your conversations with coaches",
     "noMessages": "No messages yet",
     "empty_title": "No conversations",
     "empty_desc": "Chats with your coach appear here when you hire a package.",
@@ -141,7 +148,23 @@
     "cancelCoach_success_title": "Plan cancelled",
     "cancelCoach_success_msg": "Your access to the coach continues until the end of the billing cycle.",
     "cancelCoach_error_title": "Cancellation error",
-    "cancelCoach_error_msg": "We could not cancel the plan. Please try again or contact support."
+    "cancelCoach_error_msg": "We could not cancel the plan. Please try again or contact support.",
+    "menuNotifications": "Notifications",
+    "menuNotificationsSub": "Reminders and alerts",
+    "menuMyPlan": "My plan",
+    "menuMyPlanSub": "PRO · View available plans",
+    "menuPayments": "Payments",
+    "menuPaymentsSub": "Transaction history",
+    "menuProgressPhotos": "Progress photos",
+    "menuProgressPhotosSub": "Body timeline · PRO",
+    "menuLanguage": "Language",
+    "menuLanguageSub": "Español · English",
+    "menuLiveSessions": "Live sessions",
+    "menuLiveSessionsSub": "Video calls with your coach",
+    "menuCancelCoach": "Cancel plan with my coach",
+    "menuCancelCoachSub": "Ends the current cycle",
+    "menuSignOut": "Sign out",
+    "menuDeleteAccount": "Delete your account"
   },
   "manageSubscription": {
     "screenTitle": "Manage subscription",

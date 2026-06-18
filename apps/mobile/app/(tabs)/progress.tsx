@@ -268,15 +268,6 @@ function SessionItem({ session }: { session: CompletedWorkoutSession }): React.J
   );
 }
 
-function StatCard({ label, value, featured = false }: { label: string; value: string | number; featured?: boolean }): React.JSX.Element {
-  return (
-    <Card style={styles.statCard} featured={featured}>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
-    </Card>
-  );
-}
-
 function ProGatedCard({ title }: { title: string }): React.JSX.Element {
   const { t } = useTranslation();
   return (
@@ -524,12 +515,15 @@ const metricsStyles = StyleSheet.create({
   },
 });
 
+type ProgressTabType = "graficos" | "medidas" | "historial";
+
 export default function ProgressTab(): React.JSX.Element {
   const { t } = useTranslation();
   const { user } = useAuth();
   const syncQueue = useWorkoutStore((s) => s.syncQueue);
   const { isPro } = useEntitlements();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [progressTab, setProgressTab] = useState<ProgressTabType>("graficos");
   const [storeHydrated, setStoreHydrated] = useState(
     () => useWorkoutStore.persist.hasHydrated()
   );
@@ -575,92 +569,139 @@ export default function ProgressTab(): React.JSX.Element {
     );
   }
 
+  const TABS: { key: ProgressTabType; label: string }[] = [
+    { key: "graficos", label: t("progress.tabGraficos") },
+    { key: "medidas", label: t("progress.tabMedidas") },
+    { key: "historial", label: t("progress.tabHistorial") },
+  ];
+
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing[2] }]}>
-      <Text style={styles.screenTitle}>{t("progress.title")}</Text>
+      {/* Header */}
+      <View style={styles.headerRow}>
+        <Text style={styles.screenTitle}>{t("progress.title")}</Text>
+        <Text style={styles.screenSubtitle}>{t("progress.subtitle", { count: completedSessions.length })}</Text>
+      </View>
 
-      {/* Stats row */}
+      {/* Stats pills */}
       <View style={styles.statsRow}>
-        <View style={styles.statCell}>
-          <StatCard label={t("progress.thisWeek")} value={weekCount} featured={weekCount > 0} />
+        <View style={styles.statPill}>
+          <Text style={styles.statPillValue}>{weekCount}</Text>
+          <Text style={styles.statPillLabel}>{t("progress.thisWeek").toUpperCase()}</Text>
         </View>
-        <View style={styles.statCell}>
-          <StatCard
-            label={t("progress.streakDay", { count: streak })}
-            value={streak}
-            featured={streak > 1}
-          />
+        <View style={styles.statPill}>
+          <Text style={styles.statPillValue}>{streak}</Text>
+          <Text style={styles.statPillLabel}>{t("progress.streakDay", { count: streak }).toUpperCase()}</Text>
         </View>
       </View>
 
-      {/* Last sessions */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t("progress.last5Workouts")}</Text>
-        {lastFive.length === 0 ? (
-          <EmptyState
-            title={t("progress.empty_title")}
-            description={t("progress.empty_desc")}
-            icon="📊"
-          />
-        ) : (
-          lastFive.map((session) => (
-            <SessionItem key={session.client_uuid} session={session} />
-          ))
-        )}
-
-        {/* Free-user history promo banner */}
-        {!isPro && (
-          <Pressable
-            style={styles.historyBanner}
-            onPress={() => setShowUpgradeModal(true)}
-            hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
+      {/* Tabs visuales */}
+      <View style={styles.tabsRow}>
+        {TABS.map((tab) => (
+          <TouchableOpacity
+            key={tab.key}
+            style={[styles.tabBtn, progressTab === tab.key && styles.tabBtnActive]}
+            onPress={() => setProgressTab(tab.key)}
+            activeOpacity={0.7}
           >
-            <Text style={styles.historyBannerTitle}>{t("progress.historyBanner_title")}</Text>
-            <Text style={styles.historyBannerSub}>
-              {t("progress.historyBanner_sub")}
+            <Text style={[styles.tabBtnText, progressTab === tab.key && styles.tabBtnTextActive]}>
+              {tab.label}
             </Text>
-            <Text style={styles.historyBannerCta}>{t("progress.historyBanner_cta")}</Text>
-          </Pressable>
-        )}
+          </TouchableOpacity>
+        ))}
       </View>
 
-      {/* Body metrics — FREE users can also log metrics */}
-      {user?.id && (
+      {/* Tab: Gráficos */}
+      {progressTab === "graficos" && (
+        <>
+          {/* Last sessions */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t("progress.last5Workouts")}</Text>
+            {lastFive.length === 0 ? (
+              <EmptyState
+                title={t("progress.empty_title")}
+                description={t("progress.empty_desc")}
+                icon="📊"
+              />
+            ) : (
+              lastFive.map((session) => (
+                <SessionItem key={session.client_uuid} session={session} />
+              ))
+            )}
+
+            {/* Free-user history promo banner */}
+            {!isPro && (
+              <Pressable
+                style={styles.historyBanner}
+                onPress={() => setShowUpgradeModal(true)}
+                hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
+              >
+                <Text style={styles.historyBannerTitle}>{t("progress.historyBanner_title")}</Text>
+                <Text style={styles.historyBannerSub}>
+                  {t("progress.historyBanner_sub")}
+                </Text>
+                <Text style={styles.historyBannerCta}>{t("progress.historyBanner_cta")}</Text>
+              </Pressable>
+            )}
+          </View>
+
+          {/* Progress photos — PRO only */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t("progress.progressPhotos")}</Text>
+            {isPro ? (
+              <Pressable
+                style={styles.photosCard}
+                onPress={() => router.push("/progress-photos")}
+                testID="progress-photos-link"
+              >
+                <Text style={styles.photosCardText}>{t("progress.progressPhotos")}</Text>
+                <Text style={styles.photosCardArrow}>›</Text>
+              </Pressable>
+            ) : (
+              <Pressable
+                style={styles.proCard}
+                onPress={() => setShowUpgradeModal(true)}
+                testID="progress-photos-upgrade"
+              >
+                <ProGatedCard title={t("progress.progressPhotos")} />
+              </Pressable>
+            )}
+          </View>
+        </>
+      )}
+
+      {/* Tab: Medidas */}
+      {progressTab === "medidas" && user?.id && (
         <View style={styles.section}>
           <BodyMetricsCard userId={user.id} isPro={isPro} />
         </View>
       )}
 
-      {/* Coach feedback — shown only when user has a coach */}
-      {user?.id && (
+      {/* Tab: Historial */}
+      {progressTab === "historial" && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t("progress.last5Workouts")}</Text>
+          {lastFive.length === 0 ? (
+            <EmptyState
+              title={t("progress.empty_title")}
+              description={t("progress.empty_desc")}
+              icon="📊"
+            />
+          ) : (
+            lastFive.map((session) => (
+              <SessionItem key={session.client_uuid} session={session} />
+            ))
+          )}
+        </View>
+      )}
+
+      {/* Coach feedback — shown in graficos tab */}
+      {progressTab === "graficos" && user?.id && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{t("coachFeedback.sectionTitle")}</Text>
           <CoachFeedbackSection userId={user.id} />
         </View>
       )}
-
-      {/* Progress photos — PRO only */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t("progress.progressPhotos")}</Text>
-        {isPro ? (
-          <Pressable
-            style={styles.photosCard}
-            onPress={() => router.push("/progress-photos")}
-            testID="progress-photos-link"
-          >
-            <Text style={styles.photosCardText}>{t("progress.progressPhotos")}</Text>
-            <Text style={styles.photosCardArrow}>›</Text>
-          </Pressable>
-        ) : (
-          <Pressable
-            style={styles.proCard}
-            onPress={() => setShowUpgradeModal(true)}
-            testID="progress-photos-upgrade"
-          >
-            <ProGatedCard title={t("progress.progressPhotos")} />
-          </Pressable>
-        )}
-      </View>
 
       <UpgradeModal
         visible={showUpgradeModal}
@@ -684,45 +725,85 @@ const styles = StyleSheet.create({
     padding: spacing[4],
     paddingBottom: spacing[8],
   },
+  headerRow: {
+    marginBottom: spacing[4],
+  },
   screenTitle: {
     fontFamily: typography.heading,
     color: colors.text,
     fontSize: fontSize.screenTitle,
-    fontWeight: "900",
     letterSpacing: -1,
     textTransform: "uppercase",
-    marginBottom: spacing[5],
+  },
+  screenSubtitle: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.sm,
+    marginTop: 2,
   },
   loadingContainer: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
+  // Stats pills
   statsRow: {
     flexDirection: "row",
     gap: spacing[3],
-    marginBottom: spacing[6],
+    marginBottom: spacing[4],
   },
-  statCell: {
+  statPill: {
     flex: 1,
-  },
-  statCard: {
+    backgroundColor: colors.surface2,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingVertical: spacing[4],
+    paddingHorizontal: spacing[3],
     alignItems: "center",
-    paddingVertical: spacing[5],
   },
-  statValue: {
+  statPillValue: {
     fontFamily: typography.mono,
     color: colors.lime,
-    fontSize: 48,
-    fontWeight: "900",
+    fontSize: 36,
+    fontWeight: "700",
     letterSpacing: -1,
   },
-  statLabel: {
+  statPillLabel: {
     fontFamily: typography.body,
     color: colors.muted,
-    fontSize: 13,
+    fontSize: fontSize.xs,
+    letterSpacing: 1,
     marginTop: spacing[1],
     textAlign: "center",
+  },
+  // Tabs
+  tabsRow: {
+    flexDirection: "row",
+    gap: spacing[2],
+    marginBottom: spacing[5],
+  },
+  tabBtn: {
+    flex: 1,
+    backgroundColor: colors.surface2,
+    borderRadius: radius.md,
+    paddingVertical: spacing[2],
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  tabBtnActive: {
+    backgroundColor: colors.lime,
+    borderColor: colors.lime,
+  },
+  tabBtnText: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.sm,
+    fontWeight: "700",
+  },
+  tabBtnTextActive: {
+    color: colors.black,
   },
   section: {
     marginBottom: spacing[6],
@@ -782,7 +863,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   historyBanner: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.limeGlow,
     borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.lime,
@@ -793,7 +874,6 @@ const styles = StyleSheet.create({
     fontFamily: typography.heading,
     color: colors.lime,
     fontSize: 20,
-    fontWeight: "900",
     letterSpacing: -0.5,
     marginBottom: spacing[2],
   },

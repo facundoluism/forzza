@@ -168,9 +168,16 @@ function CoachMessageCard({ coachId }: CoachMessageCardProps): React.JSX.Element
   if (isLoading) return <Skeleton width="100%" height={80} />;
   if (!lastMessage) return <></>;
 
+  const initial = (coachId ?? "C").charAt(0).toUpperCase();
+
   return (
     <Card style={styles.coachMsgCard}>
-      <Text style={styles.coachMsgBody} numberOfLines={2}>{lastMessage.body}</Text>
+      <View style={styles.coachMsgRow}>
+        <View style={styles.coachMsgAvatar}>
+          <Text style={styles.coachMsgAvatarText}>{initial}</Text>
+        </View>
+        <Text style={styles.coachMsgBody} numberOfLines={2}>{lastMessage.body}</Text>
+      </View>
       <TouchableOpacity
         style={styles.coachMsgBtn}
         onPress={() => router.push("/(tabs)/chat" as never)}
@@ -320,6 +327,18 @@ export default function HomeTab(): React.JSX.Element {
   const routinePreviewExercises = routineExercises.slice(0, 3);
   const hiddenExerciseCount = Math.max(0, routineExerciseCount - routinePreviewExercises.length);
 
+  // Avatar inicial
+  const avatarInitial = displayName.charAt(0).toUpperCase();
+
+  // Coach name and initials
+  const coachDisplayName = activeAssignment?.coach_profiles?.display_name ?? "Coach";
+  const coachInitials = coachDisplayName
+    .split(" ")
+    .map((w) => w.charAt(0))
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
   if (isError) {
     return (
       <View style={[styles.scroll, styles.errorContainer, { paddingTop: insets.top + spacing[2] }]}>
@@ -335,35 +354,63 @@ export default function HomeTab(): React.JSX.Element {
     <ScrollView style={styles.scroll} contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing[2] }]}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.greeting}>{t(greetingKey)},</Text>
-        <Text style={styles.displayName}>{displayName}</Text>
+        <View style={styles.headerLeft}>
+          <Text style={styles.greeting}>{t(greetingKey).toUpperCase()}</Text>
+          <Text style={styles.displayName}>{displayName}</Text>
+        </View>
+        <View style={styles.headerAvatar}>
+          <Text style={styles.headerAvatarText}>{avatarInitial}</Text>
+        </View>
+      </View>
+
+      {/* Frase del día — antes de la rutina, como en el prototipo */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{t("home.quoteOfTheDay")}</Text>
+        <Card style={styles.quoteCard}>
+          <Text style={styles.quoteText}>"{quoteText(dailyQuote, language)}"</Text>
+          <Text style={styles.quoteAuthor}>— {dailyQuote.author}</Text>
+          <Text style={styles.quoteSport}>{dailyQuote.sport}</Text>
+        </Card>
       </View>
 
       {/* Racha semanal */}
       <View style={styles.section}>
-        <View style={styles.streakHeader}>
-          <Text style={styles.sectionTitle}>{t("home.weeklyStreak")}</Text>
-          <Text style={styles.streakCount}>{streakCount} {t("home.days")} 🔥</Text>
-        </View>
-        <View style={styles.streakGrid}>
-          {WEEK_DAYS.map((day, i) => (
-            <View key={day} style={styles.streakDayCol}>
-              <View style={[styles.streakDayBox, trainedDayIndices.has(i) && styles.streakDayBoxActive]}>
-                {trainedDayIndices.has(i) && (
-                  <Text style={styles.streakDayCheck}>✓</Text>
-                )}
+        <Card style={styles.streakCard}>
+          <View style={styles.streakHeader}>
+            <Text style={styles.sectionTitle}>{t("home.weeklyStreak")}</Text>
+            <Text style={styles.streakCount}>{streakCount} {t("home.days")} 🔥</Text>
+          </View>
+          <View style={styles.streakGrid}>
+            {WEEK_DAYS.map((day, i) => (
+              <View key={day} style={styles.streakDayCol}>
+                <View style={[styles.streakDayBox, trainedDayIndices.has(i) && styles.streakDayBoxActive]}>
+                  {trainedDayIndices.has(i) && (
+                    <Text style={styles.streakDayCheck}>✓</Text>
+                  )}
+                </View>
+                <Text style={[styles.streakDayLabel, trainedDayIndices.has(i) && styles.streakDayLabelActive]}>{day}</Text>
               </View>
-              <Text style={[styles.streakDayLabel, trainedDayIndices.has(i) && styles.streakDayLabelActive]}>{day}</Text>
-            </View>
-          ))}
-        </View>
+            ))}
+          </View>
+        </Card>
       </View>
 
       {/* Banner contextual */}
       {hasCoach ? (
         <View style={[styles.banner, styles.bannerCoach]}>
-          <Text style={styles.bannerCoachLabel}>{t("home.bannerCoachLabel")}</Text>
-          <Text style={styles.bannerCoachName}>{activeAssignment?.coach_profiles?.display_name ?? "Tu coach"}</Text>
+          <View style={styles.bannerCoachAvatar}>
+            <Text style={styles.bannerCoachAvatarText}>{coachInitials}</Text>
+          </View>
+          <View style={styles.bannerTextCol}>
+            <Text style={styles.bannerCoachLabel}>{t("home.bannerCoachLabel")} · Paq.</Text>
+            <Text style={styles.bannerCoachName}>{coachDisplayName}</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.bannerCoachChatBtn}
+            onPress={() => router.push("/(tabs)/chat" as never)}
+          >
+            <Text style={styles.bannerCoachChatBtnText}>Chat</Text>
+          </TouchableOpacity>
         </View>
       ) : isPro ? (
         <TouchableOpacity
@@ -443,7 +490,7 @@ export default function HomeTab(): React.JSX.Element {
               </View>
             )}
             <View style={styles.routineCta}>
-              <Text testID="open-routine-button" style={styles.routineCtaText}>{t("home.openRoutine")}</Text>
+              <Text testID="open-routine-button" style={styles.routineCtaText}>▶ {t("home.openRoutine")}</Text>
             </View>
           </Card>
         ) : hasCoach ? (
@@ -484,29 +531,26 @@ export default function HomeTab(): React.JSX.Element {
         )}
       </View>
 
-      {/* Frase del día */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t("home.quoteOfTheDay")}</Text>
-        <Card style={styles.quoteCard}>
-          <Text style={styles.quoteText}>"{quoteText(dailyQuote, language)}"</Text>
-          <Text style={styles.quoteAuthor}>— {dailyQuote.author}</Text>
-          <Text style={styles.quoteSport}>{dailyQuote.sport}</Text>
-        </Card>
-      </View>
-
       {/* Meta mensual */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t("home.monthlyGoal")}</Text>
         <Card style={styles.goalCard}>
           <View style={styles.goalRow}>
-            <View style={styles.goalProgressBar}>
-              <View style={[styles.goalProgressFill, { width: `${Math.round(monthProgress * 100)}%` as `${number}%` }]} />
+            <View style={styles.goalCircleTrack}>
+              <View style={styles.goalCircleInner}>
+                <Text style={styles.goalCirclePct}>{Math.round(monthProgress * 100)}%</Text>
+              </View>
             </View>
-            <Text style={styles.goalCount}>
-              {monthSessions}/{monthGoal}
-            </Text>
+            <View style={styles.goalRight}>
+              <Text style={styles.goalCount}>
+                {monthSessions}/{monthGoal}
+              </Text>
+              <Text style={styles.goalSub}>{t("home.monthlyGoalSub", { done: monthSessions, total: monthGoal })}</Text>
+              <View style={styles.goalProgressBar}>
+                <View style={[styles.goalProgressFill, { width: `${Math.round(monthProgress * 100)}%` as `${number}%` }]} />
+              </View>
+            </View>
           </View>
-          <Text style={styles.goalSub}>{t("home.monthlyGoalSub", { done: monthSessions, total: monthGoal })}</Text>
         </Card>
       </View>
 
@@ -515,38 +559,46 @@ export default function HomeTab(): React.JSX.Element {
         <Text style={styles.sectionTitle}>{t("home.quickActions")}</Text>
         <View style={styles.quickGrid}>
           <TouchableOpacity
-            style={styles.quickTile}
+            style={[styles.quickTile, styles.quickTileTabata]}
             onPress={() => router.push("/tabata" as never)}
             testID="quick-tabata"
           >
-            <Text style={styles.quickIcon}>⏱</Text>
+            <View style={[styles.quickIconBg, styles.quickIconBgTabata]}>
+              <Text style={styles.quickIcon}>⏱</Text>
+            </View>
             <Text style={styles.quickLabel}>{t("home.quickTabata")}</Text>
             <Text style={styles.quickSub}>{t("home.quickTabataSub")}</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.quickTile}
+            style={[styles.quickTile, styles.quickTileRegister]}
             onPress={() => router.push("/register-workout" as never)}
             testID="quick-register"
           >
-            <Text style={styles.quickIcon}>📝</Text>
+            <View style={[styles.quickIconBg, styles.quickIconBgRegister]}>
+              <Text style={styles.quickIcon}>📝</Text>
+            </View>
             <Text style={styles.quickLabel}>{t("home.quickRegister")}</Text>
             <Text style={styles.quickSub}>{t("home.quickRegisterSub")}</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.quickTile}
+            style={[styles.quickTile, styles.quickTileNewRoutine]}
             onPress={() => router.push("/routine/new" as never)}
             testID="quick-new-routine"
           >
-            <Text style={styles.quickIcon}>➕</Text>
+            <View style={[styles.quickIconBg, styles.quickIconBgNewRoutine]}>
+              <Text style={styles.quickIcon}>➕</Text>
+            </View>
             <Text style={styles.quickLabel}>{t("home.quickNewRoutine")}</Text>
             <Text style={styles.quickSub}>{t("home.quickNewRoutineSub")}</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.quickTile}
+            style={[styles.quickTile, styles.quickTileProgress]}
             onPress={() => router.push("/(tabs)/progress" as never)}
             testID="quick-progress"
           >
-            <Text style={styles.quickIcon}>📈</Text>
+            <View style={[styles.quickIconBg, styles.quickIconBgProgress]}>
+              <Text style={styles.quickIcon}>📈</Text>
+            </View>
             <Text style={styles.quickLabel}>{t("home.quickProgress")}</Text>
             <Text style={styles.quickSub}>{t("home.quickProgressSub")}</Text>
           </TouchableOpacity>
@@ -556,7 +608,9 @@ export default function HomeTab(): React.JSX.Element {
               onPress={() => router.push("/live-sessions" as never)}
               testID="quick-live-sessions"
             >
-              <Text style={styles.quickIcon}>📹</Text>
+              <View style={styles.quickIconBg}>
+                <Text style={styles.quickIcon}>📹</Text>
+              </View>
               <Text style={styles.quickLabel}>{t("home.quickLiveSessions")}</Text>
               <Text style={styles.quickSub}>{t("home.quickLiveSessionsSub")}</Text>
             </TouchableOpacity>
@@ -588,13 +642,22 @@ const styles = StyleSheet.create({
     padding: spacing[4],
     paddingBottom: spacing[20],
   },
+  // Header
   header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: spacing[6],
+  },
+  headerLeft: {
+    flex: 1,
   },
   greeting: {
     fontFamily: typography.body,
     color: colors.muted,
-    fontSize: 16,
+    fontSize: fontSize.xs,
+    fontWeight: "700",
+    letterSpacing: 1.5,
   },
   displayName: {
     fontFamily: typography.heading,
@@ -602,6 +665,22 @@ const styles = StyleSheet.create({
     fontSize: fontSize.screenTitle,
     letterSpacing: -1,
     textTransform: "uppercase",
+  },
+  headerAvatar: {
+    width: 48,
+    height: 48,
+    borderRadius: radius.full,
+    borderWidth: 2,
+    borderColor: colors.lime,
+    backgroundColor: colors.surface3,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: spacing[3],
+  },
+  headerAvatarText: {
+    fontFamily: typography.heading,
+    color: colors.lime,
+    fontSize: 22,
   },
   section: {
     marginBottom: spacing[6],
@@ -616,7 +695,13 @@ const styles = StyleSheet.create({
     marginBottom: spacing[3],
   },
   // Racha semanal
-  streakHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: spacing[3] },
+  streakCard: {
+    backgroundColor: colors.surface2,
+    borderWidth: 1,
+    borderColor: colors.border,
+    gap: spacing[3],
+  },
+  streakHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   streakCount: { fontFamily: typography.mono, color: colors.lime, fontSize: fontSize.sm, fontWeight: "700" },
   streakGrid: { flexDirection: "row", gap: spacing[1] },
   streakDayCol: { flex: 1, alignItems: "center", gap: spacing[1] },
@@ -628,11 +713,40 @@ const styles = StyleSheet.create({
   // Banner contextual
   banner: { borderRadius: radius.lg, padding: spacing[3], marginBottom: spacing[4], flexDirection: "row", alignItems: "center" },
   bannerCoach: { backgroundColor: colors.surface2, borderWidth: 1, borderColor: colors.border },
+  bannerCoachAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: radius.full,
+    backgroundColor: colors.limeGlow,
+    borderWidth: 2,
+    borderColor: colors.lime,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: spacing[3],
+  },
+  bannerCoachAvatarText: {
+    fontFamily: typography.heading,
+    color: colors.lime,
+    fontSize: 18,
+  },
   bannerPro: { backgroundColor: colors.surface2, borderWidth: 1, borderColor: colors.info },
-  bannerFree: { backgroundColor: colors.surface2, borderWidth: 1, borderColor: colors.lime },
+  bannerFree: { backgroundColor: colors.limeGlow, borderWidth: 1, borderColor: colors.lime },
   bannerTextCol: { flex: 1 },
   bannerCoachLabel: { fontFamily: typography.body, color: colors.muted, fontSize: fontSize.xs, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.8 },
   bannerCoachName: { fontFamily: typography.body, color: colors.text, fontSize: fontSize.md, fontWeight: "700" },
+  bannerCoachChatBtn: {
+    backgroundColor: colors.lime,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[2],
+    marginLeft: spacing[2],
+  },
+  bannerCoachChatBtnText: {
+    fontFamily: typography.heading,
+    color: colors.black,
+    fontSize: 14,
+    letterSpacing: 0.5,
+  },
   bannerProTitle: { fontFamily: typography.body, color: colors.info, fontSize: fontSize.sm, fontWeight: "700", marginBottom: 2 },
   bannerProSub: { fontFamily: typography.body, color: colors.muted, fontSize: fontSize.sm },
   bannerFreeTitle: { fontFamily: typography.body, color: colors.lime, fontSize: fontSize.sm, fontWeight: "700", marginBottom: 2 },
@@ -642,6 +756,7 @@ const styles = StyleSheet.create({
   routineCard: {
     gap: spacing[2],
     paddingTop: spacing[5],
+    borderColor: colors.limeGlow,
   },
   routineName: {
     fontFamily: typography.heading,
@@ -824,22 +939,82 @@ const styles = StyleSheet.create({
   quoteText: { fontFamily: typography.body, color: colors.text, fontSize: fontSize.md, fontStyle: "italic", lineHeight: 22 },
   quoteAuthor: { fontFamily: typography.body, color: colors.lime, fontSize: fontSize.sm, fontWeight: "700" },
   quoteSport: { fontFamily: typography.body, color: colors.muted, fontSize: fontSize.xs },
-  // Meta mensual
+  // Meta mensual — círculo visual
   goalCard: { gap: spacing[2] },
-  goalRow: { flexDirection: "row", alignItems: "center", gap: spacing[3] },
-  goalProgressBar: { flex: 1, height: 8, backgroundColor: colors.surface3, borderRadius: radius.full, overflow: "hidden" },
-  goalProgressFill: { height: 8, backgroundColor: colors.lime, borderRadius: radius.full },
-  goalCount: { fontFamily: typography.mono, color: colors.lime, fontSize: fontSize.md, fontWeight: "700", minWidth: 48, textAlign: "right" },
-  goalSub: { fontFamily: typography.body, color: colors.muted, fontSize: fontSize.sm },
+  goalRow: { flexDirection: "row", alignItems: "center", gap: spacing[4] },
+  goalCircleTrack: {
+    width: 76,
+    height: 76,
+    borderRadius: radius.full,
+    borderWidth: 6,
+    borderColor: colors.surface3,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  goalCircleInner: {
+    width: 60,
+    height: 60,
+    borderRadius: radius.full,
+    borderWidth: 6,
+    borderColor: colors.lime,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  goalCirclePct: {
+    fontFamily: typography.mono,
+    color: colors.lime,
+    fontSize: fontSize.sm,
+    fontWeight: "700",
+  },
+  goalRight: { flex: 1 },
+  goalCount: { fontFamily: typography.mono, color: colors.lime, fontSize: fontSize.xl, fontWeight: "700" },
+  goalSub: { fontFamily: typography.body, color: colors.muted, fontSize: fontSize.sm, marginTop: 2, marginBottom: spacing[2] },
+  goalProgressBar: { height: 4, backgroundColor: colors.surface3, borderRadius: radius.full, overflow: "hidden" },
+  goalProgressFill: { height: 4, backgroundColor: colors.lime, borderRadius: radius.full },
   // Acciones rápidas
   quickGrid: { flexDirection: "row", flexWrap: "wrap", gap: spacing[3] },
   quickTile: { width: "47%", backgroundColor: colors.surface2, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing[4], gap: spacing[1] },
-  quickIcon: { fontSize: 24 },
+  quickTileTabata: { borderColor: colors.limeGlow },
+  quickTileRegister: { borderColor: "rgba(68,136,255,0.2)" },
+  quickTileNewRoutine: { borderColor: "rgba(255,136,64,0.2)" },
+  quickTileProgress: { borderColor: "rgba(167,139,250,0.2)" },
+  quickIconBg: {
+    width: 36,
+    height: 36,
+    borderRadius: radius.md,
+    backgroundColor: colors.surface3,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: spacing[1],
+  },
+  quickIconBgTabata: { backgroundColor: colors.limeGlow },
+  quickIconBgRegister: { backgroundColor: "rgba(68,136,255,0.12)" },
+  quickIconBgNewRoutine: { backgroundColor: "rgba(255,136,64,0.12)" },
+  quickIconBgProgress: { backgroundColor: "rgba(167,139,250,0.12)" },
+  quickIcon: { fontSize: 20 },
   quickLabel: { fontFamily: typography.body, color: colors.text, fontSize: fontSize.md, fontWeight: "700" },
   quickSub: { fontFamily: typography.body, color: colors.muted, fontSize: fontSize.xs },
   // Coach message
   coachMsgCard: { gap: spacing[3] },
-  coachMsgBody: { fontFamily: typography.body, color: colors.text, fontSize: fontSize.md, lineHeight: 20 },
+  coachMsgRow: { flexDirection: "row", alignItems: "flex-start", gap: spacing[3] },
+  coachMsgAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: radius.full,
+    backgroundColor: colors.limeGlow,
+    borderWidth: 2,
+    borderColor: colors.lime,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  coachMsgAvatarText: {
+    fontFamily: typography.heading,
+    color: colors.lime,
+    fontSize: 18,
+  },
+  coachMsgBody: { fontFamily: typography.body, color: colors.text, fontSize: fontSize.md, lineHeight: 20, flex: 1 },
   coachMsgBtn: { backgroundColor: colors.lime, borderRadius: radius.md, paddingVertical: spacing[3], alignItems: "center" },
   coachMsgBtnText: { fontFamily: typography.heading, color: colors.black, fontSize: fontSize.base, letterSpacing: 0.5 },
 });

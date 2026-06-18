@@ -193,7 +193,7 @@ function NotificationPrefsSection({ userId }: { userId: string }): React.JSX.Ele
 
 const notifStyles = StyleSheet.create({
   section: {
-    marginBottom: spacing[8],
+    marginBottom: spacing[4],
   },
   sectionTitle: {
     fontFamily: typography.body,
@@ -274,6 +274,90 @@ const notifStyles = StyleSheet.create({
   },
 });
 
+// ── Menu item ───────────────────────────────────────────────────────────────
+
+interface MenuItemProps {
+  icon: string;
+  label: string;
+  subtitle?: string;
+  onPress: () => void;
+  danger?: boolean;
+  isLast?: boolean;
+  rightElement?: React.ReactNode;
+}
+
+function MenuItem({ icon, label, subtitle, onPress, danger = false, isLast = false, rightElement }: MenuItemProps): React.JSX.Element {
+  return (
+    <TouchableOpacity
+      style={[menuStyles.row, !isLast && menuStyles.rowBorder]}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
+      <View style={menuStyles.iconBox}>
+        <Text style={menuStyles.iconText}>{icon}</Text>
+      </View>
+      <View style={menuStyles.labelCol}>
+        <Text style={[menuStyles.label, danger && menuStyles.labelDanger]}>{label}</Text>
+        {subtitle ? <Text style={menuStyles.subtitle}>{subtitle}</Text> : null}
+      </View>
+      {rightElement ?? <Text style={[menuStyles.arrow, danger && menuStyles.arrowDanger]}>›</Text>}
+    </TouchableOpacity>
+  );
+}
+
+const menuStyles = StyleSheet.create({
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: spacing[3],
+    gap: spacing[3],
+  },
+  rowBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  iconBox: {
+    width: 42,
+    height: 42,
+    borderRadius: 13,
+    backgroundColor: colors.surface2,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  iconText: {
+    fontSize: 20,
+  },
+  labelCol: {
+    flex: 1,
+  },
+  label: {
+    fontFamily: typography.body,
+    color: colors.text,
+    fontSize: fontSize.base,
+    fontWeight: "700",
+  },
+  labelDanger: {
+    color: colors.error,
+  },
+  subtitle: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.sm,
+    marginTop: 1,
+  },
+  arrow: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: 22,
+  },
+  arrowDanger: {
+    color: colors.error,
+  },
+});
+
+// ── Profile Tab ─────────────────────────────────────────────────────────────
+
 export default function ProfileTab() {
   const { t } = useTranslation();
   const { user, signOut } = useAuth();
@@ -287,6 +371,9 @@ export default function ProfileTab() {
   const [deletingAccount, setDeletingAccount] = useState(false);
   // Cancel coach plan state
   const [cancelingCoach, setCancelingCoach] = useState(false);
+  // Expandable sections
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showLanguage, setShowLanguage] = useState(false);
 
   const localCompletedSessions = completedSessionsFromQueue(syncQueue, user?.id);
   const { data: remoteCompletedSessions = [], isLoading: sessionsLoading } = useQuery({
@@ -448,153 +535,178 @@ export default function ProfileTab() {
     }
   }
 
+  const displayName = user?.email?.split("@")[0] ?? "atleta";
+  const avatarInitial = displayName.charAt(0).toUpperCase();
+
   return (
     <ScrollView
       style={styles.scroll}
       contentContainerStyle={[styles.container, { paddingTop: insets.top + spacing[4] }]}
     >
-      <Text style={styles.title}>{t("profile.title")}</Text>
-
-      {user && (
-        <Text style={styles.email}>{user.email}</Text>
-      )}
-
-      {/* ── Badge de plan ── */}
-      <View style={styles.planRow}>
-        {entitlementsLoading
-          ? <Skeleton width={64} height={24} />
-          : <Pill label={planLabel()} variant={planPillVariant()} />
-        }
-        {/* Gestionar suscripción PRO — visible solo cuando isPro */}
-        {!entitlementsLoading && isPro && (
-          <TouchableOpacity
-            style={styles.managePlanLink}
-            onPress={() => { router.push("/manage-subscription"); }}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            testID="profile-manage-subscription-btn"
-          >
-            <Text style={styles.managePlanLinkText}>{t("profile.managePlan")}</Text>
-          </TouchableOpacity>
+      {/* Header con avatar */}
+      <View style={styles.header}>
+        <View style={styles.headerAvatar}>
+          <Text style={styles.headerAvatarText}>{avatarInitial}</Text>
+        </View>
+        <Text style={styles.title}>{t("profile.title")}</Text>
+        {user && (
+          <Text style={styles.email}>{user.email}</Text>
         )}
+        {/* Badge de plan */}
+        <View style={styles.planRow}>
+          {entitlementsLoading
+            ? <Skeleton width={64} height={24} />
+            : <Pill label={planLabel()} variant={planPillVariant()} />
+          }
+        </View>
       </View>
 
-      {/* ── Stats básicas ── */}
+      {/* Stats */}
       <View style={styles.statsRow}>
         <View style={styles.statCard}>
           <Text style={styles.statValue}>{completedSessionsLabel}</Text>
-          <Text style={styles.statLabel}>{t("profile.statSessions")}</Text>
+          <Text style={styles.statLabel}>{t("profile.statSessions").toUpperCase()}</Text>
         </View>
-        {/* Streak: sin fuente de datos aún — TODO Fase 3 */}
         {hasCoach && (
           <View style={styles.statCard}>
             <Text style={styles.statValue}>
               {coachLoading ? "—" : (coachName ? "✓" : "—")}
             </Text>
-            <Text style={styles.statLabel}>{t("profile.statCoach")}</Text>
+            <Text style={styles.statLabel}>{t("profile.statCoach").toUpperCase()}</Text>
           </View>
         )}
       </View>
 
-      {/* ── Sección Coach ── */}
-      {(hasCoach || coachId) && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t("profile.sectionCoach")}</Text>
-          <View style={styles.coachCard}>
-            {coachLoading
-              ? <Skeleton width="60%" height={16} />
-              : (
-                <View style={styles.coachCardContent}>
-                  <Text style={styles.coachName}>
-                    {coachName ?? t("profile.coachNone")}
-                  </Text>
-                  <Pill label={t("profile.coachActive")} variant="success" />
-                </View>
-              )
-            }
-          </View>
-          {/* Sesiones en vivo */}
-          <TouchableOpacity
-            style={styles.liveSessionsButton}
-            onPress={() => router.push("/live-sessions" as never)}
-            testID="profile-live-sessions-btn"
-          >
-            <Text style={styles.liveSessionsText}>{t("liveSessions.screenTitle")}</Text>
-          </TouchableOpacity>
-
-          {/* Cancelar plan del coach */}
-          <TouchableOpacity
-            style={[styles.cancelCoachButton, cancelingCoach && styles.buttonDisabled]}
-            onPress={handleCancelCoachPlan}
-            disabled={cancelingCoach}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            testID="profile-cancel-coach-btn"
-          >
-            {cancelingCoach
-              ? <ActivityIndicator color={colors.warning} size="small" />
-              : <Text style={styles.cancelCoachText}>{t("profile.cancelCoachPlan")}</Text>
-            }
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* ── Sección Idioma ── */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t("profile.language_section")}</Text>
-        <View style={styles.langRow}>
-          {LANGUAGES.map((lang) => {
-            const isActive = language === lang.code;
-            return (
-              <TouchableOpacity
-                key={lang.code}
-                style={[styles.langButton, isActive && styles.langButtonActive]}
-                onPress={() => setLanguage(lang.code)}
-                activeOpacity={0.7}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              >
-                <Text style={[styles.langCode, isActive && styles.langCodeActive]}>
-                  {lang.label}
-                </Text>
-                <Text style={[styles.langNative, isActive && styles.langNativeActive]}>
-                  {lang.native}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      </View>
-
-      {/* ── Notificaciones ── */}
-      {user?.id && <NotificationPrefsSection userId={user.id} />}
-
-      {/* ── Acciones ── */}
-      <View style={styles.actions}>
-        {/* Historial de pagos */}
-        <TouchableOpacity
-          style={styles.paymentsButton}
-          onPress={() => router.push("/payments-history")}
-          testID="profile-payments-history-btn"
-        >
-          <Text style={styles.paymentsButtonText}>{t("paymentsHistory.viewHistory")}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.signOutButton}
-          onPress={() => { void handleSignOut(); }}
-        >
-          <Text style={styles.signOutText}>{t("profile.signOut")}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.deleteButton, deletingAccount && styles.buttonDisabled]}
-          onPress={handleDeleteAccount}
-          disabled={deletingAccount}
-          testID="profile-delete-account-btn"
-        >
-          {deletingAccount
-            ? <ActivityIndicator color={colors.error} size="small" />
-            : <Text style={styles.deleteText}>{t("profile.deleteAccount")}</Text>
+      {/* Menu list */}
+      <View style={styles.menuSection}>
+        {/* Notificaciones */}
+        <MenuItem
+          icon="🔔"
+          label={t("profile.menuNotifications")}
+          subtitle={t("profile.menuNotificationsSub")}
+          onPress={() => setShowNotifications((v) => !v)}
+          rightElement={
+            <Text style={menuStyles.arrow}>{showNotifications ? "∨" : "›"}</Text>
           }
-        </TouchableOpacity>
+        />
+        {showNotifications && user?.id && (
+          <View style={styles.expandedSection}>
+            <NotificationPrefsSection userId={user.id} />
+          </View>
+        )}
+
+        {/* Mi plan */}
+        <MenuItem
+          icon="⭐"
+          label={t("profile.menuMyPlan")}
+          subtitle={t("profile.menuMyPlanSub")}
+          onPress={() => { router.push("/manage-subscription"); }}
+        />
+
+        {/* Pagos */}
+        <MenuItem
+          icon="💳"
+          label={t("profile.menuPayments")}
+          subtitle={t("profile.menuPaymentsSub")}
+          onPress={() => router.push("/payments-history")}
+        />
+
+        {/* Fotos de progreso */}
+        <MenuItem
+          icon={isPro ? "📷" : "🔒"}
+          label={t("profile.menuProgressPhotos")}
+          subtitle={t("profile.menuProgressPhotosSub")}
+          onPress={() => {
+            if (isPro) {
+              router.push("/progress-photos");
+            } else {
+              router.push("/upgrade" as never);
+            }
+          }}
+        />
+
+        {/* Idioma */}
+        <MenuItem
+          icon="🌐"
+          label={t("profile.menuLanguage")}
+          subtitle={t("profile.menuLanguageSub")}
+          onPress={() => setShowLanguage((v) => !v)}
+          rightElement={
+            <Text style={menuStyles.arrow}>{showLanguage ? "∨" : "›"}</Text>
+          }
+        />
+        {showLanguage && (
+          <View style={styles.expandedSection}>
+            <View style={styles.langRow}>
+              {LANGUAGES.map((lang) => {
+                const isActive = language === lang.code;
+                return (
+                  <TouchableOpacity
+                    key={lang.code}
+                    style={[styles.langButton, isActive && styles.langButtonActive]}
+                    onPress={() => setLanguage(lang.code)}
+                    activeOpacity={0.7}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Text style={[styles.langCode, isActive && styles.langCodeActive]}>
+                      {lang.label}
+                    </Text>
+                    <Text style={[styles.langNative, isActive && styles.langNativeActive]}>
+                      {lang.native}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+        )}
+
+        {/* Sesiones en vivo — solo si hasCoach */}
+        {hasCoach && (
+          <MenuItem
+            icon="📹"
+            label={t("profile.menuLiveSessions")}
+            subtitle={t("profile.menuLiveSessionsSub")}
+            onPress={() => router.push("/live-sessions" as never)}
+          />
+        )}
+
+        {/* Cancelar plan coach — solo si hasCoach */}
+        {hasCoach && (
+          <MenuItem
+            icon="⚠️"
+            label={t("profile.menuCancelCoach")}
+            subtitle={t("profile.menuCancelCoachSub")}
+            onPress={handleCancelCoachPlan}
+            rightElement={
+              cancelingCoach
+                ? <ActivityIndicator color={colors.warning} size="small" />
+                : <Text style={menuStyles.arrow}>›</Text>
+            }
+          />
+        )}
+
+        {/* Cerrar sesión */}
+        <MenuItem
+          icon="🚪"
+          label={t("profile.menuSignOut")}
+          onPress={() => { void handleSignOut(); }}
+          danger
+        />
+
+        {/* Eliminar cuenta */}
+        <MenuItem
+          icon="🗑"
+          label={t("profile.menuDeleteAccount")}
+          onPress={handleDeleteAccount}
+          danger
+          isLast
+          rightElement={
+            deletingAccount
+              ? <ActivityIndicator color={colors.error} size="small" />
+              : <Text style={[menuStyles.arrow, menuStyles.arrowDanger]}>›</Text>
+          }
+        />
       </View>
     </ScrollView>
   );
@@ -606,8 +718,32 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bg,
   },
   container: {
-    padding: spacing[6],
+    paddingHorizontal: spacing[4],
     paddingBottom: spacing[20],
+  },
+  // Header
+  header: {
+    alignItems: "center",
+    paddingBottom: spacing[6],
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    marginBottom: spacing[4],
+  },
+  headerAvatar: {
+    width: 76,
+    height: 76,
+    borderRadius: radius.full,
+    borderWidth: 3,
+    borderColor: colors.lime,
+    backgroundColor: colors.surface3,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: spacing[3],
+  },
+  headerAvatarText: {
+    fontFamily: typography.heading,
+    color: colors.lime,
+    fontSize: 36,
   },
   title: {
     fontFamily: typography.heading,
@@ -615,7 +751,7 @@ const styles = StyleSheet.create({
     fontSize: fontSize.screenTitle,
     letterSpacing: -1,
     textTransform: "uppercase",
-    marginBottom: spacing[2],
+    marginBottom: spacing[1],
   },
   email: {
     fontFamily: typography.body,
@@ -624,28 +760,17 @@ const styles = StyleSheet.create({
     marginBottom: spacing[3],
   },
   planRow: {
-    marginBottom: spacing[4],
-    gap: spacing[2],
-  },
-  managePlanLink: {
-    paddingVertical: spacing[1],
-    alignSelf: "flex-start",
-  },
-  managePlanLinkText: {
-    fontFamily: typography.body,
-    color: colors.lime,
-    fontSize: fontSize.sm,
-    textDecorationLine: "underline",
+    alignItems: "center",
   },
   // Stats row
   statsRow: {
     flexDirection: "row",
     gap: spacing[3],
-    marginBottom: spacing[6],
+    marginBottom: spacing[5],
   },
   statCard: {
     flex: 1,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surface2,
     borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
@@ -657,7 +782,7 @@ const styles = StyleSheet.create({
   statValue: {
     fontFamily: typography.mono,
     color: colors.lime,
-    fontSize: fontSize.lg,
+    fontSize: fontSize.xl,
     fontWeight: "700",
   },
   statLabel: {
@@ -665,41 +790,24 @@ const styles = StyleSheet.create({
     color: colors.muted,
     fontSize: 10,
     marginTop: spacing[1],
-    textTransform: "uppercase",
     letterSpacing: 0.5,
   },
-  // Coach card
-  coachCard: {
-    backgroundColor: colors.surface,
+  // Menu
+  menuSection: {
+    backgroundColor: colors.surface2,
     borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
-    padding: spacing[4],
+    paddingHorizontal: spacing[4],
+    marginBottom: spacing[6],
   },
-  coachCardContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+  expandedSection: {
+    paddingVertical: spacing[3],
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    marginBottom: spacing[2],
   },
-  coachName: {
-    fontFamily: typography.body,
-    color: colors.text,
-    fontSize: fontSize.base,
-    fontWeight: "600",
-  },
-  // Sección de idioma
-  section: {
-    marginBottom: spacing[8],
-  },
-  sectionTitle: {
-    fontFamily: typography.body,
-    color: colors.muted,
-    fontSize: 11,
-    fontWeight: "700",
-    textTransform: "uppercase",
-    letterSpacing: 1.5,
-    marginBottom: spacing[3],
-  },
+  // Language selector
   langRow: {
     flexDirection: "row",
     gap: spacing[3],
@@ -736,87 +844,5 @@ const styles = StyleSheet.create({
   },
   langNativeActive: {
     color: colors.lime,
-  },
-  liveSessionsButton: {
-    marginTop: spacing[3],
-    padding: spacing[3],
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.info,
-    alignItems: "center",
-    minHeight: 44,
-    justifyContent: "center",
-  },
-  liveSessionsText: {
-    fontFamily: typography.body,
-    color: colors.info,
-    fontSize: fontSize.md,
-    fontWeight: "700",
-  },
-  cancelCoachButton: {
-    marginTop: spacing[3],
-    padding: spacing[3],
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.warning,
-    alignItems: "center",
-    minHeight: 44,
-    justifyContent: "center",
-  },
-  cancelCoachText: {
-    fontFamily: typography.body,
-    color: colors.warning,
-    fontSize: fontSize.md,
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-  },
-  // Acciones
-  actions: {
-    gap: spacing[3],
-  },
-  paymentsButton: {
-    padding: spacing[4],
-    borderRadius: radius.md,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: "center",
-    minHeight: 52,
-    justifyContent: "center",
-  },
-  paymentsButtonText: {
-    fontFamily: typography.body,
-    color: colors.text,
-    fontSize: 16,
-  },
-  signOutButton: {
-    padding: spacing[4],
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: "center",
-    minHeight: 52,
-    justifyContent: "center",
-  },
-  signOutText: {
-    fontFamily: typography.body,
-    color: colors.text,
-    fontSize: 16,
-  },
-  deleteButton: {
-    padding: spacing[4],
-    borderRadius: radius.md,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.error,
-    alignItems: "center",
-    minHeight: 52,
-    justifyContent: "center",
-  },
-  deleteText: {
-    fontFamily: typography.body,
-    color: colors.error,
-    fontSize: 16,
   },
 });

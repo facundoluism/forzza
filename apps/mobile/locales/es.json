@@ -69,6 +69,7 @@
   },
   "routines": {
     "title": "Mis Rutinas",
+    "subtitle": "Tus rutinas personales",
     "freeLimit": "Límite del plan gratuito: {{count}} rutinas",
     "empty_title": "No tenés rutinas todavía",
     "empty_desc": "Creá tu primera rutina tocando el botón «+» o esperá a que tu coach te asigne una.",
@@ -80,7 +81,9 @@
     "upgradeFeature": "crear más de 3 rutinas"
   },
   "progress": {
-    "title": "Tu Progreso",
+    "title": "Mi Progreso",
+    "subtitle_one": "{{count}} sesión registrada",
+    "subtitle_other": "{{count}} sesiones registradas",
     "thisWeek": "Esta semana",
     "streakDay_one": "Día seguido",
     "streakDay_other": "Días seguidos",
@@ -96,10 +99,14 @@
     "proGated_desc": "Función disponible en el plan Pro. Próximamente.",
     "upgradeFeature": "historial completo de sesiones",
     "series_one": "serie",
-    "series_other": "series"
+    "series_other": "series",
+    "tabGraficos": "Gráficos",
+    "tabMedidas": "Medidas",
+    "tabHistorial": "Historial"
   },
   "chat": {
     "title": "Mensajes",
+    "subtitle": "Tus conversaciones con coaches",
     "noMessages": "Sin mensajes aún",
     "empty_title": "Sin conversaciones",
     "empty_desc": "Los chats con tu coach aparecen acá cuando contratás un paquete.",
@@ -141,7 +148,23 @@
     "cancelCoach_success_title": "Plan cancelado",
     "cancelCoach_success_msg": "Tu acceso con el coach continúa hasta el fin del ciclo de facturación.",
     "cancelCoach_error_title": "Error al cancelar",
-    "cancelCoach_error_msg": "No pudimos cancelar el plan. Intentá de nuevo o contactá soporte."
+    "cancelCoach_error_msg": "No pudimos cancelar el plan. Intentá de nuevo o contactá soporte.",
+    "menuNotifications": "Notificaciones",
+    "menuNotificationsSub": "Recordatorios y alertas",
+    "menuMyPlan": "Mi plan",
+    "menuMyPlanSub": "PRO · Ver planes disponibles",
+    "menuPayments": "Pagos",
+    "menuPaymentsSub": "Historial de transacciones",
+    "menuProgressPhotos": "Fotos de progreso",
+    "menuProgressPhotosSub": "Timeline corporal · PRO",
+    "menuLanguage": "Idioma",
+    "menuLanguageSub": "Español · English",
+    "menuLiveSessions": "Sesiones en vivo",
+    "menuLiveSessionsSub": "Videollamadas con tu coach",
+    "menuCancelCoach": "Cancelar plan con mi coach",
+    "menuCancelCoachSub": "Finaliza el ciclo actual",
+    "menuSignOut": "Cerrá sesión",
+    "menuDeleteAccount": "Eliminá tu cuenta"
   },
   "manageSubscription": {
     "screenTitle": "Gestionar suscripción",

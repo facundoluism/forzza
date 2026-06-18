@@ -62,6 +62,7 @@ function AssignmentItem({
   onPress: () => void;
 }): React.JSX.Element {
   const { t } = useTranslation();
+  const initial = item.coachDisplayName.charAt(0).toUpperCase();
   return (
     <TouchableOpacity
       style={styles.item}
@@ -69,9 +70,7 @@ function AssignmentItem({
       onPress={onPress}
     >
       <View style={styles.avatar}>
-        <Text style={styles.avatarText}>
-          {item.coachDisplayName.charAt(0).toUpperCase()}
-        </Text>
+        <Text style={styles.avatarText}>{initial}</Text>
       </View>
       <View style={styles.itemContent}>
         <View style={styles.itemHeader}>
@@ -189,6 +188,7 @@ export default function ChatTab(): React.JSX.Element {
       <View style={styles.container}>
         <View style={[styles.header, { paddingTop: insets.top + spacing[2] }]}>
           <Text style={styles.headerTitle}>{t("chat.title")}</Text>
+          <Text style={styles.headerSubtitle}>{t("chat.subtitle")}</Text>
         </View>
         <ErrorState
           title={t("chat.error_title")}
@@ -207,13 +207,16 @@ export default function ChatTab(): React.JSX.Element {
     <View style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + spacing[2] }]}>
         <Text style={styles.headerTitle}>{t("chat.title")}</Text>
+        <Text style={styles.headerSubtitle}>{t("chat.subtitle")}</Text>
       </View>
       {chats.length === 0 ? (
-        <EmptyState
-          title={t("chat.empty_title")}
-          description={t("chat.empty_desc")}
-          icon="💬"
-        />
+        <View style={styles.emptyWrapper}>
+          <EmptyState
+            title={t("chat.empty_title")}
+            description={t("chat.empty_desc")}
+            icon="💬"
+          />
+        </View>
       ) : (
         <FlatList
           data={chats}
@@ -249,31 +252,49 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[4],
     paddingBottom: spacing[4],
     borderBottomWidth: 1,
-    borderBottomColor: colors.gray800,
+    borderBottomColor: colors.border,
   },
   headerTitle: {
     fontFamily: typography.heading,
-    color: colors.white,
+    color: colors.text,
     fontSize: fontSize.screenTitle,
-    letterSpacing: 1,
+    letterSpacing: -1,
     textTransform: "uppercase",
+  },
+  headerSubtitle: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.sm,
+    marginTop: 2,
   },
   list: {
     paddingTop: spacing[2],
     paddingBottom: spacing[20],
+    paddingHorizontal: spacing[4],
+  },
+  emptyWrapper: {
+    flex: 1,
+    paddingHorizontal: spacing[4],
   },
   item: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: spacing[4],
     paddingVertical: spacing[3],
     gap: spacing[3],
+    backgroundColor: colors.surface2,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: spacing[3],
+    marginVertical: spacing[1],
   },
   avatar: {
     width: 48,
     height: 48,
     borderRadius: radius.full,
-    backgroundColor: colors.gray800,
+    backgroundColor: colors.limeGlow,
+    borderWidth: 2,
+    borderColor: colors.lime,
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
@@ -294,9 +315,9 @@ const styles = StyleSheet.create({
   },
   itemName: {
     fontFamily: typography.body,
-    color: colors.white,
+    color: colors.text,
     fontSize: 15,
-    fontWeight: "600",
+    fontWeight: "700",
     flex: 1,
   },
   itemTime: {
@@ -312,7 +333,7 @@ const styles = StyleSheet.create({
   },
   itemPreview: {
     fontFamily: typography.body,
-    color: colors.gray400,
+    color: colors.muted,
     fontSize: 13,
     flex: 1,
   },
@@ -333,21 +354,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   separator: {
-    height: 1,
-    backgroundColor: colors.gray800,
-    marginLeft: spacing[4] + 48 + spacing[3],
-  },
-  emptyTitle: {
-    fontFamily: typography.heading,
-    color: colors.white,
-    fontSize: 24,
-    textTransform: "uppercase",
-    marginBottom: spacing[2],
-  },
-  emptyBody: {
-    fontFamily: typography.body,
-    color: colors.gray400,
-    fontSize: 14,
-    textAlign: "center",
+    height: spacing[2],
   },
 });

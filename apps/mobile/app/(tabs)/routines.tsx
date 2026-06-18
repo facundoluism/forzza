@@ -47,29 +47,35 @@ function SkeletonRoutineCard(): React.JSX.Element {
   );
 }
 
-const RoutineCard = memo(function RoutineCard({ routine }: { routine: Routine }): React.JSX.Element {
+const RoutineCard = memo(function RoutineCard({
+  routine,
+  featured = false,
+}: {
+  routine: Routine;
+  featured?: boolean;
+}): React.JSX.Element {
   const router = useRouter();
   const { t } = useTranslation();
   const exerciseCount = routine.exercises?.length ?? 0;
-  const createdDate = new Date(routine.created_at).toLocaleDateString("es-AR", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+  const setCount = routine.exercises?.reduce((acc, ex) => acc + ex.sets, 0) ?? 0;
 
   return (
     <Card
-      style={styles.card}
+      style={[styles.card, featured && styles.cardFeatured]}
+      featured={featured}
       onPress={() => router.push(`/routine/${routine.id}`)}
     >
       <Text style={styles.routineName}>{routine.title}</Text>
       <View style={styles.meta}>
-        <Text style={styles.metaText}>
-          <Text style={styles.metaMono}>{exerciseCount}</Text>
-          {" "}{t("routines.exercise", { count: exerciseCount })}
-        </Text>
-        <Text style={styles.metaDot}>·</Text>
-        <Text style={styles.metaText}>{t("routines.createdOn", { date: createdDate })}</Text>
+        <View style={styles.statPill}>
+          <Text style={styles.statPillValue}>{exerciseCount}</Text>
+          <Text style={styles.statPillLabel}>{t("routines.exercise", { count: exerciseCount }).toUpperCase()}</Text>
+        </View>
+        <View style={styles.statPillSep} />
+        <View style={styles.statPill}>
+          <Text style={styles.statPillValue}>{setCount}</Text>
+          <Text style={styles.statPillLabel}>SETS</Text>
+        </View>
       </View>
       <View style={styles.arrow}>
         <Text style={styles.arrowText}>›</Text>
@@ -118,7 +124,10 @@ export default function RoutinesTab(): React.JSX.Element {
     return (
       <View style={containerStyle}>
         <View style={styles.titleRow}>
-          <Text style={styles.screenTitle}>{t("routines.title")}</Text>
+          <View>
+            <Text style={styles.screenTitle}>{t("routines.title")}</Text>
+            <Text style={styles.screenSubtitle}>{t("routines.subtitle")}</Text>
+          </View>
         </View>
         <SkeletonRoutineCard />
         <View style={{ height: spacing[3] }} />
@@ -133,7 +142,10 @@ export default function RoutinesTab(): React.JSX.Element {
     return (
       <View style={containerStyle}>
         <View style={styles.titleRow}>
-          <Text style={styles.screenTitle}>{t("routines.title")}</Text>
+          <View>
+            <Text style={styles.screenTitle}>{t("routines.title")}</Text>
+            <Text style={styles.screenSubtitle}>{t("routines.subtitle")}</Text>
+          </View>
         </View>
         <EmptyState
           title={t("routines.error_title")}
@@ -149,7 +161,10 @@ export default function RoutinesTab(): React.JSX.Element {
   return (
     <View style={containerStyle}>
       <View style={styles.titleRow}>
-        <Text style={styles.screenTitle}>{t("routines.title")}</Text>
+        <View>
+          <Text style={styles.screenTitle}>{t("routines.title")}</Text>
+          <Text style={styles.screenSubtitle}>{t("routines.subtitle")}</Text>
+        </View>
         <Pressable
           style={[styles.addButton, atLimit && styles.addButtonLimited]}
           onPress={handleCreateRoutine}
@@ -170,7 +185,9 @@ export default function RoutinesTab(): React.JSX.Element {
       <FlatList
         data={routines}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <RoutineCard routine={item} />}
+        renderItem={({ item, index }) => (
+          <RoutineCard routine={item} featured={index === 0} />
+        )}
         ItemSeparatorComponent={() => <View style={{ height: spacing[3] }} />}
         contentContainerStyle={styles.listContent}
         keyboardShouldPersistTaps="handled"
@@ -215,6 +232,12 @@ const styles = StyleSheet.create({
     letterSpacing: -1,
     textTransform: "uppercase",
   },
+  screenSubtitle: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.sm,
+    marginTop: 2,
+  },
   addButton: {
     backgroundColor: colors.lime,
     borderRadius: radius.full,
@@ -241,18 +264,19 @@ const styles = StyleSheet.create({
     lineHeight: 32,
   },
   limitBanner: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.limeGlow,
     borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.lime,
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[3],
     marginBottom: spacing[4],
   },
   limitBannerText: {
     fontFamily: typography.body,
-    color: colors.muted,
+    color: colors.lime,
     fontSize: 13,
+    fontWeight: "700",
     textAlign: "center",
   },
   listContent: {
@@ -261,32 +285,45 @@ const styles = StyleSheet.create({
   },
   card: {
     position: "relative",
+    gap: spacing[2],
+  },
+  cardFeatured: {
+    borderColor: colors.limeGlow,
   },
   routineName: {
-    fontFamily: typography.body,
+    fontFamily: typography.heading,
     color: colors.text,
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: spacing[2],
+    fontSize: 22,
+    letterSpacing: -0.5,
+    textTransform: "uppercase",
   },
   meta: {
     flexDirection: "row",
     alignItems: "center",
     gap: spacing[2],
   },
-  metaText: {
+  statPill: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    gap: 4,
+  },
+  statPillValue: {
+    fontFamily: typography.mono,
+    color: colors.lime,
+    fontSize: fontSize.lg,
+    fontWeight: "700",
+  },
+  statPillLabel: {
     fontFamily: typography.body,
     color: colors.muted,
-    fontSize: 13,
+    fontSize: fontSize.xs,
+    letterSpacing: 0.5,
   },
-  metaMono: {
-    fontFamily: typography.mono,
-    color: colors.muted,
-    fontSize: 13,
-  },
-  metaDot: {
-    color: colors.border,
-    fontSize: 13,
+  statPillSep: {
+    width: 1,
+    height: 14,
+    backgroundColor: colors.border,
+    marginHorizontal: spacing[1],
   },
   arrow: {
     position: "absolute",
@@ -294,7 +331,7 @@ const styles = StyleSheet.create({
     top: "50%",
   },
   arrowText: {
-    color: colors.gray500,
+    color: colors.muted,
     fontSize: 24,
   },
 });
