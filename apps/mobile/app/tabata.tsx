@@ -14,7 +14,11 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
+import { useAudioPlayer, setAudioModeAsync } from "expo-audio";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
+import AUDIO_TICK from "../assets/audio/tick.wav";
+import AUDIO_START from "../assets/audio/start.wav";
+import AUDIO_FINISH from "../assets/audio/finish.wav";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { useTabataPlans, type TabataPlanRecord } from "@/hooks/useTabataPlans";
 import { track } from "@/lib/analytics";
@@ -175,6 +179,11 @@ export default function TabataScreen(): React.JSX.Element {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const prevVisualStateRef = useRef<VisualState | null>(null);
 
+  // ── Audio players (useAudioPlayer gestiona cleanup automáticamente al desmontar) ──
+  const tickPlayer = useAudioPlayer(AUDIO_TICK);
+  const startPlayer = useAudioPlayer(AUDIO_START);
+  const finishPlayer = useAudioPlayer(AUDIO_FINISH);
+
   // ── Sheet para guardar preset ─────────────────────────────────────────────────
   const [showSaveSheet, setShowSaveSheet] = useState(false);
   const [presetName, setPresetName] = useState("");
@@ -187,6 +196,17 @@ export default function TabataScreen(): React.JSX.Element {
   };
   const validation = validatePlan(advancedPlan);
   const totalsAdvanced = planTotals(advancedPlan);
+
+  // ── Configurar sesión de audio al montar (una sola vez) ───────────────────────
+  useEffect(() => {
+    void setAudioModeAsync({
+      playsInSilentMode: true,
+      interruptionMode: "mixWithOthers",
+      shouldPlayInBackground: false,
+    }).catch(() => {
+      // Fallo silencioso: háptica seguirá funcionando
+    });
+  }, []);
 
   // ── Timer helpers ─────────────────────────────────────────────────────────────
   const stopInterval = useCallback(() => {
@@ -204,7 +224,7 @@ export default function TabataScreen(): React.JSX.Element {
     }, TICK_INTERVAL_MS);
   }, [stopInterval]);
 
-  // ── Háptica en transiciones de estado ─────────────────────────────────────────
+  // ── Háptica + audio en transiciones de estado ─────────────────────────────────
   useEffect(() => {
     if (phase !== "running" || activePlan === null) return;
     const runtime = computeRuntimeState(activePlan, elapsedMs);
@@ -215,10 +235,20 @@ export default function TabataScreen(): React.JSX.Element {
 
       if (vs === "work" || vs === "rest") {
         void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        try {
+          void startPlayer.seekTo(0).then(() => { startPlayer.play(); });
+        } catch {
+          // fallo de audio silencioso
+        }
       } else if (vs === "prep-ending" || vs === "work-ending" || vs === "rest-ending") {
         void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       } else if (vs === "finished") {
         void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        try {
+          void finishPlayer.seekTo(0).then(() => { finishPlayer.play(); });
+        } catch {
+          // fallo de audio silencioso
+        }
         stopInterval();
         setPhase("done");
         setShowConfetti(true);
@@ -236,8 +266,13 @@ export default function TabataScreen(): React.JSX.Element {
         Math.ceil((runtime.remainingMs + TICK_INTERVAL_MS) / 1000)
     ) {
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      try {
+        void tickPlayer.seekTo(0).then(() => { tickPlayer.play(); });
+      } catch {
+        // fallo de audio silencioso
+      }
     }
-  }, [elapsedMs, activePlan, phase, stopInterval]);
+  }, [elapsedMs, activePlan, phase, stopInterval, tickPlayer, startPlayer, finishPlayer]);
 
   // ── AppState: vuelve del background ──────────────────────────────────────────
   useEffect(() => {

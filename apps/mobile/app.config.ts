@@ -49,6 +49,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-router',
     'expo-localization',
     'expo-secure-store',
+    // Solo reproducimos efectos de sonido (Tabata); no grabamos. microphonePermission:false
+    // evita pedir permiso de micrófono (RECORD_AUDIO / NSMicrophoneUsageDescription).
+    ['expo-audio', { microphonePermission: false }],
     [
       'expo-notifications',
       {
