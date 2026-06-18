@@ -488,6 +488,7 @@
   },
   "conversation": {
     "screenTitle": "Chat",
+    "emptyTitle": "Sin mensajes",
     "emptyHint": "Escribí el primer mensaje para empezar la conversación.",
     "inputPlaceholder": "Escribí un mensaje...",
     "send": "Enviar"
@@ -569,20 +570,31 @@
   },
   "progressPhotos": {
     "screenTitle": "Fotos de progreso",
+    "screenTitleShort": "Fotos",
     "addPhoto": "+ Agregar foto",
+    "addPhotoShort": "+ Foto",
+    "addPhotoToday": "+ Agregar foto de hoy",
     "notes": "Notas (opcional)",
     "notesPlaceholder": "Agregá una nota sobre esta foto...",
     "save": "Guardar foto",
     "saving": "Guardando...",
     "compare": "Comparar",
+    "comparatorTitle": "Comparación",
     "before": "Antes",
     "after": "Ahora",
+    "sectionLabel": "Timeline",
+    "sectionGrid": "Todas las fotos",
+    "recordsCount_one": "{{count}} registro",
+    "recordsCount_other": "{{count}} registros",
     "empty_title": "Sin fotos aún",
     "empty_desc": "Empezá a registrar tu progreso con fotos. Solo vos podés verlas.",
     "error_title": "No se pudieron cargar las fotos",
     "error_desc": "Revisá tu conexión e intentá de nuevo.",
     "permissionDenied": "No tenés permiso para acceder a la galería. Habilitalo en la configuración de tu dispositivo.",
-    "pro_gate": "fotos de progreso"
+    "pro_gate": "fotos de progreso",
+    "pro_gateTitle": "FUNCIÓN PRO",
+    "pro_gateDesc": "Guardá fotos frontales, laterales y dorsales. Compará tu cuerpo entre dos fechas con el modo split.",
+    "pro_gateCta": "Ver planes PRO"
   },
   "bodyMetrics": {
     "sectionTitle": "Métricas corporales",

@@ -15,7 +15,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/providers/AuthProvider";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { supabase } from "@/lib/supabase";
-import { EmptyState, ErrorState, Card } from "@forzza/ui/native";
+import { EmptyState, ErrorState } from "@forzza/ui/native";
 import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
 
 type LiveSessionStatus = "scheduled" | "completed" | "canceled";
@@ -108,7 +108,10 @@ function SessionCard({ session }: { session: LiveSession }): React.JSX.Element {
   }
 
   return (
-    <Card style={cardStyles.card} testID={`live-session-card-${session.id}`}>
+    <View
+      style={[cardStyles.card, !upcoming && cardStyles.cardPast]}
+      testID={`live-session-card-${session.id}`}
+    >
       <View style={cardStyles.header}>
         <Text style={cardStyles.title} numberOfLines={2}>
           {session.title}
@@ -134,14 +137,22 @@ function SessionCard({ session }: { session: LiveSession }): React.JSX.Element {
           <Text style={cardStyles.joinBtnText}>{t("liveSessions.join")}</Text>
         </TouchableOpacity>
       ) : null}
-    </Card>
+    </View>
   );
 }
 
 const cardStyles = StyleSheet.create({
   card: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing[4],
     marginBottom: spacing[3],
     gap: spacing[2],
+  },
+  cardPast: {
+    opacity: 0.6,
   },
   header: {
     flexDirection: "row",
@@ -167,7 +178,9 @@ const cardStyles = StyleSheet.create({
     fontSize: fontSize.sm,
   },
   joinBtn: {
-    backgroundColor: colors.lime,
+    backgroundColor: colors.limeGlow,
+    borderWidth: 1,
+    borderColor: `${colors.lime}60`,
     borderRadius: radius.md,
     paddingVertical: spacing[3],
     alignItems: "center",
@@ -177,9 +190,9 @@ const cardStyles = StyleSheet.create({
   },
   joinBtnText: {
     fontFamily: typography.heading,
-    color: colors.black,
+    color: colors.lime,
     fontSize: fontSize.base,
-    letterSpacing: 0.5,
+    letterSpacing: 1,
     textTransform: "uppercase",
   },
 });
@@ -262,7 +275,13 @@ export default function LiveSessionsScreen(): React.JSX.Element {
   // ── Error ────────────────────────────────────────────────────────────────────
   if (isError) {
     return (
-      <View style={[styles.container, { paddingTop: insets.top + spacing[4] }]}>
+      <View style={[styles.container, { paddingTop: insets.top }]}>
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+            <Text style={styles.backButtonText}>‹ {t("tabs.home")}</Text>
+          </TouchableOpacity>
+          <Text style={styles.screenTitle}>{t("liveSessions.screenTitle")}</Text>
+        </View>
         <ErrorState
           title={t("liveSessions.error_title")}
           description={t("liveSessions.error_desc")}
@@ -276,9 +295,15 @@ export default function LiveSessionsScreen(): React.JSX.Element {
   if (!hasCoach) {
     return (
       <View
-        style={[styles.container, { paddingTop: insets.top + spacing[4] }]}
+        style={[styles.container, { paddingTop: insets.top }]}
         testID="live-sessions-no-coach"
       >
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+            <Text style={styles.backButtonText}>‹ {t("tabs.home")}</Text>
+          </TouchableOpacity>
+          <Text style={styles.screenTitle}>{t("liveSessions.screenTitle")}</Text>
+        </View>
         <EmptyState
           title={t("liveSessions.empty_title")}
           description={t("liveSessions.noCoach")}
@@ -291,38 +316,46 @@ export default function LiveSessionsScreen(): React.JSX.Element {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={[
-        styles.content,
-        { paddingTop: insets.top + spacing[4] },
-      ]}
-      testID="live-sessions-screen"
-    >
-      <Text style={styles.screenTitle}>{t("liveSessions.screenTitle")}</Text>
-
-      {/* Upcoming */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t("liveSessions.sectionUpcoming")}</Text>
-        {upcoming.length === 0 ? (
-          <EmptyState
-            title={t("liveSessions.empty_title")}
-            description={t("liveSessions.empty_desc")}
-            icon="📅"
-          />
-        ) : (
-          upcoming.map((s) => <SessionCard key={s.id} session={s} />)
-        )}
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      {/* Header con gradient visual */}
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <Text style={styles.backButtonText}>‹ {t("tabs.home")}</Text>
+        </TouchableOpacity>
+        <Text style={styles.screenTitle}>{t("liveSessions.screenTitle")}</Text>
+        {sessions.length > 0 && sessions[0]?.coach_display_name ? (
+          <Text style={styles.headerSubtitle}>{sessions[0].coach_display_name}</Text>
+        ) : null}
       </View>
 
-      {/* Past */}
-      {past.length > 0 && (
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.content}
+        testID="live-sessions-screen"
+      >
+        {/* Próximas sesiones */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t("liveSessions.sectionPast")}</Text>
-          {past.map((s) => <SessionCard key={s.id} session={s} />)}
+          <Text style={styles.sectionTitle}>{t("liveSessions.sectionUpcoming")}</Text>
+          {upcoming.length === 0 ? (
+            <EmptyState
+              title={t("liveSessions.empty_title")}
+              description={t("liveSessions.empty_desc")}
+              icon="📅"
+            />
+          ) : (
+            upcoming.map((s) => <SessionCard key={s.id} session={s} />)
+          )}
         </View>
-      )}
-    </ScrollView>
+
+        {/* Sesiones pasadas */}
+        {past.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t("liveSessions.sectionPast")}</Text>
+            {past.map((s) => <SessionCard key={s.id} session={s} />)}
+          </View>
+        )}
+      </ScrollView>
+    </View>
   );
 }
 
@@ -335,29 +368,59 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  content: {
-    padding: spacing[4],
-    paddingBottom: spacing[12],
+
+  // ── Header ──
+  header: {
+    paddingHorizontal: spacing[4],
+    paddingTop: spacing[4],
+    paddingBottom: spacing[4],
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  backButton: {
+    marginBottom: spacing[3],
+  },
+  backButtonText: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.sm,
   },
   screenTitle: {
     fontFamily: typography.heading,
     color: colors.text,
     fontSize: fontSize.screenTitle,
-    fontWeight: "900",
-    letterSpacing: -1,
+    letterSpacing: 1,
     textTransform: "uppercase",
-    marginBottom: spacing[5],
+    lineHeight: 36,
   },
+  headerSubtitle: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.sm,
+    marginTop: spacing[1],
+  },
+
+  // ── Scroll ──
+  scrollView: {
+    flex: 1,
+  },
+  content: {
+    padding: spacing[4],
+    paddingBottom: spacing[12],
+  },
+
+  // ── Sección ──
   section: {
     marginBottom: spacing[6],
   },
   sectionTitle: {
     fontFamily: typography.body,
-    color: colors.muted,
-    fontSize: 11,
+    color: colors.lime,
+    fontSize: fontSize.xs,
     fontWeight: "700",
     textTransform: "uppercase",
-    letterSpacing: 1.5,
+    letterSpacing: 0.9,
     marginBottom: spacing[3],
   },
 });

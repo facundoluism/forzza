@@ -488,6 +488,7 @@
   },
   "conversation": {
     "screenTitle": "Chat",
+    "emptyTitle": "No messages",
     "emptyHint": "Write the first message to start the conversation.",
     "inputPlaceholder": "Write a message...",
     "send": "Send"
@@ -569,20 +570,31 @@
   },
   "progressPhotos": {
     "screenTitle": "Progress photos",
+    "screenTitleShort": "Photos",
     "addPhoto": "+ Add photo",
+    "addPhotoShort": "+ Photo",
+    "addPhotoToday": "+ Add today's photo",
     "notes": "Notes (optional)",
     "notesPlaceholder": "Add a note about this photo...",
     "save": "Save photo",
     "saving": "Saving...",
     "compare": "Compare",
+    "comparatorTitle": "Comparison",
     "before": "Before",
     "after": "Now",
+    "sectionLabel": "Timeline",
+    "sectionGrid": "All photos",
+    "recordsCount_one": "{{count}} record",
+    "recordsCount_other": "{{count}} records",
     "empty_title": "No photos yet",
     "empty_desc": "Start tracking your progress with photos. Only you can see them.",
     "error_title": "Could not load photos",
     "error_desc": "Check your connection and try again.",
     "permissionDenied": "You don't have permission to access the gallery. Enable it in your device settings.",
-    "pro_gate": "progress photos"
+    "pro_gate": "progress photos",
+    "pro_gateTitle": "PRO FEATURE",
+    "pro_gateDesc": "Save front, side and back photos. Compare your body between two dates with split mode.",
+    "pro_gateCta": "See PRO plans"
   },
   "bodyMetrics": {
     "sectionTitle": "Body metrics",

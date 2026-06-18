@@ -16,7 +16,8 @@ import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
-import { colors, spacing, radius, typography } from "@forzza/ui/tokens";
+import { EmptyState } from "@forzza/ui/native";
+import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
 interface Message {
@@ -212,10 +213,11 @@ export default function ConversationScreen(): React.JSX.Element {
     setSending(false);
   }, [text, user, assignmentId, sending]);
 
+  // ── Loading ───────────────────────────────────────────────────────────────────
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator color={colors.lime} />
+        <ActivityIndicator color={colors.lime} size="large" />
       </View>
     );
   }
@@ -228,7 +230,7 @@ export default function ConversationScreen(): React.JSX.Element {
     >
       {loadingMore && (
         <View style={styles.loadingMoreBar}>
-          <ActivityIndicator size="small" color={colors.gray400} />
+          <ActivityIndicator size="small" color={colors.muted} />
         </View>
       )}
 
@@ -248,21 +250,22 @@ export default function ConversationScreen(): React.JSX.Element {
         onStartReached={() => void handleLoadMore()}
         onLayout={() => flatListRef.current?.scrollToEnd({ animated: false })}
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>
-              {t('conversation.emptyHint')}
-            </Text>
-          </View>
+          <EmptyState
+            title={t("conversation.emptyTitle")}
+            description={t("conversation.emptyHint")}
+            icon="💬"
+          />
         }
       />
 
+      {/* Input bar */}
       <View style={styles.inputBar}>
         <TextInput
           style={styles.input}
           value={text}
           onChangeText={setText}
           placeholder={t('conversation.inputPlaceholder')}
-          placeholderTextColor={colors.gray500}
+          placeholderTextColor={colors.muted}
           multiline
           maxLength={2000}
           returnKeyType="default"
@@ -277,7 +280,7 @@ export default function ConversationScreen(): React.JSX.Element {
           activeOpacity={0.8}
         >
           {sending ? (
-            <ActivityIndicator size="small" color={colors.black} />
+            <ActivityIndicator size="small" color={colors.bg} />
           ) : (
             <Text style={styles.sendButtonText}>{t('conversation.send')}</Text>
           )}
@@ -290,13 +293,13 @@ export default function ConversationScreen(): React.JSX.Element {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.black,
+    backgroundColor: colors.bg,
   },
   centered: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.black,
+    backgroundColor: colors.bg,
   },
   loadingMoreBar: {
     paddingVertical: spacing[2],
@@ -310,7 +313,7 @@ const styles = StyleSheet.create({
   },
   bubbleWrapper: {
     marginBottom: spacing[3],
-    maxWidth: "75%",
+    maxWidth: "78%",
   },
   bubbleWrapperOwn: {
     alignSelf: "flex-end",
@@ -330,79 +333,74 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: radius.sm,
   },
   bubbleOther: {
-    backgroundColor: colors.gray800,
+    backgroundColor: colors.surface2,
     borderBottomLeftRadius: radius.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   bubbleText: {
     fontFamily: typography.body,
-    color: colors.white,
-    fontSize: 15,
+    color: colors.text,
+    fontSize: fontSize.md,
     lineHeight: 22,
   },
   bubbleTextOwn: {
-    color: colors.black,
+    color: colors.bg,
+    fontWeight: "500",
   },
   bubbleTime: {
     fontFamily: typography.body,
-    color: colors.gray500,
-    fontSize: 11,
+    color: colors.muted,
+    fontSize: fontSize.xs,
     marginTop: spacing[1],
     marginHorizontal: spacing[1],
+    opacity: 0.7,
   },
   bubbleTimeOwn: {
-    color: colors.gray600,
+    color: colors.gray,
   },
-  emptyContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: spacing[16],
-  },
-  emptyText: {
-    fontFamily: typography.body,
-    color: colors.gray500,
-    fontSize: 14,
-    textAlign: "center",
-  },
+  // ── Input bar ──
   inputBar: {
     flexDirection: "row",
     alignItems: "flex-end",
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[3],
     borderTopWidth: 1,
-    borderTopColor: colors.gray800,
-    backgroundColor: colors.black,
+    borderTopColor: colors.border,
+    backgroundColor: colors.surface,
     gap: spacing[3],
   },
   input: {
     flex: 1,
-    backgroundColor: colors.gray900,
+    backgroundColor: colors.surface3,
     borderWidth: 1,
-    borderColor: colors.gray700,
-    borderRadius: radius.lg,
+    borderColor: colors.border,
+    borderRadius: radius.full,
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[3],
-    color: colors.white,
+    color: colors.text,
     fontFamily: typography.body,
-    fontSize: 15,
+    fontSize: fontSize.md,
     maxHeight: 120,
   },
   sendButton: {
     backgroundColor: colors.lime,
-    borderRadius: radius.lg,
+    borderRadius: radius.full,
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[3],
     alignItems: "center",
     justifyContent: "center",
-    minWidth: 72,
+    minWidth: 68,
+    minHeight: 44,
   },
   sendButtonDisabled: {
-    backgroundColor: colors.gray700,
+    backgroundColor: colors.surface4,
   },
   sendButtonText: {
-    fontFamily: typography.body,
-    color: colors.black,
-    fontSize: 14,
-    fontWeight: "700",
+    fontFamily: typography.heading,
+    color: colors.bg,
+    fontSize: fontSize.base,
+    letterSpacing: 1,
+    textTransform: "uppercase",
   },
 });
