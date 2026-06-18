@@ -56,7 +56,6 @@ function renderShape(shape: Shape, accentColor: string, index: number) {
 
     case "circle": {
       const circleProps = {
-        key: index,
         cx: shape.cx,
         cy: shape.cy,
         r: shape.r,
@@ -69,7 +68,7 @@ function renderShape(shape: Shape, accentColor: string, index: number) {
           strokeWidth: shape.strokeWidth,
         }),
       };
-      return <Circle {...circleProps} />;
+      return <Circle key={index} {...circleProps} />;
     }
 
     case "ellipse":
@@ -87,7 +86,6 @@ function renderShape(shape: Shape, accentColor: string, index: number) {
 
     case "path": {
       const pathProps = {
-        key: index,
         d: shape.d,
         stroke: resolveColor(shape.stroke, accentColor),
         strokeWidth: shape.strokeWidth,
@@ -99,7 +97,7 @@ function renderShape(shape: Shape, accentColor: string, index: number) {
           strokeDasharray: shape.strokeDasharray,
         }),
       };
-      return <Path {...pathProps} />;
+      return <Path key={index} {...pathProps} />;
     }
   }
 }
