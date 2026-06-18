@@ -209,9 +209,9 @@ export default function HomeTab(): React.JSX.Element {
         .from("student_profiles")
         .select("id, user_id, display_name")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
       if (error) throw error;
-      return data as StudentProfile;
+      return (data as StudentProfile | null) ?? null;
     },
     enabled: !!user,
   });
