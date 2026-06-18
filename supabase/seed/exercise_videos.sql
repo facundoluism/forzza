@@ -5,7 +5,7 @@
 BEGIN;
 
 INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
-SELECT id, 'en', '_O1xunCfYEM', 'How To: Abdominal Crunch (Hammer Strength)', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 132, 0.732, '{"text":0.3333333333333333,"channel":1,"engagement":0.6600935925682645,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+SELECT id, 'en', '_O1xunCfYEM', 'How To: Abdominal Crunch (Hammer Strength)', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 132, 0.782, '{"text":0.5,"channel":1,"engagement":0.6600935925682645,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
 FROM public.exercise_library WHERE slug = 'ab-crunch-machine'
 ON CONFLICT (exercise_id, lang) DO UPDATE SET
   youtube_id = EXCLUDED.youtube_id,
@@ -19,7 +19,7 @@ ON CONFLICT (exercise_id, lang) DO UPDATE SET
   updated_at = now();
 
 INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
-SELECT id, 'es', 'mMieHCr-H0c', '5 MINUTOS DE ABDOMINALES INTENSOS', 'UCfwP2H1CDJvssk6g2pm8EgA', 'gymvirtual', 332, 0.7383, '{"text":0.5,"channel":1,"engagement":0.6914995892224931,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+SELECT id, 'es', 'mMieHCr-H0c', '5 MINUTOS DE ABDOMINALES INTENSOS', 'UCfwP2H1CDJvssk6g2pm8EgA', 'gymvirtual', 332, 0.8883, '{"text":1,"channel":1,"engagement":0.691499543750374,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
 FROM public.exercise_library WHERE slug = 'ab-crunch-machine'
 ON CONFLICT (exercise_id, lang) DO UPDATE SET
   youtube_id = EXCLUDED.youtube_id,
@@ -33,21 +33,7 @@ ON CONFLICT (exercise_id, lang) DO UPDATE SET
   updated_at = now();
 
 INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
-SELECT id, 'en', '_O1xunCfYEM', 'How To: Abdominal Crunch (Hammer Strength)', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 132, 0.732, '{"text":0.3333333333333333,"channel":1,"engagement":0.6600935925682645,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
-FROM public.exercise_library WHERE slug = 'ab-crunch-machine-2'
-ON CONFLICT (exercise_id, lang) DO UPDATE SET
-  youtube_id = EXCLUDED.youtube_id,
-  title = EXCLUDED.title,
-  channel_id = EXCLUDED.channel_id,
-  channel_title = EXCLUDED.channel_title,
-  duration_seconds = EXCLUDED.duration_seconds,
-  score = EXCLUDED.score,
-  score_breakdown = EXCLUDED.score_breakdown,
-  status = EXCLUDED.status,
-  updated_at = now();
-
-INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
-SELECT id, 'es', 'H_ADCsf0JOw', 'COMO ENTRENAR EL FEMORAL CORRECTAMENTE EN MAQUINA', 'UCgZN9Cgort7WQgi9AlEJDZw', 'FHI.ONLINE', 217, 0.4236, '{"text":0.3333333333333333,"channel":0,"engagement":0.6179710239809797,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+SELECT id, 'en', '_O1xunCfYEM', 'How To: Abdominal Crunch (Hammer Strength)', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 132, 0.782, '{"text":0.5,"channel":1,"engagement":0.6600935925682645,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
 FROM public.exercise_library WHERE slug = 'ab-crunch-machine-2'
 ON CONFLICT (exercise_id, lang) DO UPDATE SET
   youtube_id = EXCLUDED.youtube_id,
@@ -89,7 +75,7 @@ ON CONFLICT (exercise_id, lang) DO UPDATE SET
   updated_at = now();
 
 INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
-SELECT id, 'en', 'vKpqOpjJt18', '9 Assisted Pull Up Mistakes and How to Fix Them', 'UCfQgsKhHjSyRLOp9mnffqVg', 'Renaissance Periodization', 922, 0.7248, '{"text":0.75,"channel":1,"engagement":0.748767675313415,"duration":0,"language":1,"captionsRecency":0}'::jsonb, 'published'
+SELECT id, 'en', 'vKpqOpjJt18', '9 Assisted Pull Up Mistakes and How to Fix Them', 'UCfQgsKhHjSyRLOp9mnffqVg', 'Renaissance Periodization', 922, 0.7998, '{"text":1,"channel":1,"engagement":0.748767675313415,"duration":0,"language":1,"captionsRecency":0}'::jsonb, 'published'
 FROM public.exercise_library WHERE slug = 'assisted-pull-up-machine'
 ON CONFLICT (exercise_id, lang) DO UPDATE SET
   youtube_id = EXCLUDED.youtube_id,
@@ -117,7 +103,7 @@ ON CONFLICT (exercise_id, lang) DO UPDATE SET
   updated_at = now();
 
 INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
-SELECT id, 'en', 'vKpqOpjJt18', '9 Assisted Pull Up Mistakes and How to Fix Them', 'UCfQgsKhHjSyRLOp9mnffqVg', 'Renaissance Periodization', 922, 0.7248, '{"text":0.75,"channel":1,"engagement":0.748767675313415,"duration":0,"language":1,"captionsRecency":0}'::jsonb, 'published'
+SELECT id, 'en', 'vKpqOpjJt18', '9 Assisted Pull Up Mistakes and How to Fix Them', 'UCfQgsKhHjSyRLOp9mnffqVg', 'Renaissance Periodization', 922, 0.7998, '{"text":1,"channel":1,"engagement":0.748767675313415,"duration":0,"language":1,"captionsRecency":0}'::jsonb, 'published'
 FROM public.exercise_library WHERE slug = 'assisted-pull-up-machine-2'
 ON CONFLICT (exercise_id, lang) DO UPDATE SET
   youtube_id = EXCLUDED.youtube_id,
@@ -131,7 +117,7 @@ ON CONFLICT (exercise_id, lang) DO UPDATE SET
   updated_at = now();
 
 INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
-SELECT id, 'es', 'lgE47t3dr2Q', 'DOMINADAS Asistidas en MÁQUINA TUTORIAL', 'UCQQ2X96FF1LezYFe6lUUK0w', 'Zonapablo', 135, 0.5312, '{"text":0.6666666666666666,"channel":0,"engagement":0.6561611984455199,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+SELECT id, 'es', 'npyLB-7o19o', 'Desbloquea tus primeras DOMINADAS', 'UCh4VdbK3ybBBwleBdta_GMg', 'BlueGym Animation', 285, 0.5371, '{"text":0.5,"channel":0,"engagement":0.935475783925844,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
 FROM public.exercise_library WHERE slug = 'assisted-pull-up-machine-2'
 ON CONFLICT (exercise_id, lang) DO UPDATE SET
   youtube_id = EXCLUDED.youtube_id,
@@ -173,7 +159,7 @@ ON CONFLICT (exercise_id, lang) DO UPDATE SET
   updated_at = now();
 
 INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
-SELECT id, 'en', '8np3vKDBJfc', 'The PERFECT Deadlift (5 Steps)', 'UCERm5yFZ1SptUEU4wZ2vJvw', 'Jeremy Ethier', 57, 0.9452, '{"text":1,"channel":1,"engagement":0.9761348978804497,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+SELECT id, 'en', '8np3vKDBJfc', 'The PERFECT Deadlift (5 Steps)', 'UCERm5yFZ1SptUEU4wZ2vJvw', 'Jeremy Ethier', 57, 0.9452, '{"text":1,"channel":1,"engagement":0.9761346032811647,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
 FROM public.exercise_library WHERE slug = 'deadlift'
 ON CONFLICT (exercise_id, lang) DO UPDATE SET
   youtube_id = EXCLUDED.youtube_id,
@@ -201,7 +187,7 @@ ON CONFLICT (exercise_id, lang) DO UPDATE SET
   updated_at = now();
 
 INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
-SELECT id, 'en', 'Did01dFR3Lk', 'Dumbbell Overhead Press - How To', 'UCSzAriYndMjGjJciDYyj47w', 'Bobby Maximus', 27, 0.6043, '{"text":1,"channel":0,"engagement":0.6214331697172865,"duration":0.8,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+SELECT id, 'en', 'M2rwvNhTOu0', 'The Perfect Overhead Dumbbell Press', 'UC3pNPPqn073XJXluDu0aJhw', '3v', 54, 0.6279, '{"text":1,"channel":0,"engagement":0.6393663741603186,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
 FROM public.exercise_library WHERE slug = 'dumbbell-overhead-press'
 ON CONFLICT (exercise_id, lang) DO UPDATE SET
   youtube_id = EXCLUDED.youtube_id,

@@ -173,6 +173,64 @@ describe("señal text", () => {
     expect(result.breakdown.text).toBe(1);
     expect(result.discarded).toBe(false);
   });
+
+  // ── Equipamiento stopwords ("maquina" / "machine") ──────────────────────
+
+  it("nombre solo con tokens genéricos de equipo vs título no relacionado → descartado", () => {
+    // "Contracciones en máquina sentado" → tras stripAccents+tokenize:
+    //   "contracciones", "en"(stop-es), "maquina"(stop-equip), "sentado"
+    // Tokens efectivos del nombre: {"contracciones", "sentado"}
+    // Título "Como entrenar el FEMORAL en máquina":
+    //   tras tokenize: {"como"(stop),"entrenar","femoral","en"(stop),"maquina"(stop)}
+    //   Tokens efectivos del título: {"entrenar", "femoral"}
+    // Intersección con nombre: ∅ → irrelevant_title
+    const ex: ExerciseContext = {
+      name: "Contracciones en máquina sentado",
+      nameEn: null,
+      description: null,
+      equipment: [],
+      lang: "es",
+    };
+    const result = scoreCandidate(
+      video({ title: "Como entrenar el FEMORAL en máquina" }),
+      ex
+    );
+    expect(result.discarded).toBe(true);
+    expect(result.discardReason).toBe("irrelevant_title");
+    expect(result.score).toBe(0);
+  });
+
+  it("ejercicio legítimo de máquina no se rompe: match por tokens substantivos", () => {
+    // "Máquina de Dominadas Asistidas" → tras tokenize:
+    //   "maquina"(stop), "de"(stop), "dominadas", "asistidas"
+    //   Tokens efectivos: {"dominadas", "asistidas"}
+    // Título "DOMINADAS Asistidas en MÁQUINA" → tras tokenize:
+    //   "dominadas", "asistidas", "en"(stop), "maquina"(stop)
+    //   Tokens efectivos: {"dominadas", "asistidas"}
+    // Intersección: {dominadas, asistidas} → coverage = 2/2 = 1.0
+    const ex: ExerciseContext = {
+      name: "Máquina de Dominadas Asistidas",
+      nameEn: null,
+      description: null,
+      equipment: [],
+      lang: "es",
+    };
+    const result = scoreCandidate(
+      video({ title: "DOMINADAS Asistidas en MÁQUINA" }),
+      ex
+    );
+    expect(result.discarded).toBe(false);
+    expect(result.breakdown.text).toBeCloseTo(1.0, 5);
+  });
+
+  it("scoreLanguage no cambia: heurística usa STOPWORDS_ES/EN, no EQUIPMENT_STOPWORDS", () => {
+    // Título con stopwords solo en ES → heurística debe devolver 1 para lang es
+    const result = scoreCandidate(
+      video({ defaultAudioLanguage: null, title: "Como hacer la sentadilla con barra" }),
+      exercise // lang: "es"
+    );
+    expect(result.breakdown.language).toBe(1);
+  });
 });
 
 describe("señal channel", () => {

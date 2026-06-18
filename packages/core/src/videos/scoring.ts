@@ -50,9 +50,15 @@ const STOPWORDS_EN: ReadonlySet<string> = new Set([
   "how", "do", "does", "is", "are", "this", "that", "your", "you", "it", "by",
   "from", "as", "be",
 ]);
+// Términos de equipamiento genéricos: aparecen en muchos nombres y títulos
+// y no aportan a distinguir el ejercicio. Solo afectan el tokenizador,
+// NO la heurística de idioma (no se agregan a STOPWORDS_ES/EN).
+const EQUIPMENT_STOPWORDS: ReadonlySet<string> = new Set(["maquina", "machine"]);
+
 const STOPWORDS: ReadonlySet<string> = new Set([
   ...STOPWORDS_ES,
   ...STOPWORDS_EN,
+  ...EQUIPMENT_STOPWORDS,
 ]);
 
 /** lowercase + saca acentos/diacríticos. */

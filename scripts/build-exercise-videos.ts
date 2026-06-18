@@ -283,6 +283,10 @@ async function main(): Promise<void> {
         console.log(
           `  SIN_CANDIDATO  ${exercise.slug}/${langCode} (${videos.length} videos, todos descartados)`
         );
+        // Purgar cualquier entrada acumulada previa: si ahora no hay candidato
+        // válido, una entrada vieja (p. ej. un match flojo de una corrida anterior)
+        // no debe sobrevivir al re-run.
+        accumulatedMap.delete(`${exercise.slug}|${langCode}`);
         sinCandidato++;
         continue;
       }
