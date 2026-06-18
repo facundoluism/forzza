@@ -3,265 +3,517 @@
 // Función pura, sin dependencias de UI (usable en packages/core también).
 //
 // Reglas de resolución (orden de prioridad decreciente):
-//   1. movement_pattern exacto → key específica
-//   2. Prefijo de movement_pattern → key por categoría
-//   3. equipment hint → key por equipo
-//   4. Fallback por primary_group → key genérica por grupo muscular
+//   1. movement_pattern exacto → key específica  (normalizado a lowercase)
+//   2. Prefijo de movement_pattern → key por categoría  (normalizado)
+//   3. equipment hint → key por equipo  (normalizado)
+//   4. Fallback por primary_group → key genérica por grupo muscular  (normalizado)
 //
-// Los valores de movement_pattern provienen de exercise_library.
-// Los valores de primary_group son: Chest, Back, Legs, Shoulders, Arms, Core.
+// Todos los mapas usan KEYS EN LOWERCASE.  Los inputs del resolver
+// se normalizan (trim + toLowerCase) antes de comparar, de modo que
+// variantes de capitalización de la DB (ej. "Legs" / "legs" / "LEGS")
+// funcionen de la misma manera.
 // =============================================================================
 
 import type { ExerciseIconKey } from "./exerciseIconTypes";
 
 // ---------------------------------------------------------------------------
-// Tablas de mapeo exacto (movement_pattern completo)
+// Tablas de mapeo exacto (movement_pattern completo, todas las keys lowercase)
 // ---------------------------------------------------------------------------
 
 const EXACT_PATTERN_MAP: Record<string, ExerciseIconKey> = {
-  // Push horizontal — pecho con banco plano
-  "Push – Horizontal": "bench-press",
-  "Push – Horizontal (Guided)": "bench-press",
+  // ── Push horizontal — pecho con banco plano ──────────────────────────────
+  "push – horizontal": "bench-press",
+  "push – horizontal (guided)": "bench-press",
+  "push-ups": "bench-press",
+  "push-up": "bench-press",
+  "chest press": "bench-press",
+  "bench press": "bench-press",
 
-  // Push inclinado — pecho superior
-  "Push – Incline": "incline-press",
-  "Push – Incline (Guided)": "incline-press",
+  // ── Push inclinado — pecho superior ──────────────────────────────────────
+  "push – incline": "incline-press",
+  "push – incline (guided)": "incline-press",
+  "incline press": "incline-press",
+  "incline bench press": "incline-press",
 
-  // Push declinado — pecho inferior
-  "Push – Decline": "decline-press",
+  // ── Push declinado — pecho inferior ──────────────────────────────────────
+  "push – decline": "decline-press",
+  "decline press": "decline-press",
+  "decline bench press": "decline-press",
 
-  // Press vertical — hombros overhead
-  "Push – Vertical": "overhead-press",
-  "Push – Vertical (Guided)": "overhead-press",
-  "Push – Rotational Vertical": "overhead-press",
+  // ── Press vertical — hombros overhead ────────────────────────────────────
+  "push – vertical": "overhead-press",
+  "push – vertical (guided)": "overhead-press",
+  "push – rotational vertical": "overhead-press",
+  "overhead press": "overhead-press",
+  "shoulder press": "overhead-press",
+  "military press": "overhead-press",
+  "arnold press": "overhead-press",
 
-  // Fondos / dips
-  "Push – Close Grip": "triceps-ext",
-  "Push – Standing": "triceps-ext",
-  "Push – Lower Body (Horizontal)": "bench-press",
-  "Push – Lower Body (Incline)": "incline-press",
-  "Push-Ups": "bench-press",
+  // ── Push close / fondos / tríceps ────────────────────────────────────────
+  "push – close grip": "triceps-ext",
+  "push – standing": "triceps-ext",
+  "push – lower body (horizontal)": "bench-press",
+  "push – lower body (incline)": "incline-press",
+  "dips": "triceps-ext",
+  "tricep dips": "triceps-ext",
+  "diamond push-up": "triceps-ext",
 
-  // Fly — aperturas de pecho
-  "Fly – Horizontal": "chest-fly",
-  "Fly – Incline": "chest-fly",
-  "Fly – Decline": "chest-fly",
-  "Fly – Guided": "chest-fly",
-  "Fly – High Pulley": "chest-fly",
-  "Fly – Low Pulley": "chest-fly",
+  // ── Fly — aperturas de pecho ──────────────────────────────────────────────
+  "fly – horizontal": "chest-fly",
+  "fly – incline": "chest-fly",
+  "fly – decline": "chest-fly",
+  "fly – guided": "chest-fly",
+  "fly – high pulley": "chest-fly",
+  "fly – low pulley": "chest-fly",
+  "chest fly": "chest-fly",
+  "pec deck": "chest-fly",
+  "butterfly": "chest-fly",
 
-  // Fly inverso — hombros posteriores
-  "Fly – Reverse": "lateral-raise",
-  "Fly – Reverse (Guided)": "lateral-raise",
+  // ── Fly inverso — hombros posteriores ────────────────────────────────────
+  "fly – reverse": "lateral-raise",
+  "fly – reverse (guided)": "lateral-raise",
+  "reverse fly": "lateral-raise",
+  "rear delt fly": "lateral-raise",
 
-  // Pull vertical — jalones y dominadas
-  "Pull – Vertical": "pulldown",
-  "Pull – Vertical (Assisted)": "pulldown",
-  "Pull – Vertical (Guided)": "pulldown",
-  "Pull – Vertical (Narrow)": "pulldown",
-  "Pull – Vertical (Reverse)": "pulldown",
-  "Pull – Vertical (Wide)": "pulldown",
-  "Pull-Ups / Chin-Ups": "pullup",
+  // ── Pull vertical — jalones y dominadas ──────────────────────────────────
+  "pull – vertical": "pulldown",
+  "pull – vertical (assisted)": "pulldown",
+  "pull – vertical (guided)": "pulldown",
+  "pull – vertical (narrow)": "pulldown",
+  "pull – vertical (reverse)": "pulldown",
+  "pull – vertical (wide)": "pulldown",
+  "lat pulldown": "pulldown",
+  "pulldown": "pulldown",
 
-  // Pull horizontal — remos
-  "Pull – Horizontal": "row",
-  "Pull – Horizontal (Guided)": "row",
-  "Pull – Inclined Horizontal": "row",
-  "Pull – Unilateral Horizontal": "row",
+  // ── Dominadas ─────────────────────────────────────────────────────────────
+  "pull-ups / chin-ups": "pullup",
+  "pull-ups": "pullup",
+  "chin-ups": "pullup",
+  "pull ups": "pullup",
+  "chin ups": "pullup",
 
-  // Pull-over y arco
-  "Pull – Arc": "chest-fly",
-  "Pull – Straight Arm": "pulldown",
-  "Pull – Face": "row",
+  // ── Pull horizontal — remos ───────────────────────────────────────────────
+  "pull – horizontal": "row",
+  "pull – horizontal (guided)": "row",
+  "pull – inclined horizontal": "row",
+  "pull – unilateral horizontal": "row",
+  "pull – face": "row",
+  "row": "row",
+  "bent over row": "row",
+  "barbell row": "row",
+  "dumbbell row": "row",
+  "cable row": "row",
+  "seated row": "row",
+  "machine row": "row",
+  "t-bar row": "row",
+  "face pull": "row",
 
-  // Antirotación / core
-  "Pull – Anti-Rotation": "core-plank",
-  "Press Pallof con Polea": "core-plank",
+  // ── Pull-over / arc ───────────────────────────────────────────────────────
+  "pull – arc": "chest-fly",
+  "pull – straight arm": "pulldown",
+  "pullover": "chest-fly",
+  "pull over": "chest-fly",
+  "dumbbell pullover": "chest-fly",
 
-  // Bisagra de cadera — peso muerto y variantes
-  "Hinge – Full": "deadlift",
+  // ── Core antirotación / pallof ────────────────────────────────────────────
+  "pull – anti-rotation": "core-plank",
+  "press pallof con polea": "core-plank",
+  "pallof press": "core-plank",
+  "anti-rotation – press": "core-plank",
 
-  // Empuje tren inferior — sentadillas
-  "Squat – Guided": "squat",
-  "Squat – Wide": "squat",
+  // ── Bisagra de cadera — peso muerto ───────────────────────────────────────
+  "hinge – full": "deadlift",
+  "deadlift": "deadlift",
+  "romanian deadlift": "deadlift",
+  "rdl": "deadlift",
+  "sumo deadlift": "deadlift",
+  "trap bar deadlift": "deadlift",
+  "good morning": "deadlift",
 
-  // Zancadas
-  "Lunge – Guided": "lunge",
-  "Lunge – Reverse": "lunge",
-  "Lunge – Unilateral": "lunge",
-  "Lunge – Walking": "lunge",
-  "Lunges": "lunge",
-  "Step-Up": "lunge",
-  "Step-Up – Unilateral": "lunge",
+  // ── Sentadilla ────────────────────────────────────────────────────────────
+  "squat – guided": "squat",
+  "squat – wide": "squat",
+  "squat": "squat",
+  "back squat": "squat",
+  "front squat": "squat",
+  "goblet squat": "squat",
+  "hack squat": "squat",
+  "box squat": "squat",
+  "leg press": "squat",
+  "smith machine squat": "squat",
 
-  // Extensión de rodilla — cuádriceps en máquina
-  "Extension – Knee (Sitting)": "leg-extension",
+  // ── Zancadas / estocadas ──────────────────────────────────────────────────
+  "lunge – guided": "lunge",
+  "lunge – reverse": "lunge",
+  "lunge – unilateral": "lunge",
+  "lunge – walking": "lunge",
+  "lunges": "lunge",
+  "lunge": "lunge",
+  "step-up": "lunge",
+  "step-up – unilateral": "lunge",
+  "split squat – elevated rear foot": "lunge",
+  "walking lunge": "lunge",
+  "reverse lunge": "lunge",
 
-  // Curl femoral — isquiotibiales
-  "Extension – Hip": "leg-curl",
-  "Hip Extension – Knee Flexion": "leg-curl",
+  // ── Calf raises — pantorrillas ────────────────────────────────────────────
+  "calf raise": "lunge",
+  "calf raise – guided": "lunge",
+  "calf raise – seated": "lunge",
+  "calf raise – standing": "lunge",
+  "standing calf raise": "lunge",
+  "seated calf raise": "lunge",
 
-  // Hip thrust — glúteos
-  "Hip Thrust": "hip-thrust",
-  "Hip Thrust – Guided": "hip-thrust",
-  "Hip Abductor Machine": "hip-thrust",
-  "Hip Abductors": "hip-thrust",
-  "Hip Adductor Machine": "hip-thrust",
-  "Hip Adductors": "hip-thrust",
-  "Hip Adductors (Inner Thigh)": "hip-thrust",
+  // ── Extensión de rodilla — cuádriceps en máquina ──────────────────────────
+  "extension – knee (sitting)": "leg-extension",
+  "leg extension": "leg-extension",
 
-  // Abducción / aducción — glúteo medio / aductores
-  "Abduction": "hip-thrust",
-  "Abduction – Hip": "hip-thrust",
-  "Adduction": "hip-thrust",
-  "Adduction – Hip": "hip-thrust",
+  // ── Curl femoral — isquiotibiales ─────────────────────────────────────────
+  "extension – hip": "leg-curl",
+  "hip extension – knee flexion": "leg-curl",
+  "flexion – knee (prone)": "leg-curl",
+  "flexion – knee (sitting)": "leg-curl",
+  "leg curl": "leg-curl",
+  "lying leg curl": "leg-curl",
+  "seated leg curl": "leg-curl",
+  "hamstring curl": "leg-curl",
+  "nordic curl": "leg-curl",
 
-  // Elevación de talones — pantorrillas
-  "Calf Raise": "lunge",
-  "Calf Raise – Guided": "lunge",
-  "Calf Raise – Seated": "lunge",
-  "Calf Raise – Standing": "lunge",
+  // ── Hip thrust — glúteos ──────────────────────────────────────────────────
+  "hip thrust": "hip-thrust",
+  "hip thrust – guided": "hip-thrust",
+  "hip abductor machine": "hip-thrust",
+  "hip abductors": "hip-thrust",
+  "hip adductor machine": "hip-thrust",
+  "hip adductors": "hip-thrust",
+  "hip adductors (inner thigh)": "hip-thrust",
+  "abduction": "hip-thrust",
+  "abduction – hip": "hip-thrust",
+  "adduction": "hip-thrust",
+  "adduction – hip": "hip-thrust",
+  "glute bridge": "hip-thrust",
+  "barbell hip thrust": "hip-thrust",
+  "donkey kick": "hip-thrust",
+  "cable kickback": "hip-thrust",
 
-  // Encogimiento — trapecios
-  "Shrug": "lateral-raise",
+  // ── Encogimiento — trapecios ──────────────────────────────────────────────
+  "shrug": "lateral-raise",
+  "barbell shrug": "lateral-raise",
+  "dumbbell shrug": "lateral-raise",
 
-  // Sentadilla búlgara / split squat
-  "Split Squat – Elevated Rear Foot": "lunge",
+  // ── Elevaciones laterales — deltoides ─────────────────────────────────────
+  "raise – lateral": "lateral-raise",
+  "raise – lateral (guided)": "lateral-raise",
+  "raise – frontal": "lateral-raise",
+  "raise – hanging": "lateral-raise",
+  "lateral raise": "lateral-raise",
+  "front raise": "lateral-raise",
+  "upright row": "lateral-raise",
 
-  // Flexiones de rodilla (leg curl sentado)
-  "Flexion – Knee (Prone)": "leg-curl",
-  "Flexion – Knee (Sitting)": "leg-curl",
-  "Flexion – Kneeling": "core-plank",
-  "Flexion – Spinal (Guided)": "core-plank",
+  // ── Curl de bíceps ────────────────────────────────────────────────────────
+  "curl – braced": "biceps-curl",
+  "curl – ez bar": "biceps-curl",
+  "curl – guided": "biceps-curl",
+  "curl – isolation": "biceps-curl",
+  "curl – neutral grip": "biceps-curl",
+  "curl – overhead stretch": "biceps-curl",
+  "curl – rotational": "biceps-curl",
+  "curl – stretch": "biceps-curl",
+  "biceps curl": "biceps-curl",
+  "barbell curl": "biceps-curl",
+  "dumbbell curl": "biceps-curl",
+  "hammer curl": "biceps-curl",
+  "concentration curl": "biceps-curl",
+  "preacher curl": "biceps-curl",
+  "cable curl": "biceps-curl",
+  "ez bar curl": "biceps-curl",
 
-  // Flexión lateral (oblicuos)
-  "Lateral Flexion": "core-plank",
+  // ── Extensiones de tríceps ────────────────────────────────────────────────
+  "extension – kickback": "triceps-ext",
+  "extension – overhead": "triceps-ext",
+  "extension – pushdown": "triceps-ext",
+  "extension – guided": "triceps-ext",
+  "extension – supine": "triceps-ext",
+  "triceps extension": "triceps-ext",
+  "skull crusher": "triceps-ext",
+  "close grip bench press": "triceps-ext",
+  "triceps pushdown": "triceps-ext",
+  "rope pushdown": "triceps-ext",
+  "overhead triceps extension": "triceps-ext",
 
-  // Golpe diagonal / rotación — core
-  "Diagonal Chop": "core-plank",
-  "Anti-Rotation – Press": "core-plank",
+  // ── Core — plancha / abdominales ──────────────────────────────────────────
+  "flexion – kneeling": "core-plank",
+  "flexion – spinal (guided)": "core-plank",
+  "lateral flexion": "core-plank",
+  "diagonal chop": "core-plank",
+  "rotation – diagonal": "core-plank",
+  "rotation – torso (guided)": "core-plank",
+  "core stabilizers": "core-plank",
+  "plank": "core-plank",
+  "plank – standard": "core-plank",
+  "plank – side": "core-plank",
+  "side plank": "core-plank",
+  "crunch": "core-plank",
+  "sit-up": "core-plank",
+  "sit up": "core-plank",
+  "ab crunch": "core-plank",
+  "cable crunch": "core-plank",
+  "russian twist": "core-plank",
+  "leg raise": "core-plank",
+  "hanging leg raise": "core-plank",
+  "mountain climber": "core-plank",
+  "dead bug": "core-plank",
+  "hollow body": "core-plank",
+  "ab wheel rollout": "core-plank",
+  "woodchop": "core-plank",
+  "wood chop": "core-plank",
 
-  // Curl de bíceps
-  "Curl – Braced": "biceps-curl",
-  "Curl – EZ Bar": "biceps-curl",
-  "Curl – Guided": "biceps-curl",
-  "Curl – Isolation": "biceps-curl",
-  "Curl – Neutral Grip": "biceps-curl",
-  "Curl – Overhead Stretch": "biceps-curl",
-  "Curl – Rotational": "biceps-curl",
-  "Curl – Stretch": "biceps-curl",
+  // ── Extensiones espinales ─────────────────────────────────────────────────
+  "extension – spinal": "deadlift",
+  "hyperextension": "deadlift",
+  "back extension": "deadlift",
 
-  // Extensiones de tríceps
-  "Extension – Kickback": "triceps-ext",
-  "Extension – Overhead": "triceps-ext",
-  "Extension – Pushdown": "triceps-ext",
-  "Extension – Guided": "triceps-ext",
-  "Extension – Supine": "triceps-ext",
-  "Dips": "triceps-ext",
+  // ── Cable genérico ────────────────────────────────────────────────────────
+  "cable fly": "cable",
+  "cable crossover": "cable",
+  "cable pull-through": "cable",
+  "cable pull through": "cable",
 
-  // Elevaciones laterales — deltoides
-  "Raise – Lateral": "lateral-raise",
-  "Raise – Lateral (Guided)": "lateral-raise",
-  "Raise – Frontal": "lateral-raise",
-  "Raise – Hanging": "lateral-raise",
-
-  // Rotación / core
-  "Rotation – Diagonal": "core-plank",
-  "Rotation – Torso (Guided)": "core-plank",
-  "Core Stabilizers": "core-plank",
-
-  // Extensiones espinales
-  "Extension – Spinal": "deadlift",
+  // ── Cardio ────────────────────────────────────────────────────────────────
+  "run": "cardio",
+  "running": "cardio",
+  "treadmill": "cardio",
+  "bike": "cardio",
+  "cycling": "cardio",
+  "stationary bike": "cardio",
+  "rowing machine": "cardio",
+  "elliptical": "cardio",
+  "jump rope": "cardio",
+  "skipping": "cardio",
+  "burpees": "cardio",
+  "burpee": "cardio",
+  "jumping jacks": "cardio",
+  "box jump": "cardio",
+  "stair climber": "cardio",
+  "sprint": "cardio",
 };
 
 // ---------------------------------------------------------------------------
 // Prefijos de movement_pattern → key
 // (cubre variantes con texto libre adicional)
+// Todas las claves en LOWERCASE para comparar contra el pattern normalizado.
 // ---------------------------------------------------------------------------
 
 const PREFIX_MAP: Array<[string, ExerciseIconKey]> = [
-  ["Push – Horizontal", "bench-press"],
-  ["Push – Incline", "incline-press"],
-  ["Push – Decline", "decline-press"],
-  ["Push – Vertical", "overhead-press"],
-  ["Push – Rotational", "overhead-press"],
-  ["Push – Close", "triceps-ext"],
-  ["Push –", "bench-press"],
-  ["Pull – Vertical", "pulldown"],
-  ["Pull – Horizontal", "row"],
-  ["Pull – Face", "row"],
-  ["Pull – Straight", "pulldown"],
-  ["Pull – Unilateral", "row"],
-  ["Pull – Inclined", "row"],
-  ["Pull – Anti", "core-plank"],
-  ["Pull – Arc", "chest-fly"],
-  ["Pull –", "row"],
-  ["Fly – Reverse", "lateral-raise"],
-  ["Fly –", "chest-fly"],
-  ["Hinge", "deadlift"],
-  ["Squat", "squat"],
-  ["Lunge", "lunge"],
-  ["Step-Up", "lunge"],
-  ["Hip Thrust", "hip-thrust"],
-  ["Hip Abduct", "hip-thrust"],
-  ["Hip Adduct", "hip-thrust"],
-  ["Hip Extension", "leg-curl"],
-  ["Extension – Knee", "leg-extension"],
-  ["Extension – Hip", "leg-curl"],
-  ["Extension – Kick", "triceps-ext"],
-  ["Extension – Overhead", "triceps-ext"],
-  ["Extension – Push", "triceps-ext"],
-  ["Extension – Supine", "triceps-ext"],
-  ["Extension – Guided", "triceps-ext"],
-  ["Extension – Spinal", "deadlift"],
-  ["Curl", "biceps-curl"],
-  ["Raise –", "lateral-raise"],
-  ["Rotation", "core-plank"],
-  ["Core", "core-plank"],
-  ["Dip", "triceps-ext"],
-  ["Push-Up", "bench-press"],
-  ["Pull-Up", "pullup"],
-  ["Pull over", "chest-fly"],
-  ["Pullover", "chest-fly"],
-  ["Abduction", "hip-thrust"],
-  ["Adduction", "hip-thrust"],
-  ["Calf Raise", "lunge"],
-  ["Shrug", "lateral-raise"],
-  ["Split Squat", "lunge"],
-  ["Flexion – Knee", "leg-curl"],
-  ["Flexion – Spinal", "core-plank"],
-  ["Flexion – Kneeling", "core-plank"],
-  ["Lateral Flexion", "core-plank"],
-  ["Diagonal Chop", "core-plank"],
-  ["Anti-Rotation", "core-plank"],
+  // Push — orden de más específico a más general
+  ["push – horizontal", "bench-press"],
+  ["push – incline", "incline-press"],
+  ["push – decline", "decline-press"],
+  ["push – vertical", "overhead-press"],
+  ["push – rotational", "overhead-press"],
+  ["push – close", "triceps-ext"],
+  ["push –", "bench-press"],
+  ["push-up", "bench-press"],
+
+  // Pull — orden de más específico a más general
+  ["pull – vertical", "pulldown"],
+  ["pull – horizontal", "row"],
+  ["pull – face", "row"],
+  ["pull – straight", "pulldown"],
+  ["pull – unilateral", "row"],
+  ["pull – inclined", "row"],
+  ["pull – anti", "core-plank"],
+  ["pull – arc", "chest-fly"],
+  ["pull –", "row"],
+  ["pull-up", "pullup"],
+  ["pull over", "chest-fly"],
+  ["pullover", "chest-fly"],
+  ["pulldown", "pulldown"],
+
+  // Fly
+  ["fly – reverse", "lateral-raise"],
+  ["fly –", "chest-fly"],
+
+  // Hinge / bisagra
+  ["hinge", "deadlift"],
+
+  // Sentadilla
+  ["squat", "squat"],
+  ["leg press", "squat"],
+
+  // Zancadas / step
+  ["lunge", "lunge"],
+  ["step-up", "lunge"],
+  ["split squat", "lunge"],
+  ["calf raise", "lunge"],
+
+  // Hip
+  ["hip thrust", "hip-thrust"],
+  ["hip abduct", "hip-thrust"],
+  ["hip adduct", "hip-thrust"],
+  ["hip extension", "leg-curl"],
+
+  // Extensiones — orden de más específico a más general
+  ["extension – knee", "leg-extension"],
+  ["extension – hip", "leg-curl"],
+  ["extension – kick", "triceps-ext"],
+  ["extension – overhead", "triceps-ext"],
+  ["extension – push", "triceps-ext"],
+  ["extension – supine", "triceps-ext"],
+  ["extension – guided", "triceps-ext"],
+  ["extension – spinal", "deadlift"],
+  ["leg extension", "leg-extension"],
+  ["leg curl", "leg-curl"],
+
+  // Curl / bíceps
+  ["curl", "biceps-curl"],
+
+  // Elevaciones / encogimiento
+  ["raise –", "lateral-raise"],
+  ["lateral raise", "lateral-raise"],
+  ["front raise", "lateral-raise"],
+  ["shrug", "lateral-raise"],
+  ["upright row", "lateral-raise"],
+
+  // Tríceps standalone
+  ["dip", "triceps-ext"],
+  ["tricep", "triceps-ext"],
+  ["skull", "triceps-ext"],
+  ["pushdown", "triceps-ext"],
+
+  // Flexiones de rodilla / columna
+  ["flexion – knee", "leg-curl"],
+  ["flexion – spinal", "core-plank"],
+  ["flexion – kneeling", "core-plank"],
+  ["lateral flexion", "core-plank"],
+
+  // Core
+  ["diagonal chop", "core-plank"],
+  ["anti-rotation", "core-plank"],
+  ["rotation", "core-plank"],
+  ["core", "core-plank"],
+  ["plank", "core-plank"],
+  ["crunch", "core-plank"],
+  ["sit-up", "core-plank"],
+  ["sit up", "core-plank"],
+  ["leg raise", "core-plank"],
+  ["ab ", "core-plank"],
+  ["russian twist", "core-plank"],
+  ["mountain climber", "core-plank"],
+  ["dead bug", "core-plank"],
+  ["hollow body", "core-plank"],
+  ["wood chop", "core-plank"],
+  ["woodchop", "core-plank"],
+
+  // Abducción / aducción
+  ["abduction", "hip-thrust"],
+  ["adduction", "hip-thrust"],
+
+  // Peso muerto / bisagra
+  ["deadlift", "deadlift"],
+  ["romanian", "deadlift"],
+  ["good morning", "deadlift"],
+  ["back extension", "deadlift"],
+  ["hyperextension", "deadlift"],
+
+  // Press genérico (no identificado por push-*)
+  ["bench press", "bench-press"],
+  ["chest press", "bench-press"],
+  ["incline press", "incline-press"],
+  ["overhead press", "overhead-press"],
+  ["shoulder press", "overhead-press"],
+  ["military press", "overhead-press"],
+
+  // Row genérico
+  ["row", "row"],
+  ["face pull", "row"],
+
+  // Glute bridge
+  ["glute bridge", "hip-thrust"],
+  ["hip thrust", "hip-thrust"],
+  ["donkey kick", "hip-thrust"],
+
+  // Cardio
+  ["run", "cardio"],
+  ["treadmill", "cardio"],
+  ["bike", "cardio"],
+  ["cycl", "cardio"],
+  ["elliptical", "cardio"],
+  ["jump rope", "cardio"],
+  ["skipping", "cardio"],
+  ["burpee", "cardio"],
+  ["sprint", "cardio"],
+  ["stair", "cardio"],
+  ["rowing machine", "cardio"],
 ];
 
 // ---------------------------------------------------------------------------
 // Hints de equipment → key
 // (se aplica cuando movement_pattern no resuelve)
+// Todas las entradas en LOWERCASE para comparar contra equipment normalizado.
 // ---------------------------------------------------------------------------
 
 const EQUIPMENT_HINT_MAP: Array<[string, ExerciseIconKey]> = [
-  ["Cable", "cable"],
-  ["Pulley", "cable"],
-  ["Polea", "cable"],
-  ["Machine", "machine-generic"],
-  ["Máquina", "machine-generic"],
-  ["Maquina", "machine-generic"],
-  ["Smith", "machine-generic"],
+  // Cables — prioridad alta sobre máquina genérica
+  ["cable", "cable"],
+  ["pulley", "cable"],
+  ["polea", "cable"],
+
+  // Barbell → press horizontal si no hay más contexto
+  ["barbell", "bench-press"],
+  ["barra olímpica", "bench-press"],
+  ["barra olimpica", "bench-press"],
+  ["ez bar", "biceps-curl"],
+  ["ez-bar", "biceps-curl"],
+
+  // Dumbbell → curl si no hay más contexto
+  ["dumbbell", "biceps-curl"],
+  ["mancuerna", "biceps-curl"],
+
+  // Kettlebell
+  ["kettlebell", "deadlift"],
+  ["pesa rusa", "deadlift"],
+
+  // Bodyweight
+  ["bodyweight", "core-plank"],
+  ["body weight", "core-plank"],
+  ["no equipment", "core-plank"],
+
+  // Resistance band
+  ["band", "cable"],
+  ["resistance band", "cable"],
+  ["banda elástica", "cable"],
+  ["banda elastica", "cable"],
+  ["bandas", "cable"],
+
+  // Cardio machines
+  ["treadmill", "cardio"],
+  ["bike", "cardio"],
+  ["bicicleta", "cardio"],
+  ["rower", "cardio"],
+  ["elliptical", "cardio"],
+  ["skierg", "cardio"],
+
+  // Guided / smith / máquina genérica — al final para no sobreescribir cable
+  ["smith", "machine-generic"],
+  ["machine", "machine-generic"],
+  ["máquina", "machine-generic"],
+  ["maquina", "machine-generic"],
 ];
 
 // ---------------------------------------------------------------------------
-// Fallback por primary_group
+// Fallback por primary_group (todos los valores posibles, en lowercase)
 // ---------------------------------------------------------------------------
 
 const GROUP_FALLBACK_MAP: Record<string, ExerciseIconKey> = {
-  Chest: "bench-press",
-  Back: "row",
-  Legs: "squat",
-  Shoulders: "overhead-press",
-  Arms: "biceps-curl",
-  Core: "core-plank",
+  chest: "bench-press",
+  back: "row",
+  legs: "squat",
+  shoulders: "overhead-press",
+  arms: "biceps-curl",
+  core: "core-plank",
+  glutes: "hip-thrust",
+  cardio: "cardio",
+  full_body: "deadlift",
 };
 
 // ---------------------------------------------------------------------------
@@ -271,6 +523,10 @@ const GROUP_FALLBACK_MAP: Record<string, ExerciseIconKey> = {
 /**
  * Resuelve la key del ícono SVG a partir de los metadatos de un ejercicio.
  * Función pura — sin efectos secundarios, sin dependencias de runtime UI.
+ *
+ * Los inputs se normalizan internamente (trim + toLowerCase) antes de
+ * comparar, por lo que variantes de capitalización de la DB ("Legs" / "legs",
+ * "Push – Horizontal" / "push – horizontal") resultan en el mismo ícono.
  *
  * @param movementPattern  exercise_library.movement_pattern (puede ser null)
  * @param equipment        exercise_library.equipment (array TEXT[], puede ser vacío)
@@ -282,28 +538,33 @@ export function resolveExerciseIconKey(
   equipment: string[] | null | undefined,
   primaryGroup: string | null | undefined
 ): ExerciseIconKey {
+  // Normalización de inputs
+  const pattern = movementPattern?.trim().toLowerCase() ?? null;
+  const equipNorm = equipment?.map((e) => e.trim().toLowerCase()) ?? [];
+  const group = primaryGroup?.trim().toLowerCase() ?? null;
+
   // 1. Coincidencia exacta de movement_pattern
-  if (movementPattern) {
-    const exactMatch = EXACT_PATTERN_MAP[movementPattern];
+  if (pattern) {
+    const exactMatch = EXACT_PATTERN_MAP[pattern];
     if (exactMatch) return exactMatch;
 
     // 2. Prefijo de movement_pattern
     for (const [prefix, key] of PREFIX_MAP) {
-      if (movementPattern.startsWith(prefix)) return key;
+      if (pattern.startsWith(prefix)) return key;
     }
   }
 
   // 3. Hint por equipment
-  if (equipment && equipment.length > 0) {
-    const equipStr = equipment.join(" ");
+  if (equipNorm.length > 0) {
+    const equipStr = equipNorm.join(" ");
     for (const [hint, key] of EQUIPMENT_HINT_MAP) {
       if (equipStr.includes(hint)) return key;
     }
   }
 
   // 4. Fallback por primary_group
-  if (primaryGroup) {
-    const groupKey = GROUP_FALLBACK_MAP[primaryGroup];
+  if (group) {
+    const groupKey = GROUP_FALLBACK_MAP[group];
     if (groupKey) return groupKey;
   }
 

@@ -12,14 +12,19 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
     "lint": "cross-env ESLINT_USE_FLAT_CONFIG=false eslint src/"
   },
   "peerDependencies": {
     "react": "18.x || 19.x",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-svg": ">=15.0.0"
   },
   "peerDependenciesMeta": {
     "react-native": {
+      "optional": true
+    },
+    "react-native-svg": {
       "optional": true
     }
   },
@@ -28,6 +33,8 @@
     "@forzza/tsconfig": "workspace:*",
     "@types/react": "^18.3.0",
     "eslint": "^9.39.4",
-    "typescript": "^5.7.2"
+    "react-native-svg": "15.12.1",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
   }
 }
