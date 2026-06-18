@@ -1633,6 +1633,7 @@ export type Database = {
         Args: { p_coach_id: string; p_student_id: string }
         Returns: boolean
       }
+      is_pro: { Args: { p_user_id: string }; Returns: boolean }
       student_has_pro_or_elite_package: {
         Args: { p_coach_id: string; p_student_id: string }
         Returns: boolean

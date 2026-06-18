@@ -33,7 +33,7 @@
 
 BEGIN;
 
-SELECT plan(48);
+SELECT plan(56);
 
 -- =============================================================================
 -- FIXTURES: insertados como superusuario (bypassa RLS y REVOKE).
@@ -1033,6 +1033,426 @@ BEGIN
 END $t47$;
 
 SELECT ok(true, 'T47: student2 NO puede DELETE el plan de tabata de student1 (0 filas afectadas)');
+
+-- =============================================================================
+-- FIXTURES adicionales para enforcement PRO de tabata_plans (T49–T55)
+--
+-- UUIDs de suscripciones:
+--   sub-pro-s1  => student1 con plan='pro', status='active', CPE futuro
+--   sub-pro-s2  => student2 con plan='pro', status='active', CPE VENCIDO
+--   sub-pro-s3  => plan simple de student2 (SIN suscripcion activa en estos tests)
+--
+-- Estrategia:
+--   student1  (a3a00003): SIN suscripcion PRO al inicio del bloque de tests
+--             → se agrega temporalmente para T51/T52 y se elimina para T49/T50/T53
+--   student2  (a4a00004): suscripcion PRO con CPE vencido → T53
+--   student3  (no existe): usamos student1 sin suscripcion para el caso free
+--
+-- Para mantener fixtures auto-contenidos usamos DO blocks de setup/teardown
+-- dentro de cada grupo de tests.
+-- =============================================================================
+
+-- ---------------------------------------------------------------------------
+-- T48b: is_pro() retorna false para un UUID inexistente (sin suscripcion)
+-- ---------------------------------------------------------------------------
+SELECT ok(
+  NOT public.is_pro('00000000-0000-4000-8000-000000000099'::uuid),
+  'T48b: is_pro() retorna false para usuario sin suscripcion'
+);
+
+-- ---------------------------------------------------------------------------
+-- T49: alumno SIN suscripcion PRO puede INSERT plan mode='simple' (permitido)
+-- student1 no tiene suscripcion PRO en este punto del test
+-- ---------------------------------------------------------------------------
+DO $t49$
+DECLARE
+  v_inserted UUID;
+  v_ok BOOLEAN := false;
+BEGIN
+  -- Asegurar que student1 no tenga suscripcion PRO vigente
+  DELETE FROM public.subscriptions
+  WHERE user_id = 'a3a00003-0000-4000-8000-000000000003'::uuid
+    AND plan IN ('pro', 'elite')
+    AND status IN ('active', 'canceled')
+    AND current_period_end >= now();
+
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a3a00003-0000-4000-8000-000000000003', 'role', 'authenticated')::text,
+    true);
+  BEGIN
+    INSERT INTO public.tabata_plans (student_id, name, mode, config, created_at, updated_at)
+    VALUES (
+      'a3a00003-0000-4000-8000-000000000003'::uuid,
+      'Plan Simple Sin PRO T49',
+      'simple',
+      '{"workSecs":20,"restSecs":10,"rounds":8,"prepSecs":10}'::jsonb,
+      now(), now()
+    )
+    RETURNING id INTO v_inserted;
+    v_ok := (v_inserted IS NOT NULL);
+  EXCEPTION WHEN OTHERS THEN
+    v_ok := false;
+  END;
+  RESET ROLE;
+  IF NOT v_ok THEN
+    RAISE EXCEPTION 'T49 FALLO: alumno sin PRO no pudo insertar plan simple (debe estar permitido)';
+  END IF;
+END $t49$;
+
+SELECT ok(true, 'T49: alumno SIN PRO puede INSERT plan mode=simple (permitido)');
+
+-- ---------------------------------------------------------------------------
+-- T50: alumno SIN suscripcion PRO NO puede INSERT plan mode='advanced' (prohibido)
+-- student1 sigue sin suscripcion PRO
+-- ---------------------------------------------------------------------------
+DO $t50$
+DECLARE
+  v_ok BOOLEAN := false;
+BEGIN
+  -- Confirmar que student1 sigue sin suscripcion PRO vigente
+  DELETE FROM public.subscriptions
+  WHERE user_id = 'a3a00003-0000-4000-8000-000000000003'::uuid
+    AND plan IN ('pro', 'elite')
+    AND status IN ('active', 'canceled')
+    AND current_period_end >= now();
+
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a3a00003-0000-4000-8000-000000000003', 'role', 'authenticated')::text,
+    true);
+  BEGIN
+    INSERT INTO public.tabata_plans (student_id, name, mode, config, created_at, updated_at)
+    VALUES (
+      'a3a00003-0000-4000-8000-000000000003'::uuid,
+      'Plan Avanzado Sin PRO T50',
+      'advanced',
+      '[{"id":"s1","kind":"work","label":"Burpees","durationMs":20000}]'::jsonb,
+      now(), now()
+    );
+    -- Si llega aqui, el INSERT fue aceptado (no deberia)
+    v_ok := false;
+  EXCEPTION WHEN OTHERS THEN
+    -- RLS rechazo el INSERT — comportamiento correcto
+    v_ok := true;
+  END;
+  RESET ROLE;
+
+  -- Verificar adicionalmente que no se inserto la fila (doble chequeo como superusuario)
+  IF NOT v_ok THEN
+    -- El INSERT puede haber pasado silenciosamente (WITH CHECK sin excepcion en algunos contextos)
+    -- Verificamos que la fila no existe
+    IF NOT EXISTS (
+      SELECT 1 FROM public.tabata_plans
+      WHERE student_id = 'a3a00003-0000-4000-8000-000000000003'::uuid
+        AND name = 'Plan Avanzado Sin PRO T50'
+    ) THEN
+      v_ok := true;  -- La fila no existe: el INSERT fue rechazado correctamente
+    END IF;
+  END IF;
+
+  IF NOT v_ok THEN
+    RAISE EXCEPTION 'T50 FALLO: alumno sin PRO pudo insertar plan avanzado (debe ser prohibido)';
+  END IF;
+END $t50$;
+
+-- Verificar a nivel superusuario que la fila fraudulenta no existe
+SELECT ok(
+  NOT EXISTS (
+    SELECT 1 FROM public.tabata_plans
+    WHERE student_id = 'a3a00003-0000-4000-8000-000000000003'::uuid
+      AND name = 'Plan Avanzado Sin PRO T50'
+  ),
+  'T50: alumno SIN PRO NO puede INSERT plan mode=advanced (rechazado por RLS)'
+);
+
+-- ---------------------------------------------------------------------------
+-- T51: alumno CON suscripcion PRO activa puede INSERT plan mode='advanced' (permitido)
+-- Creamos la suscripcion PRO para student1, luego intentamos el INSERT
+-- ---------------------------------------------------------------------------
+DO $t51$
+DECLARE
+  v_sub_id UUID := 'ee510000-0000-4000-8000-000000000001'::uuid;
+  v_inserted UUID;
+  v_ok BOOLEAN := false;
+BEGIN
+  -- Crear suscripcion PRO activa para student1
+  INSERT INTO public.subscriptions (
+    id, user_id, plan, status, current_period_end,
+    platform, gateway, gateway_subscription_id, created_at, updated_at
+  )
+  VALUES (
+    v_sub_id,
+    'a3a00003-0000-4000-8000-000000000003'::uuid,
+    'pro',
+    'active',
+    now() + interval '30 days',   -- vigente
+    'web',
+    'revenuecat',
+    'rc_test_t51',
+    now(), now()
+  )
+  ON CONFLICT (id) DO NOTHING;
+
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a3a00003-0000-4000-8000-000000000003', 'role', 'authenticated')::text,
+    true);
+  BEGIN
+    INSERT INTO public.tabata_plans (student_id, name, mode, config, created_at, updated_at)
+    VALUES (
+      'a3a00003-0000-4000-8000-000000000003'::uuid,
+      'Plan Avanzado Con PRO T51',
+      'advanced',
+      '[{"id":"s1","kind":"work","label":"Box Jumps","durationMs":20000}]'::jsonb,
+      now(), now()
+    )
+    RETURNING id INTO v_inserted;
+    v_ok := (v_inserted IS NOT NULL);
+  EXCEPTION WHEN OTHERS THEN
+    v_ok := false;
+  END;
+  RESET ROLE;
+
+  -- Limpiar la suscripcion de test
+  DELETE FROM public.subscriptions WHERE id = v_sub_id;
+
+  IF NOT v_ok THEN
+    RAISE EXCEPTION 'T51 FALLO: alumno con PRO activo no pudo insertar plan avanzado (debe estar permitido)';
+  END IF;
+END $t51$;
+
+SELECT ok(true, 'T51: alumno CON PRO activo puede INSERT plan mode=advanced (permitido)');
+
+-- ---------------------------------------------------------------------------
+-- T52: alumno CON suscripcion PRO activa puede INSERT plan mode='simple' (permitido)
+-- Verificacion de que la condicion OR no rompe el caso simple para usuarios PRO
+-- ---------------------------------------------------------------------------
+DO $t52$
+DECLARE
+  v_sub_id UUID := 'ee520000-0000-4000-8000-000000000002'::uuid;
+  v_inserted UUID;
+  v_ok BOOLEAN := false;
+BEGIN
+  -- Crear suscripcion PRO activa para student1
+  INSERT INTO public.subscriptions (
+    id, user_id, plan, status, current_period_end,
+    platform, gateway, gateway_subscription_id, created_at, updated_at
+  )
+  VALUES (
+    v_sub_id,
+    'a3a00003-0000-4000-8000-000000000003'::uuid,
+    'pro',
+    'active',
+    now() + interval '30 days',
+    'web',
+    'revenuecat',
+    'rc_test_t52',
+    now(), now()
+  )
+  ON CONFLICT (id) DO NOTHING;
+
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a3a00003-0000-4000-8000-000000000003', 'role', 'authenticated')::text,
+    true);
+  BEGIN
+    INSERT INTO public.tabata_plans (student_id, name, mode, config, created_at, updated_at)
+    VALUES (
+      'a3a00003-0000-4000-8000-000000000003'::uuid,
+      'Plan Simple Con PRO T52',
+      'simple',
+      '{"workSecs":30,"restSecs":15,"rounds":6,"prepSecs":5}'::jsonb,
+      now(), now()
+    )
+    RETURNING id INTO v_inserted;
+    v_ok := (v_inserted IS NOT NULL);
+  EXCEPTION WHEN OTHERS THEN
+    v_ok := false;
+  END;
+  RESET ROLE;
+
+  -- Limpiar la suscripcion de test
+  DELETE FROM public.subscriptions WHERE id = v_sub_id;
+
+  IF NOT v_ok THEN
+    RAISE EXCEPTION 'T52 FALLO: alumno con PRO activo no pudo insertar plan simple (debe estar permitido)';
+  END IF;
+END $t52$;
+
+SELECT ok(true, 'T52: alumno CON PRO activo puede INSERT plan mode=simple (permitido)');
+
+-- ---------------------------------------------------------------------------
+-- T53: alumno con suscripcion PRO pero current_period_end VENCIDO no puede
+-- INSERT plan mode='advanced' (prohibido — suscripcion expirada)
+-- ---------------------------------------------------------------------------
+DO $t53$
+DECLARE
+  v_sub_id UUID := 'ee530000-0000-4000-8000-000000000003'::uuid;
+  v_ok BOOLEAN := false;
+BEGIN
+  -- Crear suscripcion PRO VENCIDA para student2
+  INSERT INTO public.subscriptions (
+    id, user_id, plan, status, current_period_end,
+    platform, gateway, gateway_subscription_id, created_at, updated_at
+  )
+  VALUES (
+    v_sub_id,
+    'a4a00004-0000-4000-8000-000000000004'::uuid,
+    'pro',
+    'active',
+    now() - interval '1 day',    -- ya vencio
+    'web',
+    'revenuecat',
+    'rc_test_t53_expired',
+    now(), now()
+  )
+  ON CONFLICT (id) DO NOTHING;
+
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a4a00004-0000-4000-8000-000000000004', 'role', 'authenticated')::text,
+    true);
+  BEGIN
+    INSERT INTO public.tabata_plans (student_id, name, mode, config, created_at, updated_at)
+    VALUES (
+      'a4a00004-0000-4000-8000-000000000004'::uuid,
+      'Plan Avanzado PRO Vencido T53',
+      'advanced',
+      '[{"id":"s1","kind":"work","label":"Deadlift","durationMs":30000}]'::jsonb,
+      now(), now()
+    );
+    -- Si llega aqui, el INSERT fue aceptado (no deberia)
+    v_ok := false;
+  EXCEPTION WHEN OTHERS THEN
+    v_ok := true;
+  END;
+  RESET ROLE;
+
+  -- Limpiar la suscripcion de test
+  DELETE FROM public.subscriptions WHERE id = v_sub_id;
+
+  -- Doble chequeo: fila no debe existir
+  IF NOT v_ok THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM public.tabata_plans
+      WHERE student_id = 'a4a00004-0000-4000-8000-000000000004'::uuid
+        AND name = 'Plan Avanzado PRO Vencido T53'
+    ) THEN
+      v_ok := true;
+    END IF;
+  END IF;
+
+  IF NOT v_ok THEN
+    RAISE EXCEPTION 'T53 FALLO: alumno con PRO vencido pudo insertar plan avanzado (debe ser prohibido)';
+  END IF;
+END $t53$;
+
+SELECT ok(
+  NOT EXISTS (
+    SELECT 1 FROM public.tabata_plans
+    WHERE name = 'Plan Avanzado PRO Vencido T53'
+  ),
+  'T53: alumno con PRO vencido (current_period_end pasado) NO puede INSERT plan mode=advanced'
+);
+
+-- ---------------------------------------------------------------------------
+-- T54: alumno CON suscripcion PRO activa puede UPDATE su plan avanzado (permitido)
+-- Usa el plan avanzado de student2 (fixture: 7ab00002) creado por superusuario
+-- ---------------------------------------------------------------------------
+DO $t54$
+DECLARE
+  v_sub_id UUID := 'ee540000-0000-4000-8000-000000000004'::uuid;
+  v_count INTEGER;
+BEGIN
+  -- Crear suscripcion PRO activa para student2
+  INSERT INTO public.subscriptions (
+    id, user_id, plan, status, current_period_end,
+    platform, gateway, gateway_subscription_id, created_at, updated_at
+  )
+  VALUES (
+    v_sub_id,
+    'a4a00004-0000-4000-8000-000000000004'::uuid,
+    'pro',
+    'active',
+    now() + interval '30 days',
+    'web',
+    'revenuecat',
+    'rc_test_t54',
+    now(), now()
+  )
+  ON CONFLICT (id) DO NOTHING;
+
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a4a00004-0000-4000-8000-000000000004', 'role', 'authenticated')::text,
+    true);
+  UPDATE public.tabata_plans
+    SET name = 'Plan Avanzado Con PRO Actualizado T54'
+  WHERE id = '7ab00002-0000-4000-8000-000000000002'::uuid;
+  GET DIAGNOSTICS v_count = ROW_COUNT;
+  RESET ROLE;
+
+  -- Limpiar la suscripcion de test
+  DELETE FROM public.subscriptions WHERE id = v_sub_id;
+  -- Restaurar el nombre original para no interferir con otros tests
+  UPDATE public.tabata_plans
+    SET name = 'Tabata RLS Plan Student2'
+  WHERE id = '7ab00002-0000-4000-8000-000000000002'::uuid;
+
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'T54 FALLO: alumno con PRO activo no pudo UPDATE su plan avanzado (esperado 1 fila)';
+  END IF;
+END $t54$;
+
+SELECT ok(true, 'T54: alumno CON PRO activo puede UPDATE su plan mode=advanced (permitido)');
+
+-- ---------------------------------------------------------------------------
+-- T55: alumno SIN suscripcion PRO NO puede UPDATE plan mode='advanced'
+-- (ni cambiar a avanzado ni modificar un plan avanzado existente)
+-- Usa el plan avanzado de student2 (fixture: 7ab00002); student2 no tiene PRO aqui
+-- ---------------------------------------------------------------------------
+DO $t55$
+DECLARE
+  v_count INTEGER := 0;
+  v_ok    BOOLEAN := false;
+BEGIN
+  -- Confirmar que student2 no tiene suscripcion PRO vigente en este punto
+  DELETE FROM public.subscriptions
+  WHERE user_id = 'a4a00004-0000-4000-8000-000000000004'::uuid
+    AND plan IN ('pro', 'elite')
+    AND status IN ('active', 'canceled')
+    AND current_period_end >= now();
+
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a4a00004-0000-4000-8000-000000000004', 'role', 'authenticated')::text,
+    true);
+  BEGIN
+    UPDATE public.tabata_plans
+      SET name = 'Intento UPDATE Avanzado Sin PRO T55'
+    WHERE id = '7ab00002-0000-4000-8000-000000000002'::uuid;
+    GET DIAGNOSTICS v_count = ROW_COUNT;
+    -- Si el UPDATE no modifico filas (WITH CHECK silencioso), es correcto
+    IF v_count = 0 THEN
+      v_ok := true;
+    END IF;
+    -- Si modifico filas, es un fallo
+  EXCEPTION WHEN OTHERS THEN
+    -- RLS lanzo excepcion: comportamiento correcto (prohibido)
+    v_ok := true;
+    v_count := 0;
+  END;
+  RESET ROLE;
+
+  IF NOT v_ok THEN
+    RAISE EXCEPTION 'T55 FALLO: alumno sin PRO pudo UPDATE % filas de plan avanzado (esperado 0)', v_count;
+  END IF;
+END $t55$;
+
+SELECT ok(true, 'T55: alumno SIN PRO NO puede UPDATE plan mode=advanced (0 filas afectadas)');
+
+-- =============================================================================
 
 SELECT * FROM finish();
 

@@ -34,7 +34,7 @@ Reescribir la pantalla Tabata de la app mobile con modo simple (gratis) y modo a
 |-----------|------|-----------|
 | Audio (beeps de transición): requiere `expo prebuild` + archivos `tick.wav`, `start.wav`, `finish.wav` en `apps/mobile/assets/audio/`. Hoy el guard `if (!audioReady)` deja el audio desactivado; háptica + colores funcionan. | HUMAN_REQUIRED | Alta para audio, no bloqueante para el resto |
 | Verificación manual en dispositivo de la secuencia de colores: prep (ámbar) → work (verde) → últimos 5 s (rojo) → rest (azul) → últimos 5 s (rojo) → finished. No realizada aún. | Manual QA | Media |
-| Enforcement PRO server-side en `tabata_plans`: no hay policy/trigger que rechace `mode='advanced'` para usuarios sin suscripción activa. El cliente bloquea el flujo. | Open question | Baja (ver docs/open-questions.md) |
+| Enforcement PRO server-side en `tabata_plans`: función `is_pro()` + policies INSERT/UPDATE con `(mode='simple' OR is_pro(auth.uid()))`. | PASS | `pnpm test:rls` → 56/56 PASS; tests T48b, T49–T55 cubren todos los casos (sin PRO, con PRO activo, con PRO vencido, UPDATE). Migración: `20260618000002_tabata_advanced_pro_enforcement.sql`. |
 
 ## HUMAN_REQUIRED — Audio
 
@@ -65,4 +65,4 @@ Pasos exactos para activar el audio:
 
 1. Completar el HUMAN_REQUIRED de audio (ver tabla de pendientes).
 2. Realizar verificación manual de la secuencia de colores en dispositivo real.
-3. Evaluar (baja prioridad) si se agrega enforcement server-side de PRO en `tabata_plans`.
+3. ~~Evaluar (baja prioridad) si se agrega enforcement server-side de PRO en `tabata_plans`.~~ COMPLETADO: migración `20260618000002_tabata_advanced_pro_enforcement.sql`, 56/56 tests RLS PASS.
