@@ -27,7 +27,9 @@ import {
   RestTimer,
   Confetti,
   Input,
+  ExerciseIcon,
 } from "@forzza/ui/native";
+import type { ExerciseIconKey } from "@forzza/ui/native";
 
 const TABS_DEMO = [
   { key: "rutinas", label: "Rutinas" },
@@ -419,6 +421,57 @@ export default function StyleguideScreen() {
               <ErrorState title="Error de conexion" onRetry={() => {}} />
             </Card>
           </View>
+        </View>
+
+        {/* ── ExerciseIcon ── */}
+        <View style={styles.section}>
+          <SectionHeading>ExerciseIcon (21 keys + fallback)</SectionHeading>
+          <Card padding="sm">
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: spacing[4], padding: spacing[2] }}>
+              {(
+                [
+                  "bench-press", "incline-press", "decline-press", "overhead-press",
+                  "chest-fly", "pulldown", "pullup", "row", "deadlift", "squat",
+                  "lunge", "leg-extension", "leg-curl", "hip-thrust", "biceps-curl",
+                  "triceps-ext", "lateral-raise", "cable", "core-plank", "cardio",
+                  "machine-generic",
+                ] as ExerciseIconKey[]
+              ).map((key) => (
+                <View key={key} style={{ alignItems: "center", gap: spacing[1] }}>
+                  <ExerciseIcon icon={key} size={48} color={colors.lime} />
+                  <Text style={{ color: colors.muted, fontSize: 8, textAlign: "center", maxWidth: 56 }} numberOfLines={2}>
+                    {key}
+                  </Text>
+                </View>
+              ))}
+              {/* fallback: key inexistente → machine-generic */}
+              <View style={{ alignItems: "center", gap: spacing[1] }}>
+                <ExerciseIcon icon="unknown-exercise" size={48} color={colors.orange} />
+                <Text style={{ color: colors.muted, fontSize: 8, textAlign: "center", maxWidth: 56 }} numberOfLines={2}>
+                  fallback
+                </Text>
+              </View>
+            </View>
+          </Card>
+          <Card padding="sm" style={{ marginTop: spacing[3] }}>
+            <Text style={[styles.mutedText, { marginBottom: spacing[2] }]}>Variantes de color de acento</Text>
+            <View style={{ flexDirection: "row", gap: spacing[4], flexWrap: "wrap" }}>
+              <ExerciseIcon icon="bench-press" size={48} color={colors.lime} />
+              <ExerciseIcon icon="squat" size={48} color={colors.info} />
+              <ExerciseIcon icon="deadlift" size={48} color={colors.orange} />
+              <ExerciseIcon icon="cardio" size={48} color={colors.purple} />
+              <ExerciseIcon icon="machine-generic" size={48} color={colors.error} />
+            </View>
+          </Card>
+          <Card padding="sm" style={{ marginTop: spacing[3] }}>
+            <Text style={[styles.mutedText, { marginBottom: spacing[2] }]}>Variantes de tamaño</Text>
+            <View style={{ flexDirection: "row", gap: spacing[4], alignItems: "flex-end" }}>
+              <ExerciseIcon icon="pullup" size={24} color={colors.lime} />
+              <ExerciseIcon icon="pullup" size={40} color={colors.lime} />
+              <ExerciseIcon icon="pullup" size={56} color={colors.lime} />
+              <ExerciseIcon icon="pullup" size={80} color={colors.lime} />
+            </View>
+          </Card>
         </View>
 
         {/* ── Skeleton ── */}
