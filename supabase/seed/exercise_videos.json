@@ -171,6 +171,443 @@
     "status": "needs_review"
   },
   {
+    "slug": "back-extension-incline-bench",
+    "lang": "en",
+    "youtubeId": "nAcG01Pe0Nc",
+    "title": "His Back Extension Is CRAZY!🤯",
+    "channelId": "UCyPYQTT20IgzVw92LDvtClw",
+    "channelTitle": "Squat University",
+    "durationSeconds": 58,
+    "score": 0.7931,
+    "scoreBreakdown": {
+      "text": 0.5,
+      "channel": 1,
+      "engagement": 0.965536717557942,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "back-extension-incline-bench",
+    "lang": "es",
+    "youtubeId": "aYGRgupuBdw",
+    "title": "Domina el Crunch en Banco Declinable paso a paso",
+    "channelId": "UCDQT-KZuuJ_PMR58nuYGLTg",
+    "channelTitle": "MH Entrenamiento - Mr. Glúteo",
+    "durationSeconds": 43,
+    "score": 0.4494,
+    "scoreBreakdown": {
+      "text": 0.25,
+      "channel": 0,
+      "engagement": 0.8721387520991565,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "needs_review"
+  },
+  {
+    "slug": "back-extension-machine",
+    "lang": "en",
+    "youtubeId": "H8Swl1N-uis",
+    "title": "STOP Doing Back Extensions Like This!",
+    "channelId": "UCyPYQTT20IgzVw92LDvtClw",
+    "channelTitle": "Squat University",
+    "durationSeconds": 220,
+    "score": 0.7513,
+    "scoreBreakdown": {
+      "text": 0.5,
+      "channel": 1,
+      "engagement": 0.7564951654761372,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "back-extension-machine",
+    "lang": "es",
+    "youtubeId": "khhAS-FT_A0",
+    "title": "Cómo desarrollar tu espalda con solo 3 ejercicios 💪",
+    "channelId": "UCCvQpJ5_-LGfkeDdl2Etlwg",
+    "channelTitle": "Jeremy Ethier en Español",
+    "durationSeconds": 58,
+    "score": 0.7452,
+    "scoreBreakdown": {
+      "text": 0.3333333333333333,
+      "channel": 1,
+      "engagement": 0.9758232977124582,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "barbell-bent-over-row",
+    "lang": "en",
+    "youtubeId": "p9RihhjmJsw",
+    "title": "How to Execute a Bent Over Row",
+    "channelId": "UCfQgsKhHjSyRLOp9mnffqVg",
+    "channelTitle": "Renaissance Periodization",
+    "durationSeconds": 37,
+    "score": 0.8553,
+    "scoreBreakdown": {
+      "text": 0.75,
+      "channel": 1,
+      "engagement": 0.9014903314474473,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "barbell-bent-over-row",
+    "lang": "es",
+    "youtubeId": "2J61UenaFRw",
+    "title": "Así debes hacer el remo con barra",
+    "channelId": "UCCvQpJ5_-LGfkeDdl2Etlwg",
+    "channelTitle": "Jeremy Ethier en Español",
+    "durationSeconds": 60,
+    "score": 0.9388,
+    "scoreBreakdown": {
+      "text": 1,
+      "channel": 1,
+      "engagement": 0.9438757973324629,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "barbell-bicep-curl",
+    "lang": "en",
+    "youtubeId": "QZEqB6wUPxQ",
+    "title": "How To: Barbell Bicep Curl | 3 GOLDEN RULES",
+    "channelId": "UCEtMRF1ywKMc4sf3EXYyDzw",
+    "channelTitle": "ScottHermanFitness",
+    "durationSeconds": 370,
+    "score": 0.9439,
+    "scoreBreakdown": {
+      "text": 1,
+      "channel": 1,
+      "engagement": 0.733142662135272,
+      "duration": 0.9722222222222222,
+      "language": 1,
+      "captionsRecency": 1
+    },
+    "status": "published"
+  },
+  {
+    "slug": "barbell-bicep-curl",
+    "lang": "es",
+    "youtubeId": "M67E8xSxrsA",
+    "title": "Barra VS Mancuerna en CURL DE BÍCEPS",
+    "channelId": "UCh4VdbK3ybBBwleBdta_GMg",
+    "channelTitle": "BlueGym Animation",
+    "durationSeconds": 182,
+    "score": 0.6822,
+    "scoreBreakdown": {
+      "text": 1,
+      "channel": 0,
+      "engagement": 0.9111993360398396,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "needs_review"
+  },
+  {
+    "slug": "barbell-side-bend",
+    "lang": "en",
+    "youtubeId": "7D96dK6oaP8",
+    "title": "Core Stability: Side  Bends or Suitcase Carry? |#AskSquatU Show Ep. 47|",
+    "channelId": "UCyPYQTT20IgzVw92LDvtClw",
+    "channelTitle": "Squat University",
+    "durationSeconds": 399,
+    "score": 0.6953,
+    "scoreBreakdown": {
+      "text": 0.3333333333333333,
+      "channel": 1,
+      "engagement": 0.7806210002732704,
+      "duration": 0.8916666666666667,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "needs_review"
+  },
+  {
+    "slug": "barbell-squat",
+    "lang": "en",
+    "youtubeId": "q1fCgfieNEs",
+    "title": "The SINGLE BEST Squat Tip I’ve Ever Used!",
+    "channelId": "UCe0TLA0EsQbE-MjuHXevj2A",
+    "channelTitle": "ATHLEAN-X™",
+    "durationSeconds": 317,
+    "score": 0.8061,
+    "scoreBreakdown": {
+      "text": 0.5,
+      "channel": 1,
+      "engagement": 0.7802978109547658,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 1
+    },
+    "status": "published"
+  },
+  {
+    "slug": "barbell-squat",
+    "lang": "es",
+    "youtubeId": "MnQ6MsoPHks",
+    "title": "Como hacer la sentadilla correctamente | técnica para glúteos y para piernas",
+    "channelId": "UC_zaLJ30yLlq5Pd86jdu_Og",
+    "channelTitle": "NAYLA Vlogs",
+    "durationSeconds": 161,
+    "score": 0.6858,
+    "scoreBreakdown": {
+      "text": 1,
+      "channel": 0,
+      "engagement": 0.9288387713541474,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "needs_review"
+  },
+  {
+    "slug": "barbell-twists-russian-twist-with-bar",
+    "lang": "en",
+    "youtubeId": "LdhWBp5lWqc",
+    "title": "How To: Standing Oblique Twists with Bar",
+    "channelId": "UCEtMRF1ywKMc4sf3EXYyDzw",
+    "channelTitle": "ScottHermanFitness",
+    "durationSeconds": 100,
+    "score": 0.7442,
+    "scoreBreakdown": {
+      "text": 0.4,
+      "channel": 1,
+      "engagement": 0.620928210950356,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 1
+    },
+    "status": "published"
+  },
+  {
+    "slug": "barbell-twists-russian-twist-with-bar",
+    "lang": "es",
+    "youtubeId": "wThd4GBGbQc",
+    "title": "EJERCICIOS ABDOMINALES PROHIBIDOS - Ejercicios para abdomen: Giros con pica",
+    "channelId": "UCjGVbMdksC7kagTniVQfoPQ",
+    "channelTitle": "FitCook",
+    "durationSeconds": 169,
+    "score": 0.6709,
+    "scoreBreakdown": {
+      "text": 1,
+      "channel": 0,
+      "engagement": 0.8545557159243243,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "needs_review"
+  },
+  {
+    "slug": "barbell-upright-row",
+    "lang": "en",
+    "youtubeId": "amCU-ziHITM",
+    "title": "How To: Barbell Upright Row",
+    "channelId": "UCEtMRF1ywKMc4sf3EXYyDzw",
+    "channelTitle": "ScottHermanFitness",
+    "durationSeconds": 173,
+    "score": 0.9266,
+    "scoreBreakdown": {
+      "text": 1,
+      "channel": 1,
+      "engagement": 0.6331033488939187,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 1
+    },
+    "status": "published"
+  },
+  {
+    "slug": "barbell-upright-row",
+    "lang": "es",
+    "youtubeId": "loL670Yb7nU",
+    "title": "HOMBRO y TRAPECIO GRANDES - Remo al mentón (mi ejercicio estrella)",
+    "channelId": "UCQoN9oXyVuGcQWLlfcNDRgQ",
+    "channelTitle": "Powerexplosive",
+    "durationSeconds": 257,
+    "score": 0.697,
+    "scoreBreakdown": {
+      "text": 0.3333333333333333,
+      "channel": 1,
+      "engagement": 0.7351709815570052,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "needs_review"
+  },
+  {
+    "slug": "bench-press-barbell",
+    "lang": "en",
+    "youtubeId": "0cXAp6WhSj4",
+    "title": "The PERFECT Bench Press (5 Steps)",
+    "channelId": "UCERm5yFZ1SptUEU4wZ2vJvw",
+    "channelTitle": "Jeremy Ethier",
+    "durationSeconds": 58,
+    "score": 0.8475,
+    "scoreBreakdown": {
+      "text": 0.6666666666666666,
+      "channel": 1,
+      "engagement": 0.9875202653298837,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "bench-press-barbell",
+    "lang": "es",
+    "youtubeId": "jlFl7WJ1TzI",
+    "title": "Cómo hacer press de banca CORRECTAMENTE para incrementar tus músculos (5 pasos sencillos)",
+    "channelId": "UCCvQpJ5_-LGfkeDdl2Etlwg",
+    "channelTitle": "Jeremy Ethier en Español",
+    "durationSeconds": 473,
+    "score": 0.886,
+    "scoreBreakdown": {
+      "text": 1,
+      "channel": 1,
+      "engagement": 0.836717130625341,
+      "duration": 0.6861111111111111,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "bent-over-rear-delt-fly",
+    "lang": "en",
+    "youtubeId": "ttvfGg9d76c",
+    "title": "How To: Dumbbell Bent-Over Raise",
+    "channelId": "UCEtMRF1ywKMc4sf3EXYyDzw",
+    "channelTitle": "ScottHermanFitness",
+    "durationSeconds": 102,
+    "score": 0.7483,
+    "scoreBreakdown": {
+      "text": 0.4,
+      "channel": 1,
+      "engagement": 0.6413830764176844,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 1
+    },
+    "status": "published"
+  },
+  {
+    "slug": "bent-over-rear-delt-fly",
+    "lang": "es",
+    "youtubeId": "JfMF84StvGo",
+    "title": "PÁJARO de PIE con MANCUERNAS | ELEVACIONES POSTERIORES",
+    "channelId": "UC3Rn-AuuDMQZAsVqaUrd8hg",
+    "channelTitle": "APTA Vital Sport",
+    "durationSeconds": 108,
+    "score": 0.5442,
+    "scoreBreakdown": {
+      "text": 0.75,
+      "channel": 0,
+      "engagement": 0.5962342711780682,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "needs_review"
+  },
+  {
+    "slug": "bicep-curl-machine",
+    "lang": "en",
+    "youtubeId": "M_uPvGrMx_o",
+    "title": "How To: Arm Curl (Cybex)",
+    "channelId": "UCEtMRF1ywKMc4sf3EXYyDzw",
+    "channelTitle": "ScottHermanFitness",
+    "durationSeconds": 100,
+    "score": 0.7757,
+    "scoreBreakdown": {
+      "text": 0.5,
+      "channel": 1,
+      "engagement": 0.6283598782801877,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 1
+    },
+    "status": "published"
+  },
+  {
+    "slug": "bicep-curl-machine",
+    "lang": "es",
+    "youtubeId": "M67E8xSxrsA",
+    "title": "Barra VS Mancuerna en CURL DE BÍCEPS",
+    "channelId": "UCh4VdbK3ybBBwleBdta_GMg",
+    "channelTitle": "BlueGym Animation",
+    "durationSeconds": 182,
+    "score": 0.6822,
+    "scoreBreakdown": {
+      "text": 1,
+      "channel": 0,
+      "engagement": 0.9111993360398396,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "needs_review"
+  },
+  {
+    "slug": "cable-bicep-curl",
+    "lang": "en",
+    "youtubeId": "AsAVbj7puKo",
+    "title": "How To: Outside Grip Cable EZ-Curls (LF Cable)",
+    "channelId": "UCEtMRF1ywKMc4sf3EXYyDzw",
+    "channelTitle": "ScottHermanFitness",
+    "durationSeconds": 111,
+    "score": 0.7261,
+    "scoreBreakdown": {
+      "text": 0.3333333333333333,
+      "channel": 1,
+      "engagement": 0.6303190772830736,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 1
+    },
+    "status": "published"
+  },
+  {
+    "slug": "cable-bicep-curl",
+    "lang": "es",
+    "youtubeId": "fx9VW2lDx_s",
+    "title": "Curl de bíceps con soga en polea baja",
+    "channelId": "UC_9_CYb4vxMPYMosJv1u0ZA",
+    "channelTitle": "Abdias Sadrac",
+    "durationSeconds": 67,
+    "score": 0.6161,
+    "scoreBreakdown": {
+      "text": 1,
+      "channel": 0,
+      "engagement": 0.5807151263440884,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "needs_review"
+  },
+  {
     "slug": "close-grip-barbell-bench-press",
     "lang": "en",
     "youtubeId": "UYJsFzqdgK4",

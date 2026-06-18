@@ -131,6 +131,328 @@ ON CONFLICT (exercise_id, lang) DO UPDATE SET
   updated_at = now();
 
 INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'nAcG01Pe0Nc', 'His Back Extension Is CRAZY!🤯', 'UCyPYQTT20IgzVw92LDvtClw', 'Squat University', 58, 0.7931, '{"text":0.5,"channel":1,"engagement":0.965536717557942,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'back-extension-incline-bench'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'aYGRgupuBdw', 'Domina el Crunch en Banco Declinable paso a paso', 'UCDQT-KZuuJ_PMR58nuYGLTg', 'MH Entrenamiento - Mr. Glúteo', 43, 0.4494, '{"text":0.25,"channel":0,"engagement":0.8721387520991565,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'back-extension-incline-bench'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'H8Swl1N-uis', 'STOP Doing Back Extensions Like This!', 'UCyPYQTT20IgzVw92LDvtClw', 'Squat University', 220, 0.7513, '{"text":0.5,"channel":1,"engagement":0.7564951654761372,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'back-extension-machine'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'khhAS-FT_A0', 'Cómo desarrollar tu espalda con solo 3 ejercicios 💪', 'UCCvQpJ5_-LGfkeDdl2Etlwg', 'Jeremy Ethier en Español', 58, 0.7452, '{"text":0.3333333333333333,"channel":1,"engagement":0.9758232977124582,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'back-extension-machine'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'p9RihhjmJsw', 'How to Execute a Bent Over Row', 'UCfQgsKhHjSyRLOp9mnffqVg', 'Renaissance Periodization', 37, 0.8553, '{"text":0.75,"channel":1,"engagement":0.9014903314474473,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'barbell-bent-over-row'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', '2J61UenaFRw', 'Así debes hacer el remo con barra', 'UCCvQpJ5_-LGfkeDdl2Etlwg', 'Jeremy Ethier en Español', 60, 0.9388, '{"text":1,"channel":1,"engagement":0.9438757973324629,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'barbell-bent-over-row'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'QZEqB6wUPxQ', 'How To: Barbell Bicep Curl | 3 GOLDEN RULES', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 370, 0.9439, '{"text":1,"channel":1,"engagement":0.733142662135272,"duration":0.9722222222222222,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'barbell-bicep-curl'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'M67E8xSxrsA', 'Barra VS Mancuerna en CURL DE BÍCEPS', 'UCh4VdbK3ybBBwleBdta_GMg', 'BlueGym Animation', 182, 0.6822, '{"text":1,"channel":0,"engagement":0.9111993360398396,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'barbell-bicep-curl'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', '7D96dK6oaP8', 'Core Stability: Side  Bends or Suitcase Carry? |#AskSquatU Show Ep. 47|', 'UCyPYQTT20IgzVw92LDvtClw', 'Squat University', 399, 0.6953, '{"text":0.3333333333333333,"channel":1,"engagement":0.7806210002732704,"duration":0.8916666666666667,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'barbell-side-bend'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'q1fCgfieNEs', 'The SINGLE BEST Squat Tip I’ve Ever Used!', 'UCe0TLA0EsQbE-MjuHXevj2A', 'ATHLEAN-X™', 317, 0.8061, '{"text":0.5,"channel":1,"engagement":0.7802978109547658,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'barbell-squat'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'MnQ6MsoPHks', 'Como hacer la sentadilla correctamente | técnica para glúteos y para piernas', 'UC_zaLJ30yLlq5Pd86jdu_Og', 'NAYLA Vlogs', 161, 0.6858, '{"text":1,"channel":0,"engagement":0.9288387713541474,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'barbell-squat'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'LdhWBp5lWqc', 'How To: Standing Oblique Twists with Bar', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 100, 0.7442, '{"text":0.4,"channel":1,"engagement":0.620928210950356,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'barbell-twists-russian-twist-with-bar'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'wThd4GBGbQc', 'EJERCICIOS ABDOMINALES PROHIBIDOS - Ejercicios para abdomen: Giros con pica', 'UCjGVbMdksC7kagTniVQfoPQ', 'FitCook', 169, 0.6709, '{"text":1,"channel":0,"engagement":0.8545557159243243,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'barbell-twists-russian-twist-with-bar'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'amCU-ziHITM', 'How To: Barbell Upright Row', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 173, 0.9266, '{"text":1,"channel":1,"engagement":0.6331033488939187,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'barbell-upright-row'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'loL670Yb7nU', 'HOMBRO y TRAPECIO GRANDES - Remo al mentón (mi ejercicio estrella)', 'UCQoN9oXyVuGcQWLlfcNDRgQ', 'Powerexplosive', 257, 0.697, '{"text":0.3333333333333333,"channel":1,"engagement":0.7351709815570052,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'barbell-upright-row'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', '0cXAp6WhSj4', 'The PERFECT Bench Press (5 Steps)', 'UCERm5yFZ1SptUEU4wZ2vJvw', 'Jeremy Ethier', 58, 0.8475, '{"text":0.6666666666666666,"channel":1,"engagement":0.9875202653298837,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'bench-press-barbell'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'jlFl7WJ1TzI', 'Cómo hacer press de banca CORRECTAMENTE para incrementar tus músculos (5 pasos sencillos)', 'UCCvQpJ5_-LGfkeDdl2Etlwg', 'Jeremy Ethier en Español', 473, 0.886, '{"text":1,"channel":1,"engagement":0.836717130625341,"duration":0.6861111111111111,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'bench-press-barbell'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'ttvfGg9d76c', 'How To: Dumbbell Bent-Over Raise', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 102, 0.7483, '{"text":0.4,"channel":1,"engagement":0.6413830764176844,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'bent-over-rear-delt-fly'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'JfMF84StvGo', 'PÁJARO de PIE con MANCUERNAS | ELEVACIONES POSTERIORES', 'UC3Rn-AuuDMQZAsVqaUrd8hg', 'APTA Vital Sport', 108, 0.5442, '{"text":0.75,"channel":0,"engagement":0.5962342711780682,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'bent-over-rear-delt-fly'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'M_uPvGrMx_o', 'How To: Arm Curl (Cybex)', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 100, 0.7757, '{"text":0.5,"channel":1,"engagement":0.6283598782801877,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'bicep-curl-machine'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'M67E8xSxrsA', 'Barra VS Mancuerna en CURL DE BÍCEPS', 'UCh4VdbK3ybBBwleBdta_GMg', 'BlueGym Animation', 182, 0.6822, '{"text":1,"channel":0,"engagement":0.9111993360398396,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'bicep-curl-machine'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'AsAVbj7puKo', 'How To: Outside Grip Cable EZ-Curls (LF Cable)', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 111, 0.7261, '{"text":0.3333333333333333,"channel":1,"engagement":0.6303190772830736,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'cable-bicep-curl'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'fx9VW2lDx_s', 'Curl de bíceps con soga en polea baja', 'UC_9_CYb4vxMPYMosJv1u0ZA', 'Abdias Sadrac', 67, 0.6161, '{"text":1,"channel":0,"engagement":0.5807151263440884,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'cable-bicep-curl'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
 SELECT id, 'en', 'UYJsFzqdgK4', 'HOW TO: Close-Grip Bench Press (TRICEPS BUILDER) || PERFECT FORM', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 177, 0.8197, '{"text":0.8,"channel":1,"engagement":0.6485522565099342,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
 FROM public.exercise_library WHERE slug = 'close-grip-barbell-bench-press'
 ON CONFLICT (exercise_id, lang) DO UPDATE SET
