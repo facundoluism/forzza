@@ -121,7 +121,7 @@ export default async function AdminUsuariosPage({ params, searchParams }: Props)
 
   // ── Resolve IDs matching search term by email ────────────────────────────────
   // search matches: email substring (case-insensitive) OR id prefix
-  let emailMatchedIds: string[] = [];
+  const emailMatchedIds: string[] = [];
   if (search && emailMap.size > 0) {
     const lc = search.toLowerCase();
     for (const [id, email] of emailMap.entries()) {
