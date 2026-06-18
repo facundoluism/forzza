@@ -69,6 +69,14 @@ function dateLabel(t: (key: string) => string, date: Date): string {
   return d.toLocaleDateString("es-AR", { day: "numeric", month: "short" });
 }
 
+const FEELING_EMOJIS: Record<1 | 2 | 3 | 4 | 5, string> = {
+  1: "💀",
+  2: "😓",
+  3: "😐",
+  4: "💪",
+  5: "🔥",
+};
+
 export default function RegisterWorkoutScreen(): React.JSX.Element {
   const router = useRouter();
   const { t } = useTranslation();
@@ -253,12 +261,32 @@ export default function RegisterWorkoutScreen(): React.JSX.Element {
   }
 
   // ── Saved state ───────────────────────────────────────────────────────────────
+  const savedRoutineName =
+    selectedRoutineId === "libre"
+      ? t("registerWorkout.freeWorkout")
+      : (routines.find((r) => r.id === selectedRoutineId)?.title ?? "");
+
   if (saved) {
     return (
       <View style={[styles.container, { paddingTop: insets.top + spacing[4] }]}>
         <Confetti active duration={3000} />
         <View style={styles.savedContainer}>
+          <Text style={styles.savedEmoji}>💾</Text>
           <Text style={styles.savedTitle}>{t("registerWorkout.saved_title")}</Text>
+          <Text style={styles.savedSubtitle}>{savedRoutineName}</Text>
+          <TouchableOpacity
+            style={styles.registerAnotherBtn}
+            onPress={() => {
+              setSaved(false);
+              setStep(1);
+              setSelectedRoutineId(null);
+              setExercises([emptyExercise()]);
+              setFeeling(null);
+              setNotes("");
+            }}
+          >
+            <Text style={styles.registerAnotherBtnText}>{t("registerWorkout.registerAnother")}</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={styles.primaryButton}
             onPress={() => router.replace("/(tabs)/progress")}
@@ -282,14 +310,20 @@ export default function RegisterWorkoutScreen(): React.JSX.Element {
           <View>
             <Text style={styles.stepTitle}>{t("registerWorkout.step1Title")}</Text>
 
+            {/* Info card */}
+            <View style={styles.infoCard}>
+              <Text style={styles.infoCardTitle}>{t("registerWorkout.infoCardTitle")}</Text>
+              <Text style={styles.infoCardBody}>{t("registerWorkout.infoCardBody")}</Text>
+            </View>
+
             {/* Date picker */}
             <TouchableOpacity style={styles.dateButton} onPress={showDatePicker}>
-              <Text style={styles.dateButtonLabel}>{t("registerWorkout.selectDate")}</Text>
+              <Text style={styles.dateButtonLabel}>{t("registerWorkout.dateLabel")}</Text>
               <Text style={styles.dateButtonValue}>{dateLabel(t, selectedDate)}</Text>
             </TouchableOpacity>
 
             {/* Routine selector */}
-            <Text style={styles.sectionLabel}>{t("registerWorkout.selectRoutine")}</Text>
+            <Text style={styles.sectionLabel}>{t("registerWorkout.routineLabel")}</Text>
 
             {routinesLoading && (
               <View style={styles.loadingRow}>
@@ -317,14 +351,22 @@ export default function RegisterWorkoutScreen(): React.JSX.Element {
                     onPress={() => handleSelectRoutine(routine.id)}
                     testID={`routine-row-${routine.id}`}
                   >
-                    <Text
-                      style={[
-                        styles.routineRowText,
-                        selectedRoutineId === routine.id && styles.routineRowTextSelected,
-                      ]}
-                    >
-                      {routine.title}
-                    </Text>
+                    <View style={styles.routineRowInner}>
+                      <View style={styles.routineRowInfo}>
+                        <Text
+                          style={[
+                            styles.routineRowText,
+                            selectedRoutineId === routine.id && styles.routineRowTextSelected,
+                          ]}
+                        >
+                          {routine.title}
+                        </Text>
+                        <Text style={styles.routineRowCount}>
+                          {t('routines.exercise', { count: Array.isArray(routine.exercises) ? routine.exercises.length : 0 })}
+                        </Text>
+                      </View>
+                      <Text style={styles.routineRowChevron}>›</Text>
+                    </View>
                   </TouchableOpacity>
                 ))}
 
@@ -336,14 +378,19 @@ export default function RegisterWorkoutScreen(): React.JSX.Element {
                   onPress={() => handleSelectRoutine("libre")}
                   testID="routine-row-libre"
                 >
-                  <Text
-                    style={[
-                      styles.routineRowText,
-                      selectedRoutineId === "libre" && styles.routineRowTextSelected,
-                    ]}
-                  >
-                    {t("registerWorkout.freeWorkout")}
-                  </Text>
+                  <View style={styles.routineRowInner}>
+                    <View style={styles.routineRowInfo}>
+                      <Text
+                        style={[
+                          styles.routineRowText,
+                          selectedRoutineId === "libre" && styles.routineRowTextSelected,
+                        ]}
+                      >
+                        {t("registerWorkout.freeWorkout")}
+                      </Text>
+                    </View>
+                    <Text style={styles.routineRowChevron}>›</Text>
+                  </View>
                 </TouchableOpacity>
 
                 {routines.length === 0 && selectedRoutineId !== "libre" && (
@@ -447,8 +494,9 @@ export default function RegisterWorkoutScreen(): React.JSX.Element {
                   onPress={() => setFeeling(val)}
                   testID={`feeling-btn-${val}`}
                 >
-                  <Text style={[styles.feelingNum, feeling === val && styles.feelingNumSelected]}>
-                    {val}
+                  <Text style={styles.feelingEmoji}>{FEELING_EMOJIS[val]}</Text>
+                  <Text style={[styles.feelingLabel, feeling === val && styles.feelingLabelSelected]}>
+                    {t(`registerWorkout.feelingScale_${val}`)}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -468,14 +516,14 @@ export default function RegisterWorkoutScreen(): React.JSX.Element {
             />
 
             <TouchableOpacity
-              style={[styles.primaryButton, saving && styles.buttonDisabled]}
+              style={[styles.saveButton, saving && styles.buttonDisabled]}
               onPress={handleSave}
               disabled={saving}
               testID="register-workout-save-btn"
             >
               {saving
                 ? <ActivityIndicator color={colors.bg} />
-                : <Text style={styles.primaryButtonText}>{t("registerWorkout.save")}</Text>
+                : <Text style={styles.saveButtonText}>{t("registerWorkout.saveBtn")}</Text>
               }
             </TouchableOpacity>
           </View>
@@ -511,6 +559,27 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 1.5,
     marginBottom: spacing[4],
+  },
+  // Info card
+  infoCard: {
+    backgroundColor: `${colors.info}15`,
+    borderWidth: 1,
+    borderColor: `${colors.info}40`,
+    borderRadius: radius.lg,
+    padding: spacing[4],
+    marginBottom: spacing[4],
+  },
+  infoCardTitle: {
+    fontFamily: typography.body,
+    color: colors.info,
+    fontSize: fontSize.sm,
+    fontWeight: "700",
+    marginBottom: spacing[1],
+  },
+  infoCardBody: {
+    fontFamily: typography.body,
+    color: colors.text,
+    fontSize: fontSize.sm,
   },
   dateButton: {
     backgroundColor: colors.surface,
@@ -565,6 +634,15 @@ const styles = StyleSheet.create({
   routineRowSelected: {
     backgroundColor: colors.limeGlow,
     borderColor: colors.lime,
+    borderWidth: 1.5,
+  },
+  routineRowInner: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  routineRowInfo: {
+    flex: 1,
   },
   routineRowText: {
     fontFamily: typography.body,
@@ -574,6 +652,16 @@ const styles = StyleSheet.create({
   routineRowTextSelected: {
     color: colors.lime,
     fontWeight: "600",
+  },
+  routineRowCount: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.xs,
+    marginTop: 2,
+  },
+  routineRowChevron: {
+    color: colors.muted,
+    fontSize: 20,
   },
   primaryButton: {
     backgroundColor: colors.lime,
@@ -596,7 +684,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   backButton: {
-    marginBottom: spacing[4],
+    marginBottom: spacing[3],
   },
   backButtonText: {
     fontFamily: typography.body,
@@ -680,26 +768,32 @@ const styles = StyleSheet.create({
   },
   feelingBtn: {
     flex: 1,
-    height: 44,
-    borderRadius: radius.md,
-    backgroundColor: colors.surface,
+    paddingVertical: spacing[3],
+    paddingHorizontal: spacing[1],
+    alignItems: "center",
+    borderRadius: 14,
+    backgroundColor: colors.surface2,
     borderWidth: 1,
     borderColor: colors.border,
-    alignItems: "center",
-    justifyContent: "center",
   },
   feelingBtnSelected: {
     backgroundColor: colors.limeGlow,
     borderColor: colors.lime,
   },
-  feelingNum: {
-    fontFamily: typography.mono,
-    color: colors.muted,
-    fontSize: fontSize.lg,
+  feelingEmoji: {
+    fontSize: 20,
+    marginBottom: spacing[1],
+    textAlign: "center",
   },
-  feelingNumSelected: {
+  feelingLabel: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.xs,
+    textAlign: "center",
+    fontWeight: "600",
+  },
+  feelingLabelSelected: {
     color: colors.lime,
-    fontWeight: "700",
   },
   notesInput: {
     backgroundColor: colors.surface,
@@ -714,11 +808,32 @@ const styles = StyleSheet.create({
     textAlignVertical: "top",
     marginBottom: spacing[5],
   },
+  saveButton: {
+    backgroundColor: colors.lime,
+    borderRadius: radius.lg,
+    minHeight: 56,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: spacing[4],
+  },
+  saveButtonText: {
+    fontFamily: typography.heading,
+    color: colors.bg,
+    fontSize: fontSize["2xl"],
+    letterSpacing: 1,
+    textTransform: "uppercase",
+  },
+  // Saved state
   savedContainer: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
     padding: spacing[6],
+  },
+  savedEmoji: {
+    fontSize: 56,
+    textAlign: "center",
+    marginBottom: spacing[4],
   },
   savedTitle: {
     fontFamily: typography.heading,
@@ -727,6 +842,33 @@ const styles = StyleSheet.create({
     letterSpacing: -1,
     textTransform: "uppercase",
     textAlign: "center",
-    marginBottom: spacing[8],
+    marginBottom: spacing[2],
+  },
+  savedSubtitle: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.sm,
+    textAlign: "center",
+    marginBottom: spacing[6],
+  },
+  registerAnotherBtn: {
+    backgroundColor: colors.surface2,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.lg,
+    minHeight: 48,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: spacing[3],
+    paddingHorizontal: spacing[6],
+    marginBottom: spacing[3],
+    width: "100%",
+  },
+  registerAnotherBtnText: {
+    fontFamily: typography.body,
+    color: colors.text,
+    fontSize: fontSize.base,
+    fontWeight: "700",
+    textAlign: "center",
   },
 });

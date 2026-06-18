@@ -18,7 +18,7 @@ import { useWorkoutStore } from "@/stores/workoutStore";
 import type { RoutineExerciseDefinition } from "@/stores/workoutStore";
 import { getExerciseIcon } from "@/constants/exerciseIcons";
 import { ExercisePreviewSheet } from "@/components/ExercisePreviewSheet";
-import { Button, Card, EmptyState } from "@forzza/ui/native";
+import { Button, EmptyState } from "@forzza/ui/native";
 import { colors, fontSize, spacing, typography, radius } from "@forzza/ui/tokens";
 
 // Shape canónico del JSONB routines.exercises (coordinado con el seed)
@@ -63,35 +63,39 @@ function ExerciseRow({ item, index, libraryEntry, onPress, restLabel }: Exercise
   const isTappable = !!item.exercise_id;
 
   const content = (
-    <Card style={styles.exerciseCard}>
+    <View style={styles.exerciseCard}>
+      {/* Badge with index number */}
       <View style={styles.exerciseIndex}>
         <Text style={styles.exerciseIndexText}>{index + 1}</Text>
       </View>
+
+      {/* Emoji icon box */}
+      <View style={styles.exerciseEmojiBox}>
+        <Text style={styles.exerciseEmoji}>{icon.emoji}</Text>
+      </View>
+
+      {/* Info column */}
       <View style={styles.exerciseInfo}>
-        <View style={styles.exerciseNameRow}>
-          <Text style={styles.exerciseEmoji}>{icon.emoji}</Text>
-          <Text style={styles.exerciseName}>{displayName}</Text>
-          {isTappable && (
-            <Text style={styles.exerciseInfoIcon}>ℹ</Text>
-          )}
-        </View>
+        <Text style={styles.exerciseName}>{displayName}</Text>
         <View style={styles.exerciseMeta}>
           <Text style={styles.exerciseLabel}>{label}</Text>
           {rest && (
             <>
               <Text style={styles.exerciseMetaDot}>·</Text>
-              <Text style={styles.exerciseLabel}>{rest}</Text>
+              <Text style={styles.exerciseRestLabel}>{rest}</Text>
             </>
           )}
-          {item.notes ? (
-            <>
-              <Text style={styles.exerciseMetaDot}>·</Text>
-              <Text style={styles.exerciseNotes}>{item.notes}</Text>
-            </>
-          ) : null}
         </View>
+        {item.notes ? (
+          <Text style={styles.exerciseNotes}>{item.notes}</Text>
+        ) : null}
       </View>
-    </Card>
+
+      {/* Info badge for tappable exercises */}
+      {isTappable && (
+        <Text style={styles.exerciseInfoIcon}>ℹ</Text>
+      )}
+    </View>
   );
 
   if (!isTappable) {
@@ -197,6 +201,7 @@ export default function RoutineDetailScreen() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator color={colors.lime} size="large" />
+        <Text style={styles.loadingText}>{t('routineDetail.loadingText')}</Text>
       </View>
     );
   }
@@ -204,9 +209,11 @@ export default function RoutineDetailScreen() {
   if (isError || !routine) {
     return (
       <View style={styles.container}>
-        <TouchableOpacity style={[styles.backBtn, { paddingTop: insets.top + spacing[2] }]} onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 20, right: 20 }}>
-          <Text style={styles.backBtnText}>{t('routineDetail.back')}</Text>
-        </TouchableOpacity>
+        <View style={[styles.header, { paddingTop: insets.top + spacing[2] }]}>
+          <TouchableOpacity onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 20, right: 20 }}>
+            <Text style={styles.backBtnText}>{t('routineDetail.back')}</Text>
+          </TouchableOpacity>
+        </View>
         <EmptyState
           title={t('routineDetail.errorTitle')}
           description={t('routineDetail.errorDesc')}
@@ -220,20 +227,22 @@ export default function RoutineDetailScreen() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={[styles.backBtn, { paddingTop: insets.top + spacing[2] }]} onPress={() => router.back()}>
-        <Text style={styles.backBtnText}>{t('routineDetail.back')}</Text>
-      </TouchableOpacity>
+      {/* Fixed header */}
+      <View style={[styles.header, { paddingTop: insets.top + spacing[2] }]}>
+        <TouchableOpacity onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 20, right: 20 }}>
+          <Text style={styles.backBtnText}>{t('routineDetail.back')}</Text>
+        </TouchableOpacity>
+        <Text style={styles.routineTitle}>{routine.title}</Text>
+        <Text style={styles.headerSubtitle}>
+          {t('routineDetail.headerSubtitle', { count: exercises.length })}
+        </Text>
+      </View>
 
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.routineTitle}>{routine.title}</Text>
-        <Text style={styles.exerciseCount}>
-          {t('routineDetail.exercise', { count: exercises.length })}
-        </Text>
-
         <View style={styles.exerciseList}>
           {exercises.length === 0 ? (
             <EmptyState
@@ -251,7 +260,7 @@ export default function RoutineDetailScreen() {
                   item={ex}
                   index={idx}
                   libraryEntry={libraryEntry}
-                  restLabel={t('routineDetail.restSeconds', { n: ex.rest_seconds })}
+                  restLabel={t('routineDetail.restLabel', { n: ex.rest_seconds })}
                   onPress={() => {
                     if (ex.exercise_id) setSelectedExerciseId(ex.exercise_id);
                   }}
@@ -264,7 +273,7 @@ export default function RoutineDetailScreen() {
 
       <View style={styles.footer}>
         {hasActiveSession ? (
-          <View style={styles.activeSessionNotice}>
+          <View style={styles.activeSessionCard}>
             <Text style={styles.activeSessionText}>
               {t('routineDetail.activeWorkoutTitle')}
             </Text>
@@ -299,57 +308,76 @@ export default function RoutineDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.black,
+    backgroundColor: colors.bg,
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: colors.black,
+    backgroundColor: colors.bg,
     alignItems: "center",
     justifyContent: "center",
   },
-  backBtn: {
+  loadingText: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.md,
+    marginTop: spacing[3],
+  },
+  // Fixed header
+  header: {
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
     paddingHorizontal: spacing[4],
-    paddingBottom: spacing[2],
+    paddingBottom: spacing[3],
   },
   backBtnText: {
     fontFamily: typography.body,
     color: colors.lime,
-    fontSize: 16,
+    fontSize: fontSize.base,
+  },
+  routineTitle: {
+    fontFamily: typography.heading,
+    color: colors.text,
+    fontSize: 30,
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+    marginTop: spacing[2],
+  },
+  headerSubtitle: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.sm,
+    marginTop: spacing[1],
   },
   scroll: {
     flex: 1,
   },
   content: {
     paddingHorizontal: spacing[4],
+    paddingTop: spacing[4],
     paddingBottom: spacing[4],
-  },
-  routineTitle: {
-    fontFamily: typography.heading,
-    color: colors.white,
-    fontSize: fontSize.screenTitle,
-    letterSpacing: 1,
-    textTransform: "uppercase",
-    marginBottom: spacing[1],
-  },
-  exerciseCount: {
-    fontFamily: typography.body,
-    color: colors.gray500,
-    fontSize: 14,
-    marginBottom: spacing[5],
   },
   exerciseList: {
     gap: spacing[3],
   },
+  // Exercise card layout
   exerciseCard: {
     flexDirection: "row",
     alignItems: "flex-start",
     gap: spacing[3],
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing[3],
   },
   exerciseIndex: {
     width: 32,
     height: 32,
     borderRadius: radius.full,
-    backgroundColor: colors.gray800,
+    backgroundColor: colors.surface3,
+    borderWidth: 1,
+    borderColor: colors.lime,
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
@@ -360,30 +388,27 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "700",
   },
+  exerciseEmojiBox: {
+    width: 44,
+    height: 44,
+    backgroundColor: colors.surface3,
+    borderRadius: radius.md,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  exerciseEmoji: {
+    fontSize: 20,
+  },
   exerciseInfo: {
     flex: 1,
   },
-  exerciseNameRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing[2],
-    marginBottom: spacing[1],
-  },
-  exerciseEmoji: {
-    fontSize: 18,
-    lineHeight: 22,
-  },
   exerciseName: {
     fontFamily: typography.body,
-    color: colors.white,
-    fontSize: 16,
-    fontWeight: "600",
-    flex: 1,
-  },
-  exerciseInfoIcon: {
-    fontFamily: typography.body,
-    color: colors.muted,
-    fontSize: 14,
+    color: colors.text,
+    fontSize: fontSize.base,
+    fontWeight: "700",
+    marginBottom: spacing[1],
   },
   exerciseMeta: {
     flexDirection: "row",
@@ -393,33 +418,50 @@ const styles = StyleSheet.create({
   },
   exerciseLabel: {
     fontFamily: typography.body,
-    color: colors.gray500,
-    fontSize: 13,
+    color: colors.muted,
+    fontSize: fontSize.sm,
+  },
+  exerciseRestLabel: {
+    fontFamily: typography.mono,
+    color: colors.lime,
+    fontSize: fontSize.sm,
   },
   exerciseMetaDot: {
-    color: colors.gray700,
-    fontSize: 13,
+    color: colors.muted,
+    fontSize: fontSize.sm,
   },
   exerciseNotes: {
     fontFamily: typography.body,
     color: colors.gray500,
-    fontSize: 12,
+    fontSize: fontSize.xs,
     fontStyle: "italic",
+    marginTop: spacing[1],
+  },
+  exerciseInfoIcon: {
+    fontFamily: typography.body,
+    color: colors.lime,
+    fontSize: fontSize.sm,
+    alignSelf: "center",
   },
   footer: {
     padding: spacing[4],
     paddingBottom: spacing[8],
     borderTopWidth: 1,
-    borderTopColor: colors.gray800,
-    backgroundColor: colors.black,
+    borderTopColor: colors.border,
+    backgroundColor: colors.surface,
   },
-  activeSessionNotice: {
+  activeSessionCard: {
+    backgroundColor: `${colors.warning}15`,
+    borderWidth: 1,
+    borderColor: `${colors.warning}40`,
+    borderRadius: radius.lg,
+    padding: spacing[3],
     gap: spacing[3],
   },
   activeSessionText: {
     fontFamily: typography.body,
     color: colors.warning,
-    fontSize: 14,
+    fontSize: fontSize.md,
     textAlign: "center",
   },
 });

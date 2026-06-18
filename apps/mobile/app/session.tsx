@@ -30,16 +30,17 @@ interface NumberInputProps {
   onChangeText: (v: string) => void;
   placeholder?: string;
   testID?: string;
+  hasValue?: boolean;
 }
 
-function NumberInput({ label, value, onChangeText, placeholder = "0", testID }: NumberInputProps): React.JSX.Element {
+function NumberInput({ label, value, onChangeText, placeholder = "0", testID, hasValue }: NumberInputProps): React.JSX.Element {
   return (
     <View style={styles.inputGroup}>
       <Text style={styles.inputLabel}>{label}</Text>
       <TextInput
         testID={testID}
         accessibilityLabel={label}
-        style={styles.input}
+        style={[styles.input, { borderColor: hasValue ? colors.lime : colors.border }]}
         value={value}
         onChangeText={onChangeText}
         keyboardType="numeric"
@@ -295,7 +296,7 @@ export default function SessionScreen(): React.JSX.Element | null {
         <Card style={styles.exerciseCard} featured>
           <View style={styles.exerciseCardInner}>
             <Text style={styles.exerciseIndexLabel}>
-              {t('session.currentExercise')}{" "}
+              {t('session.exerciseLabel')}{" "}
               <Text style={styles.exerciseIndexMono}>{currentExerciseIndex + 1}</Text>
               {" / "}
               <Text style={styles.exerciseIndexMono}>{totalExercises}</Text>
@@ -383,7 +384,7 @@ export default function SessionScreen(): React.JSX.Element | null {
             </Text>
             <View style={styles.inputRow}>
               <View style={styles.inputCell}>
-                <NumberInput testID="reps-input" label={t('session.reps')} value={reps} onChangeText={setReps} />
+                <NumberInput testID="reps-input" label={t('session.reps')} value={reps} onChangeText={setReps} hasValue={reps.length > 0} />
               </View>
               <View style={styles.inputCell}>
                 <NumberInput
@@ -392,6 +393,7 @@ export default function SessionScreen(): React.JSX.Element | null {
                   value={weightKg}
                   onChangeText={setWeightKg}
                   placeholder="0.0"
+                  hasValue={weightKg.length > 0}
                 />
               </View>
             </View>
@@ -409,6 +411,7 @@ export default function SessionScreen(): React.JSX.Element | null {
 
         {isPaused && (
           <Card style={styles.pausedCard}>
+            <Text style={styles.pausedIcon}>⏸</Text>
             <Text style={styles.pausedText}>
               {t('session.pausedHint')}
             </Text>
@@ -466,16 +469,16 @@ const styles = StyleSheet.create({
   },
   // Progress bar
   progressBarTrack: {
-    height: 3,
+    height: 4,
     backgroundColor: colors.surface2,
     width: "100%",
   },
   progressBarFill: {
-    height: 3,
+    height: 4,
     backgroundColor: colors.lime,
     shadowColor: colors.lime,
-    shadowOpacity: 0.6,
-    shadowRadius: 4,
+    shadowOpacity: 0.8,
+    shadowRadius: 8,
     shadowOffset: { width: 0, height: 0 },
   },
   // Header
@@ -487,6 +490,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
+    backgroundColor: colors.surface,
   },
   headerContent: {
     flex: 1,
@@ -494,7 +498,7 @@ const styles = StyleSheet.create({
   sessionTitle: {
     fontFamily: typography.heading,
     color: colors.text,
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "900",
     letterSpacing: -0.5,
     textTransform: "uppercase",
@@ -511,7 +515,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   pauseBtn: {
-    backgroundColor: colors.surface2,
+    backgroundColor: colors.surface3,
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border,
@@ -714,7 +718,6 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: colors.surface2,
     borderWidth: 1,
-    borderColor: colors.border,
     borderRadius: radius.lg,
     paddingHorizontal: spacing[3],
     paddingVertical: spacing[4],
@@ -755,6 +758,11 @@ const styles = StyleSheet.create({
   pausedCard: {
     alignItems: "center",
     paddingVertical: spacing[6],
+  },
+  pausedIcon: {
+    fontSize: 48,
+    textAlign: "center",
+    marginBottom: spacing[3],
   },
   pausedText: {
     fontFamily: typography.body,

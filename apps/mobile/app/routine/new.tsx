@@ -460,6 +460,7 @@ export default function NewRoutineScreen(): React.JSX.Element {
       keyboardShouldPersistTaps="handled"
     >
       <Text style={styles.stepHeading}>{t('routineNew.basicInfo')}</Text>
+      <Text style={styles.stepSubheading}>{t('routineNew.headerSubtitle')}</Text>
 
       <View style={styles.fieldGap}>
         <Input
@@ -633,6 +634,9 @@ const styles = StyleSheet.create({
     paddingTop: spacing[12],
     paddingHorizontal: spacing[4],
     paddingBottom: spacing[3],
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
   backButton: {
     minWidth: 72,
@@ -668,8 +672,8 @@ const styles = StyleSheet.create({
     gap: spacing[2],
   },
   stepDot: {
-    width: 28,
-    height: 28,
+    width: 32,
+    height: 32,
     borderRadius: radius.full,
     backgroundColor: colors.surface3,
     borderWidth: 1,
@@ -708,10 +712,11 @@ const styles = StyleSheet.create({
   stepLabelActive: {
     color: colors.lime,
     fontWeight: "700",
+    fontSize: fontSize.sm,
   },
   stepLine: {
-    width: 20,
-    height: 1,
+    width: 40,
+    height: 2,
     backgroundColor: colors.border,
     marginHorizontal: spacing[1],
   },
@@ -905,11 +910,12 @@ const styles = StyleSheet.create({
   },
   reviewSectionLabel: {
     fontFamily: typography.body,
-    color: colors.gray500,
+    color: colors.muted,
     fontSize: fontSize.sm,
     textTransform: "uppercase",
     letterSpacing: 1,
     marginBottom: spacing[3],
+    fontWeight: "700",
   },
   reviewExerciseCard: {
     marginBottom: spacing[3],

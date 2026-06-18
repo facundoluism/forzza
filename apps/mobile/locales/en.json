@@ -406,7 +406,9 @@
     "errorMissingDataDesc": "Enter reps or duration for this set.",
     "prevExercise": "‹ Previous",
     "nextExercise": "Next ›",
-    "exerciseFallback": "Exercise {{n}}"
+    "exerciseFallback": "Exercise {{n}}",
+    "exerciseLabel": "EXERCISE",
+    "noRest": "No rest configured"
   },
   "routineNew": {
     "screenTitle": "New Routine",
@@ -443,13 +445,17 @@
     "errorMinExercise": "You need at least one exercise to save the routine",
     "alertMinExercise": "Minimum one exercise",
     "errorSave": "Could not save the routine. Please try again.",
-    "untitled": "Untitled"
+    "untitled": "Untitled",
+    "headerSubtitle": "Create your custom routine"
   },
   "routineDetail": {
     "back": "‹ Back",
     "exercise_one": "exercise",
     "exercise_other": "exercises",
     "restSeconds": "Rest: {{n}}s",
+    "headerSubtitle": "{{count}} exercises · tap to see details",
+    "restLabel": "{{n}}s rest",
+    "loadingText": "Loading routine...",
     "errorTitle": "Could not load routine",
     "errorDesc": "Check your connection and try again.",
     "emptyTitle": "This routine has no exercises",
@@ -541,7 +547,14 @@
     "errorNoFeeling": "Select how you felt",
     "errorNoSets": "Add at least one set",
     "routines_loading": "Loading routines...",
-    "routines_error": "Could not load your routines"
+    "routines_error": "Could not load your routines",
+    "infoCardTitle": "📝 No time pressure",
+    "infoCardBody": "You can log your workout after finishing it. Everything stays in your history.",
+    "savedSubtitle": "{{name}}",
+    "registerAnother": "Log another workout",
+    "dateLabel": "WORKOUT DATE",
+    "routineLabel": "WHICH ROUTINE DID YOU DO?",
+    "saveBtn": "💾 SAVE WORKOUT"
   },
   "progressPhotos": {
     "screenTitle": "Progress photos",

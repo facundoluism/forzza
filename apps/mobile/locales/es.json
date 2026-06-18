@@ -406,7 +406,9 @@
     "errorMissingDataDesc": "Ingresá las reps o la duración del set.",
     "prevExercise": "‹ Anterior",
     "nextExercise": "Siguiente ›",
-    "exerciseFallback": "Ejercicio {{n}}"
+    "exerciseFallback": "Ejercicio {{n}}",
+    "exerciseLabel": "EJERCICIO",
+    "noRest": "Sin descanso configurado"
   },
   "routineNew": {
     "screenTitle": "Nueva Rutina",
@@ -443,13 +445,17 @@
     "errorMinExercise": "Necesitás al menos un ejercicio para guardar la rutina",
     "alertMinExercise": "Mínimo un ejercicio",
     "errorSave": "No se pudo guardar la rutina. Intentá de nuevo.",
-    "untitled": "Sin título"
+    "untitled": "Sin título",
+    "headerSubtitle": "Creá tu rutina personalizada"
   },
   "routineDetail": {
     "back": "‹ Volver",
     "exercise_one": "ejercicio",
     "exercise_other": "ejercicios",
     "restSeconds": "Descanso: {{n}}s",
+    "headerSubtitle": "{{count}} ejercicios · tocá uno para ver la ficha",
+    "restLabel": "{{n}}s descanso",
+    "loadingText": "Cargando rutina...",
     "errorTitle": "No se pudo cargar la rutina",
     "errorDesc": "Revisá tu conexión e intentá de nuevo.",
     "emptyTitle": "Esta rutina no tiene ejercicios",
@@ -541,7 +547,14 @@
     "errorNoFeeling": "Seleccioná cómo te sentiste",
     "errorNoSets": "Agregá al menos una serie",
     "routines_loading": "Cargando rutinas...",
-    "routines_error": "No se pudieron cargar tus rutinas"
+    "routines_error": "No se pudieron cargar tus rutinas",
+    "infoCardTitle": "📝 Sin presión de tiempo",
+    "infoCardBody": "Podés cargar tu entrenamiento después de hacerlo. Todo queda en tu historial.",
+    "savedSubtitle": "{{name}}",
+    "registerAnother": "Registrar otro entreno",
+    "dateLabel": "FECHA DEL ENTRENAMIENTO",
+    "routineLabel": "¿QUÉ RUTINA HICISTE?",
+    "saveBtn": "💾 GUARDAR ENTRENAMIENTO"
   },
   "progressPhotos": {
     "screenTitle": "Fotos de progreso",
