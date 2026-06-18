@@ -11,6 +11,7 @@ import {
   Platform,
   StyleSheet,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -198,18 +199,34 @@ export default function ConversationScreen(): React.JSX.Element {
     setSending(true);
     setText("");
 
-    const { error } = await db.from("messages").insert({
-      assignment_id: assignmentId,
-      sender_id: user.id,
-      content,
-    });
+    const { data, error } = await db
+      .from("messages")
+      .insert({
+        assignment_id: assignmentId,
+        sender_id: user.id,
+        content,
+      })
+      .select("id, assignment_id, sender_id, content, read_at, created_at")
+      .single();
 
-    if (error) {
+    if (error || !data) {
+      // Restituir el texto y avisar: no silenciar el fallo de envío.
       setText(content);
+      Alert.alert(t("conversation.sendError"));
+      setSending(false);
+      return;
     }
 
+    // Optimista: mostrar el mensaje al instante. Si Realtime luego lo trae,
+    // el dedup por id (handler de postgres_changes) evita duplicarlo.
+    const sent = data as Message;
+    setMessages((prev) => (prev.some((m) => m.id === sent.id) ? prev : [...prev, sent]));
+    setTimeout(() => {
+      flatListRef.current?.scrollToEnd({ animated: true });
+    }, 100);
+
     setSending(false);
-  }, [text, user, assignmentId, sending]);
+  }, [text, user, assignmentId, sending, t]);
 
   // ── Loading ───────────────────────────────────────────────────────────────────
   if (loading) {

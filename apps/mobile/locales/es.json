@@ -502,7 +502,8 @@
     "emptyTitle": "Sin mensajes",
     "emptyHint": "Escribí el primer mensaje para empezar la conversación.",
     "inputPlaceholder": "Escribí un mensaje...",
-    "send": "Enviar"
+    "send": "Enviar",
+    "sendError": "No se pudo enviar el mensaje. Reintentá."
   },
   "tabata": {
     "screenTitle": "Tabata",

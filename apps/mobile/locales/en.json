@@ -502,7 +502,8 @@
     "emptyTitle": "No messages",
     "emptyHint": "Write the first message to start the conversation.",
     "inputPlaceholder": "Write a message...",
-    "send": "Send"
+    "send": "Send",
+    "sendError": "Couldn't send the message. Try again."
   },
   "tabata": {
     "screenTitle": "Tabata",
