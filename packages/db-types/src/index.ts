@@ -6,26 +6,31 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-// Alias de conveniencia de los enums de la DB (re-agregados tras regenerar tipos).
-export type UserRole = "student" | "coach" | "owner" | "promoter";
-export type CountryCode = "AR" | "CL";
-export type SubscriptionStatus = "active" | "past_due" | "canceled" | "trialing";
-export type BillingModel = "fixed" | "comision";
-export type CoachStatus = "pending" | "approved" | "rejected" | "suspended";
-export type PackageTier = "starter" | "pro" | "elite";
-export type AssignmentStatus = "pending" | "active" | "completed" | "refunded" | "canceled";
-export type PaymentStatus = "pending" | "approved" | "rejected" | "refunded" | "in_process";
-export type SettlementStatus = "pending" | "pending_invoice" | "invoiced" | "transferred";
-export type WorkoutStatus = "in_progress" | "completed" | "abandoned";
-export type LegalEntityType = "monotributo" | "responsable_inscripto" | "empresa" | "otro";
-export type NotificationChannel = "push" | "email" | "in_app";
-export type SubscriptionPlan = "free" | "pro" | "elite";
-
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "14.5"
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
@@ -279,6 +284,51 @@ export type Database = {
           },
         ]
       }
+      coach_feedback: {
+        Row: {
+          coach_id: string
+          created_at: string
+          feedback_text: string
+          id: string
+          student_id: string
+          target_id: string
+          target_type: string
+        }
+        Insert: {
+          coach_id: string
+          created_at?: string
+          feedback_text: string
+          id?: string
+          student_id: string
+          target_id: string
+          target_type: string
+        }
+        Update: {
+          coach_id?: string
+          created_at?: string
+          feedback_text?: string
+          id?: string
+          student_id?: string
+          target_id?: string
+          target_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coach_feedback_coach_id_fkey"
+            columns: ["coach_id"]
+            isOneToOne: false
+            referencedRelation: "coach_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coach_feedback_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       coach_packages: {
         Row: {
           active: boolean
@@ -326,57 +376,12 @@ export type Database = {
           },
         ]
       }
-      coach_feedback: {
-        Row: {
-          coach_id: string
-          created_at: string
-          feedback_text: string
-          id: string
-          student_id: string
-          target_id: string
-          target_type: string
-        }
-        Insert: {
-          coach_id: string
-          created_at?: string
-          feedback_text: string
-          id?: string
-          student_id: string
-          target_id: string
-          target_type: string
-        }
-        Update: {
-          coach_id?: string
-          created_at?: string
-          feedback_text?: string
-          id?: string
-          student_id?: string
-          target_id?: string
-          target_type?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "coach_feedback_coach_id_fkey"
-            columns: ["coach_id"]
-            isOneToOne: false
-            referencedRelation: "coach_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "coach_feedback_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       coach_profiles: {
         Row: {
           active_student_count: number
           alias_cbu: string | null
-          avg_rating: number
           avatar_url: string | null
+          avg_rating: number
           bank_account: string | null
           billing_model: Database["public"]["Enums"]["billing_model"]
           bio: string | null
@@ -400,8 +405,8 @@ export type Database = {
         Insert: {
           active_student_count?: number
           alias_cbu?: string | null
-          avg_rating?: number
           avatar_url?: string | null
+          avg_rating?: number
           bank_account?: string | null
           billing_model?: Database["public"]["Enums"]["billing_model"]
           bio?: string | null
@@ -425,8 +430,8 @@ export type Database = {
         Update: {
           active_student_count?: number
           alias_cbu?: string | null
-          avg_rating?: number
           avatar_url?: string | null
+          avg_rating?: number
           bank_account?: string | null
           billing_model?: Database["public"]["Enums"]["billing_model"]
           bio?: string | null
@@ -541,6 +546,35 @@ export type Database = {
         }
         Relationships: []
       }
+      deletion_queue: {
+        Row: {
+          anonymize_at: string
+          processed_at: string | null
+          requested_at: string
+          user_id: string
+        }
+        Insert: {
+          anonymize_at?: string
+          processed_at?: string | null
+          requested_at?: string
+          user_id: string
+        }
+        Update: {
+          anonymize_at?: string
+          processed_at?: string | null
+          requested_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deletion_queue_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       exercise_library: {
         Row: {
           common_errors_en: Json
@@ -634,6 +668,86 @@ export type Database = {
         }
         Relationships: []
       }
+      exercise_videos: {
+        Row: {
+          channel_id: string | null
+          channel_title: string
+          created_at: string
+          duration_seconds: number | null
+          exercise_id: string
+          id: string
+          lang: string
+          score: number
+          score_breakdown: Json | null
+          status: string
+          title: string
+          updated_at: string
+          youtube_id: string
+        }
+        Insert: {
+          channel_id?: string | null
+          channel_title: string
+          created_at?: string
+          duration_seconds?: number | null
+          exercise_id: string
+          id?: string
+          lang: string
+          score: number
+          score_breakdown?: Json | null
+          status?: string
+          title: string
+          updated_at?: string
+          youtube_id: string
+        }
+        Update: {
+          channel_id?: string | null
+          channel_title?: string
+          created_at?: string
+          duration_seconds?: number | null
+          exercise_id?: string
+          id?: string
+          lang?: string
+          score?: number
+          score_breakdown?: Json | null
+          status?: string
+          title?: string
+          updated_at?: string
+          youtube_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exercise_videos_exercise_id_fkey"
+            columns: ["exercise_id"]
+            isOneToOne: false
+            referencedRelation: "exercise_library"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads: {
+        Row: {
+          country: Database["public"]["Enums"]["country_code"] | null
+          created_at: string
+          email: string
+          id: string
+          source: string | null
+        }
+        Insert: {
+          country?: Database["public"]["Enums"]["country_code"] | null
+          created_at?: string
+          email: string
+          id?: string
+          source?: string | null
+        }
+        Update: {
+          country?: Database["public"]["Enums"]["country_code"] | null
+          created_at?: string
+          email?: string
+          id?: string
+          source?: string | null
+        }
+        Relationships: []
+      }
       live_sessions: {
         Row: {
           assignment_id: string | null
@@ -694,30 +808,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      leads: {
-        Row: {
-          country: Database["public"]["Enums"]["country_code"] | null
-          created_at: string
-          email: string
-          id: string
-          source: string | null
-        }
-        Insert: {
-          country?: Database["public"]["Enums"]["country_code"] | null
-          created_at?: string
-          email: string
-          id?: string
-          source?: string | null
-        }
-        Update: {
-          country?: Database["public"]["Enums"]["country_code"] | null
-          created_at?: string
-          email?: string
-          id?: string
-          source?: string | null
-        }
-        Relationships: []
       }
       messages: {
         Row: {
@@ -1214,6 +1304,7 @@ export type Database = {
           id: string
           invoice_number: string | null
           invoice_path: string | null
+          invoice_rejection_reason: string | null
           net_amount: number
           period_end: string
           period_start: string
@@ -1230,6 +1321,7 @@ export type Database = {
           id?: string
           invoice_number?: string | null
           invoice_path?: string | null
+          invoice_rejection_reason?: string | null
           net_amount: number
           period_end: string
           period_start: string
@@ -1246,6 +1338,7 @@ export type Database = {
           id?: string
           invoice_number?: string | null
           invoice_path?: string | null
+          invoice_rejection_reason?: string | null
           net_amount?: number
           period_end?: string
           period_start?: string
@@ -1493,10 +1586,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      auth_coach_profile_id: {
-        Args: never
-        Returns: string
-      }
+      auth_coach_profile_id: { Args: never; Returns: string }
       auth_role: {
         Args: never
         Returns: Database["public"]["Enums"]["user_role"]
@@ -1506,7 +1596,7 @@ export type Database = {
         Returns: boolean
       }
       student_has_pro_or_elite_package: {
-        Args: { p_student_id: string; p_coach_id: string }
+        Args: { p_coach_id: string; p_student_id: string }
         Returns: boolean
       }
     }
@@ -1538,6 +1628,8 @@ export type Database = {
         | "pending_invoice"
         | "invoiced"
         | "transferred"
+        | "approved"
+        | "rejected"
       subscription_status: "active" | "past_due" | "canceled" | "trialing"
       user_role: "student" | "coach" | "owner" | "promoter"
       workout_status: "in_progress" | "completed" | "abandoned"
@@ -1666,6 +1758,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       assignment_status: [
@@ -1698,6 +1793,8 @@ export const Constants = {
         "pending_invoice",
         "invoiced",
         "transferred",
+        "approved",
+        "rejected",
       ],
       subscription_status: ["active", "past_due", "canceled", "trialing"],
       user_role: ["student", "coach", "owner", "promoter"],
@@ -1705,3 +1802,21 @@ export const Constants = {
     },
   },
 } as const
+
+// Alias de conveniencia de los enums de la DB.
+// DERIVADOS de Database para no perderlos ni driftear al regenerar tipos (pnpm db:types).
+export type UserRole = Database["public"]["Enums"]["user_role"];
+export type CountryCode = Database["public"]["Enums"]["country_code"];
+export type SubscriptionStatus = Database["public"]["Enums"]["subscription_status"];
+export type BillingModel = Database["public"]["Enums"]["billing_model"];
+export type CoachStatus = Database["public"]["Enums"]["coach_status"];
+export type PackageTier = Database["public"]["Enums"]["package_tier"];
+export type AssignmentStatus = Database["public"]["Enums"]["assignment_status"];
+export type PaymentStatus = Database["public"]["Enums"]["payment_status"];
+export type SettlementStatus = Database["public"]["Enums"]["settlement_status"];
+export type WorkoutStatus = Database["public"]["Enums"]["workout_status"];
+export type LegalEntityType = Database["public"]["Enums"]["legal_entity_type"];
+export type NotificationChannel = Database["public"]["Enums"]["notification_channel"];
+// No existe enum en DB: plan de suscripción es un literal de dominio.
+export type SubscriptionPlan = "free" | "pro" | "elite";
+

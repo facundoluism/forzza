@@ -18,6 +18,7 @@ enabled = true
 sql_paths = [
   "./seed/seed.sql",
   "./seed/exercises.sql",
+  "./seed/exercise_videos.sql",
   "./seed/exercises_descriptions_es.sql",
   "./seed/exercises_ficha.sql",
   "./seed/exercises_svg_icons.sql",

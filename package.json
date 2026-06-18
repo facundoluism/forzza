@@ -22,13 +22,16 @@
     "smoke-test": "node scripts/smoke-test.js",
     "smoke-test:fixtures": "cross-env SMOKE_EXPECT_FIXTURES=1 node scripts/smoke-test.js",
     "smoke-test:mobile": "maestro test e2e/flows/03-workout-session.yaml",
-    "smoke-test:staging": "node scripts/smoke-test.js --url https://staging.forzza.app"
+    "smoke-test:staging": "node scripts/smoke-test.js --url https://staging.forzza.app",
+    "videos:generate": "tsx scripts/build-exercise-videos.ts",
+    "videos:generate:dry": "tsx scripts/build-exercise-videos.ts --dry-run"
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",
     "@types/node": "^22.19.20",
     "cross-env": "^10.1.0",
     "prettier": "^3.4.2",
+    "tsx": "^4.22.4",
     "turbo": "^2.3.3",
     "typescript": "^5.7.2"
   },
