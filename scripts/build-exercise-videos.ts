@@ -108,6 +108,7 @@ function generateSql(entries: VideoEntry[]): string {
 function parseArgs(): {
   limit: number | null;
   slugs: string[] | null;
+  onlyMissing: number | null;
   lang: "es" | "en" | "both";
   dryRun: boolean;
   confirmFull: boolean;
@@ -116,6 +117,10 @@ function parseArgs(): {
 
   const limitIdx = argv.indexOf("--limit");
   const limit = limitIdx >= 0 ? parseInt(argv[limitIdx + 1] ?? "", 10) : null;
+
+  const onlyMissingIdx = argv.indexOf("--only-missing");
+  const onlyMissing =
+    onlyMissingIdx >= 0 ? parseInt(argv[onlyMissingIdx + 1] ?? "", 10) : null;
 
   const slugsIdx = argv.indexOf("--slugs");
   const slugsRaw = slugsIdx >= 0 ? (argv[slugsIdx + 1] ?? "") : null;
@@ -134,13 +139,18 @@ function parseArgs(): {
     process.exit(1);
   }
 
-  return { limit, slugs, lang, dryRun, confirmFull };
+  if (onlyMissing !== null && (isNaN(onlyMissing) || onlyMissing <= 0)) {
+    console.error("ERROR: --only-missing debe ser un entero positivo.");
+    process.exit(1);
+  }
+
+  return { limit, slugs, onlyMissing, lang, dryRun, confirmFull };
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
-  const { limit, slugs, lang, dryRun, confirmFull } = parseArgs();
+  const { limit, slugs, onlyMissing, lang, dryRun, confirmFull } = parseArgs();
 
   // 1) Validar variables de entorno
   const apiKey = process.env["YOUTUBE_API_KEY"];
@@ -182,7 +192,7 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  // 3) Filtrar por --slugs o --limit
+  // 3) Filtrar por --slugs, --only-missing o --limit
   let filtered = exercises as Array<{
     id: string;
     slug: string;
@@ -202,6 +212,26 @@ async function main(): Promise<void> {
     if (notFound.length > 0) {
       console.warn(`ADVERTENCIA: slugs no encontrados en DB: ${notFound.join(", ")}`);
     }
+  } else if (onlyMissing !== null) {
+    // Auto-seleccionar los próximos N ejercicios SIN ninguna fila en exercise_videos.
+    const { data: withVideo, error: vidError } = await supabase
+      .from("exercise_videos")
+      .select("exercise_id");
+    if (vidError) {
+      console.error("ERROR al leer exercise_videos:", vidError.message);
+      process.exit(1);
+    }
+    const haveVideo = new Set((withVideo ?? []).map((r) => r.exercise_id as string));
+    const missing = filtered.filter((e) => !haveVideo.has(e.id));
+    const totalMissing = missing.length;
+    filtered = missing.slice(0, onlyMissing);
+    console.log(
+      `Sin video: ${totalMissing} ejercicios. Procesando los próximos ${filtered.length}.`
+    );
+    if (filtered.length === 0) {
+      console.log("No quedan ejercicios sin video. Nada que hacer.");
+      return;
+    }
   } else if (limit !== null) {
     filtered = filtered.slice(0, limit);
   }
@@ -212,7 +242,13 @@ async function main(): Promise<void> {
   const totalSearches = filtered.length * langs.length;
 
   const QUOTA_GUARDRAIL = 50;
-  if (slugs === null && limit === null && !confirmFull && totalSearches > QUOTA_GUARDRAIL) {
+  if (
+    slugs === null &&
+    limit === null &&
+    onlyMissing === null &&
+    !confirmFull &&
+    totalSearches > QUOTA_GUARDRAIL
+  ) {
     console.error(
       `ERROR: Esta corrida ejecutaría ${totalSearches} búsquedas (${filtered.length} ejercicios × ${langs.length} idiomas).\n` +
         `Eso supera el límite de seguridad de ${QUOTA_GUARDRAIL} búsquedas.\n` +
