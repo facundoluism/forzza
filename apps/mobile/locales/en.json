@@ -210,7 +210,14 @@
       "continueWithApple": "Continue with Apple",
       "continueWithGoogle": "Continue with Google",
       "ssoErrorTitle": "Authentication error",
-      "ssoErrorDesc": "Could not connect to the provider. Please try again."
+      "ssoErrorDesc": "Could not connect to the provider. Please try again.",
+      "headlineTop": "WELCOME",
+      "headlineBottom": "BACK",
+      "headlineSubtitle": "Sign in to your account to continue",
+      "emailLabel": "EMAIL",
+      "passwordLabel": "PASSWORD",
+      "noAccountLink": "No account?",
+      "signupLink": "Sign up free"
     },
     "signup": {
       "title": "Create your free account",
@@ -221,7 +228,20 @@
       "successDesc": "We sent a verification link to your inbox. Check your spam too.",
       "goToLogin": "Go to sign in",
       "alreadyHaveAccount": "Already have an account — Sign in",
-      "errorCreate": "Could not create account. Try a different email."
+      "errorCreate": "Could not create account. Try a different email.",
+      "headlineTop": "CREATE YOUR",
+      "headlineBottom": "ACCOUNT",
+      "headlineSubtitle": "Create your free account in minutes",
+      "emailLabel": "EMAIL",
+      "passwordLabel": "PASSWORD",
+      "confirmPasswordLabel": "CONFIRM PASSWORD",
+      "welcomeCardTitle": "WELCOME TO FORZZA",
+      "welcomeCardSubtitle": "Create your account in 2 minutes",
+      "termsText": "By signing up you accept our",
+      "termsLink": "Terms and conditions",
+      "privacyLink": "Privacy policy",
+      "loginLinkPre": "Already have an account?",
+      "loginLinkAction": "Sign in"
     },
     "onboarding": {
       "stepInfo": "Step {{current}} of {{total}}",
@@ -256,7 +276,19 @@
       "levelIntermediate": "Intermediate",
       "levelIntermediateDesc": "6 months - 2 years of experience",
       "levelAdvanced": "Advanced",
-      "levelAdvancedDesc": "More than 2 years training consistently"
+      "levelAdvancedDesc": "More than 2 years training consistently",
+      "step1Sub": "Access data",
+      "step1Label": "Create account",
+      "step2Sub": "Tell us about you",
+      "step2Label": "Hello!",
+      "step3Sub": "To personalize your plan",
+      "step3Label": "Your goal",
+      "welcomeCardTitle": "WELCOME TO FORZZA",
+      "welcomeCardSubtitle": "Complete your profile in 2 minutes",
+      "continueBtn": "Continue →",
+      "loginLink": "Already have an account? Sign in",
+      "goalSectionLabel": "WHAT IS YOUR MAIN GOAL?",
+      "levelSectionLabel": "YOUR EXPERIENCE LEVEL"
     },
     "forgotPassword": {
       "title": "Recover password",
@@ -266,7 +298,19 @@
       "successTitle": "Email sent",
       "successDesc": "Check your inbox (and spam) for the recovery link.",
       "back": "Back",
-      "error": "Could not send the email. Make sure it is correct and try again."
+      "error": "Could not send the email. Make sure it is correct and try again.",
+      "headlineTop": "RECOVER",
+      "headlineBottom": "PASSWORD",
+      "headlineSubtitle": "We'll send you a link to reset your password",
+      "emailLabel": "EMAIL"
+    },
+    "welcome": {
+      "subtitle": "TRAIN · TRACK · TRANSFORM",
+      "headlineTop": "YOUR BEST",
+      "headlineAccent": "VERSION",
+      "headlineBottom": "STARTS TODAY",
+      "primaryBtn": "GET STARTED",
+      "secondaryBtn": "I already have an account"
     }
   },
   "marketplace": {

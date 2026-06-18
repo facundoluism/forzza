@@ -210,7 +210,14 @@
       "continueWithApple": "Continuar con Apple",
       "continueWithGoogle": "Continuar con Google",
       "ssoErrorTitle": "Error de autenticación",
-      "ssoErrorDesc": "No se pudo conectar con el proveedor. Intentá de nuevo."
+      "ssoErrorDesc": "No se pudo conectar con el proveedor. Intentá de nuevo.",
+      "headlineTop": "BIENVENIDO",
+      "headlineBottom": "DE VUELTA",
+      "headlineSubtitle": "Ingresá a tu cuenta para continuar",
+      "emailLabel": "EMAIL",
+      "passwordLabel": "CONTRASEÑA",
+      "noAccountLink": "¿Sin cuenta?",
+      "signupLink": "Registrate gratis"
     },
     "signup": {
       "title": "Creá tu cuenta gratis",
@@ -221,7 +228,20 @@
       "successDesc": "Te enviamos un link de verificación a tu casilla. Revisá también el spam.",
       "goToLogin": "Ir al inicio de sesión",
       "alreadyHaveAccount": "Ya tengo cuenta — Iniciar sesión",
-      "errorCreate": "No se pudo crear la cuenta. Intentá con otro email."
+      "errorCreate": "No se pudo crear la cuenta. Intentá con otro email.",
+      "headlineTop": "CREÁ TU",
+      "headlineBottom": "CUENTA",
+      "headlineSubtitle": "Creá tu cuenta gratis en minutos",
+      "emailLabel": "EMAIL",
+      "passwordLabel": "CONTRASEÑA",
+      "confirmPasswordLabel": "REPETIR CONTRASEÑA",
+      "welcomeCardTitle": "BIENVENIDO A FORZZA",
+      "welcomeCardSubtitle": "Creá tu cuenta en 2 minutos",
+      "termsText": "Al registrarte aceptás nuestros",
+      "termsLink": "Términos y condiciones",
+      "privacyLink": "Política de privacidad",
+      "loginLinkPre": "¿Ya tenés cuenta?",
+      "loginLinkAction": "Iniciar sesión"
     },
     "onboarding": {
       "stepInfo": "Paso {{current}} de {{total}}",
@@ -256,7 +276,19 @@
       "levelIntermediate": "Intermedio",
       "levelIntermediateDesc": "6 meses - 2 años de experiencia",
       "levelAdvanced": "Avanzado",
-      "levelAdvancedDesc": "Más de 2 años entrenando con consistencia"
+      "levelAdvancedDesc": "Más de 2 años entrenando con consistencia",
+      "step1Sub": "Datos de acceso",
+      "step1Label": "Crear cuenta",
+      "step2Sub": "Cuéntanos sobre vos",
+      "step2Label": "¡Hola!",
+      "step3Sub": "Para personalizar tu plan",
+      "step3Label": "Tu objetivo",
+      "welcomeCardTitle": "BIENVENIDO A FORZZA",
+      "welcomeCardSubtitle": "Completá tu perfil en 2 minutos",
+      "continueBtn": "Continuar →",
+      "loginLink": "¿Ya tenés cuenta? Iniciar sesión",
+      "goalSectionLabel": "¿CUÁL ES TU OBJETIVO PRINCIPAL?",
+      "levelSectionLabel": "TU NIVEL DE EXPERIENCIA"
     },
     "forgotPassword": {
       "title": "Recuperar contraseña",
@@ -266,7 +298,19 @@
       "successTitle": "Email enviado",
       "successDesc": "Revisá tu bandeja de entrada (y el spam) para encontrar el link de recuperación.",
       "back": "Volver",
-      "error": "No pudimos enviar el email. Verificá que sea correcto e intentá de nuevo."
+      "error": "No pudimos enviar el email. Verificá que sea correcto e intentá de nuevo.",
+      "headlineTop": "RECUPERAR",
+      "headlineBottom": "CONTRASEÑA",
+      "headlineSubtitle": "Te enviamos un link para restablecer tu contraseña",
+      "emailLabel": "EMAIL"
+    },
+    "welcome": {
+      "subtitle": "TRAIN · TRACK · TRANSFORM",
+      "headlineTop": "TU MEJOR",
+      "headlineAccent": "VERSIÓN",
+      "headlineBottom": "EMPIEZA HOY",
+      "primaryBtn": "COMENZAR AHORA",
+      "secondaryBtn": "Ya tengo cuenta"
     }
   },
   "marketplace": {

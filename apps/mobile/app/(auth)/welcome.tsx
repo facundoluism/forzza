@@ -8,12 +8,14 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { QUOTES, quoteByIndex, quoteText } from "@forzza/core";
 import { useLanguageStore } from "@/stores/languageStore";
 import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
 
 export default function WelcomeScreen(): React.JSX.Element {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const language = useLanguageStore((s) => s.language);
   const [qIdx, setQIdx] = useState(0);
 
@@ -44,7 +46,7 @@ export default function WelcomeScreen(): React.JSX.Element {
       </View>
 
       {/* Subtítulo */}
-      <Text style={styles.subtitle}>TRAIN · TRACK · TRANSFORM</Text>
+      <Text style={styles.subtitle}>{t('auth.welcome.subtitle')}</Text>
 
       {/* Frase rotativa */}
       <View key={qIdx} style={styles.quoteContainer}>
@@ -55,9 +57,9 @@ export default function WelcomeScreen(): React.JSX.Element {
 
       {/* Headline grande */}
       <View style={styles.headlineBlock}>
-        <Text style={styles.headlineLine}>TU MEJOR</Text>
-        <Text style={[styles.headlineLine, styles.headlineAccent]}>VERSIÓN</Text>
-        <Text style={styles.headlineLine}>EMPIEZA HOY</Text>
+        <Text style={styles.headlineLine}>{t('auth.welcome.headlineTop')}</Text>
+        <Text style={[styles.headlineLine, styles.headlineAccent]}>{t('auth.welcome.headlineAccent')}</Text>
+        <Text style={styles.headlineLine}>{t('auth.welcome.headlineBottom')}</Text>
       </View>
 
       {/* CTAs */}
@@ -66,18 +68,18 @@ export default function WelcomeScreen(): React.JSX.Element {
           testID="welcome-start-button"
           style={styles.primaryButton}
           onPress={() => { router.push("/(auth)/signup"); }}
-          accessibilityLabel="Comenzar ahora"
+          accessibilityLabel={t('auth.welcome.primaryBtn')}
         >
-          <Text style={styles.primaryButtonText}>COMENZAR AHORA</Text>
+          <Text style={styles.primaryButtonText}>{t('auth.welcome.primaryBtn')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           testID="welcome-login-button"
           style={styles.secondaryButton}
           onPress={() => { router.push("/(auth)/login"); }}
-          accessibilityLabel="Ya tengo cuenta"
+          accessibilityLabel={t('auth.welcome.secondaryBtn')}
         >
-          <Text style={styles.secondaryButtonText}>Ya tengo cuenta</Text>
+          <Text style={styles.secondaryButtonText}>{t('auth.welcome.secondaryBtn')}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -174,7 +176,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   secondaryButton: {
-    backgroundColor: colors.bg,
+    backgroundColor: "transparent",
     borderWidth: 1.5,
     borderColor: colors.border,
     borderRadius: radius.lg,
