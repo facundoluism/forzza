@@ -10,6 +10,7 @@ import {
   Users,
   CreditCard,
   HandCoins,
+  ScrollText,
   Settings,
   Ticket,
   type LucideIcon,
@@ -27,6 +28,7 @@ const navItems: NavItem[] = [
   { href: "/admin/usuarios", labelKey: "nav.usuarios", Icon: Users },
   { href: "/admin/pagos", labelKey: "nav.pagos", Icon: CreditCard },
   { href: "/admin/liquidaciones", labelKey: "nav.liquidaciones", Icon: HandCoins },
+  { href: "/admin/auditoria", labelKey: "nav.auditoria", Icon: ScrollText },
   { href: "/admin/configuracion", labelKey: "nav.configuracion", Icon: Settings },
   { href: "/admin/tickets", labelKey: "nav.tickets", Icon: Ticket },
 ];
