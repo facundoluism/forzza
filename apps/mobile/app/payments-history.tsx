@@ -7,9 +7,10 @@ import {
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
-import { EmptyState, ErrorState, Skeleton, Pill } from "@forzza/ui/native";
+import { EmptyState, ErrorState, Skeleton, Pill, ScreenHeader } from "@forzza/ui/native";
 import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
 
 interface Payment {
@@ -97,6 +98,7 @@ function PaymentRow({ payment }: { payment: Payment }): React.JSX.Element {
 export default function PaymentsHistoryScreen(): React.JSX.Element {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const { user } = useAuth();
 
   const {
@@ -125,7 +127,7 @@ export default function PaymentsHistoryScreen(): React.JSX.Element {
     return (
       <View style={styles.container}>
         <View style={[styles.headerBlock, { paddingTop: insets.top + spacing[4] }]}>
-          <Text style={styles.screenTitle}>{t("paymentsHistory.screenTitle")}</Text>
+          <ScreenHeader title={t("paymentsHistory.screenTitle")} onBack={() => router.back()} />
           <Text style={styles.headerSubtitle}>{t("paymentsHistory.subtitle")}</Text>
         </View>
         <ScrollView contentContainerStyle={styles.content}>
@@ -142,7 +144,7 @@ export default function PaymentsHistoryScreen(): React.JSX.Element {
     return (
       <View style={styles.container}>
         <View style={[styles.headerBlock, { paddingTop: insets.top + spacing[4] }]}>
-          <Text style={styles.screenTitle}>{t("paymentsHistory.screenTitle")}</Text>
+          <ScreenHeader title={t("paymentsHistory.screenTitle")} onBack={() => router.back()} />
           <Text style={styles.headerSubtitle}>{t("paymentsHistory.subtitle")}</Text>
         </View>
         <View style={styles.content}>
@@ -161,7 +163,7 @@ export default function PaymentsHistoryScreen(): React.JSX.Element {
     return (
       <View style={styles.container}>
         <View style={[styles.headerBlock, { paddingTop: insets.top + spacing[4] }]}>
-          <Text style={styles.screenTitle}>{t("paymentsHistory.screenTitle")}</Text>
+          <ScreenHeader title={t("paymentsHistory.screenTitle")} onBack={() => router.back()} />
           <Text style={styles.headerSubtitle}>{t("paymentsHistory.subtitle")}</Text>
         </View>
         <View style={styles.emptyContainer}>
@@ -179,7 +181,7 @@ export default function PaymentsHistoryScreen(): React.JSX.Element {
   return (
     <View style={styles.container}>
       <View style={[styles.headerBlock, { paddingTop: insets.top + spacing[4] }]}>
-        <Text style={styles.screenTitle}>{t("paymentsHistory.screenTitle")}</Text>
+        <ScreenHeader title={t("paymentsHistory.screenTitle")} onBack={() => router.back()} />
         <Text style={styles.headerSubtitle}>{t("paymentsHistory.subtitle")}</Text>
       </View>
       <ScrollView contentContainerStyle={styles.content}>
@@ -205,13 +207,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
     gap: spacing[1],
-  },
-  screenTitle: {
-    fontFamily: typography.heading,
-    color: colors.text,
-    fontSize: fontSize.screenTitle,
-    letterSpacing: 1,
-    textTransform: "uppercase",
   },
   headerSubtitle: {
     fontFamily: typography.body,

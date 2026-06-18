@@ -4,7 +4,6 @@ import {
   Text,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
   ActivityIndicator,
   Pressable,
 } from "react-native";
@@ -18,7 +17,7 @@ import { useWorkoutStore } from "@/stores/workoutStore";
 import type { RoutineExerciseDefinition } from "@/stores/workoutStore";
 import { getExerciseIcon } from "@/constants/exerciseIcons";
 import { ExercisePreviewSheet } from "@/components/ExercisePreviewSheet";
-import { Button, EmptyState } from "@forzza/ui/native";
+import { Button, EmptyState, ScreenHeader } from "@forzza/ui/native";
 import { colors, fontSize, spacing, typography, radius } from "@forzza/ui/tokens";
 
 // Shape canónico del JSONB routines.exercises (coordinado con el seed)
@@ -210,9 +209,7 @@ export default function RoutineDetailScreen() {
     return (
       <View style={styles.container}>
         <View style={[styles.header, { paddingTop: insets.top + spacing[2] }]}>
-          <TouchableOpacity onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 20, right: 20 }}>
-            <Text style={styles.backBtnText}>{t('routineDetail.back')}</Text>
-          </TouchableOpacity>
+          <ScreenHeader title={t("routineDetail.screenTitle")} onBack={() => router.back()} />
         </View>
         <EmptyState
           title={t('routineDetail.errorTitle')}
@@ -229,13 +226,11 @@ export default function RoutineDetailScreen() {
     <View style={styles.container}>
       {/* Fixed header */}
       <View style={[styles.header, { paddingTop: insets.top + spacing[2] }]}>
-        <TouchableOpacity onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 20, right: 20 }}>
-          <Text style={styles.backBtnText}>{t('routineDetail.back')}</Text>
-        </TouchableOpacity>
-        <Text style={styles.routineTitle}>{routine.title}</Text>
-        <Text style={styles.headerSubtitle}>
-          {t('routineDetail.headerSubtitle', { count: exercises.length })}
-        </Text>
+        <ScreenHeader
+          title={routine.title}
+          onBack={() => router.back()}
+          subtitle={t("routineDetail.headerSubtitle", { count: exercises.length })}
+        />
       </View>
 
       <ScrollView
@@ -329,25 +324,6 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border,
     paddingHorizontal: spacing[4],
     paddingBottom: spacing[3],
-  },
-  backBtnText: {
-    fontFamily: typography.body,
-    color: colors.lime,
-    fontSize: fontSize.base,
-  },
-  routineTitle: {
-    fontFamily: typography.heading,
-    color: colors.text,
-    fontSize: 30,
-    letterSpacing: 0.5,
-    textTransform: "uppercase",
-    marginTop: spacing[2],
-  },
-  headerSubtitle: {
-    fontFamily: typography.body,
-    color: colors.muted,
-    fontSize: fontSize.sm,
-    marginTop: spacing[1],
   },
   scroll: {
     flex: 1,

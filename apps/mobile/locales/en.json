@@ -399,6 +399,7 @@
     }
   },
   "session": {
+    "screenTitle": "Active workout",
     "resting": "Resting",
     "skipRest": "Skip rest",
     "logSet": "Log set",
@@ -437,8 +438,6 @@
     "stepInfo": "Info",
     "stepExercises": "Exercises",
     "stepReview": "Review",
-    "cancel": "Cancel",
-    "back": "‹ Back",
     "next": "Next",
     "save": "Save routine",
     "saving": "Saving...",
@@ -471,7 +470,7 @@
     "headerSubtitle": "Create your custom routine"
   },
   "routineDetail": {
-    "back": "‹ Back",
+    "screenTitle": "Routine",
     "exercise_one": "exercise",
     "exercise_other": "exercises",
     "restSeconds": "Rest: {{n}}s",
@@ -507,7 +506,6 @@
   },
   "tabata": {
     "screenTitle": "Tabata",
-    "back": "‹ Back",
     "subtitle": "High-intensity training",
     "info_title": "💡 What is Tabata?",
     "info_body": "Protocol of 20 sec max effort + 10 sec rest, repeated 8 times. Total: 4 minutes of high intensity.",

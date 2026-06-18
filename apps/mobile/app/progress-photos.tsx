@@ -30,7 +30,7 @@ import * as ImagePicker from "expo-image-picker";
 import { useAuth } from "@/providers/AuthProvider";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { supabase } from "@/lib/supabase";
-import { EmptyState, ErrorState, UpgradeModal } from "@forzza/ui/native";
+import { EmptyState, ErrorState, UpgradeModal, ScreenHeader } from "@forzza/ui/native";
 import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
 
 const BUCKET = "progress-photos";
@@ -76,12 +76,9 @@ export default function ProgressPhotosScreen(): React.JSX.Element {
   if (!isPro) {
     return (
       <View style={[styles.container, { paddingTop: insets.top }]}>
-        {/* Header gradient con back */}
+        {/* Header con back */}
         <View style={[styles.header, { paddingTop: spacing[4] }]}>
-          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-            <Text style={styles.backButtonText}>‹ {t("progress.progressPhotos")}</Text>
-          </TouchableOpacity>
-          <Text style={styles.screenTitle}>{t("progressPhotos.screenTitle")}</Text>
+          <ScreenHeader title={t("progressPhotos.screenTitle")} onBack={() => router.back()} />
         </View>
 
         {/* Gate state centrado */}
@@ -269,10 +266,7 @@ function ProgressPhotosContent({
     return (
       <View style={styles.container}>
         <View style={[styles.header, { paddingTop: spacing[4] }]}>
-          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-            <Text style={styles.backButtonText}>‹ {t("progress.progressPhotos")}</Text>
-          </TouchableOpacity>
-          <Text style={styles.screenTitle}>{t("progressPhotos.screenTitle")}</Text>
+          <ScreenHeader title={t("progressPhotos.screenTitle")} onBack={() => router.back()} />
         </View>
         <ErrorState
           title={t("progressPhotos.error_title")}
@@ -290,16 +284,12 @@ function ProgressPhotosContent({
 
     return (
       <View style={styles.container}>
-        {/* Header comparador */}
+        {/* Header comparador — onBack cierra el comparador (acción interna) */}
         <View style={[styles.header, { paddingTop: spacing[4] }]}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => setShowComparator(false)}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
-            <Text style={styles.backButtonText}>‹ {t("common.close")}</Text>
-          </TouchableOpacity>
-          <Text style={styles.screenTitle}>{t("progressPhotos.comparatorTitle")}</Text>
+          <ScreenHeader
+            title={t("progressPhotos.comparatorTitle")}
+            onBack={() => setShowComparator(false)}
+          />
         </View>
 
         <View style={styles.comparatorRow}>
@@ -349,41 +339,37 @@ function ProgressPhotosContent({
   // ── Main view ─────────────────────────────────────────────────────────────────
   return (
     <View style={styles.container}>
-      {/* Header con gradiente visual */}
+      {/* Header con acciones */}
       <View style={[styles.header, { paddingTop: spacing[4] }]}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Text style={styles.backButtonText}>‹ {t("progress.progressPhotos")}</Text>
-        </TouchableOpacity>
-        <View style={styles.headerRow}>
-          <View>
-            <Text style={styles.screenTitle}>{t("progressPhotos.screenTitleShort")}</Text>
-            {photosWithUrls.length > 0 && (
-              <Text style={styles.headerSubtitle}>
-                {t("progressPhotos.recordsCount", { count: photosWithUrls.length })}
-              </Text>
-            )}
-          </View>
-          <View style={styles.headerActions}>
-            {photosWithUrls.length >= 2 && !pendingImageUri && (
-              <TouchableOpacity
-                style={styles.compareButton}
-                onPress={() => setShowComparator(true)}
-                testID="progress-photos-compare-btn"
-              >
-                <Text style={styles.compareButtonText}>{t("progressPhotos.compare")}</Text>
-              </TouchableOpacity>
-            )}
-            {!pendingImageUri && (
-              <TouchableOpacity
-                style={styles.addButtonSmall}
-                onPress={() => { void handlePickImage(); }}
-                testID="progress-photos-add-btn"
-              >
-                <Text style={styles.addButtonSmallText}>{t("progressPhotos.addPhotoShort")}</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
+        <ScreenHeader
+          title={t("progressPhotos.screenTitleShort")}
+          onBack={() => router.back()}
+          {...(photosWithUrls.length > 0
+            ? { subtitle: t("progressPhotos.recordsCount", { count: photosWithUrls.length }) }
+            : {})}
+          right={
+            <View style={styles.headerActions}>
+              {photosWithUrls.length >= 2 && !pendingImageUri && (
+                <TouchableOpacity
+                  style={styles.compareButton}
+                  onPress={() => setShowComparator(true)}
+                  testID="progress-photos-compare-btn"
+                >
+                  <Text style={styles.compareButtonText}>{t("progressPhotos.compare")}</Text>
+                </TouchableOpacity>
+              )}
+              {!pendingImageUri && (
+                <TouchableOpacity
+                  style={styles.addButtonSmall}
+                  onPress={() => { void handlePickImage(); }}
+                  testID="progress-photos-add-btn"
+                >
+                  <Text style={styles.addButtonSmallText}>{t("progressPhotos.addPhotoShort")}</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          }
+        />
       </View>
 
       <ScrollView
@@ -537,33 +523,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
-  },
-  backButton: {
-    marginBottom: spacing[3],
-  },
-  backButtonText: {
-    fontFamily: typography.body,
-    color: colors.muted,
-    fontSize: fontSize.sm,
-  },
-  headerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-end",
-  },
-  screenTitle: {
-    fontFamily: typography.heading,
-    color: colors.text,
-    fontSize: fontSize.screenTitle,
-    letterSpacing: 1,
-    textTransform: "uppercase",
-    lineHeight: 36,
-  },
-  headerSubtitle: {
-    fontFamily: typography.body,
-    color: colors.muted,
-    fontSize: fontSize.sm,
-    marginTop: spacing[1],
   },
   headerActions: {
     flexDirection: "row",

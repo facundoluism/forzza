@@ -15,7 +15,6 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { LogBox } from "react-native";
 import { AuthProvider, useAuth } from "@/providers/AuthProvider";
 import { initSentry } from "@/lib/sentry";
-import { colors } from "@forzza/ui/tokens";
 // i18n — inicializar el singleton ANTES de cualquier render que use useTranslation().
 // Lee el idioma persistido del store; si no hay, usa el locale del dispositivo.
 import { initI18n } from "@/lib/i18n";
@@ -69,104 +68,27 @@ function RootLayoutNav() {
   return (
     <>
       <StatusBar style="light" />
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack screenOptions={{ headerShown: false, gestureEnabled: true }}>
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="index" />
-        <Stack.Screen name="session" options={{ presentation: "modal" }} />
+        <Stack.Screen name="session" />
         <Stack.Screen name="routine/[id]" />
         <Stack.Screen
           name="routine/new"
           options={{
-            headerShown: false,
-            // Card push (no modal): evita que la pantalla anterior asome detrás
+            // Card push (no modal): evita que la pantalla anterior asome detras
             // y que el picker de biblioteca quede como modal-sobre-modal en iOS.
             presentation: "card",
           }}
         />
-        <Stack.Screen
-          name="upgrade"
-          options={{ title: "Planes", presentation: "modal" }}
-        />
-        <Stack.Screen
-          name="marketplace/index"
-          options={{
-            headerShown: true,
-            title: "Coaches",
-            headerStyle: { backgroundColor: colors.black },
-            headerTintColor: colors.white,
-            headerTitleStyle: {
-              fontFamily: "BebasNeue_400Regular",
-              fontSize: 20,
-            },
-          }}
-        />
-        <Stack.Screen
-          name="marketplace/[coachId]"
-          options={{
-            headerShown: true,
-            title: "Perfil del coach",
-            headerStyle: { backgroundColor: colors.black },
-            headerTintColor: colors.white,
-            headerTitleStyle: {
-              fontFamily: "BebasNeue_400Regular",
-              fontSize: 20,
-            },
-          }}
-        />
-        <Stack.Screen
-          name="marketplace/checkout"
-          options={{
-            headerShown: true,
-            title: "Contratar",
-            presentation: "modal",
-            headerStyle: { backgroundColor: colors.black },
-            headerTintColor: colors.white,
-            headerTitleStyle: {
-              fontFamily: "BebasNeue_400Regular",
-              fontSize: 20,
-            },
-          }}
-        />
-        <Stack.Screen
-          name="notifications"
-          options={{
-            headerShown: true,
-            title: "Notificaciones",
-            headerStyle: { backgroundColor: colors.black },
-            headerTintColor: colors.white,
-            headerTitleStyle: {
-              fontFamily: "BebasNeue_400Regular",
-              fontSize: 20,
-            },
-          }}
-        />
-        <Stack.Screen
-          name="chat/[conversationId]"
-          options={{
-            headerShown: true,
-            title: "Chat",
-            headerStyle: { backgroundColor: colors.black },
-            headerTintColor: colors.white,
-            headerTitleStyle: {
-              fontFamily: "BebasNeue_400Regular",
-              fontSize: 20,
-            },
-          }}
-        />
-        <Stack.Screen
-          name="styleguide"
-          options={{
-            headerShown: true,
-            title: "Styleguide",
-            headerStyle: { backgroundColor: colors.black },
-            headerTintColor: colors.lime,
-            headerTitleStyle: {
-              fontFamily: "BebasNeue_400Regular",
-              fontSize: 20,
-            },
-          }}
-        />
+        <Stack.Screen name="upgrade" />
+        <Stack.Screen name="marketplace/index" />
+        <Stack.Screen name="marketplace/[coachId]" />
+        <Stack.Screen name="marketplace/checkout" />
+        <Stack.Screen name="notifications" />
+        <Stack.Screen name="chat/[conversationId]" />
+        <Stack.Screen name="styleguide" />
       </Stack>
     </>
   );

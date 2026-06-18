@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import {
   View,
   Text,
@@ -20,7 +20,7 @@ import { syncPendingItems } from "@/services/sync";
 import { supabase } from "@/lib/supabase";
 import { track } from "@/lib/analytics";
 import { TRACKED_EVENTS } from "@forzza/core";
-import { Card, EmptyState, ErrorState, Confetti } from "@forzza/ui/native";
+import { Card, EmptyState, ErrorState, Confetti, ScreenHeader } from "@forzza/ui/native";
 import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
 
 interface Routine {
@@ -300,19 +300,16 @@ export default function RegisterWorkoutScreen(): React.JSX.Element {
   }
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + spacing[4] }]}>
+    <View style={styles.container}>
+      {step === 1 && (
+        <View style={[styles.headerBar, { paddingTop: insets.top }]}>
+          <ScreenHeader
+            title={t("registerWorkout.screenTitle")}
+            onBack={() => router.back()}
+          />
+        </View>
+      )}
       <ScrollView contentContainerStyle={styles.content}>
-        {/* Header */}
-        {step === 1 && (
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => router.back()}
-            testID="register-workout-back"
-          >
-            <Text style={styles.backButtonText}>{t("registerWorkout.back")}</Text>
-          </TouchableOpacity>
-        )}
-        <Text style={styles.screenTitle}>{t("registerWorkout.screenTitle")}</Text>
 
         {/* ── Step 1 ── */}
         {step === 1 && (
@@ -551,14 +548,10 @@ const styles = StyleSheet.create({
     padding: spacing[4],
     paddingBottom: spacing[8],
   },
-  screenTitle: {
-    fontFamily: typography.heading,
-    color: colors.text,
-    fontSize: fontSize.screenTitle,
-    fontWeight: "900",
-    letterSpacing: -1,
-    textTransform: "uppercase",
-    marginBottom: spacing[5],
+  headerBar: {
+    paddingHorizontal: spacing[4],
+    paddingBottom: spacing[3],
+    backgroundColor: colors.bg,
   },
   stepTitle: {
     fontFamily: typography.body,

@@ -10,11 +10,10 @@ import {
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
-import { router, useNavigation } from "expo-router";
-import { useLayoutEffect } from "react";
+import { router, useRouter } from "expo-router";
 import { supabase } from "@/lib/supabase";
 import { useEntitlements } from "@/hooks/useEntitlements";
-import { Button, Skeleton, EmptyState, ErrorState } from "@forzza/ui/native";
+import { Button, Skeleton, EmptyState, ErrorState, ScreenHeader } from "@forzza/ui/native";
 import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
 
 interface Subscription {
@@ -40,12 +39,8 @@ function formatDate(iso: string | null, locale: string): string {
 export default function ManageSubscriptionScreen() {
   const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation();
+  const nav = useRouter();
   const { isPro, isLoading: entitlementsLoading } = useEntitlements();
-
-  useLayoutEffect(() => {
-    navigation.setOptions({ title: t("manageSubscription.screenTitle") });
-  }, [t, navigation]);
 
   const {
     data: subscription,
@@ -118,7 +113,7 @@ export default function ManageSubscriptionScreen() {
     return (
       <View style={styles.scroll}>
         <View style={[styles.headerBlock, { paddingTop: insets.top + spacing[4] }]}>
-          <Text style={styles.headerTitle}>{t("manageSubscription.screenTitle")}</Text>
+          <ScreenHeader title={t("manageSubscription.screenTitle")} onBack={() => nav.back()} />
           <Text style={styles.headerSubtitle}>{t("manageSubscription.subtitle")}</Text>
         </View>
         <ScrollView contentContainerStyle={styles.container}>
@@ -168,7 +163,7 @@ export default function ManageSubscriptionScreen() {
     <View style={styles.scroll}>
       {/* Header visual */}
       <View style={[styles.headerBlock, { paddingTop: insets.top + spacing[4] }]}>
-        <Text style={styles.headerTitle}>{t("manageSubscription.screenTitle")}</Text>
+        <ScreenHeader title={t("manageSubscription.screenTitle")} onBack={() => nav.back()} />
         <Text style={styles.headerSubtitle}>{t("manageSubscription.subtitle")}</Text>
       </View>
 
@@ -236,13 +231,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
     gap: spacing[1],
-  },
-  headerTitle: {
-    fontFamily: typography.heading,
-    color: colors.text,
-    fontSize: fontSize.screenTitle,
-    letterSpacing: 1,
-    textTransform: "uppercase",
   },
   headerSubtitle: {
     fontFamily: typography.body,
