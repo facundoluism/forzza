@@ -453,6 +453,188 @@ ON CONFLICT (exercise_id, lang) DO UPDATE SET
   updated_at = now();
 
 INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'AsAVbj7puKo', 'How To: Outside Grip Cable EZ-Curls (LF Cable)', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 111, 0.7461, '{"text":0.4,"channel":1,"engagement":0.6303190772830736,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'cable-bicep-curl-ez-bar'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'M67E8xSxrsA', 'Barra VS Mancuerna en CURL DE BÍCEPS', 'UCh4VdbK3ybBBwleBdta_GMg', 'BlueGym Animation', 182, 0.8122, '{"text":0.6,"channel":1,"engagement":0.9111993360398396,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'cable-bicep-curl-ez-bar'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'AsAVbj7puKo', 'How To: Outside Grip Cable EZ-Curls (LF Cable)', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 111, 0.6861, '{"text":0.2,"channel":1,"engagement":0.6303190772830736,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'cable-bicep-curl-straight-bar'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'M67E8xSxrsA', 'Barra VS Mancuerna en CURL DE BÍCEPS', 'UCh4VdbK3ybBBwleBdta_GMg', 'BlueGym Animation', 182, 0.8122, '{"text":0.6,"channel":1,"engagement":0.9111993360398396,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'cable-bicep-curl-straight-bar'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', '8Um35Es-ROE', 'How To: Cable Fly (High-To-Low) || 3 GOLDEN RULES', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 233, 0.7697, '{"text":0.6,"channel":1,"engagement":0.6986761352253078,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'cable-chest-fly-low-pulley'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'OtW0EYqBczI', 'Cómo hacer APERTURAS, el ejercicio BÁSICO de toda rutina de pecho #gym #aperturas  #pecho', 'UCh4VdbK3ybBBwleBdta_GMg', 'BlueGym Animation', 45, 0.7115, '{"text":0.25,"channel":1,"engagement":0.9325432507665611,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'cable-chest-fly-low-pulley'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'JUDTGZh4rhg', 'STOP F*cking Up Cable Flys (PROPER FORM!)', 'UCe0TLA0EsQbE-MjuHXevj2A', 'ATHLEAN-X™', 411, 0.7012, '{"text":0.3333333333333333,"channel":1,"engagement":0.8270092122286649,"duration":0.8583333333333333,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'cable-chest-press'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'WNtBIde3Qks', 'Deja de Arruinar El Cruce de Poleas PECHO ¡FORMA CORRECTA!', 'UCAR76PvwLHcHqnbqFIos_Xg', 'ATHLEAN-X Español', 411, 0.9237, '{"text":1,"channel":1,"engagement":0.9392076314697476,"duration":0.8583333333333333,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'cable-crossover'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', '8Um35Es-ROE', 'How To: Cable Fly (High-To-Low) || 3 GOLDEN RULES', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 233, 0.8147, '{"text":0.75,"channel":1,"engagement":0.6986761352253078,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'cable-crossover-high-to-low'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'XuQWMR4QKF0', 'Cómo hacer CRUNCH en polea', 'UCh4VdbK3ybBBwleBdta_GMg', 'BlueGym Animation', 57, 0.9255, '{"text":1,"channel":1,"engagement":0.8773220347686083,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'cable-crunch'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', '4cxt_Tldugw', '9 Hack Squat Mistakes and How to Fix Them', 'UCfQgsKhHjSyRLOp9mnffqVg', 'Renaissance Periodization', 1127, 0.7095, '{"text":0.6666666666666666,"channel":1,"engagement":0.7973039938991753,"duration":0,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'cable-hack-squat'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'XusYaOMftMA', 'BICEPS - CURL MARTILLO POLEA', 'UCZ0We59vomlVrHdBPFGOFzQ', 'Rodrigo Metabolico', 42, 0.5367, '{"text":1,"channel":0,"engagement":0.4335319025927512,"duration":1,"language":0.5,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'cable-hammer-curl'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'OmhY5_tVzt0', 'Pull Through Polea Baja con Cuerdas. Técnica para GLÚTEO', 'UCQQ2X96FF1LezYFe6lUUK0w', 'Zonapablo', 134, 0.6737, '{"text":0.3333333333333333,"channel":1,"engagement":0.618377674771098,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'cable-hip-extension'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
 SELECT id, 'en', 'UYJsFzqdgK4', 'HOW TO: Close-Grip Bench Press (TRICEPS BUILDER) || PERFECT FORM', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 177, 0.8197, '{"text":0.8,"channel":1,"engagement":0.6485522565099342,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
 FROM public.exercise_library WHERE slug = 'close-grip-barbell-bench-press'
 ON CONFLICT (exercise_id, lang) DO UPDATE SET
