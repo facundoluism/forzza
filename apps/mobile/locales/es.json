@@ -501,6 +501,7 @@
   },
   "tabata": {
     "screenTitle": "Tabata",
+    "back": "‹ Volver",
     "subtitle": "Entrenamiento de alta intensidad",
     "info_title": "💡 ¿Qué es el Tabata?",
     "info_body": "Protocolo de 20 seg de trabajo máximo + 10 seg de descanso, repetido 8 veces. Total: 4 minutos de alta intensidad.",

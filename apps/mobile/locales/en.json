@@ -501,6 +501,7 @@
   },
   "tabata": {
     "screenTitle": "Tabata",
+    "back": "‹ Back",
     "subtitle": "High-intensity training",
     "info_title": "💡 What is Tabata?",
     "info_body": "Protocol of 20 sec max effort + 10 sec rest, repeated 8 times. Total: 4 minutes of high intensity.",

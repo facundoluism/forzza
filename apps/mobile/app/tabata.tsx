@@ -725,6 +725,13 @@ export default function TabataScreen(): React.JSX.Element {
       </Sheet>
 
       <ScrollView contentContainerStyle={styles.configContent} showsVerticalScrollIndicator={false}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+          testID="tabata-back"
+        >
+          <Text style={styles.backButtonText}>{t("tabata.back")}</Text>
+        </TouchableOpacity>
         <Text style={styles.screenTitle}>{t("tabata.screenTitle")}</Text>
         <Text style={styles.screenSubtitle}>{t("tabata.subtitle")}</Text>
 
@@ -1116,6 +1123,14 @@ const styles = StyleSheet.create({
   configContent: {
     padding: spacing[4],
     paddingBottom: spacing[8],
+  },
+  backButton: {
+    marginBottom: spacing[3],
+  },
+  backButtonText: {
+    fontFamily: typography.body,
+    color: colors.lime,
+    fontSize: fontSize.base,
   },
   screenTitle: {
     fontFamily: typography.heading,
