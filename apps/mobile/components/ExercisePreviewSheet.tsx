@@ -5,11 +5,13 @@ import {
   ScrollView,
   StyleSheet,
   ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import YoutubePlayer from "react-native-youtube-iframe";
 import type { Database } from "@forzza/db-types";
-import { Sheet, Tabs, Pill, ErrorState, ExerciseIcon } from "@forzza/ui/native";
+import { Sheet, Tabs, Pill, ErrorState, EmptyState, ExerciseIcon } from "@forzza/ui/native";
 import { colors, spacing, fontSize, typography, radius } from "@forzza/ui/tokens";
 import { supabase } from "@/lib/supabase";
 import { useLanguageStore, type AppLanguage } from "@/stores/languageStore";
@@ -19,6 +21,13 @@ import { localizeMeta } from "@/constants/exerciseI18n";
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
 type ExerciseLibraryRow = Database["public"]["Tables"]["exercise_library"]["Row"];
+
+type ExerciseVideoRow = Database["public"]["Tables"]["exercise_videos"]["Row"];
+
+type ExerciseVideoData = Pick<
+  ExerciseVideoRow,
+  "youtube_id" | "title" | "channel_title" | "duration_seconds" | "lang"
+>;
 
 export interface ExercisePreviewSheetProps {
   exerciseId: string | null; // null = cerrado
@@ -41,6 +50,31 @@ async function fetchExerciseDetail(id: string): Promise<ExerciseLibraryRow> {
   if (!data) throw new Error("Ejercicio no encontrado.");
   return data;
 }
+
+async function fetchExerciseVideo(
+  exerciseId: string,
+  language: AppLanguage,
+): Promise<ExerciseVideoData | null> {
+  const { data, error } = await supabase
+    .from("exercise_videos")
+    .select("youtube_id, title, channel_title, duration_seconds, lang")
+    .eq("exercise_id", exerciseId)
+    .eq("status", "published");
+
+  if (error) throw error;
+  if (!data || data.length === 0) return null;
+
+  // Preferir el video en el idioma activo; fallback al otro idioma
+  const preferred = data.find((v) => v.lang === language);
+  if (preferred) return preferred;
+  return data[0] ?? null;
+}
+
+// Ancho de pantalla para calcular el alto 16:9 del player
+const SCREEN_WIDTH = Dimensions.get("window").width;
+// El sheet ocupa el ancho completo menos el padding horizontal del contenido
+const PLAYER_WIDTH = SCREEN_WIDTH - spacing[5] * 2;
+const PLAYER_HEIGHT = Math.round(PLAYER_WIDTH * (9 / 16));
 
 // ─── Helpers de localización ──────────────────────────────────────────────────
 
@@ -266,6 +300,82 @@ function MusculosTab({
   );
 }
 
+// ─── Tab: Video ───────────────────────────────────────────────────────────────
+
+interface VideoTabProps {
+  exerciseId: string;
+  language: AppLanguage;
+}
+
+function VideoTab({ exerciseId, language }: VideoTabProps): React.JSX.Element {
+  const { t } = useTranslation();
+
+  const {
+    data: video,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["exercise_video", exerciseId, language],
+    queryFn: () => fetchExerciseVideo(exerciseId, language),
+    enabled: true,
+    staleTime: 1000 * 60 * 10, // 10 min
+  });
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer} testID="video-tab-loading">
+        <ActivityIndicator color={colors.lime} size="large" />
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <ErrorState
+        title={t("exercisePreview.video_error_title")}
+        description={t("exercisePreview.video_error_desc")}
+        onRetry={() => {
+          void refetch();
+        }}
+      />
+    );
+  }
+
+  if (!video) {
+    return (
+      <EmptyState
+        title={t("exercisePreview.video_empty_title")}
+        description={t("exercisePreview.video_empty_desc")}
+        icon="🎬"
+      />
+    );
+  }
+
+  return (
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={styles.tabContent}
+      testID="video-tab-content"
+    >
+      <View style={styles.playerWrapper}>
+        <YoutubePlayer
+          height={PLAYER_HEIGHT}
+          videoId={video.youtube_id}
+        />
+      </View>
+      <View style={styles.videoMeta}>
+        <Text style={styles.videoTitle} numberOfLines={2}>
+          {video.title}
+        </Text>
+        <Text style={styles.videoChannel}>
+          {t("exercisePreview.video_channel", { channel: video.channel_title })}
+        </Text>
+      </View>
+    </ScrollView>
+  );
+}
+
 // ─── Contenido del sheet (estado success) ─────────────────────────────────────
 
 function ExerciseDetailContent({
@@ -286,6 +396,7 @@ function ExerciseDetailContent({
     { key: "ejecucion", label: t("exercisePreview.tabs.execution") },
     { key: "errores",   label: t("exercisePreview.tabs.errors") },
     { key: "musculos",  label: t("exercisePreview.tabs.muscles") },
+    { key: "video",     label: t("exercisePreview.tabs.video") },
   ] as const;
 
   type DetailTabKey = (typeof DETAIL_TABS)[number]["key"];
@@ -388,6 +499,9 @@ function ExerciseDetailContent({
             iconKey={iconKey}
             language={language}
           />
+        )}
+        {activeTab === "video" && (
+          <VideoTab exerciseId={exercise.id} language={language} />
         )}
       </View>
     </>
@@ -662,6 +776,30 @@ const styles = StyleSheet.create({
     fontSize: fontSize.md,
     lineHeight: 22,
     flex: 1,
+  },
+
+  // ── Tab Video ──
+  playerWrapper: {
+    borderRadius: radius.lg,
+    overflow: "hidden",
+    backgroundColor: colors.surface3,
+    width: PLAYER_WIDTH,
+    height: PLAYER_HEIGHT,
+  },
+  videoMeta: {
+    gap: spacing[1],
+    marginTop: spacing[3],
+  },
+  videoTitle: {
+    fontFamily: typography.heading,
+    color: colors.text,
+    fontSize: fontSize.md,
+    lineHeight: 22,
+  },
+  videoChannel: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.sm,
   },
 
   // ── Tab Músculos ──

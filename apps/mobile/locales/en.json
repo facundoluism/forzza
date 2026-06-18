@@ -202,8 +202,14 @@
     "tabs": {
       "execution": "Execution",
       "errors": "Errors",
-      "muscles": "Muscles"
+      "muscles": "Muscles",
+      "video": "Video"
     },
+    "video_empty_title": "No video yet",
+    "video_empty_desc": "There is no demo video for this exercise yet.",
+    "video_error_title": "Could not load video",
+    "video_error_desc": "Check your connection and try again.",
+    "video_channel": "Channel: {{channel}}",
     "primaryMuscles": "Primary muscles",
     "secondaryMuscles": "Secondary muscles",
     "tertiaryMuscles": "Tertiary muscles",
