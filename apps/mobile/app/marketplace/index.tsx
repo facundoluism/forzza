@@ -23,11 +23,11 @@ function CoachCardSkeleton() {
   return (
     <View style={styles.skeletonCard}>
       <View style={styles.skeletonRow}>
-        <Skeleton width={64} height={64} borderRadius={32} />
+        <Skeleton width={52} height={52} borderRadius={9999} />
         <View style={styles.skeletonInfo}>
-          <Skeleton width="60%" height={20} />
-          <Skeleton width="40%" height={14} />
-          <Skeleton width="30%" height={14} />
+          <Skeleton width="55%" height={22} />
+          <Skeleton width="35%" height={12} />
+          <Skeleton width="45%" height={14} />
         </View>
       </View>
     </View>
@@ -92,25 +92,38 @@ export default function MarketplaceScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
+      {/* Header DS: logoBox + título BebasNeue + label muted */}
       <View style={styles.header}>
-        <Text style={styles.title}>{t('marketplace.index.screenTitle')}</Text>
-        <Text style={styles.subtitle}>
-          {t('marketplace.index.subtitle')}
-        </Text>
+        <View style={styles.headerTop}>
+          <View style={styles.logoBox}>
+            <Text style={styles.logoLetter}>F</Text>
+          </View>
+          <View style={styles.headerText}>
+            <Text style={styles.title}>{t('marketplace.index.screenTitle').toUpperCase()}</Text>
+            <Text style={styles.subtitle}>{t('marketplace.index.subtitle')}</Text>
+          </View>
+        </View>
       </View>
 
-      {/* Search bar */}
+      {/* Search bar con ícono */}
       <View style={styles.searchWrapper}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder={t('marketplace.index.searchPlaceholder')}
-          placeholderTextColor={colors.gray500}
-          value={search}
-          onChangeText={setSearch}
-          clearButtonMode="while-editing"
-          returnKeyType="search"
-        />
+        <View style={styles.searchBar}>
+          <Text style={styles.searchIcon}>🔍</Text>
+          <TextInput
+            style={styles.searchInput}
+            placeholder={t('marketplace.index.searchPlaceholder')}
+            placeholderTextColor={colors.muted}
+            value={search}
+            onChangeText={setSearch}
+            clearButtonMode="while-editing"
+            returnKeyType="search"
+          />
+        </View>
+      </View>
+
+      {/* Section label */}
+      <View style={styles.sectionLabelWrapper}>
+        <Text style={styles.sectionLabel}>{t('marketplace.index.sectionLabel')}</Text>
       </View>
 
       {/* List */}
@@ -153,12 +166,34 @@ export default function MarketplaceScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.black,
+    backgroundColor: colors.bg,
   },
   header: {
     paddingHorizontal: spacing[4],
-    paddingTop: spacing[4],
-    paddingBottom: spacing[4],
+    paddingTop: spacing[5],
+    paddingBottom: spacing[3],
+  },
+  headerTop: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing[3],
+  },
+  logoBox: {
+    width: 40,
+    height: 40,
+    borderRadius: radius.md,
+    backgroundColor: colors.lime,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  logoLetter: {
+    fontFamily: typography.heading,
+    color: colors.black,
+    fontSize: fontSize["2xl"],
+    letterSpacing: 0,
+  },
+  headerText: {
+    flex: 1,
   },
   title: {
     fontFamily: typography.heading,
@@ -166,27 +201,51 @@ const styles = StyleSheet.create({
     fontSize: fontSize.screenTitle,
     letterSpacing: 1,
     textTransform: "uppercase",
+    lineHeight: fontSize.screenTitle + 4,
   },
   subtitle: {
     fontFamily: typography.body,
-    color: colors.gray400,
-    fontSize: 14,
-    marginTop: spacing[1],
+    color: colors.muted,
+    fontSize: fontSize.sm,
+    marginTop: 2,
   },
   searchWrapper: {
     paddingHorizontal: spacing[4],
-    paddingBottom: spacing[3],
+    paddingBottom: spacing[2],
+  },
+  searchBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.surface2,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[3],
+    gap: spacing[2],
+  },
+  searchIcon: {
+    fontSize: fontSize.base,
   },
   searchInput: {
-    backgroundColor: colors.gray900,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.gray800,
-    paddingHorizontal: spacing[4],
-    paddingVertical: spacing[3],
+    flex: 1,
     color: colors.white,
     fontFamily: typography.body,
-    fontSize: 15,
+    fontSize: fontSize.md,
+    padding: 0,
+  },
+  sectionLabelWrapper: {
+    paddingHorizontal: spacing[4],
+    paddingBottom: spacing[2],
+    marginTop: spacing[1],
+  },
+  sectionLabel: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.xs,
+    fontWeight: "700",
+    letterSpacing: 1,
+    textTransform: "uppercase",
   },
   listContent: {
     paddingHorizontal: spacing[4],
@@ -198,15 +257,16 @@ const styles = StyleSheet.create({
     marginTop: spacing[2],
   },
   skeletonCard: {
-    backgroundColor: colors.gray900,
-    borderRadius: radius.lg,
+    backgroundColor: colors.surface2,
+    borderRadius: radius.xl,
     borderWidth: 1,
-    borderColor: colors.gray800,
+    borderColor: colors.border,
     padding: spacing[4],
     marginBottom: spacing[3],
   },
   skeletonRow: {
     flexDirection: "row",
+    alignItems: "center",
     gap: spacing[3],
   },
   skeletonInfo: {

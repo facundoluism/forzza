@@ -345,7 +345,8 @@
       "errorDesc": "Check your connection and try again.",
       "emptyTitle": "No coaches available",
       "emptyNoResults": "No coaches found with that name.",
-      "emptyNoneApproved": "No approved coaches yet. Check back soon."
+      "emptyNoneApproved": "No approved coaches yet. Check back soon.",
+      "sectionLabel": "AVAILABLE COACHES"
     },
     "coach": {
       "screenTitle": "Coach profile",
@@ -359,7 +360,11 @@
       "consentRequiredDesc": "You need your guardian's consent to hire a coach. Ask them to approve it in the app.",
       "year_one": "year",
       "year_other": "years",
-      "experience": "{{count}} {{unit}} of experience"
+      "experience": "{{count}} {{unit}} of experience",
+      "studentsCount": "{{count}} students",
+      "ratingLabel": "Rating",
+      "resultsTitle": "RESULTS",
+      "packageRecommended": "RECOMMENDED"
     },
     "checkout": {
       "screenTitle": "Hire coach",
@@ -373,7 +378,10 @@
       "minorBlock": "You need your guardian's consent to hire a coach.",
       "cancelInfo": "You have 72 hours from hire date to request a refund.",
       "errorTitle": "Payment error",
-      "close": "Close"
+      "close": "Close",
+      "step1Label": "Data",
+      "step2Label": "Payment",
+      "securePayment": "Secure payment with Mercado Pago"
     }
   },
   "session": {
@@ -679,6 +687,9 @@
     "errorRestoreTitle": "Could not restore",
     "errorRestoreDesc": "No previous purchases found associated with your account.",
     "restoreSuccess": "Your purchases were restored successfully.",
-    "activateProSuccess": "PRO plan activated! You can now enjoy all features."
+    "activateProSuccess": "PRO plan activated! You can now enjoy all features.",
+    "planSectionLabel": "CHOOSE YOUR PLAN",
+    "freePlanLabel": "FREE",
+    "coachNote": "Coach is hired separately in the marketplace"
   }
 }

@@ -15,8 +15,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/providers/AuthProvider";
-import { Card, ErrorState } from "@forzza/ui/native";
-import { colors, spacing, typography, radius } from "@forzza/ui/tokens";
+import { ErrorState } from "@forzza/ui/native";
+import { colors, spacing, typography, radius, fontSize } from "@forzza/ui/tokens";
 
 // Columnas reales de coach_packages: id, coach_id, tier, title, description, price, active
 interface CheckoutPackage {
@@ -162,17 +162,31 @@ export default function CheckoutScreen() {
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>{t('marketplace.checkout.title')}</Text>
+      {/* Header BebasNeue */}
+      <Text style={styles.title}>{t('marketplace.checkout.screenTitle').toUpperCase()}</Text>
+      <Text style={styles.titleSubtitle}>
+        {coachName} · {pkg.title}
+      </Text>
+
+      {/* Barra de progreso 2 pasos (visual only, siempre paso 1 activo) */}
+      <View style={styles.stepBar}>
+        <View style={styles.stepBarSegmentActive} />
+        <View style={styles.stepBarSegment} />
+      </View>
+      <View style={styles.stepLabels}>
+        <Text style={styles.stepLabelActive}>{t('marketplace.checkout.step1Label')}</Text>
+        <Text style={styles.stepLabel}>{t('marketplace.checkout.step2Label')}</Text>
+      </View>
 
       {/* Summary card */}
-      <Card style={styles.summaryCard} padding="lg">
+      <View style={styles.summaryCard}>
         <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>{t('marketplace.checkout.labelCoach')}</Text>
+          <Text style={styles.summaryLabel}>{t('marketplace.checkout.labelCoach').toUpperCase()}</Text>
           <Text style={styles.summaryValue}>{coachName}</Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>{t('marketplace.checkout.labelPackage')}</Text>
+          <Text style={styles.summaryLabel}>{t('marketplace.checkout.labelPackage').toUpperCase()}</Text>
           <Text style={styles.summaryValue}>{pkg.title}</Text>
         </View>
         {pkg.description ? (
@@ -180,7 +194,7 @@ export default function CheckoutScreen() {
         ) : null}
         <View style={styles.divider} />
         <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>{t('marketplace.checkout.labelPrice')}</Text>
+          <Text style={styles.summaryLabel}>{t('marketplace.checkout.labelPrice').toUpperCase()}</Text>
           <View style={styles.priceGroup}>
             <Text style={styles.priceAmount}>
               {currencySymbol}
@@ -188,15 +202,17 @@ export default function CheckoutScreen() {
             </Text>
           </View>
         </View>
-      </Card>
+        <View style={styles.divider} />
+        <Text style={styles.securePaymentNote}>{t('marketplace.checkout.securePayment')}</Text>
+      </View>
 
       {/* Minor blocked warning */}
       {minorBlocked && (
-        <Card style={styles.warningCard} padding="md">
+        <View style={styles.warningCard}>
           <Text style={styles.warningText}>
             {t('marketplace.checkout.minorBlock')}
           </Text>
-        </Card>
+        </View>
       )}
 
       {/* Refund policy */}
@@ -217,7 +233,7 @@ export default function CheckoutScreen() {
         {loading ? (
           <ActivityIndicator color={colors.black} />
         ) : (
-          <Text style={styles.confirmText}>{t('marketplace.checkout.submit')}</Text>
+          <Text style={styles.confirmText}>{t('marketplace.checkout.submit').toUpperCase()}</Text>
         )}
       </TouchableOpacity>
     </ScrollView>
@@ -227,7 +243,7 @@ export default function CheckoutScreen() {
 const styles = StyleSheet.create({
   scroll: {
     flex: 1,
-    backgroundColor: colors.black,
+    backgroundColor: colors.bg,
   },
   content: {
     padding: spacing[4],
@@ -236,12 +252,62 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: typography.heading,
     color: colors.white,
-    fontSize: 30,
+    fontSize: fontSize.screenTitle,
+    letterSpacing: 1,
+    textTransform: "uppercase",
+    marginBottom: spacing[1],
+  },
+  titleSubtitle: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.sm,
+    marginBottom: spacing[5],
+  },
+  stepBar: {
+    flexDirection: "row",
+    gap: spacing[2],
+    marginBottom: spacing[1],
+  },
+  stepBarSegmentActive: {
+    flex: 1,
+    height: 4,
+    borderRadius: radius.full,
+    backgroundColor: colors.lime,
+  },
+  stepBarSegment: {
+    flex: 1,
+    height: 4,
+    borderRadius: radius.full,
+    backgroundColor: colors.surface4,
+  },
+  stepLabels: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: spacing[5],
+  },
+  stepLabelActive: {
+    fontFamily: typography.body,
+    color: colors.lime,
+    fontSize: fontSize.xs,
+    fontWeight: "700",
     letterSpacing: 0.5,
     textTransform: "uppercase",
-    marginBottom: spacing[4],
+  },
+  stepLabel: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.xs,
+    fontWeight: "700",
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+    textAlign: "right",
   },
   summaryCard: {
+    backgroundColor: colors.surface2,
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing[4],
     gap: spacing[3],
     marginBottom: spacing[4],
   },
@@ -252,30 +318,30 @@ const styles = StyleSheet.create({
   },
   summaryLabel: {
     fontFamily: typography.body,
-    color: colors.gray400,
-    fontSize: 13,
-    fontWeight: "600",
+    color: colors.muted,
+    fontSize: fontSize.xs,
+    fontWeight: "700",
     textTransform: "uppercase",
-    letterSpacing: 0.5,
+    letterSpacing: 1,
   },
   summaryValue: {
     fontFamily: typography.body,
-    color: colors.white,
-    fontSize: 15,
+    color: colors.text,
+    fontSize: fontSize.md,
     fontWeight: "600",
     maxWidth: "60%",
     textAlign: "right",
   },
   summaryDesc: {
     fontFamily: typography.body,
-    color: colors.gray400,
-    fontSize: 13,
+    color: colors.muted,
+    fontSize: fontSize.sm,
     lineHeight: 18,
     marginTop: -spacing[1],
   },
   divider: {
     height: 1,
-    backgroundColor: colors.gray800,
+    backgroundColor: colors.border,
   },
   priceGroup: {
     alignItems: "flex-end",
@@ -283,34 +349,44 @@ const styles = StyleSheet.create({
   priceAmount: {
     fontFamily: typography.mono,
     color: colors.lime,
-    fontSize: 22,
+    fontSize: fontSize["3xl"],
     fontWeight: "700",
+  },
+  securePaymentNote: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.xs,
+    textAlign: "center",
   },
   warningCard: {
     borderColor: colors.warning,
     borderWidth: 1,
+    borderRadius: radius.lg,
+    padding: spacing[4],
     marginBottom: spacing[4],
     backgroundColor: colors.warning + "11",
   },
   warningText: {
     fontFamily: typography.body,
     color: colors.warning,
-    fontSize: 14,
+    fontSize: fontSize.md,
     lineHeight: 20,
   },
   refundNote: {
     fontFamily: typography.body,
-    color: colors.gray500,
-    fontSize: 12,
+    color: colors.muted,
+    fontSize: fontSize.xs,
     textAlign: "center",
     marginBottom: spacing[6],
     lineHeight: 18,
   },
   confirmBtn: {
     backgroundColor: colors.lime,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     paddingVertical: spacing[4],
     alignItems: "center",
+    minHeight: 56,
+    justifyContent: "center",
   },
   confirmBtnDisabled: {
     opacity: 0.4,
@@ -318,20 +394,20 @@ const styles = StyleSheet.create({
   confirmText: {
     fontFamily: typography.heading,
     color: colors.black,
-    fontSize: 20,
+    fontSize: fontSize.xl,
     letterSpacing: 1,
     textTransform: "uppercase",
   },
   centered: {
     flex: 1,
-    backgroundColor: colors.black,
+    backgroundColor: colors.bg,
     alignItems: "center",
     justifyContent: "center",
   },
   errorText: {
     fontFamily: typography.body,
-    color: colors.gray400,
-    fontSize: 15,
+    color: colors.muted,
+    fontSize: fontSize.md,
     textAlign: "center",
     paddingHorizontal: spacing[6],
   },

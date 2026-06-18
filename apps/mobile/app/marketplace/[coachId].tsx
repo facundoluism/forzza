@@ -153,20 +153,30 @@ function PackageCard({
 }) {
   // Precio en centavos → mostrar formateado
   const price = (pkg.price / 100).toLocaleString("es-AR");
+  // El paquete pro recibe estilo destacado
+  const isHighlighted = pkg.tier === "pro";
 
   return (
-    <Card style={styles.packageCard} padding="lg">
+    <View
+      style={[
+        styles.packageCard,
+        isHighlighted && styles.packageCardHighlighted,
+      ]}
+    >
+      {isHighlighted && (
+        <View style={styles.packageBadge}>
+          <Text style={styles.packageBadgeText}>RECOMENDADO</Text>
+        </View>
+      )}
       <Text style={styles.packageName}>{pkg.title}</Text>
       {pkg.description ? (
         <Text style={styles.packageDesc}>{pkg.description}</Text>
       ) : null}
 
       <View style={styles.packageFooter}>
-        <Text style={styles.packagePrice}>
-          <Text style={styles.packagePriceAmount}>
-            {currencySymbol}
-            {price}
-          </Text>
+        <Text style={[styles.packagePriceAmount, isHighlighted && styles.packagePriceHighlighted]}>
+          {currencySymbol}
+          {price}
         </Text>
         <TouchableOpacity
           style={styles.contratarBtn}
@@ -176,7 +186,7 @@ function PackageCard({
           <Text style={styles.contratarText}>{hireLabel}</Text>
         </TouchableOpacity>
       </View>
-    </Card>
+    </View>
   );
 }
 
@@ -517,14 +527,17 @@ export default function CoachProfileScreen() {
   if (isLoading) {
     return (
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
-        <View style={styles.heroSkeleton}>
-          <Skeleton width={96} height={96} borderRadius={48} />
-          <View style={styles.skeletonInfo}>
-            <Skeleton width="60%" height={28} />
-            <Skeleton width="80%" height={14} />
-            <Skeleton width="50%" height={14} />
-          </View>
+        {/* Hero skeleton centrado */}
+        <View style={styles.heroSkeletonCenter}>
+          <Skeleton width={96} height={96} borderRadius={9999} />
+          <View style={{ height: spacing[3] }} />
+          <Skeleton width={180} height={32} />
+          <View style={{ height: spacing[2] }} />
+          <Skeleton width={120} height={14} />
+          <View style={{ height: spacing[2] }} />
+          <Skeleton width={200} height={14} />
         </View>
+        <View style={{ height: spacing[6] }} />
         <Skeleton width="100%" height={140} />
         <View style={{ height: spacing[3] }} />
         <Skeleton width="100%" height={140} />
@@ -563,33 +576,44 @@ export default function CoachProfileScreen() {
     <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
       {/* Hero */}
       <View style={styles.hero}>
-        {coach.avatar_url ? (
-          <Image
-            source={{ uri: coach.avatar_url }}
-            style={styles.avatar}
-            resizeMode="cover"
-          />
-        ) : (
-          <View style={styles.avatarFallback}>
-            <Text style={styles.avatarInitials}>{initials}</Text>
-          </View>
-        )}
+        {/* Avatar grande con borde lime */}
+        <View style={styles.avatarWrapper}>
+          {coach.avatar_url ? (
+            <Image
+              source={{ uri: coach.avatar_url }}
+              style={styles.avatar}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={styles.avatarFallback}>
+              <Text style={styles.avatarInitials}>{initials}</Text>
+            </View>
+          )}
+        </View>
 
         <Text style={styles.coachName}>{coach.display_name}</Text>
 
-        {/* Rating summary in hero */}
-        {coach.rating_count > 0 && avgRatingDisplay !== null && (
-          <View style={styles.heroRatingRow} testID="coach-avg-rating">
-            <StarRating value={Math.round(coach.avg_rating ?? 0)} size={18} />
-            <Text style={styles.heroRatingText}>
-              {avgRatingDisplay} · {t("coachRatings.ratingCount", { count: coach.rating_count })}
-            </Text>
-          </View>
-        )}
-
-        {experienceText !== null && (
-          <Text style={styles.experience}>{experienceText}</Text>
-        )}
+        {/* Fila de metadata muted */}
+        <View style={styles.heroMetaRow}>
+          {experienceText !== null && (
+            <Text style={styles.heroMeta}>{experienceText}</Text>
+          )}
+          {experienceText !== null && coach.rating_count > 0 && (
+            <Text style={styles.heroMetaDot}>·</Text>
+          )}
+          {/* Rating summary in hero */}
+          {coach.rating_count > 0 && avgRatingDisplay !== null && (
+            <View style={styles.heroRatingRow} testID="coach-avg-rating">
+              <Text style={styles.heroRatingStar}>★</Text>
+              <Text style={styles.heroRatingText}>
+                {avgRatingDisplay}
+              </Text>
+              <Text style={styles.heroRatingCount}>
+                ({t("coachRatings.ratingCount", { count: coach.rating_count })})
+              </Text>
+            </View>
+          )}
+        </View>
 
         {coach.specialties.length > 0 && (
           <View style={styles.specialties}>
@@ -603,20 +627,20 @@ export default function CoachProfileScreen() {
       {/* Bio */}
       {coach.bio ? (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t("marketplace.coach.about")}</Text>
+          <Text style={styles.sectionTitle}>{t("marketplace.coach.about").toUpperCase()}</Text>
           <Text style={styles.bio}>{coach.bio}</Text>
         </View>
       ) : null}
 
       {/* Packages */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t("marketplace.coach.packages")}</Text>
+        <Text style={styles.sectionTitle}>{t("marketplace.coach.packages").toUpperCase()}</Text>
         {activePackages.length === 0 ? (
-          <Card>
+          <View style={styles.noPackagesCard}>
             <Text style={styles.noPackages}>
               {t("marketplace.coach.noPackages")}
             </Text>
-          </Card>
+          </View>
         ) : (
           activePackages.map((pkg) => (
             <PackageCard
@@ -646,7 +670,7 @@ export default function CoachProfileScreen() {
 const styles = StyleSheet.create({
   scroll: {
     flex: 1,
-    backgroundColor: colors.black,
+    backgroundColor: colors.bg,
   },
   content: {
     padding: spacing[4],
@@ -657,6 +681,17 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[6],
     gap: spacing[3],
   },
+  avatarWrapper: {
+    width: 96,
+    height: 96,
+    borderRadius: radius.full,
+    backgroundColor: colors.limeGlow,
+    borderWidth: 3,
+    borderColor: colors.lime,
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   avatar: {
     width: 96,
     height: 96,
@@ -666,38 +701,59 @@ const styles = StyleSheet.create({
     width: 96,
     height: 96,
     borderRadius: radius.full,
-    backgroundColor: colors.gray700,
+    backgroundColor: colors.limeGlow,
     alignItems: "center",
     justifyContent: "center",
   },
   avatarInitials: {
     fontFamily: typography.heading,
     color: colors.lime,
-    fontSize: 32,
+    fontSize: 36,
     letterSpacing: 1,
   },
   coachName: {
     fontFamily: typography.heading,
     color: colors.white,
-    fontSize: 32,
+    fontSize: fontSize.screenTitle,
     letterSpacing: 1,
     textAlign: "center",
     textTransform: "uppercase",
   },
-  heroRatingRow: {
+  heroMetaRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: spacing[2],
+    flexWrap: "wrap",
+    justifyContent: "center",
   },
-  heroRatingText: {
+  heroMeta: {
     fontFamily: typography.body,
-    color: colors.gray400,
+    color: colors.muted,
     fontSize: fontSize.sm,
   },
-  experience: {
+  heroMetaDot: {
     fontFamily: typography.body,
-    color: colors.gray400,
-    fontSize: 14,
+    color: colors.muted,
+    fontSize: fontSize.sm,
+  },
+  heroRatingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  heroRatingStar: {
+    color: colors.warning,
+    fontSize: fontSize.sm,
+  },
+  heroRatingText: {
+    fontFamily: typography.mono,
+    color: colors.warning,
+    fontSize: fontSize.sm,
+  },
+  heroRatingCount: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.xs,
   },
   specialties: {
     flexDirection: "row",
@@ -710,8 +766,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontFamily: typography.body,
-    color: colors.gray300,
-    fontSize: 12,
+    color: colors.muted,
+    fontSize: fontSize.xs,
     fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 1,
@@ -724,19 +780,44 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   packageCard: {
+    backgroundColor: colors.surface3,
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing[4],
     marginBottom: spacing[3],
     gap: spacing[3],
+  },
+  packageCardHighlighted: {
+    backgroundColor: colors.limeGlow,
+    borderColor: colors.lime,
+    borderWidth: 2,
+  },
+  packageBadge: {
+    alignSelf: "flex-start",
+    backgroundColor: colors.lime,
+    borderRadius: radius.full,
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[1],
+  },
+  packageBadgeText: {
+    fontFamily: typography.body,
+    color: colors.black,
+    fontSize: fontSize.xs,
+    fontWeight: "700",
+    letterSpacing: 1,
   },
   packageName: {
     fontFamily: typography.heading,
     color: colors.white,
-    fontSize: 22,
+    fontSize: fontSize["2xl"],
     letterSpacing: 0.5,
+    textTransform: "uppercase",
   },
   packageDesc: {
     fontFamily: typography.body,
     color: colors.gray300,
-    fontSize: 14,
+    fontSize: fontSize.md,
     lineHeight: 20,
   },
   packageFooter: {
@@ -745,16 +826,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginTop: spacing[2],
   },
-  packagePrice: {
-    fontFamily: typography.body,
-    color: colors.gray400,
-    fontSize: 14,
-  },
   packagePriceAmount: {
     fontFamily: typography.mono,
     color: colors.lime,
-    fontSize: 18,
+    fontSize: fontSize.lg,
     fontWeight: "700",
+  },
+  packagePriceHighlighted: {
+    fontSize: fontSize["2xl"],
   },
   contratarBtn: {
     backgroundColor: colors.lime,
@@ -767,22 +846,28 @@ const styles = StyleSheet.create({
   contratarText: {
     fontFamily: typography.heading,
     color: colors.black,
-    fontSize: 16,
+    fontSize: fontSize.base,
     letterSpacing: 0.5,
     textTransform: "uppercase",
   },
+  noPackagesCard: {
+    backgroundColor: colors.surface3,
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing[4],
+  },
   noPackages: {
     fontFamily: typography.body,
-    color: colors.gray500,
-    fontSize: 14,
+    color: colors.muted,
+    fontSize: fontSize.md,
     textAlign: "center",
-    paddingVertical: spacing[4],
+    paddingVertical: spacing[2],
   },
-  heroSkeleton: {
-    flexDirection: "row",
-    gap: spacing[3],
-    marginBottom: spacing[6],
-    alignItems: "flex-start",
+  heroSkeletonCenter: {
+    alignItems: "center",
+    paddingVertical: spacing[6],
+    gap: spacing[2],
   },
   skeletonInfo: {
     flex: 1,

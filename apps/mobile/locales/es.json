@@ -345,7 +345,8 @@
       "errorDesc": "Revisá tu conexión e intentá de nuevo.",
       "emptyTitle": "No hay coaches disponibles",
       "emptyNoResults": "No encontramos coaches con ese nombre.",
-      "emptyNoneApproved": "No hay coaches aprobados todavía. Volvé pronto."
+      "emptyNoneApproved": "No hay coaches aprobados todavía. Volvé pronto.",
+      "sectionLabel": "COACHES DISPONIBLES"
     },
     "coach": {
       "screenTitle": "Perfil del coach",
@@ -359,10 +360,14 @@
       "consentRequiredDesc": "Necesitás el consentimiento de tu tutor/a para contratar un coach. Pedile que lo apruebe en la app.",
       "year_one": "año",
       "year_other": "años",
-      "experience": "{{count}} {{unit}} de experiencia"
+      "experience": "{{count}} {{unit}} de experiencia",
+      "studentsCount": "{{count}} alumnos",
+      "ratingLabel": "Valoración",
+      "resultsTitle": "RESULTADOS",
+      "packageRecommended": "RECOMENDADO"
     },
     "checkout": {
-      "screenTitle": "Contratar",
+      "screenTitle": "Contratar coach",
       "title": "Resumen de tu contratación",
       "labelCoach": "Coach",
       "labelPackage": "Paquete",
@@ -373,7 +378,10 @@
       "minorBlock": "Necesitás el consentimiento de tu tutor/a para contratar un coach.",
       "cancelInfo": "Tenés 72 horas desde la contratación para solicitar un reembolso.",
       "errorTitle": "Error al procesar el pago",
-      "close": "Cerrar"
+      "close": "Cerrar",
+      "step1Label": "Datos",
+      "step2Label": "Pago",
+      "securePayment": "Pago seguro con Mercado Pago"
     }
   },
   "session": {
@@ -679,6 +687,9 @@
     "errorRestoreTitle": "No se pudo restaurar",
     "errorRestoreDesc": "No encontramos compras previas asociadas a tu cuenta.",
     "restoreSuccess": "Tus compras fueron restauradas exitosamente.",
-    "activateProSuccess": "¡Plan PRO activado! Ya podés disfrutar de todas las funciones."
+    "activateProSuccess": "¡Plan PRO activado! Ya podés disfrutar de todas las funciones.",
+    "planSectionLabel": "ELEGÍ TU PLAN",
+    "freePlanLabel": "GRATIS",
+    "coachNote": "Coach se contrata por separado en el marketplace"
   }
 }

@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { purchasePro, restorePurchases } from "@/services/revenuecat";
-import { colors, spacing, radius, typography } from "@forzza/ui/tokens";
+import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
 import { useState, useEffect, useLayoutEffect } from "react";
 import { TRACKED_EVENTS } from "@forzza/core";
 import { track } from "@/lib/analytics";
@@ -28,21 +28,25 @@ interface PlanFeature {
   available: boolean;
 }
 
-function FeatureRow({ feature }: { feature: PlanFeature }) {
+function FeatureRow({ feature, proCard = false }: { feature: PlanFeature; proCard?: boolean }) {
   return (
     <View style={styles.featureRow}>
       <Text
         style={[
           styles.featureIcon,
-          { color: feature.available ? colors.lime : colors.gray600 },
+          {
+            color: feature.available
+              ? proCard ? colors.lime : colors.success
+              : colors.error,
+          },
         ]}
       >
-        {feature.available ? "✓" : "✕"}
+        {feature.available ? "✓" : "✗"}
       </Text>
       <Text
         style={[
           styles.featureText,
-          { color: feature.available ? colors.white : colors.gray600 },
+          { color: feature.available ? colors.text : colors.muted },
         ]}
       >
         {feature.text}
@@ -156,10 +160,16 @@ export default function UpgradeScreen() {
       style={styles.container}
       contentContainerStyle={styles.content}
     >
-      {/* Header */}
+      {/* Header: logoBox + título con última palabra en lime */}
+      <View style={styles.headerRow}>
+        <View style={styles.logoBox}>
+          <Text style={styles.logoLetter}>F</Text>
+        </View>
+      </View>
+      <Text style={styles.sectionLabel}>{t('upgrade.planSectionLabel')}</Text>
       <Text style={styles.title}>
         {t('upgrade.title').split(' ').slice(0, -1).join(' ')}{" "}
-        <Text style={{ color: colors.lime }}>{t('upgrade.title').split(' ').at(-1)}</Text>
+        <Text style={styles.titleAccent}>{t('upgrade.title').split(' ').at(-1)}</Text>
       </Text>
       <Text style={styles.subtitle}>
         {t('upgrade.subtitle')}
@@ -167,19 +177,20 @@ export default function UpgradeScreen() {
 
       {/* Free card */}
       <View style={[styles.card, styles.cardFree]}>
-        <Text style={styles.cardName}>Free</Text>
+        <Text style={styles.cardPlanLabel}>{t('upgrade.freePlanLabel')}</Text>
         <Text style={styles.cardPrice}>$0</Text>
         <Text style={styles.cardPriceNote}>{t('upgrade.freePlanName')}</Text>
         <View style={styles.features}>
           {FREE_FEATURES.map((f) => (
-            <FeatureRow key={f.text} feature={f} />
+            <FeatureRow key={f.text} feature={f} proCard={false} />
           ))}
         </View>
         <View style={[styles.ctaButton, styles.ctaButtonFree]}>
-          <Text style={[styles.ctaLabel, { color: colors.white }]}>
+          <Text style={styles.ctaLabelFree}>
             {t('upgrade.currentPlan')}
           </Text>
         </View>
+        <Text style={styles.coachNote}>{t('upgrade.coachNote')}</Text>
       </View>
 
       {/* PRO card */}
@@ -187,18 +198,18 @@ export default function UpgradeScreen() {
         <View style={styles.recommendedBadge}>
           <Text style={styles.recommendedText}>{t('upgrade.recommended')}</Text>
         </View>
-        <Text style={[styles.cardName, { color: colors.lime }]}>PRO</Text>
-        <Text style={styles.cardPrice}>{formatPrice()}</Text>
+        <Text style={styles.cardPlanLabelPro}>PRO</Text>
+        <Text style={styles.cardPricePro}>{formatPrice()}</Text>
         <Text style={styles.cardPriceNote}>
           {t('upgrade.perMonth')}
         </Text>
         <View style={styles.features}>
           {PRO_FEATURES.map((f) => (
-            <FeatureRow key={f.text} feature={f} />
+            <FeatureRow key={f.text} feature={f} proCard={true} />
           ))}
         </View>
         <TouchableOpacity
-          style={[styles.ctaButton, styles.ctaButtonPro]}
+          style={[styles.ctaButton, styles.ctaButtonPro, (activating || configLoading) && styles.ctaDisabled]}
           onPress={() => {
             void handleActivatePro();
           }}
@@ -207,8 +218,8 @@ export default function UpgradeScreen() {
           {activating ? (
             <ActivityIndicator color={colors.black} />
           ) : (
-            <Text style={[styles.ctaLabel, { color: colors.black }]}>
-              {t('upgrade.activatePro')}
+            <Text style={styles.ctaLabelPro}>
+              {t('upgrade.activatePro').toUpperCase()}
             </Text>
           )}
         </TouchableOpacity>
@@ -223,7 +234,7 @@ export default function UpgradeScreen() {
         disabled={restoring}
       >
         {restoring ? (
-          <ActivityIndicator color={colors.gray400} size="small" />
+          <ActivityIndicator color={colors.muted} size="small" />
         ) : (
           <Text style={styles.restoreLabel}>{t('upgrade.restorePurchase')}</Text>
         )}
@@ -239,40 +250,72 @@ export default function UpgradeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.black,
+    backgroundColor: colors.bg,
   },
   content: {
     padding: spacing[6],
     paddingBottom: spacing[20],
   },
+  headerRow: {
+    alignItems: "center",
+    marginBottom: spacing[3],
+  },
+  logoBox: {
+    width: 48,
+    height: 48,
+    borderRadius: radius.md,
+    backgroundColor: colors.lime,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  logoLetter: {
+    fontFamily: typography.heading,
+    color: colors.black,
+    fontSize: fontSize["2xl"],
+  },
+  sectionLabel: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.xs,
+    fontWeight: "700",
+    letterSpacing: 1,
+    textTransform: "uppercase",
+    textAlign: "center",
+    marginBottom: spacing[1],
+  },
   title: {
     fontFamily: typography.heading,
-    fontSize: 40,
+    fontSize: fontSize["4xl"],
     color: colors.white,
     textAlign: "center",
     marginBottom: spacing[2],
     letterSpacing: 1,
+    textTransform: "uppercase",
+  },
+  titleAccent: {
+    color: colors.lime,
   },
   subtitle: {
     fontFamily: typography.body,
-    fontSize: 15,
-    color: colors.gray400,
+    fontSize: fontSize.md,
+    color: colors.muted,
     textAlign: "center",
     marginBottom: spacing[8],
     lineHeight: 22,
   },
   card: {
-    backgroundColor: colors.gray900,
-    borderRadius: radius.lg,
+    borderRadius: radius.xl,
     padding: spacing[6],
     marginBottom: spacing[6],
     position: "relative",
   },
   cardFree: {
-    borderWidth: 2,
-    borderColor: colors.gray700,
+    backgroundColor: colors.surface3,
+    borderWidth: 1,
+    borderColor: colors.surface4,
   },
   cardPro: {
+    backgroundColor: colors.limeGlow,
     borderWidth: 2,
     borderColor: colors.lime,
   },
@@ -287,29 +330,45 @@ const styles = StyleSheet.create({
   },
   recommendedText: {
     fontFamily: typography.body,
-    fontSize: 10,
+    fontSize: fontSize.xs,
     fontWeight: "700",
     color: colors.black,
     letterSpacing: 1,
   },
-  cardName: {
+  cardPlanLabel: {
     fontFamily: typography.heading,
-    fontSize: 28,
-    color: colors.white,
+    fontSize: fontSize["2xl"],
+    color: colors.muted,
     letterSpacing: 1,
     marginBottom: spacing[2],
+    textTransform: "uppercase",
+  },
+  cardPlanLabelPro: {
+    fontFamily: typography.heading,
+    fontSize: fontSize["2xl"],
+    color: colors.lime,
+    letterSpacing: 1,
+    marginBottom: spacing[2],
+    textTransform: "uppercase",
   },
   cardPrice: {
     fontFamily: typography.mono,
-    fontSize: 36,
+    fontSize: fontSize["4xl"],
     fontWeight: "900",
-    color: colors.white,
-    lineHeight: 40,
+    color: colors.muted,
+    lineHeight: 44,
+  },
+  cardPricePro: {
+    fontFamily: typography.mono,
+    fontSize: fontSize["4xl"],
+    fontWeight: "900",
+    color: colors.lime,
+    lineHeight: 44,
   },
   cardPriceNote: {
     fontFamily: typography.body,
-    fontSize: 13,
-    color: colors.gray400,
+    fontSize: fontSize.sm,
+    color: colors.muted,
     marginTop: spacing[1],
     marginBottom: spacing[4],
   },
@@ -322,36 +381,57 @@ const styles = StyleSheet.create({
     gap: spacing[3],
     paddingVertical: spacing[2],
     borderBottomWidth: 1,
-    borderBottomColor: colors.gray800,
+    borderBottomColor: colors.border,
   },
   featureIcon: {
     fontFamily: typography.body,
     fontWeight: "700",
-    fontSize: 16,
+    fontSize: fontSize.base,
     width: 20,
     textAlign: "center",
   },
   featureText: {
     fontFamily: typography.body,
-    fontSize: 14,
+    fontSize: fontSize.md,
     flex: 1,
   },
   ctaButton: {
     padding: spacing[4],
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     alignItems: "center",
+    minHeight: 56,
+    justifyContent: "center",
   },
   ctaButtonFree: {
-    backgroundColor: colors.gray800,
+    backgroundColor: colors.surface4,
   },
   ctaButtonPro: {
     backgroundColor: colors.lime,
   },
-  ctaLabel: {
+  ctaDisabled: {
+    opacity: 0.5,
+  },
+  ctaLabelFree: {
     fontFamily: typography.body,
     fontWeight: "700",
-    fontSize: 16,
+    fontSize: fontSize.base,
+    color: colors.muted,
     letterSpacing: 0.5,
+  },
+  ctaLabelPro: {
+    fontFamily: typography.heading,
+    fontSize: fontSize.xl,
+    color: colors.black,
+    letterSpacing: 1,
+    textTransform: "uppercase",
+  },
+  coachNote: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.xs,
+    textAlign: "center",
+    marginTop: spacing[3],
+    lineHeight: 16,
   },
   restoreButton: {
     alignItems: "center",
@@ -360,14 +440,14 @@ const styles = StyleSheet.create({
   },
   restoreLabel: {
     fontFamily: typography.body,
-    fontSize: 14,
-    color: colors.gray400,
+    fontSize: fontSize.sm,
+    color: colors.muted,
     textDecorationLine: "underline",
   },
   footerNote: {
     fontFamily: typography.body,
-    fontSize: 12,
-    color: colors.gray600,
+    fontSize: fontSize.xs,
+    color: colors.gray,
     textAlign: "center",
     lineHeight: 18,
   },
