@@ -303,6 +303,15 @@ export default function RegisterWorkoutScreen(): React.JSX.Element {
     <View style={[styles.container, { paddingTop: insets.top + spacing[4] }]}>
       <ScrollView contentContainerStyle={styles.content}>
         {/* Header */}
+        {step === 1 && (
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
+            testID="register-workout-back"
+          >
+            <Text style={styles.backButtonText}>{t("registerWorkout.back")}</Text>
+          </TouchableOpacity>
+        )}
         <Text style={styles.screenTitle}>{t("registerWorkout.screenTitle")}</Text>
 
         {/* ── Step 1 ── */}
