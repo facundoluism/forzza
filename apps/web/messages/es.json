@@ -580,6 +580,7 @@
       "alumnos": "Alumnos",
       "rutinas": "Rutinas",
       "checkins": "Check-ins",
+      "calendario": "Calendario",
       "cobros": "Cobros",
       "perfil": "Mi perfil",
       "roleCoach": "COACH",
@@ -660,6 +661,32 @@
           "errorNetwork": "Error de red"
         }
       }
+    },
+    "calendario": {
+      "metaTitle": "Calendario — Forzza Coach",
+      "title": "Calendario",
+      "subtitle": "Asigná rutinas a tus alumnos en fechas específicas",
+      "mobileWarning": "Esta sección está optimizada para pantallas más grandes. Usá una computadora para gestionar el calendario.",
+      "errorTitle": "No se pudo cargar el calendario",
+      "errorDesc": "Revisá tu conexión e intentá de nuevo.",
+      "prevMonth": "Mes anterior",
+      "nextMonth": "Mes siguiente",
+      "selectDate": "Seleccioná una fecha del calendario para asignar rutinas.",
+      "noSelection": "Sin selección",
+      "assignRoutine": "Asignar rutina",
+      "assignedOn": "Asignadas en esta fecha",
+      "selectStudent": "Alumno",
+      "selectRoutine": "Rutina",
+      "notesLabel": "Notas (opcional)",
+      "notesPlaceholder": "Agregá indicaciones para esta sesión…",
+      "btnSave": "Asignar",
+      "btnSaving": "Guardando…",
+      "btnRemove": "Quitar",
+      "errorSave": "Error al guardar la asignación.",
+      "errorNetwork": "Error de red. Verificá tu conexión.",
+      "errorRequired": "Seleccioná un alumno y una rutina antes de guardar.",
+      "emptyStudents": "No tenés alumnos activos asignados.",
+      "noRoutines": "Este alumno no tiene rutinas activas."
     },
     "rutinas": {
       "metaTitle": "Rutinas — Forzza Coach",

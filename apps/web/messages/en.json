@@ -580,6 +580,7 @@
       "alumnos": "Students",
       "rutinas": "Routines",
       "checkins": "Check-ins",
+      "calendario": "Calendar",
       "cobros": "Payouts",
       "perfil": "My profile",
       "roleCoach": "COACH",
@@ -660,6 +661,32 @@
           "errorNetwork": "Network error"
         }
       }
+    },
+    "calendario": {
+      "metaTitle": "Calendar — Forzza Coach",
+      "title": "Calendar",
+      "subtitle": "Assign routines to your students on specific dates",
+      "mobileWarning": "This section is optimized for larger screens. Use a computer to manage the calendar.",
+      "errorTitle": "Could not load the calendar",
+      "errorDesc": "Check your connection and try again.",
+      "prevMonth": "Previous month",
+      "nextMonth": "Next month",
+      "selectDate": "Select a date on the calendar to assign routines.",
+      "noSelection": "No selection",
+      "assignRoutine": "Assign routine",
+      "assignedOn": "Assigned on this date",
+      "selectStudent": "Student",
+      "selectRoutine": "Routine",
+      "notesLabel": "Notes (optional)",
+      "notesPlaceholder": "Add instructions for this session…",
+      "btnSave": "Assign",
+      "btnSaving": "Saving…",
+      "btnRemove": "Remove",
+      "errorSave": "Error saving the assignment.",
+      "errorNetwork": "Network error. Check your connection.",
+      "errorRequired": "Select a student and a routine before saving.",
+      "emptyStudents": "You have no active assigned students.",
+      "noRoutines": "This student has no active routines."
     },
     "rutinas": {
       "metaTitle": "Routines — Forzza Coach",

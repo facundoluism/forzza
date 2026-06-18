@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { Users, ClipboardList, ClipboardCheck, Wallet, User } from "lucide-react";
+import { Users, ClipboardList, ClipboardCheck, CalendarDays, Wallet, User } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 interface NavItem {
@@ -16,6 +16,7 @@ const navItems: NavItem[] = [
   { href: "/coach/alumnos", labelKey: "nav.alumnos", Icon: Users },
   { href: "/coach/rutinas", labelKey: "nav.rutinas", Icon: ClipboardList },
   { href: "/coach/checkins", labelKey: "nav.checkins", Icon: ClipboardCheck },
+  { href: "/coach/calendario", labelKey: "nav.calendario", Icon: CalendarDays },
   { href: "/coach/cobros", labelKey: "nav.cobros", Icon: Wallet },
   { href: "/coach/perfil", labelKey: "nav.perfil", Icon: User },
 ];

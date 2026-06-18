@@ -1088,6 +1088,71 @@ export type Database = {
           },
         ]
       }
+      routine_schedule: {
+        Row: {
+          assignment_id: string
+          coach_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          routine_id: string
+          scheduled_date: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          assignment_id: string
+          coach_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          routine_id: string
+          scheduled_date: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          assignment_id?: string
+          coach_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          routine_id?: string
+          scheduled_date?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "routine_schedule_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "coach_assignments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "routine_schedule_coach_id_fkey"
+            columns: ["coach_id"]
+            isOneToOne: false
+            referencedRelation: "coach_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "routine_schedule_routine_id_fkey"
+            columns: ["routine_id"]
+            isOneToOne: false
+            referencedRelation: "routines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "routine_schedule_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       routines: {
         Row: {
           active: boolean
