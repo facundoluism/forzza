@@ -104,6 +104,75 @@ describe("señal text", () => {
     ).breakdown.text;
     expect(related).toBeGreaterThan(unrelated);
   });
+
+  it("text = 1.0 cuando el título contiene el nombre completo del ejercicio", () => {
+    // exercise.name = "Sentadilla" → un solo token "sentadilla"
+    const result = scoreCandidate(
+      video({ title: "Sentadilla con barra — técnica correcta" }),
+      exercise
+    );
+    expect(result.breakdown.text).toBe(1);
+  });
+
+  it("text parcial cuando el título contiene solo parte del nombre", () => {
+    // exercise con nombre de dos tokens; solo uno en el título → cobertura 0.5
+    const ex: ExerciseContext = {
+      name: "Peso muerto",
+      nameEn: "Deadlift",
+      description: null,
+      equipment: [],
+      lang: "es",
+    };
+    // "Peso" → token "peso"; "muerto" → token "muerto"
+    // título solo contiene "peso" → cobertura 1/2 = 0.5
+    const result = scoreCandidate(
+      video({ title: "Peso kettlebell tutorial" }),
+      ex
+    );
+    expect(result.breakdown.text).toBeCloseTo(0.5, 5);
+    expect(result.discarded).toBe(false);
+  });
+
+  it("descarte irrelevant_title cuando el título no comparte ningún token del nombre", () => {
+    const result = scoreCandidate(
+      video({ title: "Abdominales en 10 minutos" }),
+      exercise // name = "Sentadilla"
+    );
+    expect(result.discarded).toBe(true);
+    expect(result.discardReason).toBe("irrelevant_title");
+    expect(result.score).toBe(0);
+  });
+
+  it("descripción gigante NO infla ni desinfla el text score — solo importa el título", () => {
+    const hugDesc = "a ".repeat(500) + "sentadilla " + "z ".repeat(500);
+    const withHuge = scoreCandidate(
+      video({ title: "Sentadilla técnica", description: hugDesc }),
+      exercise
+    ).breakdown.text;
+    const withEmpty = scoreCandidate(
+      video({ title: "Sentadilla técnica", description: "" }),
+      exercise
+    ).breakdown.text;
+    expect(withHuge).toBe(withEmpty);
+    expect(withHuge).toBeGreaterThan(0);
+  });
+
+  it("lang en usa nameEn para la cobertura", () => {
+    const ex: ExerciseContext = {
+      name: "Sentadilla",
+      nameEn: "Squat",
+      description: null,
+      equipment: [],
+      lang: "en",
+    };
+    // "squat" está en el título; "sentadilla" no → cobertura sobre nameEn
+    const result = scoreCandidate(
+      video({ title: "How to squat properly" }),
+      ex
+    );
+    expect(result.breakdown.text).toBe(1);
+    expect(result.discarded).toBe(false);
+  });
 });
 
 describe("señal channel", () => {
@@ -153,6 +222,57 @@ describe("señal channel", () => {
       exercise
     ).score;
     expect(withChannel).toBeGreaterThan(withoutChannel);
+  });
+
+  // Normalización robusta: variantes reales de canales
+  it("'ATHLEAN-X™' matchea allowlist 'athleanx' → 1", () => {
+    const result = scoreCandidate(
+      video({ channelTitle: "ATHLEAN-X™" }),
+      exercise,
+      DEFAULT_SCORE_WEIGHTS,
+      { channelAllowlist: ["athleanx"] }
+    );
+    expect(result.breakdown.channel).toBe(1);
+  });
+
+  it("'ATHLEAN-X Español' matchea allowlist 'athleanx' (includes) → 1", () => {
+    const result = scoreCandidate(
+      video({ channelTitle: "ATHLEAN-X Español" }),
+      exercise,
+      DEFAULT_SCORE_WEIGHTS,
+      { channelAllowlist: ["athleanx"] }
+    );
+    expect(result.breakdown.channel).toBe(1);
+  });
+
+  it("'ScottHermanFitness' matchea allowlist 'scott herman fitness' → 1", () => {
+    const result = scoreCandidate(
+      video({ channelTitle: "ScottHermanFitness" }),
+      exercise,
+      DEFAULT_SCORE_WEIGHTS,
+      { channelAllowlist: ["scott herman fitness"] }
+    );
+    expect(result.breakdown.channel).toBe(1);
+  });
+
+  it("canal fuera del allowlist con caracteres especiales → 0", () => {
+    const result = scoreCandidate(
+      video({ channelTitle: "Fitness Pro™ — Official" }),
+      exercise,
+      DEFAULT_SCORE_WEIGHTS,
+      { channelAllowlist: ["athleanx", "powerexplosive"] }
+    );
+    expect(result.breakdown.channel).toBe(0);
+  });
+
+  it("allowlist vacío → 0 incluso con canal bien formateado", () => {
+    const result = scoreCandidate(
+      video({ channelTitle: "ATHLEAN-X™" }),
+      exercise,
+      DEFAULT_SCORE_WEIGHTS,
+      { channelAllowlist: [] }
+    );
+    expect(result.breakdown.channel).toBe(0);
   });
 });
 
@@ -254,8 +374,9 @@ describe("señal language", () => {
 
   it("lang en: audio inglés declarado → 1", () => {
     const ex: ExerciseContext = { ...exercise, lang: "en" };
+    // El título debe contener "squat" (nameEn) para no ser descartado por irrelevant_title.
     expect(
-      scoreCandidate(video({ defaultAudioLanguage: "en" }), ex).breakdown.language
+      scoreCandidate(video({ defaultAudioLanguage: "en", title: "Squat tutorial" }), ex).breakdown.language
     ).toBe(1);
   });
 

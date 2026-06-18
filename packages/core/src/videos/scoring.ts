@@ -98,28 +98,52 @@ function clamp01(value: number): number {
 
 // ─── Señales ────────────────────────────────────────────────────────────────
 
-/** text: Jaccard entre tokens del video y tokens del ejercicio. */
+/**
+ * text: recall del nombre del ejercicio en el TÍTULO del video.
+ *   coverage = |nameTokens ∩ titleTokens| / nameTokens.size
+ * Se usa solo el título (no la descripción) para evitar inflar la unión
+ * con cientos de tokens irrelevantes de las descripciones de YouTube.
+ */
 function scoreText(video: ScorableVideo, exercise: ExerciseContext): number {
-  const videoTokens = tokenize(`${video.title} ${video.description}`);
-  const exerciseParts = [
-    exercise.name,
-    exercise.nameEn ?? "",
-    exercise.description ?? "",
-    exercise.equipment.join(" "),
-  ];
-  const exerciseTokens = tokenize(exerciseParts.join(" "));
-  return clamp01(jaccard(videoTokens, exerciseTokens));
+  const targetName =
+    exercise.lang === "en" ? (exercise.nameEn ?? exercise.name) : exercise.name;
+  const nameTokens = tokenize(targetName);
+  if (nameTokens.size === 0) return 0;
+  const titleTokens = tokenize(video.title);
+  let intersection = 0;
+  for (const token of nameTokens) {
+    if (titleTokens.has(token)) intersection += 1;
+  }
+  return clamp01(intersection / nameTokens.size);
 }
 
-/** channel: 1 si channelId o channelTitle normalizado está en el allowlist. */
+/**
+ * Normalización robusta de nombre de canal: lowercase, sin acentos,
+ * y elimina todo carácter no alfanumérico (espacios, guiones, ™, etc.).
+ * Así "ATHLEAN-X™" → "athleanx", "Scott Herman Fitness" → "scotthermanfitness".
+ */
+function normalizeChannel(s: string): string {
+  return stripAccents(s).replace(/[^a-z0-9]/g, "");
+}
+
+/**
+ * channel: 1 si channelId o channelTitle (normalizados) son iguales a, o
+ * contienen, alguna entrada normalizada del allowlist.
+ * Ejemplo: allowlist "athleanx" matchea "ATHLEAN-X™" y "ATHLEAN-X Español".
+ */
 function scoreChannel(
   video: ScorableVideo,
   allowlist: readonly string[]
 ): number {
   if (allowlist.length === 0) return 0;
-  const set = new Set(allowlist.map((entry) => stripAccents(entry)));
-  if (set.has(stripAccents(video.channelId))) return 1;
-  if (set.has(stripAccents(video.channelTitle))) return 1;
+  const normalizedAllowlist = allowlist.map(normalizeChannel);
+  const normalizedId = normalizeChannel(video.channelId);
+  const normalizedTitle = normalizeChannel(video.channelTitle);
+  for (const entry of normalizedAllowlist) {
+    if (entry.length === 0) continue;
+    if (normalizedId === entry || normalizedId.includes(entry)) return 1;
+    if (normalizedTitle === entry || normalizedTitle.includes(entry)) return 1;
+  }
   return 0;
 }
 
@@ -226,8 +250,22 @@ export function scoreCandidate(
 
   const allowlist = options.channelAllowlist ?? [];
 
+  // Calcular text score una sola vez para reusarlo en el descarte y el breakdown.
+  const textScore = scoreText(video, exercise);
+
+  // Hard filter: si ningún token del nombre del ejercicio aparece en el título,
+  // el video es irrelevante (ej: un video de abdominales para "fondos en cable").
+  if (textScore === 0) {
+    return {
+      score: 0,
+      breakdown: { ...ZERO_BREAKDOWN, text: 0 },
+      discarded: true,
+      discardReason: "irrelevant_title",
+    };
+  }
+
   const breakdown: ScoreBreakdown = {
-    text: scoreText(video, exercise),
+    text: textScore,
     channel: scoreChannel(video, allowlist),
     engagement: scoreEngagement(video),
     duration: scoreDuration(video),
