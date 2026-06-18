@@ -9,28 +9,35 @@ function normalizeSpaces(value: string): string {
 }
 
 /**
+ * Elimina fragmentos entre paréntesis del nombre (ej: "Fondos en paralelas asistidos (polea)"
+ * → "Fondos en paralelas asistidos") y normaliza espacios.
+ */
+function cleanName(name: string): string {
+  return normalizeSpaces(name.replace(/\([^)]*\)/g, ""));
+}
+
+/**
  * Construye la query de búsqueda para encontrar videos demostrativos.
  *
- * - ES: `"{name} {equipment...} cómo hacer técnica correcta"`
- * - EN: `"{nameEn ?? name} {equipment...} how to proper form"`
+ * - ES: `"{nombreLimpio} cómo hacer técnica correcta"`
+ * - EN: `"{nombreEnLimpio ?? nombreLimpio} how to proper form"`
  *
- * El equipment vacío (o entradas en blanco) se omite. El resultado tiene
- * los espacios normalizados.
+ * El equipment NO se incluye en la query (es ruido verboso/bilingüe que
+ * desvía la búsqueda). El tipo ExerciseContext mantiene el campo equipment
+ * porque el scoring lo usa para su señal de texto.
+ * El resultado tiene los espacios normalizados.
  */
 export function buildSearchQuery(exercise: ExerciseContext): string {
   const isEn = exercise.lang === "en";
-  const baseName = isEn
+  const rawName = isEn
     ? (exercise.nameEn ?? exercise.name)
     : exercise.name;
 
-  const equipment = exercise.equipment
-    .map((item) => item.trim())
-    .filter((item) => item.length > 0);
+  const baseName = cleanName(rawName);
 
   const suffix = isEn
     ? "how to proper form"
     : "cómo hacer técnica correcta";
 
-  const parts = [baseName, ...equipment, suffix];
-  return normalizeSpaces(parts.join(" "));
+  return normalizeSpaces(`${baseName} ${suffix}`);
 }
