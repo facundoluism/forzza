@@ -33,7 +33,7 @@ Reescribir la pantalla Tabata de la app mobile con modo simple (gratis) y modo a
 | Pendiente | Tipo | Severidad |
 |-----------|------|-----------|
 | ~~Audio (beeps de transición)~~ **COMPLETADO**: `expo-audio` cableado en `tabata.tsx` (`start.wav` al entrar a trabajo/descanso, `tick.wav` en la cuenta regresiva, `finish.wav` al completar), assets generados con `scripts/build-tabata-audio.mjs`, plugin en `app.config.ts`, `expo prebuild` corrido. typecheck/lint PASS. Commit `c458df1`. | PASS | — |
-| **Permiso `RECORD_AUDIO` (Android)**: el módulo nativo de `expo-audio` declara `RECORD_AUDIO` aunque la app solo REPRODUCE (no graba). Se configuró `['expo-audio', { microphonePermission: false }]` (suprime el permiso de micrófono en iOS — `NSMicrophoneUsageDescription`). En Android el permiso se mergea desde el manifest del módulo durante el build de gradle, y NO pudo verificarse su remoción local (el `prebuild` no ejecuta el manifest merger). Ver detalle abajo. | Release hardening | Media |
+| ~~Permiso `RECORD_AUDIO` (Android)~~ **RESUELTO**: `expo-audio` lo inyectaba desde su módulo nativo aunque solo reproducimos. Se agregó el config plugin `apps/mobile/plugins/withRemoveRecordAudio.js` (marca el permiso con `tools:node="remove"`) + `microphonePermission:false` para iOS. Verificado con el Manifest Merger de Gradle local (`gradlew :app:processDebugManifest`): el manifest final ya NO contiene `RECORD_AUDIO` (solo queda `MODIFY_AUDIO_SETTINGS`). Ver detalle abajo. | PASS | — |
 | Verificación manual en dispositivo de la secuencia de colores: prep (ámbar) → work (verde) → últimos 5 s (rojo) → rest (azul) → últimos 5 s (rojo) → finished. No realizada aún. | Manual QA | Media |
 | Enforcement PRO server-side en `tabata_plans`: función `is_pro()` + policies INSERT/UPDATE con `(mode='simple' OR is_pro(auth.uid()))`. | PASS | `pnpm test:rls` → 56/56 PASS; tests T48b, T49–T55 cubren todos los casos (sin PRO, con PRO activo, con PRO vencido, UPDATE). Migración: `20260618000002_tabata_advanced_pro_enforcement.sql`. |
 
@@ -41,16 +41,20 @@ Reescribir la pantalla Tabata de la app mobile con modo simple (gratis) y modo a
 
 El audio quedó cableado: `useAudioPlayer` ×3 en `apps/mobile/app/tabata.tsx`, `setAudioModeAsync({ playsInSilentMode: true })` para sonar con el teléfono en silencio, y reproducción tolerante a fallos (si el audio falla, el timer y la háptica siguen). Assets en `apps/mobile/assets/audio/` regenerables con `node scripts/build-tabata-audio.mjs`. Falta solo la verificación en dispositivo real (el simulador puede no reproducir audio en todas las configuraciones).
 
-## CAVEAT — `RECORD_AUDIO` en Android (pendiente de hardening de release)
+## `RECORD_AUDIO` en Android — RESUELTO y verificado
 
-`expo-audio` agrega el permiso `android.permission.RECORD_AUDIO` desde su módulo nativo, aunque el Tabata **solo reproduce** sonido y nunca graba. Se dejó `['expo-audio', { microphonePermission: false }]` en `app.config.ts`, lo que evita el permiso de micrófono en **iOS** (`NSMicrophoneUsageDescription`). En **Android** el permiso se mergea desde el manifest del módulo durante el build de gradle/EAS — el `expo prebuild` local NO ejecuta el manifest merger, así que no se pudo confirmar su remoción de forma verificable.
+`expo-audio` agregaba `android.permission.RECORD_AUDIO` desde su módulo nativo, aunque el Tabata **solo reproduce** sonido y nunca graba. Solución aplicada:
+- `['expo-audio', { microphonePermission: false }]` en `app.config.ts` → evita el permiso en **iOS** (`NSMicrophoneUsageDescription`).
+- Config plugin `apps/mobile/plugins/withRemoveRecordAudio.js` → marca `RECORD_AUDIO` con `tools:node="remove"` para que el Manifest Merger de Android lo elimine en **Android**.
 
-Pasos pendientes (release-store-engineer):
-1. Hacer un build EAS de Android y revisar el `AndroidManifest.xml` final / la sección de permisos en Play Console.
-2. Si `RECORD_AUDIO` persiste, agregar un config plugin custom (`withAndroidManifest`) que marque el permiso con `tools:node="remove"`, y volver a verificar en build.
-3. Confirmar en iOS que el build no incluya `NSMicrophoneUsageDescription`.
+**Verificación (local, sin nube):** como `eas-cli` no está instalado y un build EAS requiere login interactivo, se usó el mismo Manifest Merger que corre EAS, vía Gradle local:
+```
+npx expo prebuild --platform android        # escribe RECORD_AUDIO con tools:node="remove" en el manifest source
+cd android && ./gradlew :app:processDebugManifest
+```
+Resultado: el `AndroidManifest.xml` mergeado final (`app/build/intermediates/merged_manifest/debug/.../AndroidManifest.xml`) **NO contiene `RECORD_AUDIO`**; solo queda `MODIFY_AUDIO_SETTINGS` (permiso normal, sin prompt). El binario de un build EAS tendrá el mismo resultado (mismo merger).
 
-Impacto si no se resuelve: Google Play preguntará por el uso de micrófono y puede generar fricción en la review; no afecta la funcionalidad (no se muestra prompt en runtime porque no se invoca la API de grabación).
+Pendiente menor: confirmarlo también en un build de iOS real (que el `microphonePermission:false` excluya `NSMicrophoneUsageDescription`).
 
 ## Decisiones registradas
 

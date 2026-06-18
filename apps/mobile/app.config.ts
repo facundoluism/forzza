@@ -50,8 +50,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-localization',
     'expo-secure-store',
     // Solo reproducimos efectos de sonido (Tabata); no grabamos. microphonePermission:false
-    // evita pedir permiso de micrófono (RECORD_AUDIO / NSMicrophoneUsageDescription).
+    // evita el permiso de micrófono en iOS (NSMicrophoneUsageDescription). En Android
+    // expo-audio igual inyecta RECORD_AUDIO desde su módulo nativo, así que lo removemos
+    // explícitamente del manifest con el plugin local de abajo.
     ['expo-audio', { microphonePermission: false }],
+    './plugins/withRemoveRecordAudio',
     [
       'expo-notifications',
       {
