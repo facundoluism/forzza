@@ -668,6 +668,42 @@ export type Database = {
         }
         Relationships: []
       }
+      exercise_video_requests: {
+        Row: {
+          created_at: string
+          exercise_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          exercise_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          exercise_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exercise_video_requests_exercise_id_fkey"
+            columns: ["exercise_id"]
+            isOneToOne: false
+            referencedRelation: "exercise_library"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exercise_video_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       exercise_videos: {
         Row: {
           channel_id: string | null
@@ -1621,7 +1657,23 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      exercise_video_request_counts: {
+        Row: {
+          exercise_id: string | null
+          exercise_name: string | null
+          has_published_video: boolean | null
+          request_count: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exercise_video_requests_exercise_id_fkey"
+            columns: ["exercise_id"]
+            isOneToOne: false
+            referencedRelation: "exercise_library"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       auth_coach_profile_id: { Args: never; Returns: string }

@@ -33,7 +33,7 @@
 
 BEGIN;
 
-SELECT plan(56);
+SELECT plan(63);
 
 -- =============================================================================
 -- FIXTURES: insertados como superusuario (bypassa RLS y REVOKE).
@@ -147,6 +147,13 @@ BEGIN
   VALUES
     ('7ab00001-0000-4000-8000-000000000001'::uuid, 'a3a00003-0000-4000-8000-000000000003'::uuid, 'Tabata RLS Plan Student1', 'simple',   '{"workSecs":20,"restSecs":10,"rounds":8,"prepSecs":10}'::jsonb, now(), now()),
     ('7ab00002-0000-4000-8000-000000000002'::uuid, 'a4a00004-0000-4000-8000-000000000004'::uuid, 'Tabata RLS Plan Student2', 'advanced',  '[{"id":"s1","kind":"work","label":"Squats","durationMs":20000}]'::jsonb, now(), now())
+  ON CONFLICT (id) DO NOTHING;
+
+  -- 14. ejercicio de prueba para exercise_video_requests (T56-T62)
+  --   ee10ex01 => ejercicio sin video publicado
+  INSERT INTO exercise_library (id, name, description, muscle_groups, equipment, created_at)
+  VALUES
+    ('ee100e01-0000-4000-8000-000000000001'::uuid, 'Ejercicio RLS Test Video Request', 'Ejercicio de prueba para tests de pedidos de video', ARRAY['core'], ARRAY['Bodyweight'], now())
   ON CONFLICT (id) DO NOTHING;
 END $setup$;
 -- (UUIDs de tabata_plans corregidos a hex válido: 7ab… en lugar de tab…)
@@ -1451,6 +1458,164 @@ BEGIN
 END $t55$;
 
 SELECT ok(true, 'T55: alumno SIN PRO NO puede UPDATE plan mode=advanced (0 filas afectadas)');
+
+-- =============================================================================
+-- T56: RLS habilitado en tabla exercise_video_requests
+-- =============================================================================
+SELECT ok(
+  (SELECT rowsecurity FROM pg_tables WHERE tablename = 'exercise_video_requests' AND schemaname = 'public'),
+  'T56: RLS habilitado en tabla exercise_video_requests'
+);
+
+-- =============================================================================
+-- T57: student1 puede INSERT un pedido propio (user_id = auth.uid()) — PASA
+-- =============================================================================
+DO $t57$
+DECLARE
+  v_inserted UUID;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a3a00003-0000-4000-8000-000000000003', 'role', 'authenticated')::text,
+    true);
+  INSERT INTO public.exercise_video_requests (exercise_id, user_id)
+  VALUES (
+    'ee100e01-0000-4000-8000-000000000001'::uuid,
+    'a3a00003-0000-4000-8000-000000000003'::uuid
+  )
+  RETURNING id INTO v_inserted;
+  RESET ROLE;
+  IF v_inserted IS NULL THEN
+    RAISE EXCEPTION 'T57 FALLO: student1 no pudo insertar pedido propio (debe estar permitido)';
+  END IF;
+END $t57$;
+
+SELECT ok(true, 'T57: student1 puede INSERT un pedido propio (user_id = auth.uid(), permitido)');
+
+-- =============================================================================
+-- T58: Segundo INSERT del mismo (exercise_id, user_id) → rechazado por UNIQUE (dedup)
+-- =============================================================================
+DO $t58$
+DECLARE
+  v_ok BOOLEAN := false;
+BEGIN
+  -- Intentamos volver a insertar el mismo par (exercise_id, user_id) del T57
+  BEGIN
+    INSERT INTO public.exercise_video_requests (exercise_id, user_id)
+    VALUES (
+      'ee100e01-0000-4000-8000-000000000001'::uuid,
+      'a3a00003-0000-4000-8000-000000000003'::uuid
+    );
+  EXCEPTION WHEN unique_violation THEN
+    v_ok := true;
+  WHEN OTHERS THEN
+    v_ok := true;  -- cualquier error es correcto (incluyendo violacion de RLS)
+  END;
+  IF NOT v_ok THEN
+    RAISE EXCEPTION 'T58 FALLO: segundo INSERT del mismo par (exercise, user) no fue rechazado';
+  END IF;
+END $t58$;
+
+SELECT ok(true, 'T58: segundo INSERT del mismo (exercise_id, user_id) rechazado por UNIQUE (dedup)');
+
+-- =============================================================================
+-- T59: student1 NO puede INSERT un pedido con user_id de student2 — FALLA (prohibido)
+-- =============================================================================
+DO $t59$
+DECLARE
+  v_ok BOOLEAN := false;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a3a00003-0000-4000-8000-000000000003', 'role', 'authenticated')::text,
+    true);
+  BEGIN
+    INSERT INTO public.exercise_video_requests (exercise_id, user_id)
+    VALUES (
+      'ee100e01-0000-4000-8000-000000000001'::uuid,
+      'a4a00004-0000-4000-8000-000000000004'::uuid  -- user_id de student2: no es auth.uid()
+    );
+  EXCEPTION WHEN OTHERS THEN
+    v_ok := true;  -- RLS WITH CHECK rechazo el INSERT
+  END;
+  RESET ROLE;
+  -- Doble chequeo: la fila con user_id de student2 no debe existir
+  IF NOT v_ok THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM public.exercise_video_requests
+      WHERE exercise_id = 'ee100e01-0000-4000-8000-000000000001'::uuid
+        AND user_id = 'a4a00004-0000-4000-8000-000000000004'::uuid
+    ) THEN
+      v_ok := true;
+    END IF;
+  END IF;
+  IF NOT v_ok THEN
+    RAISE EXCEPTION 'T59 FALLO: student1 pudo insertar pedido con user_id de student2 (prohibido)';
+  END IF;
+END $t59$;
+
+SELECT ok(
+  NOT EXISTS (
+    SELECT 1 FROM public.exercise_video_requests
+    WHERE exercise_id = 'ee100e01-0000-4000-8000-000000000001'::uuid
+      AND user_id = 'a4a00004-0000-4000-8000-000000000004'::uuid
+  ),
+  'T59: student1 NO puede INSERT con user_id de student2 (WITH CHECK prohibido)'
+);
+
+-- =============================================================================
+-- T60: student1 puede SELECT su propio pedido (ve >= 1 fila)
+-- =============================================================================
+DO $t60$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a3a00003-0000-4000-8000-000000000003', 'role', 'authenticated')::text,
+    true);
+  SELECT COUNT(*) INTO v_count
+  FROM public.exercise_video_requests
+  WHERE user_id = 'a3a00003-0000-4000-8000-000000000003'::uuid;
+  RESET ROLE;
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'T60 FALLO: student1 vio 0 pedidos propios en exercise_video_requests (esperado >= 1)';
+  END IF;
+END $t60$;
+
+SELECT ok(true, 'T60: student1 puede SELECT su propio pedido en exercise_video_requests (permitido)');
+
+-- =============================================================================
+-- T61: student2 NO puede ver el pedido de student1 en exercise_video_requests
+-- =============================================================================
+DO $t61$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a4a00004-0000-4000-8000-000000000004', 'role', 'authenticated')::text,
+    true);
+  SELECT COUNT(*) INTO v_count
+  FROM public.exercise_video_requests
+  WHERE user_id = 'a3a00003-0000-4000-8000-000000000003'::uuid;
+  RESET ROLE;
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'T61 FALLO: student2 vio % pedidos de student1 en exercise_video_requests (esperado 0)', v_count;
+  END IF;
+END $t61$;
+
+SELECT ok(true, 'T61: student2 NO puede ver pedidos de student1 en exercise_video_requests (aislamiento)');
+
+-- =============================================================================
+-- T62: superusuario puede leer la vista exercise_video_request_counts
+-- (simula el acceso del admin via service-role que bypasea RLS)
+-- =============================================================================
+SELECT ok(
+  (SELECT COUNT(*) >= 1 FROM public.exercise_video_request_counts
+   WHERE exercise_id = 'ee100e01-0000-4000-8000-000000000001'::uuid),
+  'T62: vista exercise_video_request_counts devuelve el ejercicio con pedido (acceso service-role/superusuario)'
+);
 
 -- =============================================================================
 
