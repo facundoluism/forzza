@@ -168,6 +168,8 @@
   },
   "manageSubscription": {
     "screenTitle": "Gestionar suscripción",
+    "subtitle": "Tu suscripción PRO",
+    "sectionActive": "PLAN ACTIVO",
     "plan": "Plan",
     "activeUntil": "Activo hasta",
     "gateway": "Método de pago",
@@ -474,6 +476,7 @@
   },
   "notifications": {
     "screenTitle": "Notificaciones",
+    "subtitle": "Programá tus recordatorios",
     "markAllRead": "Marcar todas como leídas",
     "markingRead": "Marcando...",
     "emptyTitle": "Sin notificaciones",
@@ -606,6 +609,8 @@
   },
   "paymentsHistory": {
     "screenTitle": "Historial de pagos",
+    "subtitle": "Tus transacciones",
+    "sectionLabel": "HISTORIAL",
     "empty_title": "Sin pagos todavía",
     "empty_desc": "Tus pagos van a aparecer acá cuando realices una compra.",
     "error_title": "No se pudo cargar el historial",

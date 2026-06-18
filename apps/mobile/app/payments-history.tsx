@@ -71,6 +71,11 @@ function PaymentRow({ payment }: { payment: Payment }): React.JSX.Element {
 
   return (
     <View style={styles.paymentRow} testID={`payment-row-${payment.id}`}>
+      {/* iconBox */}
+      <View style={styles.paymentIconBox}>
+        <Text style={styles.paymentIconEmoji}>💳</Text>
+      </View>
+      {/* Centro */}
       <View style={styles.paymentLeft}>
         <Text style={styles.paymentAmount}>{formatAmount(payment.amount, payment.currency)}</Text>
         <Text style={styles.paymentDate}>{date}</Text>
@@ -80,6 +85,7 @@ function PaymentRow({ payment }: { payment: Payment }): React.JSX.Element {
           </Text>
         )}
       </View>
+      {/* Pill derecha */}
       <Pill
         label={statusLabel(t, payment.status)}
         variant={statusToPillVariant(payment.status)}
@@ -117,12 +123,15 @@ export default function PaymentsHistoryScreen(): React.JSX.Element {
   // ── Loading ─────────────────────────────────────────────────────────────────
   if (isLoading) {
     return (
-      <View style={[styles.container, { paddingTop: insets.top + spacing[4] }]}>
-        <ScrollView contentContainerStyle={styles.content}>
+      <View style={styles.container}>
+        <View style={[styles.headerBlock, { paddingTop: insets.top + spacing[4] }]}>
           <Text style={styles.screenTitle}>{t("paymentsHistory.screenTitle")}</Text>
-          <View style={styles.skeletonRow}><Skeleton width="100%" height={72} /></View>
-          <View style={styles.skeletonRow}><Skeleton width="100%" height={72} /></View>
-          <View style={styles.skeletonRow}><Skeleton width="100%" height={72} /></View>
+          <Text style={styles.headerSubtitle}>{t("paymentsHistory.subtitle")}</Text>
+        </View>
+        <ScrollView contentContainerStyle={styles.content}>
+          <View style={styles.skeletonRow}><Skeleton width="100%" height={80} /></View>
+          <View style={styles.skeletonRow}><Skeleton width="100%" height={80} /></View>
+          <View style={styles.skeletonRow}><Skeleton width="100%" height={80} /></View>
         </ScrollView>
       </View>
     );
@@ -131,9 +140,12 @@ export default function PaymentsHistoryScreen(): React.JSX.Element {
   // ── Error ────────────────────────────────────────────────────────────────────
   if (isError) {
     return (
-      <View style={[styles.container, { paddingTop: insets.top + spacing[4] }]}>
-        <View style={styles.content}>
+      <View style={styles.container}>
+        <View style={[styles.headerBlock, { paddingTop: insets.top + spacing[4] }]}>
           <Text style={styles.screenTitle}>{t("paymentsHistory.screenTitle")}</Text>
+          <Text style={styles.headerSubtitle}>{t("paymentsHistory.subtitle")}</Text>
+        </View>
+        <View style={styles.content}>
           <ErrorState
             title={t("paymentsHistory.error_title")}
             description={t("paymentsHistory.error_desc")}
@@ -147,9 +159,12 @@ export default function PaymentsHistoryScreen(): React.JSX.Element {
   // ── Empty ────────────────────────────────────────────────────────────────────
   if (payments.length === 0) {
     return (
-      <View style={[styles.container, { paddingTop: insets.top + spacing[4] }]}>
-        <View style={styles.content}>
+      <View style={styles.container}>
+        <View style={[styles.headerBlock, { paddingTop: insets.top + spacing[4] }]}>
           <Text style={styles.screenTitle}>{t("paymentsHistory.screenTitle")}</Text>
+          <Text style={styles.headerSubtitle}>{t("paymentsHistory.subtitle")}</Text>
+        </View>
+        <View style={styles.emptyContainer}>
           <EmptyState
             title={t("paymentsHistory.empty_title")}
             description={t("paymentsHistory.empty_desc")}
@@ -162,15 +177,19 @@ export default function PaymentsHistoryScreen(): React.JSX.Element {
 
   // ── Success ───────────────────────────────────────────────────────────────────
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing[4] }]}
-    >
-      <Text style={styles.screenTitle}>{t("paymentsHistory.screenTitle")}</Text>
-      {payments.map((payment) => (
-        <PaymentRow key={payment.id} payment={payment} />
-      ))}
-    </ScrollView>
+    <View style={styles.container}>
+      <View style={[styles.headerBlock, { paddingTop: insets.top + spacing[4] }]}>
+        <Text style={styles.screenTitle}>{t("paymentsHistory.screenTitle")}</Text>
+        <Text style={styles.headerSubtitle}>{t("paymentsHistory.subtitle")}</Text>
+      </View>
+      <ScrollView contentContainerStyle={styles.content}>
+        {/* Label de sección */}
+        <Text style={styles.sectionLabel}>{t("paymentsHistory.sectionLabel")}</Text>
+        {payments.map((payment) => (
+          <PaymentRow key={payment.id} payment={payment} />
+        ))}
+      </ScrollView>
+    </View>
   );
 }
 
@@ -179,37 +198,71 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg,
   },
-  content: {
-    padding: spacing[4],
-    paddingBottom: spacing[8],
+  headerBlock: {
+    paddingHorizontal: spacing[4],
+    paddingBottom: spacing[4],
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    gap: spacing[1],
   },
   screenTitle: {
     fontFamily: typography.heading,
     color: colors.text,
     fontSize: fontSize.screenTitle,
-    fontWeight: "900",
-    letterSpacing: -1,
+    letterSpacing: 1,
     textTransform: "uppercase",
-    marginBottom: spacing[5],
+  },
+  headerSubtitle: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: 13,
+  },
+  content: {
+    padding: spacing[4],
+    paddingBottom: spacing[8],
+  },
+  emptyContainer: {
+    flex: 1,
+  },
+  sectionLabel: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.xs,
+    fontWeight: "700",
+    letterSpacing: 1.5,
+    textTransform: "uppercase",
+    marginBottom: spacing[3],
   },
   paymentRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surface2,
     borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
     padding: spacing[4],
-    marginBottom: spacing[3],
+    marginBottom: spacing[2],
+    gap: spacing[3],
+  },
+  paymentIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: `${colors.info}15`,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  paymentIconEmoji: {
+    fontSize: 20,
   },
   paymentLeft: {
     flex: 1,
-    marginRight: spacing[3],
   },
   paymentAmount: {
     fontFamily: typography.mono,
-    color: colors.text,
+    color: colors.lime,
     fontSize: fontSize.lg,
     fontWeight: "700",
     marginBottom: spacing[1],
@@ -227,7 +280,7 @@ const styles = StyleSheet.create({
     textTransform: "capitalize",
   },
   skeletonRow: {
-    marginBottom: spacing[3],
+    marginBottom: spacing[2],
     borderRadius: radius.lg,
   },
 });

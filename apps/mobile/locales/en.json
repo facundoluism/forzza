@@ -168,6 +168,8 @@
   },
   "manageSubscription": {
     "screenTitle": "Manage subscription",
+    "subtitle": "Your PRO subscription",
+    "sectionActive": "ACTIVE PLAN",
     "plan": "Plan",
     "activeUntil": "Active until",
     "gateway": "Payment method",
@@ -474,6 +476,7 @@
   },
   "notifications": {
     "screenTitle": "Notifications",
+    "subtitle": "Schedule your reminders",
     "markAllRead": "Mark all as read",
     "markingRead": "Marking...",
     "emptyTitle": "No notifications",
@@ -606,6 +609,8 @@
   },
   "paymentsHistory": {
     "screenTitle": "Payment history",
+    "subtitle": "Your transactions",
+    "sectionLabel": "HISTORY",
     "empty_title": "No payments yet",
     "empty_desc": "Your payments will appear here when you make a purchase.",
     "error_title": "Could not load history",

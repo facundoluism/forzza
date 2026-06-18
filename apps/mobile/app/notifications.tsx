@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useRouter, useNavigation } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
 import { EmptyState } from "@forzza/ui/native";
@@ -26,6 +27,32 @@ interface Notification {
   created_at: string;
 }
 
+function iconColorForType(type: string): string {
+  switch (type) {
+    case "new_message":
+      return colors.info;
+    case "checkin_reminder":
+      return colors.lime;
+    case "payment_received":
+      return colors.warning;
+    default:
+      return colors.purple;
+  }
+}
+
+function iconEmojiForType(type: string): string {
+  switch (type) {
+    case "new_message":
+      return "💬";
+    case "checkin_reminder":
+      return "🏋️";
+    case "payment_received":
+      return "💳";
+    default:
+      return "🔔";
+  }
+}
+
 function NotificationItem({
   item,
   onPress,
@@ -36,6 +63,7 @@ function NotificationItem({
   timeLabel: string;
 }): React.JSX.Element {
   const isUnread = item.read_at === null;
+  const iconColor = iconColorForType(item.type);
 
   return (
     <TouchableOpacity
@@ -43,8 +71,8 @@ function NotificationItem({
       activeOpacity={0.7}
       onPress={onPress}
     >
-      <View style={styles.itemLeft}>
-        {isUnread && <View style={styles.unreadDot} />}
+      <View style={[styles.iconBox, { backgroundColor: `${iconColor}20` }]}>
+        <Text style={styles.iconEmoji}>{iconEmojiForType(item.type)}</Text>
       </View>
       <View style={styles.itemContent}>
         <View style={styles.itemHeader}>
@@ -54,7 +82,9 @@ function NotificationItem({
           >
             {item.title}
           </Text>
-          <Text style={styles.itemTime}>{timeLabel}</Text>
+          <View style={styles.timeChip}>
+            <Text style={styles.itemTime}>{timeLabel}</Text>
+          </View>
         </View>
         <Text style={styles.itemBody} numberOfLines={3}>
           {item.body}
@@ -92,6 +122,7 @@ function navigateForType(
 export default function NotificationsScreen(): React.JSX.Element {
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const router = useRouter();
   const channelRef = useRef<RealtimeChannel | null>(null);
@@ -228,16 +259,20 @@ export default function NotificationsScreen(): React.JSX.Element {
 
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator color={colors.lime} />
+      <View style={[styles.centered, { paddingTop: insets.top }]}>
+        <ActivityIndicator color={colors.lime} size="large" />
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>{t('notifications.screenTitle')}</Text>
+      {/* Header visual */}
+      <View style={[styles.header, { paddingTop: insets.top + spacing[4] }]}>
+        <View style={styles.headerLeft}>
+          <Text style={styles.headerTitle}>{t('notifications.screenTitle')}</Text>
+          <Text style={styles.headerSubtitle}>{t('notifications.subtitle')}</Text>
+        </View>
         {unreadCount > 0 && (
           <TouchableOpacity
             onPress={() => void markAllAsRead()}
@@ -254,11 +289,13 @@ export default function NotificationsScreen(): React.JSX.Element {
       </View>
 
       {notifications.length === 0 ? (
-        <EmptyState
-          title={t('notifications.emptyTitle')}
-          description={t('notifications.emptyDesc')}
-          icon="🔔"
-        />
+        <View style={styles.emptyContainer}>
+          <EmptyState
+            title={t('notifications.emptyTitle')}
+            description={t('notifications.emptyDesc')}
+            icon="🔔"
+          />
+        </View>
       ) : (
         <FlatList
           data={notifications}
@@ -271,7 +308,6 @@ export default function NotificationsScreen(): React.JSX.Element {
             />
           )}
           contentContainerStyle={styles.list}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
         />
       )}
     </View>
@@ -281,65 +317,85 @@ export default function NotificationsScreen(): React.JSX.Element {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.black,
+    backgroundColor: colors.bg,
   },
   centered: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: colors.bg,
     padding: spacing[6],
   },
   header: {
-    paddingTop: spacing[4],
     paddingHorizontal: spacing[4],
     paddingBottom: spacing[4],
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: colors.gray800,
+    borderBottomColor: colors.border,
     flexDirection: "row",
     alignItems: "flex-end",
     justifyContent: "space-between",
   },
+  headerLeft: {
+    flex: 1,
+    gap: spacing[1],
+  },
   headerTitle: {
     fontFamily: typography.heading,
-    color: colors.white,
+    color: colors.text,
     fontSize: fontSize.screenTitle,
     letterSpacing: 1,
     textTransform: "uppercase",
   },
+  headerSubtitle: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: 13,
+  },
   markAllBtn: {
     minHeight: 44,
     justifyContent: "center",
+    paddingLeft: spacing[3],
   },
   markAllText: {
     fontFamily: typography.body,
     color: colors.lime,
     fontSize: 13,
     fontWeight: "600",
-    paddingBottom: spacing[1],
   },
   list: {
-    paddingTop: spacing[1],
+    paddingTop: spacing[2],
     paddingBottom: spacing[8],
+  },
+  emptyContainer: {
+    flex: 1,
   },
   item: {
     flexDirection: "row",
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[4],
+    marginHorizontal: spacing[4],
+    marginVertical: spacing[1],
     gap: spacing[3],
+    backgroundColor: colors.surface2,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   itemUnread: {
-    backgroundColor: `${colors.gray900}80`,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.lime,
   },
-  itemLeft: {
-    width: 10,
+  iconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
     alignItems: "center",
-    paddingTop: spacing[2],
+    justifyContent: "center",
+    flexShrink: 0,
   },
-  unreadDot: {
-    width: 8,
-    height: 8,
-    borderRadius: radius.full,
-    backgroundColor: colors.lime,
+  iconEmoji: {
+    fontSize: 20,
   },
   itemContent: {
     flex: 1,
@@ -353,42 +409,26 @@ const styles = StyleSheet.create({
   },
   itemTitle: {
     fontFamily: typography.body,
-    color: colors.gray300,
-    fontSize: 14,
+    color: colors.muted,
+    fontSize: fontSize.md,
     fontWeight: "600",
     flex: 1,
   },
   itemTitleUnread: {
-    color: colors.white,
+    color: colors.text,
+  },
+  timeChip: {
+    flexShrink: 0,
   },
   itemTime: {
     fontFamily: typography.body,
     color: colors.gray500,
-    fontSize: 12,
-    flexShrink: 0,
+    fontSize: 11,
   },
   itemBody: {
     fontFamily: typography.body,
-    color: colors.gray400,
+    color: colors.muted,
     fontSize: 13,
     lineHeight: 18,
-  },
-  separator: {
-    height: 1,
-    backgroundColor: colors.gray800,
-    marginLeft: spacing[4] + 10 + spacing[3],
-  },
-  emptyTitle: {
-    fontFamily: typography.heading,
-    color: colors.white,
-    fontSize: 24,
-    textTransform: "uppercase",
-    marginBottom: spacing[2],
-  },
-  emptyBody: {
-    fontFamily: typography.body,
-    color: colors.gray400,
-    fontSize: 14,
-    textAlign: "center",
   },
 });

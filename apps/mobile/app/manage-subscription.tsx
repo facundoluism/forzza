@@ -116,18 +116,21 @@ export default function ManageSubscriptionScreen() {
   // Loading state
   if (isLoading) {
     return (
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={[styles.container, { paddingTop: insets.top + spacing[4] }]}
-      >
-        <View style={{ marginBottom: spacing[3] }}>
-          <Skeleton width="60%" height={20} />
+      <View style={styles.scroll}>
+        <View style={[styles.headerBlock, { paddingTop: insets.top + spacing[4] }]}>
+          <Text style={styles.headerTitle}>{t("manageSubscription.screenTitle")}</Text>
+          <Text style={styles.headerSubtitle}>{t("manageSubscription.subtitle")}</Text>
         </View>
-        <View style={{ marginBottom: spacing[4] }}>
-          <Skeleton width="100%" height={100} />
-        </View>
-        <Skeleton width="100%" height={52} />
-      </ScrollView>
+        <ScrollView contentContainerStyle={styles.container}>
+          <View style={{ marginBottom: spacing[3] }}>
+            <Skeleton width="60%" height={20} />
+          </View>
+          <View style={{ marginBottom: spacing[4] }}>
+            <Skeleton width="100%" height={120} />
+          </View>
+          <Skeleton width="100%" height={52} />
+        </ScrollView>
+      </View>
     );
   }
 
@@ -162,50 +165,62 @@ export default function ManageSubscriptionScreen() {
   const gateway = subscription?.gateway ?? null;
 
   return (
-    <ScrollView
-      style={styles.scroll}
-      contentContainerStyle={[styles.container, { paddingTop: insets.top + spacing[4] }]}
-    >
-      <Text style={styles.title}>{t("manageSubscription.screenTitle")}</Text>
+    <View style={styles.scroll}>
+      {/* Header visual */}
+      <View style={[styles.headerBlock, { paddingTop: insets.top + spacing[4] }]}>
+        <Text style={styles.headerTitle}>{t("manageSubscription.screenTitle")}</Text>
+        <Text style={styles.headerSubtitle}>{t("manageSubscription.subtitle")}</Text>
+      </View>
 
-      {/* Active PRO card */}
-      <View style={styles.card}>
-        <View style={styles.cardRow}>
-          <Text style={styles.cardLabel}>{t("manageSubscription.plan")}</Text>
-          <Text style={styles.cardValuePro}>PRO</Text>
-        </View>
-        <View style={styles.divider} />
-        <View style={styles.cardRow}>
-          <Text style={styles.cardLabel}>{t("manageSubscription.activeUntil")}</Text>
-          <Text style={styles.cardValue}>{periodEnd}</Text>
-        </View>
-        {gateway && (
-          <>
-            <View style={styles.divider} />
-            <View style={styles.cardRow}>
-              <Text style={styles.cardLabel}>{t("manageSubscription.gateway")}</Text>
-              <Text style={styles.cardValue}>
-                {gateway === "mercadopago" ? "Mercado Pago" : t("manageSubscription.gatewayStore")}
-              </Text>
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* Label de sección */}
+        <Text style={styles.sectionLabel}>{t("manageSubscription.sectionActive")}</Text>
+
+        {/* Card de datos PRO */}
+        <View style={styles.card}>
+          {/* Fila Plan + badge PRO */}
+          <View style={styles.cardRow}>
+            <Text style={styles.cardLabel}>{t("manageSubscription.plan")}</Text>
+            <View style={styles.proBadge}>
+              <Text style={styles.proBadgeText}>PRO</Text>
             </View>
-          </>
-        )}
-      </View>
+          </View>
+          <View style={styles.divider} />
+          {/* Fila fecha */}
+          <View style={styles.cardRow}>
+            <Text style={styles.cardLabel}>{t("manageSubscription.activeUntil")}</Text>
+            <Text style={styles.cardValueDate}>{periodEnd}</Text>
+          </View>
+          {gateway && (
+            <>
+              <View style={styles.divider} />
+              <View style={styles.cardRow}>
+                <Text style={styles.cardLabel}>{t("manageSubscription.gateway")}</Text>
+                <Text style={styles.cardValue}>
+                  {gateway === "mercadopago" ? "Mercado Pago" : t("manageSubscription.gatewayStore")}
+                </Text>
+              </View>
+            </>
+          )}
+        </View>
 
-      {/* Access note */}
-      <Text style={styles.note}>{t("manageSubscription.accessNote")}</Text>
+        {/* Nota de acceso — info card con borde lime */}
+        <View style={styles.noteCard}>
+          <Text style={styles.note}>{t("manageSubscription.accessNote")}</Text>
+        </View>
 
-      {/* Cancel CTA */}
-      <View style={styles.actions}>
-        <Button
-          label={t("manageSubscription.cancelPro")}
-          variant="danger"
-          fullWidth
-          onPress={handleCancelPro}
-          testID="manage-sub-cancel-btn"
-        />
-      </View>
-    </ScrollView>
+        {/* CTA cancelar */}
+        <View style={styles.actions}>
+          <Button
+            label={t("manageSubscription.cancelPro")}
+            variant="danger"
+            fullWidth
+            onPress={handleCancelPro}
+            testID="manage-sub-cancel-btn"
+          />
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
@@ -214,8 +229,28 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg,
   },
+  headerBlock: {
+    paddingHorizontal: spacing[4],
+    paddingBottom: spacing[4],
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    gap: spacing[1],
+  },
+  headerTitle: {
+    fontFamily: typography.heading,
+    color: colors.text,
+    fontSize: fontSize.screenTitle,
+    letterSpacing: 1,
+    textTransform: "uppercase",
+  },
+  headerSubtitle: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: 13,
+  },
   container: {
-    padding: spacing[6],
+    padding: spacing[4],
     paddingBottom: spacing[20],
   },
   centered: {
@@ -224,27 +259,29 @@ const styles = StyleSheet.create({
     padding: spacing[6],
     justifyContent: "center",
   },
-  title: {
-    fontFamily: typography.heading,
-    color: colors.text,
-    fontSize: fontSize.screenTitle,
-    letterSpacing: -1,
+  sectionLabel: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.xs,
+    fontWeight: "700",
+    letterSpacing: 1.5,
     textTransform: "uppercase",
-    marginBottom: spacing[6],
+    marginBottom: spacing[3],
   },
   card: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surface2,
     borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
-    padding: spacing[4],
     marginBottom: spacing[4],
+    overflow: "hidden",
   },
   cardRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: spacing[2],
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[4],
   },
   cardLabel: {
     fontFamily: typography.body,
@@ -257,7 +294,18 @@ const styles = StyleSheet.create({
     fontSize: fontSize.md,
     fontWeight: "600",
   },
-  cardValuePro: {
+  cardValueDate: {
+    fontFamily: typography.mono,
+    color: colors.text,
+    fontSize: fontSize.md,
+  },
+  proBadge: {
+    backgroundColor: colors.limeGlow,
+    borderRadius: radius.full,
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[1],
+  },
+  proBadgeText: {
     fontFamily: typography.heading,
     color: colors.lime,
     fontSize: fontSize.lg,
@@ -266,17 +314,24 @@ const styles = StyleSheet.create({
   divider: {
     height: 1,
     backgroundColor: colors.border,
-    marginVertical: spacing[1],
+    marginHorizontal: spacing[4],
+  },
+  noteCard: {
+    borderLeftWidth: 2,
+    borderLeftColor: colors.lime,
+    paddingLeft: spacing[3],
+    marginBottom: spacing[6],
   },
   note: {
     fontFamily: typography.body,
     color: colors.muted,
     fontSize: fontSize.sm,
-    textAlign: "center",
-    marginBottom: spacing[6],
     lineHeight: 18,
   },
   actions: {
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    paddingTop: spacing[4],
     gap: spacing[3],
   },
 });
