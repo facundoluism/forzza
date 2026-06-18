@@ -32,19 +32,25 @@ Reescribir la pantalla Tabata de la app mobile con modo simple (gratis) y modo a
 
 | Pendiente | Tipo | Severidad |
 |-----------|------|-----------|
-| Audio (beeps de transición): requiere `expo prebuild` + archivos `tick.wav`, `start.wav`, `finish.wav` en `apps/mobile/assets/audio/`. Hoy el guard `if (!audioReady)` deja el audio desactivado; háptica + colores funcionan. | HUMAN_REQUIRED | Alta para audio, no bloqueante para el resto |
+| ~~Audio (beeps de transición)~~ **COMPLETADO**: `expo-audio` cableado en `tabata.tsx` (`start.wav` al entrar a trabajo/descanso, `tick.wav` en la cuenta regresiva, `finish.wav` al completar), assets generados con `scripts/build-tabata-audio.mjs`, plugin en `app.config.ts`, `expo prebuild` corrido. typecheck/lint PASS. Commit `c458df1`. | PASS | — |
+| **Permiso `RECORD_AUDIO` (Android)**: el módulo nativo de `expo-audio` declara `RECORD_AUDIO` aunque la app solo REPRODUCE (no graba). Se configuró `['expo-audio', { microphonePermission: false }]` (suprime el permiso de micrófono en iOS — `NSMicrophoneUsageDescription`). En Android el permiso se mergea desde el manifest del módulo durante el build de gradle, y NO pudo verificarse su remoción local (el `prebuild` no ejecuta el manifest merger). Ver detalle abajo. | Release hardening | Media |
 | Verificación manual en dispositivo de la secuencia de colores: prep (ámbar) → work (verde) → últimos 5 s (rojo) → rest (azul) → últimos 5 s (rojo) → finished. No realizada aún. | Manual QA | Media |
 | Enforcement PRO server-side en `tabata_plans`: función `is_pro()` + policies INSERT/UPDATE con `(mode='simple' OR is_pro(auth.uid()))`. | PASS | `pnpm test:rls` → 56/56 PASS; tests T48b, T49–T55 cubren todos los casos (sin PRO, con PRO activo, con PRO vencido, UPDATE). Migración: `20260618000002_tabata_advanced_pro_enforcement.sql`. |
 
-## HUMAN_REQUIRED — Audio
+## Audio — implementado (commit `c458df1`)
 
-Pasos exactos para activar el audio:
+El audio quedó cableado: `useAudioPlayer` ×3 en `apps/mobile/app/tabata.tsx`, `setAudioModeAsync({ playsInSilentMode: true })` para sonar con el teléfono en silencio, y reproducción tolerante a fallos (si el audio falla, el timer y la háptica siguen). Assets en `apps/mobile/assets/audio/` regenerables con `node scripts/build-tabata-audio.mjs`. Falta solo la verificación en dispositivo real (el simulador puede no reproducir audio en todas las configuraciones).
 
-1. Ir a `apps/mobile/`.
-2. Ejecutar `npx expo prebuild --platform android` y `npx expo prebuild --platform ios` (el plugin `expo-audio` ya está declarado en `app.json`; el prebuild genera el código nativo).
-3. Copiar `tick.wav`, `start.wav` y `finish.wav` a `apps/mobile/assets/audio/`.
-4. En `apps/mobile/src/tabataAudio.ts` (o donde esté el guard), eliminar el `if (!audioReady) return` y verificar que los `require()` resuelvan los assets.
-5. Probar en dispositivo real (el simulador puede no reproducir audio en todas las configuraciones).
+## CAVEAT — `RECORD_AUDIO` en Android (pendiente de hardening de release)
+
+`expo-audio` agrega el permiso `android.permission.RECORD_AUDIO` desde su módulo nativo, aunque el Tabata **solo reproduce** sonido y nunca graba. Se dejó `['expo-audio', { microphonePermission: false }]` en `app.config.ts`, lo que evita el permiso de micrófono en **iOS** (`NSMicrophoneUsageDescription`). En **Android** el permiso se mergea desde el manifest del módulo durante el build de gradle/EAS — el `expo prebuild` local NO ejecuta el manifest merger, así que no se pudo confirmar su remoción de forma verificable.
+
+Pasos pendientes (release-store-engineer):
+1. Hacer un build EAS de Android y revisar el `AndroidManifest.xml` final / la sección de permisos en Play Console.
+2. Si `RECORD_AUDIO` persiste, agregar un config plugin custom (`withAndroidManifest`) que marque el permiso con `tools:node="remove"`, y volver a verificar en build.
+3. Confirmar en iOS que el build no incluya `NSMicrophoneUsageDescription`.
+
+Impacto si no se resuelve: Google Play preguntará por el uso de micrófono y puede generar fricción en la review; no afecta la funcionalidad (no se muestra prompt en runtime porque no se invoca la API de grabación).
 
 ## Decisiones registradas
 
@@ -63,6 +69,6 @@ Pasos exactos para activar el audio:
 
 ## Próximos pasos
 
-1. Completar el HUMAN_REQUIRED de audio (ver tabla de pendientes).
-2. Realizar verificación manual de la secuencia de colores en dispositivo real.
+1. ~~Completar el audio~~ COMPLETADO (commit `c458df1`). Pendiente: verificar el caveat de `RECORD_AUDIO` en un build EAS de Android (ver sección CAVEAT).
+2. Realizar verificación manual de la secuencia de colores y del audio en dispositivo real.
 3. ~~Evaluar (baja prioridad) si se agrega enforcement server-side de PRO en `tabata_plans`.~~ COMPLETADO: migración `20260618000002_tabata_advanced_pro_enforcement.sql`, 56/56 tests RLS PASS.
