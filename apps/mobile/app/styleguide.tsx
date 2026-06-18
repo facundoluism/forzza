@@ -207,6 +207,12 @@ export default function StyleguideScreen() {
               </Text>
             </View>
           </Card>
+          <Card padding="sm" style={{ marginTop: spacing[3] }}>
+            <Text style={[styles.mutedText, { paddingHorizontal: spacing[4], paddingTop: spacing[3] }]}>
+              distribute (ancho completo)
+            </Text>
+            <Tabs tabs={TABS_DEMO} activeKey={activeTab} onTabChange={setActiveTab} distribute />
+          </Card>
         </View>
 
         {/* ── Card variants ── */}

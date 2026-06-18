@@ -469,6 +469,7 @@ function ExerciseDetailContent({
         tabs={DETAIL_TABS as unknown as { key: string; label: string }[]}
         activeKey={activeTab}
         onTabChange={(key) => setActiveTab(key as DetailTabKey)}
+        distribute
       />
 
       {/* ── Cuerpo del tab activo ── */}

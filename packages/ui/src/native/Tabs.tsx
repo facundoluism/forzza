@@ -11,9 +11,40 @@ export interface TabsProps extends Omit<ViewProps, "style"> {
   activeKey: string;
   onTabChange: (key: string) => void;
   style?: ViewProps["style"];
+  /**
+   * Cuando `true` los tabs se distribuyen en fila ocupando el ancho completo
+   * con `flex: 1` y label centrado. Útil cuando el número de tabs es fijo y
+   * cabe en pantalla (ej: ficha de ejercicio con 4 tabs).
+   * Cuando `false` (default) se usa el ScrollView horizontal original.
+   */
+  distribute?: boolean;
 }
 
-export function Tabs({ tabs, activeKey, onTabChange, style, ...rest }: TabsProps) {
+export function Tabs({ tabs, activeKey, onTabChange, style, distribute = false, ...rest }: TabsProps) {
+  if (distribute) {
+    return (
+      <View style={[styles.wrapper, style]} {...rest}>
+        <View style={styles.distributeRow}>
+          {tabs.map((tab) => {
+            const isActive = tab.key === activeKey;
+            return (
+              <Pressable
+                key={tab.key}
+                onPress={() => onTabChange(tab.key)}
+                hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+                style={[styles.distributeTab, isActive && styles.tabActive]}
+              >
+                <Text style={[styles.distributeTabText, isActive && styles.tabTextActive]}>
+                  {tab.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={[styles.wrapper, style]} {...rest}>
       <ScrollView
@@ -69,5 +100,24 @@ const styles = StyleSheet.create({
   },
   tabTextActive: {
     color: colors.lime,
+  },
+  // ── distribute mode ──
+  distributeRow: {
+    flexDirection: "row",
+  },
+  distributeTab: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: spacing[3],
+    borderBottomWidth: 2,
+    borderBottomColor: "transparent",
+    marginBottom: -1,
+  },
+  distributeTabText: {
+    fontSize: fontSize.sm,
+    color: colors.muted,
+    fontWeight: "600",
+    letterSpacing: 0.3,
+    textAlign: "center",
   },
 });
