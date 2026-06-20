@@ -2622,6 +2622,196 @@
     "status": "published"
   },
   {
+    "slug": "dumbbell-bulgarian-split-squat",
+    "lang": "en",
+    "youtubeId": "lG3MsPmEQQk",
+    "title": "🔥 Bulgarian Split Squat Tutorial",
+    "channelId": "UCyPYQTT20IgzVw92LDvtClw",
+    "channelTitle": "Squat University",
+    "durationSeconds": 60,
+    "score": 0.875,
+    "scoreBreakdown": {
+      "text": 0.75,
+      "channel": 1,
+      "engagement": 1,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "dumbbell-bulgarian-split-squat",
+    "lang": "es",
+    "youtubeId": "YCPbCCMLwNc",
+    "title": "Sentadilla Búlgara Más Fácil ¡CORRIGE TU FORMA!",
+    "channelId": "UCAR76PvwLHcHqnbqFIos_Xg",
+    "channelTitle": "ATHLEAN-X Español",
+    "durationSeconds": 59,
+    "score": 0.8367,
+    "scoreBreakdown": {
+      "text": 0.6666666666666666,
+      "channel": 1,
+      "engagement": 0.9332895876247617,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "dumbbell-close-grip-press",
+    "lang": "en",
+    "youtubeId": "z6A4W5Dib28",
+    "title": "STOP Doing Dumbbell Press Like This",
+    "channelId": "UCN3kSAAWJS5rurEKLoVo3dg",
+    "channelTitle": "Jeremy Ethier Shorts",
+    "durationSeconds": 56,
+    "score": 0.7954,
+    "scoreBreakdown": {
+      "text": 0.5,
+      "channel": 1,
+      "engagement": 0.977024402943326,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "dumbbell-close-grip-press",
+    "lang": "es",
+    "youtubeId": "5wN-99Fny5Q",
+    "title": "DEJA de hacer así el press con mancuernas (5 errores que retrasan el crecimiento de los pectorales)",
+    "channelId": "UCCvQpJ5_-LGfkeDdl2Etlwg",
+    "channelTitle": "Jeremy Ethier en Español",
+    "durationSeconds": 433,
+    "score": 0.731,
+    "scoreBreakdown": {
+      "text": 0.5,
+      "channel": 1,
+      "engagement": 0.7562070950592403,
+      "duration": 0.7972222222222223,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "dumbbell-concentration-curl",
+    "lang": "en",
+    "youtubeId": "Jvj2wV0vOYU",
+    "title": "How To: Dumbbell Concentration Curl",
+    "channelId": "UCEtMRF1ywKMc4sf3EXYyDzw",
+    "channelTitle": "ScottHermanFitness",
+    "durationSeconds": 101,
+    "score": 0.9303,
+    "scoreBreakdown": {
+      "text": 1,
+      "channel": 1,
+      "engagement": 0.6514234982311221,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 1
+    },
+    "status": "published"
+  },
+  {
+    "slug": "dumbbell-concentration-curl",
+    "lang": "es",
+    "youtubeId": "Cl0YsucldGA",
+    "title": "¡Importante al Hacer Curl de Bíceps!",
+    "channelId": "UCAR76PvwLHcHqnbqFIos_Xg",
+    "channelTitle": "ATHLEAN-X Español",
+    "durationSeconds": 40,
+    "score": 0.7374,
+    "scoreBreakdown": {
+      "text": 0.3333333333333333,
+      "channel": 1,
+      "engagement": 0.9370910497040842,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "dumbbell-deadlift",
+    "lang": "en",
+    "youtubeId": "lJ3QwaXNJfw",
+    "title": "How To: Dumbbell Deadlift",
+    "channelId": "UCEtMRF1ywKMc4sf3EXYyDzw",
+    "channelTitle": "ScottHermanFitness",
+    "durationSeconds": 135,
+    "score": 0.9302,
+    "scoreBreakdown": {
+      "text": 1,
+      "channel": 1,
+      "engagement": 0.6510208114964456,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 1
+    },
+    "status": "published"
+  },
+  {
+    "slug": "dumbbell-deadlift",
+    "lang": "es",
+    "youtubeId": "7EFlWfvU59w",
+    "title": "Peso Muerto con Mancuernas - Femoral y Glúteos",
+    "channelId": "UCQQ2X96FF1LezYFe6lUUK0w",
+    "channelTitle": "Zonapablo",
+    "durationSeconds": 64,
+    "score": 0.8684,
+    "scoreBreakdown": {
+      "text": 1,
+      "channel": 1,
+      "engagement": 0.5921192302743568,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "dumbbell-decline-bench-press",
+    "lang": "en",
+    "youtubeId": "0xRvl4Qv3ZY",
+    "title": "Decline Dumbbell Bench Press - Chest Exercise",
+    "channelId": "UCRnQ0oe-NLWHPt0UUqoDcNQ",
+    "channelTitle": "MyTraining App",
+    "durationSeconds": 66,
+    "score": 0.6754,
+    "scoreBreakdown": {
+      "text": 1,
+      "channel": 0,
+      "engagement": 0.6272186677127473,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 1
+    },
+    "status": "needs_review"
+  },
+  {
+    "slug": "dumbbell-decline-bench-press",
+    "lang": "es",
+    "youtubeId": "Lp9LLEGJJrI",
+    "title": "Deja de Hacer Press de Banca con Mancuernas Así ¡TE LO RUEGO!",
+    "channelId": "UCAR76PvwLHcHqnbqFIos_Xg",
+    "channelTitle": "ATHLEAN-X Español",
+    "durationSeconds": 597,
+    "score": 0.7969,
+    "scoreBreakdown": {
+      "text": 0.75,
+      "channel": 1,
+      "engagement": 0.9386643856970867,
+      "duration": 0.3416666666666667,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
     "slug": "dumbbell-overhead-press",
     "lang": "en",
     "youtubeId": "M2rwvNhTOu0",
