@@ -127,7 +127,7 @@ export class RealYouTubeClient implements YouTubeSearchClient {
     if (ids.length === 0) return [];
 
     // 2) videos.list (cuota: 1) → obtener detalles de esos IDs en un batch.
-    return this.fetchVideoDetails(ids);
+    return this.fetchVideosByIds(ids);
   }
 
   private async searchVideoIds(
@@ -158,7 +158,13 @@ export class RealYouTubeClient implements YouTubeSearchClient {
     return ids;
   }
 
-  private async fetchVideoDetails(ids: string[]): Promise<YouTubeVideoDetails[]> {
+  /**
+   * videos.list (cuota: 1) → detalles normalizados de los IDs dados en un batch.
+   * Público para la rama de PIN del pipeline (resuelve un video fijado sin search).
+   * Lista vacía → no hace request y devuelve [].
+   */
+  async fetchVideosByIds(ids: string[]): Promise<YouTubeVideoDetails[]> {
+    if (ids.length === 0) return [];
     const params = new URLSearchParams({
       part: "snippet,statistics,contentDetails,status",
       id: ids.join(","),

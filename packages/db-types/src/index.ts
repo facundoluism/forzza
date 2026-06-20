@@ -668,6 +668,66 @@ export type Database = {
         }
         Relationships: []
       }
+      exercise_video_feedback: {
+        Row: {
+          action: string
+          channel_title: string | null
+          created_at: string
+          created_by: string | null
+          exercise_id: string | null
+          filters: Json | null
+          id: string
+          lang: string | null
+          note: string | null
+          query_add: string[] | null
+          query_remove: string[] | null
+          youtube_id: string | null
+        }
+        Insert: {
+          action: string
+          channel_title?: string | null
+          created_at?: string
+          created_by?: string | null
+          exercise_id?: string | null
+          filters?: Json | null
+          id?: string
+          lang?: string | null
+          note?: string | null
+          query_add?: string[] | null
+          query_remove?: string[] | null
+          youtube_id?: string | null
+        }
+        Update: {
+          action?: string
+          channel_title?: string | null
+          created_at?: string
+          created_by?: string | null
+          exercise_id?: string | null
+          filters?: Json | null
+          id?: string
+          lang?: string | null
+          note?: string | null
+          query_add?: string[] | null
+          query_remove?: string[] | null
+          youtube_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exercise_video_feedback_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exercise_video_feedback_exercise_id_fkey"
+            columns: ["exercise_id"]
+            isOneToOne: false
+            referencedRelation: "exercise_library"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       exercise_video_requests: {
         Row: {
           created_at: string
@@ -1911,3 +1971,4 @@ export type LegalEntityType = Database["public"]["Enums"]["legal_entity_type"];
 export type NotificationChannel = Database["public"]["Enums"]["notification_channel"];
 // No existe enum en DB: plan de suscripción es un literal de dominio.
 export type SubscriptionPlan = "free" | "pro" | "elite";
+

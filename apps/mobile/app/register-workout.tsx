@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import {
   View,
   Text,
@@ -20,7 +20,7 @@ import { syncPendingItems } from "@/services/sync";
 import { supabase } from "@/lib/supabase";
 import { track } from "@/lib/analytics";
 import { TRACKED_EVENTS } from "@forzza/core";
-import { Card, EmptyState, ErrorState, Confetti } from "@forzza/ui/native";
+import { Card, EmptyState, ErrorState, Confetti, ScreenHeader } from "@forzza/ui/native";
 import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
 
 interface Routine {
@@ -268,7 +268,13 @@ export default function RegisterWorkoutScreen(): React.JSX.Element {
 
   if (saved) {
     return (
-      <View style={[styles.container, { paddingTop: insets.top + spacing[4] }]}>
+      <View style={styles.container}>
+        <View style={[styles.headerBar, { paddingTop: insets.top }]}>
+          <ScreenHeader
+            title={t("registerWorkout.screenTitle")}
+            onBack={() => router.back()}
+          />
+        </View>
         <Confetti active duration={3000} />
         <View style={styles.savedContainer}>
           <Text style={styles.savedEmoji}>💾</Text>
@@ -300,19 +306,14 @@ export default function RegisterWorkoutScreen(): React.JSX.Element {
   }
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + spacing[4] }]}>
+    <View style={styles.container}>
+      <View style={[styles.headerBar, { paddingTop: insets.top }]}>
+        <ScreenHeader
+          title={t("registerWorkout.screenTitle")}
+          onBack={step === 1 ? () => router.back() : () => setStep(1)}
+        />
+      </View>
       <ScrollView contentContainerStyle={styles.content}>
-        {/* Header */}
-        {step === 1 && (
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => router.back()}
-            testID="register-workout-back"
-          >
-            <Text style={styles.backButtonText}>{t("registerWorkout.back")}</Text>
-          </TouchableOpacity>
-        )}
-        <Text style={styles.screenTitle}>{t("registerWorkout.screenTitle")}</Text>
 
         {/* ── Step 1 ── */}
         {step === 1 && (
@@ -426,14 +427,6 @@ export default function RegisterWorkoutScreen(): React.JSX.Element {
         {/* ── Step 2 ── */}
         {step === 2 && (
           <View>
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => setStep(1)}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            >
-              <Text style={styles.backButtonText}>{t("registerWorkout.back")}</Text>
-            </TouchableOpacity>
-
             <Text style={styles.stepTitle}>{t("registerWorkout.step2Title")}</Text>
 
             {exercises.map((exercise, exerciseIndex) => (
@@ -551,14 +544,10 @@ const styles = StyleSheet.create({
     padding: spacing[4],
     paddingBottom: spacing[8],
   },
-  screenTitle: {
-    fontFamily: typography.heading,
-    color: colors.text,
-    fontSize: fontSize.screenTitle,
-    fontWeight: "900",
-    letterSpacing: -1,
-    textTransform: "uppercase",
-    marginBottom: spacing[5],
+  headerBar: {
+    paddingHorizontal: spacing[4],
+    paddingBottom: spacing[3],
+    backgroundColor: colors.bg,
   },
   stepTitle: {
     fontFamily: typography.body,

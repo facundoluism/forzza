@@ -20,3 +20,4 @@ export * from "./Sheet";
 export * from "./RestTimer";
 export * from "./Confetti";
 export * from "./ExerciseIcon";
+export * from "./ScreenHeader";

@@ -19,7 +19,7 @@ import { useEntitlements } from "@/hooks/useEntitlements";
 import { TRACKED_EVENTS } from "@forzza/core";
 import { track } from "@/lib/analytics";
 import { ExercisePreviewSheet } from "@/components/ExercisePreviewSheet";
-import { Button, Card, AutopromoOverlay, RestTimer } from "@forzza/ui/native";
+import { Button, Card, AutopromoOverlay, RestTimer, ScreenHeader } from "@forzza/ui/native";
 import { colors, spacing, radius, typography } from "@forzza/ui/tokens";
 
 const AUTOPROMO_SECONDS = 10;
@@ -267,24 +267,20 @@ export default function SessionScreen(): React.JSX.Element | null {
 
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + spacing[2] }]}>
-        <View style={styles.headerContent}>
-          <Text style={styles.sessionTitle}>{activeSession.routine_name}</Text>
-          <Text style={styles.sessionStatus}>
-            {isPaused ? t('session.statusPaused') : t('session.statusActive')}
-            {" · "}
-            <Text style={styles.sessionStatusMono}>
-              {activeSession.exercises.reduce((acc, ex) => acc + ex.sets.length, 0)}
-            </Text>
-            {" "}{t('session.totalSets')}
-          </Text>
-        </View>
-        <Pressable
-          style={styles.pauseBtn}
-          onPress={isPaused ? resumeSession : pauseSession}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Text style={styles.pauseBtnText}>{isPaused ? t('session.btnResume') : t('session.btnPause')}</Text>
-        </Pressable>
+        <ScreenHeader
+          title={activeSession.routine_name}
+          onBack={() => router.back()}
+          subtitle={`${isPaused ? t("session.statusPaused") : t("session.statusActive")} · ${activeSession.exercises.reduce((acc, ex) => acc + ex.sets.length, 0)} ${t("session.totalSets")}`}
+          right={
+            <Pressable
+              style={styles.pauseBtn}
+              onPress={isPaused ? resumeSession : pauseSession}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Text style={styles.pauseBtnText}>{isPaused ? t("session.btnResume") : t("session.btnPause")}</Text>
+            </Pressable>
+          }
+        />
       </View>
 
       <ScrollView
@@ -487,32 +483,7 @@ const styles = StyleSheet.create({
     paddingBottom: spacing[4],
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
     backgroundColor: colors.surface,
-  },
-  headerContent: {
-    flex: 1,
-  },
-  sessionTitle: {
-    fontFamily: typography.heading,
-    color: colors.text,
-    fontSize: 22,
-    fontWeight: "900",
-    letterSpacing: -0.5,
-    textTransform: "uppercase",
-  },
-  sessionStatus: {
-    fontFamily: typography.body,
-    color: colors.muted,
-    fontSize: 13,
-    marginTop: spacing[1],
-  },
-  sessionStatusMono: {
-    fontFamily: typography.mono,
-    color: colors.lime,
-    fontSize: 13,
   },
   pauseBtn: {
     backgroundColor: colors.surface3,

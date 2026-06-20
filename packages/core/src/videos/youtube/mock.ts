@@ -101,6 +101,34 @@ export class MockYouTubeClient implements YouTubeSearchClient {
       maxResults !== undefined ? results.slice(0, maxResults) : results;
     return Promise.resolve(sliced);
   }
+
+  /**
+   * Resuelve detalles por ID buscando en TODOS los fixtures conocidos. Útil para
+   * testear la rama de PIN sin red. IDs no encontrados se omiten.
+   */
+  fetchVideosByIds(ids: string[]): Promise<YouTubeVideoDetails[]> {
+    if (ids.length === 0) return Promise.resolve([]);
+    const wanted = new Set(ids);
+    const files = new Set<string>([
+      this.defaultFixture,
+      ...this.overrides.map((o) => o.file),
+    ]);
+    const byId = new Map<string, YouTubeVideoDetails>();
+    for (const file of files) {
+      for (const v of loadFixture(file)) {
+        if (wanted.has(v.youtubeId) && !byId.has(v.youtubeId)) {
+          byId.set(v.youtubeId, v);
+        }
+      }
+    }
+    // Preservar el orden de `ids`.
+    const out: YouTubeVideoDetails[] = [];
+    for (const id of ids) {
+      const v = byId.get(id);
+      if (v) out.push(v);
+    }
+    return Promise.resolve(out);
+  }
 }
 
 /** Export del helper de selección, útil para tests del Paso D. */

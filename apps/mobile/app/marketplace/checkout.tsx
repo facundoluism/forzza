@@ -8,14 +8,14 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
-import { useLocalSearchParams, useNavigation } from "expo-router";
-import { useLayoutEffect } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/providers/AuthProvider";
-import { ErrorState } from "@forzza/ui/native";
+import { ErrorState, ScreenHeader } from "@forzza/ui/native";
 import { colors, spacing, typography, radius, fontSize } from "@forzza/ui/tokens";
 
 // Columnas reales de coach_packages: id, coach_id, tier, title, description, price, active
@@ -50,17 +50,14 @@ function isMinor(birthDate: string): boolean {
 
 export default function CheckoutScreen() {
   const { t } = useTranslation();
-  const navigation = useNavigation();
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { coach_id, package_id } = useLocalSearchParams<{
     coach_id: string;
     package_id: string;
   }>();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-
-  useLayoutEffect(() => {
-    navigation.setOptions({ title: t('marketplace.checkout.screenTitle') });
-  }, [t, navigation]);
 
   const { data: pkg, isLoading: pkgLoading } = useQuery({
     queryKey: ["checkout_package", package_id, coach_id],
@@ -141,18 +138,28 @@ export default function CheckoutScreen() {
 
   if (pkgLoading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator color={colors.lime} size="large" />
+      <View style={styles.screen}>
+        <View style={[styles.screenHeader, { paddingTop: insets.top + spacing[4] }]}>
+          <ScreenHeader title={t("marketplace.checkout.screenTitle")} onBack={() => router.back()} />
+        </View>
+        <View style={styles.centered}>
+          <ActivityIndicator color={colors.lime} size="large" />
+        </View>
       </View>
     );
   }
 
   if (!pkg) {
     return (
-      <ErrorState
-        title={t('marketplace.checkout.packageUnavailable')}
-        description={t('marketplace.checkout.packageUnavailableDesc')}
-      />
+      <View style={styles.screen}>
+        <View style={[styles.screenHeader, { paddingTop: insets.top + spacing[4] }]}>
+          <ScreenHeader title={t("marketplace.checkout.screenTitle")} onBack={() => router.back()} />
+        </View>
+        <ErrorState
+          title={t("marketplace.checkout.packageUnavailable")}
+          description={t("marketplace.checkout.packageUnavailableDesc")}
+        />
+      </View>
     );
   }
 
@@ -161,9 +168,12 @@ export default function CheckoutScreen() {
   const price = (pkg.price / 100).toLocaleString("es-AR");
 
   return (
-    <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
-      {/* Header BebasNeue */}
-      <Text style={styles.title}>{t('marketplace.checkout.screenTitle').toUpperCase()}</Text>
+    <View style={styles.screen}>
+      <View style={[styles.screenHeader, { paddingTop: insets.top + spacing[4] }]}>
+        <ScreenHeader title={t("marketplace.checkout.screenTitle")} onBack={() => router.back()} />
+      </View>
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
+      {/* Subtítulo coach · paquete */}
       <Text style={styles.titleSubtitle}>
         {coachName} · {pkg.title}
       </Text>
@@ -236,11 +246,23 @@ export default function CheckoutScreen() {
           <Text style={styles.confirmText}>{t('marketplace.checkout.submit').toUpperCase()}</Text>
         )}
       </TouchableOpacity>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: colors.bg,
+  },
+  screenHeader: {
+    paddingHorizontal: spacing[4],
+    paddingBottom: spacing[3],
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
   scroll: {
     flex: 1,
     backgroundColor: colors.bg,
@@ -248,14 +270,6 @@ const styles = StyleSheet.create({
   content: {
     padding: spacing[4],
     paddingBottom: spacing[12],
-  },
-  title: {
-    fontFamily: typography.heading,
-    color: colors.white,
-    fontSize: fontSize.screenTitle,
-    letterSpacing: 1,
-    textTransform: "uppercase",
-    marginBottom: spacing[1],
   },
   titleSubtitle: {
     fontFamily: typography.body,

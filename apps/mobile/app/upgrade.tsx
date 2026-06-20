@@ -7,13 +7,15 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import { useNavigation } from "expo-router";
+import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { purchasePro, restorePurchases } from "@/services/revenuecat";
 import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
-import { useState, useEffect, useLayoutEffect } from "react";
+import { useState, useEffect } from "react";
+import { ScreenHeader } from "@forzza/ui/native";
 import { TRACKED_EVENTS } from "@forzza/core";
 import { track } from "@/lib/analytics";
 
@@ -57,13 +59,10 @@ function FeatureRow({ feature, proCard = false }: { feature: PlanFeature; proCar
 
 export default function UpgradeScreen() {
   const { t } = useTranslation();
-  const navigation = useNavigation();
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [activating, setActivating] = useState(false);
   const [restoring, setRestoring] = useState(false);
-
-  useLayoutEffect(() => {
-    navigation.setOptions({ title: t('upgrade.screenTitle') });
-  }, [t, navigation]);
 
   useEffect(() => {
     track(TRACKED_EVENTS.UPGRADE_MODAL_SHOWN);
@@ -158,9 +157,10 @@ export default function UpgradeScreen() {
   return (
     <ScrollView
       style={styles.container}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing[2] }]}
     >
-      {/* Header: logoBox + título con última palabra en lime */}
+      <ScreenHeader title={t("upgrade.screenTitle")} onBack={() => router.back()} />
+      {/* Header: logoBox centrado */}
       <View style={styles.headerRow}>
         <View style={styles.logoBox}>
           <Text style={styles.logoLetter}>F</Text>

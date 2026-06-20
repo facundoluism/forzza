@@ -11,12 +11,13 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQueryClient } from "@tanstack/react-query";
 import type { Json } from "@forzza/db-types";
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
 import { track } from "@/lib/analytics";
-import { Input, Button, Card, NumInput } from "@forzza/ui/native";
+import { Input, Button, Card, NumInput, ScreenHeader } from "@forzza/ui/native";
 import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
 import { ExerciseLibraryPicker } from "@/components/ExerciseLibraryPicker";
 import { getExerciseIcon } from "@/constants/exerciseIcons";
@@ -275,6 +276,7 @@ function ReviewPanel({
 export default function NewRoutineScreen(): React.JSX.Element {
   const router = useRouter();
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -560,18 +562,11 @@ export default function NewRoutineScreen(): React.JSX.Element {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={handleBack}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          style={styles.backButton}
-        >
-          <Text style={styles.backButtonText}>
-            {currentIdx === 0 ? t('routineNew.cancel') : t('routineNew.back')}
-          </Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('routineNew.screenTitle')}</Text>
-        <View style={styles.headerSpacer} />
+      <View style={[styles.header, { paddingTop: insets.top + spacing[4] }]}>
+        <ScreenHeader
+          title={t("routineNew.screenTitle")}
+          onBack={handleBack}
+        />
       </View>
 
       {/* Step indicator */}
@@ -628,33 +623,11 @@ const styles = StyleSheet.create({
 
   // ── Header ──
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingTop: spacing[12],
     paddingHorizontal: spacing[4],
     paddingBottom: spacing[3],
     backgroundColor: colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
-  },
-  backButton: {
-    minWidth: 72,
-  },
-  backButtonText: {
-    fontFamily: typography.body,
-    color: colors.lime,
-    fontSize: fontSize.base,
-  },
-  headerTitle: {
-    fontFamily: typography.heading,
-    color: colors.text,
-    fontSize: 20,
-    letterSpacing: 1,
-    textTransform: "uppercase",
-  },
-  headerSpacer: {
-    minWidth: 72,
   },
 
   // ── Step bar ──

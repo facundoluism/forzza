@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback, useLayoutEffect } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -7,12 +7,12 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
-import { useRouter, useNavigation } from "expo-router";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
-import { EmptyState } from "@forzza/ui/native";
+import { EmptyState, ScreenHeader } from "@forzza/ui/native";
 import { colors, fontSize, spacing, radius, typography } from "@forzza/ui/tokens";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
@@ -121,7 +121,6 @@ function navigateForType(
 
 export default function NotificationsScreen(): React.JSX.Element {
   const { t } = useTranslation();
-  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const router = useRouter();
@@ -132,10 +131,6 @@ export default function NotificationsScreen(): React.JSX.Element {
   const [markingAll, setMarkingAll] = useState(false);
 
   const unreadCount = notifications.filter((n) => n.read_at === null).length;
-
-  useLayoutEffect(() => {
-    navigation.setOptions({ title: t('notifications.screenTitle') });
-  }, [t, navigation]);
 
   function timeAgo(iso: string): string {
     const diff = Date.now() - new Date(iso).getTime();
@@ -259,8 +254,13 @@ export default function NotificationsScreen(): React.JSX.Element {
 
   if (loading) {
     return (
-      <View style={[styles.centered, { paddingTop: insets.top }]}>
-        <ActivityIndicator color={colors.lime} size="large" />
+      <View style={styles.container}>
+        <View style={[styles.header, { paddingTop: insets.top + spacing[4] }]}>
+          <ScreenHeader title={t("notifications.screenTitle")} onBack={() => router.back()} />
+        </View>
+        <View style={styles.centered}>
+          <ActivityIndicator color={colors.lime} size="large" />
+        </View>
       </View>
     );
   }
@@ -269,23 +269,24 @@ export default function NotificationsScreen(): React.JSX.Element {
     <View style={styles.container}>
       {/* Header visual */}
       <View style={[styles.header, { paddingTop: insets.top + spacing[4] }]}>
-        <View style={styles.headerLeft}>
-          <Text style={styles.headerTitle}>{t('notifications.screenTitle')}</Text>
-          <Text style={styles.headerSubtitle}>{t('notifications.subtitle')}</Text>
-        </View>
-        {unreadCount > 0 && (
-          <TouchableOpacity
-            onPress={() => void markAllAsRead()}
-            disabled={markingAll}
-            activeOpacity={0.7}
-            hitSlop={{ top: 12, bottom: 12, left: 10, right: 10 }}
-            style={styles.markAllBtn}
-          >
-            <Text style={styles.markAllText}>
-              {markingAll ? t('notifications.markingRead') : t('notifications.markAllRead')}
-            </Text>
-          </TouchableOpacity>
-        )}
+        <ScreenHeader
+          title={t("notifications.screenTitle")}
+          onBack={() => router.back()}
+          right={
+            unreadCount > 0 ? (
+              <TouchableOpacity
+                onPress={() => void markAllAsRead()}
+                disabled={markingAll}
+                activeOpacity={0.7}
+                hitSlop={{ top: 12, bottom: 12, left: 10, right: 10 }}
+              >
+                <Text style={styles.markAllText}>
+                  {markingAll ? t("notifications.markingRead") : t("notifications.markAllRead")}
+                </Text>
+              </TouchableOpacity>
+            ) : undefined
+          }
+        />
       </View>
 
       {notifications.length === 0 ? (
@@ -332,30 +333,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "space-between",
-  },
-  headerLeft: {
-    flex: 1,
-    gap: spacing[1],
-  },
-  headerTitle: {
-    fontFamily: typography.heading,
-    color: colors.text,
-    fontSize: fontSize.screenTitle,
-    letterSpacing: 1,
-    textTransform: "uppercase",
-  },
-  headerSubtitle: {
-    fontFamily: typography.body,
-    color: colors.muted,
-    fontSize: 13,
-  },
-  markAllBtn: {
-    minHeight: 44,
-    justifyContent: "center",
-    paddingLeft: spacing[3],
   },
   markAllText: {
     fontFamily: typography.body,

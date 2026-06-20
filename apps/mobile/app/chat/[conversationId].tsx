@@ -1,6 +1,6 @@
 // Nota: el parámetro de ruta "conversationId" representa el assignment_id
 // (el chat es 1:1 por assignment, no existe tabla conversations)
-import { useEffect, useRef, useState, useCallback, useLayoutEffect } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -11,12 +11,14 @@ import {
   Platform,
   StyleSheet,
   ActivityIndicator,
+  Alert,
 } from "react-native";
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
-import { EmptyState } from "@forzza/ui/native";
+import { EmptyState, ScreenHeader } from "@forzza/ui/native";
 import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
@@ -67,7 +69,8 @@ const db = supabase as any;
 
 export default function ConversationScreen(): React.JSX.Element {
   const { t } = useTranslation();
-  const navigation = useNavigation();
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
   // El parámetro "conversationId" es en realidad el assignment_id
   const { conversationId: assignmentId } = useLocalSearchParams<{
     conversationId: string;
@@ -82,10 +85,6 @@ export default function ConversationScreen(): React.JSX.Element {
   const [hasMore, setHasMore] = useState(true);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
-
-  useLayoutEffect(() => {
-    navigation.setOptions({ title: t('conversation.screenTitle') });
-  }, [t, navigation]);
 
   function formatTime(iso: string): string {
     return new Date(iso).toLocaleTimeString(undefined, {
@@ -200,24 +199,45 @@ export default function ConversationScreen(): React.JSX.Element {
     setSending(true);
     setText("");
 
-    const { error } = await db.from("messages").insert({
-      assignment_id: assignmentId,
-      sender_id: user.id,
-      content,
-    });
+    const { data, error } = await db
+      .from("messages")
+      .insert({
+        assignment_id: assignmentId,
+        sender_id: user.id,
+        content,
+      })
+      .select("id, assignment_id, sender_id, content, read_at, created_at")
+      .single();
 
-    if (error) {
+    if (error || !data) {
+      // Restituir el texto y avisar: no silenciar el fallo de envío.
       setText(content);
+      Alert.alert(t("conversation.sendError"));
+      setSending(false);
+      return;
     }
 
+    // Optimista: mostrar el mensaje al instante. Si Realtime luego lo trae,
+    // el dedup por id (handler de postgres_changes) evita duplicarlo.
+    const sent = data as Message;
+    setMessages((prev) => (prev.some((m) => m.id === sent.id) ? prev : [...prev, sent]));
+    setTimeout(() => {
+      flatListRef.current?.scrollToEnd({ animated: true });
+    }, 100);
+
     setSending(false);
-  }, [text, user, assignmentId, sending]);
+  }, [text, user, assignmentId, sending, t]);
 
   // ── Loading ───────────────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator color={colors.lime} size="large" />
+      <View style={styles.container}>
+        <View style={[styles.chatHeader, { paddingTop: insets.top + spacing[4] }]}>
+          <ScreenHeader title={t("conversation.screenTitle")} onBack={() => router.back()} />
+        </View>
+        <View style={styles.centered}>
+          <ActivityIndicator color={colors.lime} size="large" />
+        </View>
       </View>
     );
   }
@@ -228,6 +248,9 @@ export default function ConversationScreen(): React.JSX.Element {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
     >
+      <View style={[styles.chatHeader, { paddingTop: insets.top + spacing[4] }]}>
+        <ScreenHeader title={t("conversation.screenTitle")} onBack={() => router.back()} />
+      </View>
       {loadingMore && (
         <View style={styles.loadingMoreBar}>
           <ActivityIndicator size="small" color={colors.muted} />
@@ -294,6 +317,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.bg,
+  },
+  chatHeader: {
+    paddingHorizontal: spacing[4],
+    paddingBottom: spacing[3],
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
   centered: {
     flex: 1,

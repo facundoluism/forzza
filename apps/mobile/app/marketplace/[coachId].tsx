@@ -9,14 +9,14 @@ import {
   TextInput,
   ActivityIndicator,
 } from "react-native";
-import { useLocalSearchParams, useRouter, useNavigation } from "expo-router";
-import { useLayoutEffect } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/providers/AuthProvider";
 import { useState } from "react";
-import { Card, Pill, Skeleton, ErrorState, EmptyState } from "@forzza/ui/native";
+import { Card, Pill, Skeleton, ErrorState, EmptyState, ScreenHeader } from "@forzza/ui/native";
 import { colors, spacing, typography, radius, fontSize } from "@forzza/ui/tokens";
 
 // Columnas reales de coach_packages: id, coach_id, tier, title, description, price, active
@@ -451,13 +451,9 @@ function ReviewsSection({
 export default function CoachProfileScreen() {
   const { coachId } = useLocalSearchParams<{ coachId: string }>();
   const router = useRouter();
-  const navigation = useNavigation();
   const { t } = useTranslation();
   const { user } = useAuth();
-
-  useLayoutEffect(() => {
-    navigation.setOptions({ title: t("marketplace.coach.screenTitle") });
-  }, [t, navigation]);
+  const insets = useSafeAreaInsets();
 
   const { data: coach, isLoading, isError, refetch } = useQuery({
     queryKey: ["coach_profile", coachId],
@@ -526,7 +522,11 @@ export default function CoachProfileScreen() {
 
   if (isLoading) {
     return (
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
+      <View style={styles.screen}>
+        <View style={[styles.screenHeader, { paddingTop: insets.top + spacing[4] }]}>
+          <ScreenHeader title={t("marketplace.coach.screenTitle")} onBack={() => router.back()} />
+        </View>
+        <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
         {/* Hero skeleton centrado */}
         <View style={styles.heroSkeletonCenter}>
           <Skeleton width={96} height={96} borderRadius={9999} />
@@ -542,16 +542,22 @@ export default function CoachProfileScreen() {
         <View style={{ height: spacing[3] }} />
         <Skeleton width="100%" height={140} />
       </ScrollView>
+      </View>
     );
   }
 
   if (isError || !coach) {
     return (
-      <ErrorState
-        title={t("marketplace.coach.notFound")}
-        description={t("marketplace.coach.notFoundDesc")}
-        onRetry={() => void refetch()}
-      />
+      <View style={styles.screen}>
+        <View style={[styles.screenHeader, { paddingTop: insets.top + spacing[4] }]}>
+          <ScreenHeader title={t("marketplace.coach.screenTitle")} onBack={() => router.back()} />
+        </View>
+        <ErrorState
+          title={t("marketplace.coach.notFound")}
+          description={t("marketplace.coach.notFoundDesc")}
+          onRetry={() => void refetch()}
+        />
+      </View>
     );
   }
 
@@ -573,7 +579,11 @@ export default function CoachProfileScreen() {
       : null;
 
   return (
-    <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
+    <View style={styles.screen}>
+      <View style={[styles.screenHeader, { paddingTop: insets.top + spacing[4] }]}>
+        <ScreenHeader title={t("marketplace.coach.screenTitle")} onBack={() => router.back()} />
+      </View>
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
       {/* Hero */}
       <View style={styles.hero}>
         {/* Avatar grande con borde lime */}
@@ -663,11 +673,23 @@ export default function CoachProfileScreen() {
           ratingCount={coach.rating_count}
         />
       )}
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: colors.bg,
+  },
+  screenHeader: {
+    paddingHorizontal: spacing[4],
+    paddingBottom: spacing[3],
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
   scroll: {
     flex: 1,
     backgroundColor: colors.bg,

@@ -2,11 +2,11 @@ import {
   View,
   Text,
   ScrollView,
-  TouchableOpacity,
   StyleSheet,
   Linking,
   Alert,
   ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -15,7 +15,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/providers/AuthProvider";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { supabase } from "@/lib/supabase";
-import { EmptyState, ErrorState } from "@forzza/ui/native";
+import { EmptyState, ErrorState, ScreenHeader } from "@forzza/ui/native";
 import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
 
 type LiveSessionStatus = "scheduled" | "completed" | "canceled";
@@ -263,11 +263,13 @@ export default function LiveSessionsScreen(): React.JSX.Element {
   // ── Loading ──────────────────────────────────────────────────────────────────
   if (entitlementsLoading || isLoading) {
     return (
-      <View
-        style={[styles.container, styles.centered, { paddingTop: insets.top + spacing[4] }]}
-        testID="live-sessions-loading"
-      >
-        <ActivityIndicator color={colors.lime} size="large" />
+      <View style={styles.container} testID="live-sessions-loading">
+        <View style={[styles.header, { paddingTop: insets.top + spacing[4] }]}>
+          <ScreenHeader title={t("liveSessions.screenTitle")} onBack={() => router.back()} />
+        </View>
+        <View style={styles.centered}>
+          <ActivityIndicator color={colors.lime} size="large" />
+        </View>
       </View>
     );
   }
@@ -275,12 +277,9 @@ export default function LiveSessionsScreen(): React.JSX.Element {
   // ── Error ────────────────────────────────────────────────────────────────────
   if (isError) {
     return (
-      <View style={[styles.container, { paddingTop: insets.top }]}>
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-            <Text style={styles.backButtonText}>‹ {t("tabs.home")}</Text>
-          </TouchableOpacity>
-          <Text style={styles.screenTitle}>{t("liveSessions.screenTitle")}</Text>
+      <View style={styles.container}>
+        <View style={[styles.header, { paddingTop: insets.top + spacing[4] }]}>
+          <ScreenHeader title={t("liveSessions.screenTitle")} onBack={() => router.back()} />
         </View>
         <ErrorState
           title={t("liveSessions.error_title")}
@@ -295,14 +294,11 @@ export default function LiveSessionsScreen(): React.JSX.Element {
   if (!hasCoach) {
     return (
       <View
-        style={[styles.container, { paddingTop: insets.top }]}
+        style={styles.container}
         testID="live-sessions-no-coach"
       >
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-            <Text style={styles.backButtonText}>‹ {t("tabs.home")}</Text>
-          </TouchableOpacity>
-          <Text style={styles.screenTitle}>{t("liveSessions.screenTitle")}</Text>
+        <View style={[styles.header, { paddingTop: insets.top + spacing[4] }]}>
+          <ScreenHeader title={t("liveSessions.screenTitle")} onBack={() => router.back()} />
         </View>
         <EmptyState
           title={t("liveSessions.empty_title")}
@@ -316,16 +312,16 @@ export default function LiveSessionsScreen(): React.JSX.Element {
   }
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      {/* Header con gradient visual */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Text style={styles.backButtonText}>‹ {t("tabs.home")}</Text>
-        </TouchableOpacity>
-        <Text style={styles.screenTitle}>{t("liveSessions.screenTitle")}</Text>
-        {sessions.length > 0 && sessions[0]?.coach_display_name ? (
-          <Text style={styles.headerSubtitle}>{sessions[0].coach_display_name}</Text>
-        ) : null}
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={[styles.header, { paddingTop: insets.top + spacing[4] }]}>
+        <ScreenHeader
+          title={t("liveSessions.screenTitle")}
+          onBack={() => router.back()}
+          {...(sessions.length > 0 && sessions[0]?.coach_display_name
+            ? { subtitle: sessions[0].coach_display_name }
+            : {})}
+        />
       </View>
 
       <ScrollView
@@ -372,33 +368,10 @@ const styles = StyleSheet.create({
   // ── Header ──
   header: {
     paddingHorizontal: spacing[4],
-    paddingTop: spacing[4],
     paddingBottom: spacing[4],
     backgroundColor: colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
-  },
-  backButton: {
-    marginBottom: spacing[3],
-  },
-  backButtonText: {
-    fontFamily: typography.body,
-    color: colors.muted,
-    fontSize: fontSize.sm,
-  },
-  screenTitle: {
-    fontFamily: typography.heading,
-    color: colors.text,
-    fontSize: fontSize.screenTitle,
-    letterSpacing: 1,
-    textTransform: "uppercase",
-    lineHeight: 36,
-  },
-  headerSubtitle: {
-    fontFamily: typography.body,
-    color: colors.muted,
-    fontSize: fontSize.sm,
-    marginTop: spacing[1],
   },
 
   // ── Scroll ──

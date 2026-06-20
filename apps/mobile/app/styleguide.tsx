@@ -5,6 +5,8 @@ import {
   ScrollView,
   StyleSheet,
 } from "react-native";
+import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, spacing, fontSize, typography } from "@forzza/ui/tokens";
 import {
   Button,
@@ -28,6 +30,7 @@ import {
   Confetti,
   Input,
   ExerciseIcon,
+  ScreenHeader,
 } from "@forzza/ui/native";
 import type { ExerciseIconKey } from "@forzza/ui/native";
 
@@ -47,6 +50,8 @@ function SectionHeading({ children }: { children: string }) {
 }
 
 export default function StyleguideScreen() {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState("rutinas");
   const [numValue, setNumValue] = useState(8);
   const [weightValue, setWeightValue] = useState(80);
@@ -58,6 +63,10 @@ export default function StyleguideScreen() {
   return (
     <View style={styles.root}>
       <Confetti active={confettiActive} />
+
+      <View style={[styles.headerBar, { paddingTop: insets.top }]}>
+        <ScreenHeader title="Styleguide" onBack={() => router.back()} />
+      </View>
 
       <ScrollView
         style={styles.scroll}
@@ -503,6 +512,11 @@ export default function StyleguideScreen() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
+    backgroundColor: colors.bg,
+  },
+  headerBar: {
+    paddingHorizontal: spacing[4],
+    paddingBottom: spacing[2],
     backgroundColor: colors.bg,
   },
   scroll: {

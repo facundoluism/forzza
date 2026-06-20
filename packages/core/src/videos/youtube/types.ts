@@ -38,6 +38,12 @@ export interface YouTubeSearchClient {
     query: string,
     opts?: YouTubeSearchOptions,
   ): Promise<YouTubeVideoDetails[]>;
+  /**
+   * Trae los detalles de videos por sus IDs (videos.list, 1 unidad de cuota).
+   * Usado por la rama de PIN del pipeline: salta search.list y resuelve solo el
+   * video fijado por el owner.
+   */
+  fetchVideosByIds(ids: string[]): Promise<YouTubeVideoDetails[]>;
 }
 
 // ─── Shapes crudos de la YouTube Data API v3 ──────────────────────────────────

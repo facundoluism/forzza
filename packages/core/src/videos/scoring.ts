@@ -62,7 +62,7 @@ const STOPWORDS: ReadonlySet<string> = new Set([
 ]);
 
 /** lowercase + saca acentos/diacríticos. */
-function stripAccents(value: string): string {
+export function stripAccents(value: string): string {
   return value
     .toLowerCase()
     .normalize("NFD")
@@ -116,7 +116,7 @@ function scoreText(video: ScorableVideo, exercise: ExerciseContext): number {
  * y elimina todo carácter no alfanumérico (espacios, guiones, ™, etc.).
  * Así "ATHLEAN-X™" → "athleanx", "Scott Herman Fitness" → "scotthermanfitness".
  */
-function normalizeChannel(s: string): string {
+export function normalizeChannel(s: string): string {
   return stripAccents(s).replace(/[^a-z0-9]/g, "");
 }
 

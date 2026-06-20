@@ -33,7 +33,12 @@ import { createClient } from "@supabase/supabase-js";
 import {
   buildSearchQuery,
   pickBest,
+  resolveFeedbackRules,
+  filterCandidates,
+  hasPin,
   type ExerciseContext,
+  type VideoFeedback,
+  type ExerciseFeedbackRules,
 } from "../packages/core/src/videos/index.js";
 import { RealYouTubeClient } from "../packages/core/src/videos/youtube/index.js";
 import {
@@ -283,9 +288,30 @@ async function main(): Promise<void> {
     }
   }
 
+  // 6.5) Traer TODO el feedback de curación de una sola query y resolver en memoria.
+  //      Las filas se consolidan por (ejercicio, idioma) con resolveFeedbackRules.
+  //      Se resuelve por exercise_id (UUID), que es lo que guarda la tabla.
+  let feedbackRows: VideoFeedback[] = [];
+  {
+    const { data: fbData, error: fbError } = await supabase
+      .from("exercise_video_feedback")
+      .select(
+        "exercise_id, lang, action, youtube_id, channel_title, query_add, query_remove, filters, note, created_by, created_at"
+      );
+    if (fbError) {
+      console.error("ERROR al leer exercise_video_feedback:", fbError.message);
+      process.exit(1);
+    }
+    feedbackRows = (fbData ?? []) as VideoFeedback[];
+    console.log(
+      `Cargadas ${feedbackRows.length} filas de exercise_video_feedback (directivas de curación).`
+    );
+  }
+
   // 7) Procesar cada (ejercicio, idioma)
   let processed = 0;
   let sinCandidato = 0;
+  let pinned = 0;
 
   for (const exercise of filtered) {
     for (const langCode of langs) {
@@ -298,39 +324,15 @@ async function main(): Promise<void> {
         lang: langCode,
       };
 
-      const query = buildSearchQuery(ctx);
+      // Resolver directivas de curación del owner para este (ejercicio, idioma).
+      // Se resuelve por exercise_id (UUID): rows con exercise_id null = global.
+      const rules: ExerciseFeedbackRules = resolveFeedbackRules(
+        feedbackRows,
+        exercise.id,
+        langCode
+      );
 
-      let videos;
-      try {
-        videos = await ytClient.searchVideos(query, {
-          maxResults: 10,
-          relevanceLanguage: langCode,
-        });
-      } catch (err) {
-        console.error(`  ERROR buscando ${exercise.slug}/${langCode}: ${String(err)}`);
-        continue;
-      }
-
-      const { winner, scored } = pickBest(videos, ctx, undefined, {
-        channelAllowlist: EXERCISE_VIDEO_CHANNEL_ALLOWLIST,
-      });
-
-      if (winner === null) {
-        console.log(
-          `  SIN_CANDIDATO  ${exercise.slug}/${langCode} (${videos.length} videos, todos descartados)`
-        );
-        // Purgar cualquier entrada acumulada previa: si ahora no hay candidato
-        // válido, una entrada vieja (p. ej. un match flojo de una corrida anterior)
-        // no debe sobrevivir al re-run.
-        accumulatedMap.delete(`${exercise.slug}|${langCode}`);
-        sinCandidato++;
-        continue;
-      }
-
-      // Obtener score y breakdown del ganador: es el primer item no-descartado en scored[]
-      const winnerScoredItem = scored.find((item) => !item.result.discarded);
-      const score = winnerScoredItem?.result.score ?? 0;
-      const breakdown = winnerScoredItem?.result.breakdown ?? {
+      const emptyBreakdown = {
         text: 0,
         channel: 0,
         engagement: 0,
@@ -339,13 +341,95 @@ async function main(): Promise<void> {
         captionsRecency: 0,
       };
 
+      let winner: { youtubeId?: string; title: string; channelId: string; channelTitle: string; durationSeconds: number } | null;
+      let score: number;
+      let breakdown = emptyBreakdown;
+      let status: "published" | "needs_review";
+      let isPin = false;
+
+      if (hasPin(rules)) {
+        // ── Rama de PIN ──────────────────────────────────────────────────────
+        // Saltar search.list (100 unidades): traer SOLO el video fijado (1 unidad),
+        // scorearlo para tener breakdown, y forzar status='published' sin importar el score.
+        const pinnedId = rules.pinnedYoutubeId as string;
+        let pinDetails;
+        try {
+          pinDetails = await ytClient.fetchVideosByIds([pinnedId]);
+        } catch (err) {
+          console.error(`  ERROR PIN ${exercise.slug}/${langCode} (${pinnedId}): ${String(err)}`);
+          continue;
+        }
+        const pinVideo = pinDetails[0];
+        if (!pinVideo) {
+          console.log(
+            `  PIN_NO_RESUELTO ${exercise.slug}/${langCode} youtube_id=${pinnedId} (no encontrado en videos.list)`
+          );
+          accumulatedMap.delete(`${exercise.slug}|${langCode}`);
+          sinCandidato++;
+          continue;
+        }
+        // Scorear igual (para trazabilidad del breakdown), pero forzar published.
+        const { scored } = pickBest([pinVideo], ctx, undefined, {
+          channelAllowlist: EXERCISE_VIDEO_CHANNEL_ALLOWLIST,
+        });
+        const item = scored[0];
+        score = item?.result.score ?? 0;
+        breakdown = item?.result.breakdown ?? emptyBreakdown;
+        winner = pinVideo;
+        status = "published"; // PIN siempre se publica.
+        isPin = true;
+        pinned++;
+      } else {
+        // ── Rama normal (búsqueda) ───────────────────────────────────────────
+        const query = buildSearchQuery(ctx, {
+          queryAdd: rules.queryAdd,
+          queryRemove: rules.queryRemove,
+        });
+
+        let videos;
+        try {
+          videos = await ytClient.searchVideos(query, {
+            maxResults: 10,
+            relevanceLanguage: langCode,
+          });
+        } catch (err) {
+          console.error(`  ERROR buscando ${exercise.slug}/${langCode}: ${String(err)}`);
+          continue;
+        }
+
+        // Aplicar blocklist/filtros del feedback ANTES del scoring/selección.
+        const filtered = filterCandidates(videos, rules, langCode);
+
+        const { winner: best, scored } = pickBest(filtered, ctx, undefined, {
+          channelAllowlist: EXERCISE_VIDEO_CHANNEL_ALLOWLIST,
+        });
+
+        if (best === null) {
+          console.log(
+            `  SIN_CANDIDATO  ${exercise.slug}/${langCode} (${videos.length} videos, ${filtered.length} tras feedback, todos descartados)`
+          );
+          // Purgar cualquier entrada acumulada previa: si ahora no hay candidato
+          // válido, una entrada vieja (p. ej. un match flojo de una corrida anterior)
+          // no debe sobrevivir al re-run.
+          accumulatedMap.delete(`${exercise.slug}|${langCode}`);
+          sinCandidato++;
+          continue;
+        }
+
+        // Score y breakdown del ganador: primer item no-descartado en scored[]
+        const winnerScoredItem = scored.find((i) => !i.result.discarded);
+        score = winnerScoredItem?.result.score ?? 0;
+        breakdown = winnerScoredItem?.result.breakdown ?? emptyBreakdown;
+        winner = best;
+        status =
+          score >= EXERCISE_VIDEO_AUTOPUBLISH_THRESHOLD ? "published" : "needs_review";
+      }
+
       // YouTubeVideoDetails es superset de ScorableVideo: tiene youtubeId en runtime
-      const youtubeId = (winner as { youtubeId?: string }).youtubeId ?? "";
-      const status: "published" | "needs_review" =
-        score >= EXERCISE_VIDEO_AUTOPUBLISH_THRESHOLD ? "published" : "needs_review";
+      const youtubeId = winner.youtubeId ?? "";
 
       console.log(
-        `  ${exercise.slug} | ${langCode} | score=${score.toFixed(4)} | ${status} | ${youtubeId} | ${winner.channelTitle} | ${winner.title}`
+        `  ${isPin ? "[PIN] " : ""}${exercise.slug} | ${langCode} | score=${score.toFixed(4)} | ${status}${isPin ? " (forzado por PIN)" : ""} | ${youtubeId} | ${winner.channelTitle} | ${winner.title}`
       );
 
       const entry: VideoEntry = {
@@ -367,7 +451,7 @@ async function main(): Promise<void> {
 
   console.log(`${"─".repeat(80)}`);
   console.log(
-    `Completado: ${processed} búsquedas, ${sinCandidato} sin candidato, ${accumulatedMap.size} entradas totales en JSON.`
+    `Completado: ${processed} (${pinned} por PIN), ${sinCandidato} sin candidato, ${accumulatedMap.size} entradas totales en JSON.`
   );
 
   if (dryRun) {

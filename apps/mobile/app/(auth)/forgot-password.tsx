@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { supabase } from "@/lib/supabase";
 import { forgotPasswordSchema } from "@forzza/core";
-import { Input } from "@forzza/ui/native";
+import { Input, ScreenHeader } from "@forzza/ui/native";
 import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
 
 type PageState = "idle" | "loading" | "success" | "error";
@@ -67,28 +67,17 @@ export default function ForgotPasswordScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={[styles.screenHeader, { paddingTop: insets.top + spacing[4] }]}>
+        <ScreenHeader title={t("auth.forgotPassword.title")} onBack={() => router.back()} />
+      </View>
       <ScrollView
         contentContainerStyle={[
           styles.content,
-          { paddingTop: insets.top + spacing[8], paddingBottom: insets.bottom + spacing[8] },
+          { paddingBottom: insets.bottom + spacing[8] },
         ]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Header */}
-        <View style={styles.logoRow}>
-          <View style={styles.logoBox}>
-            <Text style={styles.logoIcon}>⚡</Text>
-          </View>
-          <Text style={styles.logoText}>FORZZA</Text>
-        </View>
-
-        <View style={styles.headlineBlock}>
-          <Text style={styles.headlineLine}>{t('auth.forgotPassword.headlineTop')}</Text>
-          <Text style={[styles.headlineLine, styles.headlineAccent]}>{t('auth.forgotPassword.headlineBottom')}</Text>
-        </View>
-        <Text style={styles.headlineSubtitle}>{t('auth.forgotPassword.headlineSubtitle')}</Text>
-
         {/* Campo email con label */}
         <Text style={styles.inputLabel}>{t('auth.forgotPassword.emailLabel')}</Text>
         <Input
@@ -112,10 +101,6 @@ export default function ForgotPasswordScreen() {
             : <Text style={styles.buttonText}>{t('auth.forgotPassword.submit')}</Text>
           }
         </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => router.back()} style={styles.backLink}>
-          <Text style={styles.backLinkText}>{t('auth.forgotPassword.back')}</Text>
-        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -126,10 +111,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg,
   },
+  screenHeader: {
+    paddingHorizontal: spacing[4],
+    paddingBottom: spacing[3],
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
   successContainer: {
     justifyContent: "center",
     alignItems: "center",
     padding: spacing[6],
+    flex: 1,
   },
   successEmoji: {
     fontSize: fontSize["5xl"],
@@ -155,46 +148,7 @@ const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
     paddingHorizontal: spacing[6],
-  },
-  logoRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing[3],
-    marginBottom: spacing[8],
-  },
-  logoBox: {
-    width: 32,
-    height: 32,
-    backgroundColor: colors.lime,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  logoIcon: {
-    fontSize: fontSize.base,
-  },
-  logoText: {
-    fontFamily: typography.heading,
-    fontSize: 26,
-    color: colors.text,
-  },
-  headlineBlock: {
-    marginBottom: spacing[2],
-  },
-  headlineLine: {
-    fontFamily: typography.heading,
-    fontSize: 42,
-    lineHeight: 44,
-    color: colors.text,
-  },
-  headlineAccent: {
-    color: colors.lime,
-  },
-  headlineSubtitle: {
-    fontFamily: typography.body,
-    fontSize: fontSize.md,
-    color: colors.muted,
-    marginBottom: spacing[8],
+    paddingTop: spacing[6],
   },
   inputLabel: {
     fontFamily: typography.body,
@@ -227,14 +181,5 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontSize: fontSize.lg,
     letterSpacing: 1,
-  },
-  backLink: {
-    alignItems: "center",
-    paddingTop: spacing[4],
-  },
-  backLinkText: {
-    fontFamily: typography.body,
-    color: colors.gray,
-    fontSize: fontSize.sm,
   },
 });

@@ -399,6 +399,7 @@
     }
   },
   "session": {
+    "screenTitle": "Entreno activo",
     "resting": "Descansando",
     "skipRest": "Saltar descanso",
     "logSet": "Registrar serie",
@@ -437,8 +438,6 @@
     "stepInfo": "Información",
     "stepExercises": "Ejercicios",
     "stepReview": "Revisar",
-    "cancel": "Cancelar",
-    "back": "‹ Atrás",
     "next": "Siguiente",
     "save": "Guardar rutina",
     "saving": "Guardando...",
@@ -471,7 +470,7 @@
     "headerSubtitle": "Creá tu rutina personalizada"
   },
   "routineDetail": {
-    "back": "‹ Volver",
+    "screenTitle": "Rutina",
     "exercise_one": "ejercicio",
     "exercise_other": "ejercicios",
     "restSeconds": "Descanso: {{n}}s",
@@ -503,11 +502,11 @@
     "emptyTitle": "Sin mensajes",
     "emptyHint": "Escribí el primer mensaje para empezar la conversación.",
     "inputPlaceholder": "Escribí un mensaje...",
-    "send": "Enviar"
+    "send": "Enviar",
+    "sendError": "No se pudo enviar el mensaje. Reintentá."
   },
   "tabata": {
     "screenTitle": "Tabata",
-    "back": "‹ Volver",
     "subtitle": "Entrenamiento de alta intensidad",
     "info_title": "💡 ¿Qué es el Tabata?",
     "info_body": "Protocolo de 20 seg de trabajo máximo + 10 seg de descanso, repetido 8 veces. Total: 4 minutos de alta intensidad.",

@@ -48,6 +48,7 @@ import {
   Tabs,
   Input,
   Sheet,
+  ScreenHeader,
 } from "@forzza/ui/native";
 
 // ── Constantes ────────────────────────────────────────────────────────────────
@@ -724,16 +725,12 @@ export default function TabataScreen(): React.JSX.Element {
         </View>
       </Sheet>
 
+      <ScreenHeader
+        title={t("tabata.screenTitle")}
+        onBack={() => router.back()}
+        subtitle={t("tabata.subtitle")}
+      />
       <ScrollView contentContainerStyle={styles.configContent} showsVerticalScrollIndicator={false}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-          testID="tabata-back"
-        >
-          <Text style={styles.backButtonText}>{t("tabata.back")}</Text>
-        </TouchableOpacity>
-        <Text style={styles.screenTitle}>{t("tabata.screenTitle")}</Text>
-        <Text style={styles.screenSubtitle}>{t("tabata.subtitle")}</Text>
 
         {/* Tabs Simple / Avanzado */}
         <Tabs
@@ -1123,30 +1120,6 @@ const styles = StyleSheet.create({
   configContent: {
     padding: spacing[4],
     paddingBottom: spacing[8],
-  },
-  backButton: {
-    marginBottom: spacing[3],
-  },
-  backButtonText: {
-    fontFamily: typography.body,
-    color: colors.lime,
-    fontSize: fontSize.base,
-  },
-  screenTitle: {
-    fontFamily: typography.heading,
-    color: colors.text,
-    fontSize: fontSize.screenTitle,
-    fontWeight: "900",
-    letterSpacing: 1,
-    textTransform: "uppercase",
-    lineHeight: 36,
-  },
-  screenSubtitle: {
-    fontFamily: typography.body,
-    color: colors.muted,
-    fontSize: fontSize.sm,
-    marginBottom: spacing[4],
-    marginTop: spacing[1],
   },
   tabsBar: {
     marginBottom: spacing[4],

@@ -1,4 +1,5 @@
 import { requireAdmin } from "@/lib/auth/admin";
+import { Link } from "@/i18n/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { EmptyState, ErrorState } from "@forzza/ui/web";
 import type { Metadata } from "next";
@@ -321,7 +322,11 @@ export default async function AdminUsuariosPage({ params, searchParams }: Props)
               const activeSub = u.subscriptions?.find((s) => s.status === "active");
               const email = emailMap.get(u.id);
               return (
-                <div key={u.id} className="rounded-xl border border-border bg-surface p-4 space-y-2">
+                <Link
+                  key={u.id}
+                  href={`/admin/usuarios/${u.id}`}
+                  className="block rounded-xl border border-border bg-surface p-4 space-y-2 hover:bg-surface-2 transition-colors"
+                >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       {email ? (
@@ -346,7 +351,7 @@ export default async function AdminUsuariosPage({ params, searchParams }: Props)
                     )}
                     <span>{formatDate(u.created_at)}</span>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>
@@ -372,16 +377,25 @@ export default async function AdminUsuariosPage({ params, searchParams }: Props)
                     <tr key={u.id} className="hover:bg-surface-2 transition-colors">
                       {/* Email — PII, shown in UI only, never logged */}
                       <td className="px-6 py-4">
-                        {email ? (
-                          <span className="text-text text-sm">{email}</span>
-                        ) : (
-                          <span className="text-muted text-xs">—</span>
-                        )}
+                        <Link
+                          href={`/admin/usuarios/${u.id}`}
+                          className="hover:text-[#C8FF00] transition-colors"
+                        >
+                          {email ? (
+                            <span className="text-text text-sm">{email}</span>
+                          ) : (
+                            <span className="text-muted text-xs">—</span>
+                          )}
+                        </Link>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="font-mono text-muted text-xs" title={u.id}>
+                        <Link
+                          href={`/admin/usuarios/${u.id}`}
+                          className="font-mono text-muted text-xs hover:text-[#C8FF00] transition-colors"
+                          title={u.id}
+                        >
                           {u.id.slice(0, 8)}…
-                        </span>
+                        </Link>
                       </td>
                       <td className="px-6 py-4 text-muted text-sm">{u.country}</td>
                       <td className="px-6 py-4">

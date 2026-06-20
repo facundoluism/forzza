@@ -1,4 +1,4 @@
-import { useState, useMemo, useLayoutEffect } from "react";
+import { useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -7,12 +7,13 @@ import {
   StyleSheet,
   type ListRenderItemInfo,
 } from "react-native";
-import { useNavigation } from "expo-router";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { CoachCard, type CoachCardData } from "@/components/CoachCard";
-import { EmptyState, Skeleton, ErrorState } from "@forzza/ui/native";
+import { EmptyState, Skeleton, ErrorState, ScreenHeader } from "@forzza/ui/native";
 import { colors, fontSize, spacing, typography, radius } from "@forzza/ui/tokens";
 
 interface CountryConfig {
@@ -36,12 +37,9 @@ function CoachCardSkeleton() {
 
 export default function MarketplaceScreen() {
   const { t } = useTranslation();
-  const navigation = useNavigation();
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [search, setSearch] = useState("");
-
-  useLayoutEffect(() => {
-    navigation.setOptions({ title: t('marketplace.index.screenTitle') });
-  }, [t, navigation]);
 
   const { data: coaches, isLoading, isError, refetch } = useQuery({
     queryKey: ["marketplace_coaches"],
@@ -92,17 +90,13 @@ export default function MarketplaceScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Header DS: logoBox + título BebasNeue + label muted */}
-      <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <View style={styles.logoBox}>
-            <Text style={styles.logoLetter}>F</Text>
-          </View>
-          <View style={styles.headerText}>
-            <Text style={styles.title}>{t('marketplace.index.screenTitle').toUpperCase()}</Text>
-            <Text style={styles.subtitle}>{t('marketplace.index.subtitle')}</Text>
-          </View>
-        </View>
+      {/* Header DS */}
+      <View style={[styles.header, { paddingTop: insets.top + spacing[4] }]}>
+        <ScreenHeader
+          title={t("marketplace.index.screenTitle")}
+          onBack={() => router.back()}
+          subtitle={t("marketplace.index.subtitle")}
+        />
       </View>
 
       {/* Search bar con ícono */}
@@ -170,44 +164,10 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: spacing[4],
-    paddingTop: spacing[5],
     paddingBottom: spacing[3],
-  },
-  headerTop: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing[3],
-  },
-  logoBox: {
-    width: 40,
-    height: 40,
-    borderRadius: radius.md,
-    backgroundColor: colors.lime,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  logoLetter: {
-    fontFamily: typography.heading,
-    color: colors.black,
-    fontSize: fontSize["2xl"],
-    letterSpacing: 0,
-  },
-  headerText: {
-    flex: 1,
-  },
-  title: {
-    fontFamily: typography.heading,
-    color: colors.white,
-    fontSize: fontSize.screenTitle,
-    letterSpacing: 1,
-    textTransform: "uppercase",
-    lineHeight: fontSize.screenTitle + 4,
-  },
-  subtitle: {
-    fontFamily: typography.body,
-    color: colors.muted,
-    fontSize: fontSize.sm,
-    marginTop: 2,
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
   searchWrapper: {
     paddingHorizontal: spacing[4],
