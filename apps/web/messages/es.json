@@ -752,7 +752,7 @@
         "noteLabel": "Nota libre (opcional)",
         "notePlaceholder": "Cualquier aclaración adicional para el equipo…",
         "alwaysBlocks": "Siempre se va a registrar un bloqueo del video {youtubeId} del canal {channelTitle} para que no vuelva a aparecer.",
-        "errorVariantTermsRequired": "Si elegís "Variante equivocada", tenés que especificar al menos un término para agregar o quitar.",
+        "errorVariantTermsRequired": "Si elegís \"Variante equivocada\", tenés que especificar al menos un término para agregar o quitar.",
         "errorPinInvalid": "La URL o ID de YouTube ingresada no es válida. Revisá el link.",
         "btnCancel": "Cancelar",
         "btnConfirm": "Descartar video",
