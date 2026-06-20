@@ -143,4 +143,50 @@ describe("buildSearchQuery", () => {
       )
     ).toBe("Fondos en paralelas asistidos cómo hacer técnica correcta");
   });
+
+  // --- overrides de feedback (queryAdd / queryRemove) ---
+
+  it("options vacío: comportamiento idéntico al base", () => {
+    expect(buildSearchQuery(ctx({ name: "Sentadilla" }), {})).toBe(
+      "Sentadilla cómo hacer técnica correcta"
+    );
+    expect(buildSearchQuery(ctx({ name: "Sentadilla" }), {})).toBe(
+      buildSearchQuery(ctx({ name: "Sentadilla" }))
+    );
+  });
+
+  it("queryAdd: concatena términos al final", () => {
+    expect(
+      buildSearchQuery(ctx({ name: "Sentadilla" }), { queryAdd: ["en español", "barra"] })
+    ).toBe("Sentadilla cómo hacer técnica correcta en español barra");
+  });
+
+  it("queryAdd ignora términos en blanco", () => {
+    expect(
+      buildSearchQuery(ctx({ name: "Sentadilla" }), { queryAdd: ["  ", "powerexplosive"] })
+    ).toBe("Sentadilla cómo hacer técnica correcta powerexplosive");
+  });
+
+  it("queryRemove: quita términos case/acentos-insensitive", () => {
+    expect(
+      buildSearchQuery(ctx({ name: "Sentadilla" }), { queryRemove: ["CÓMO", "técnica"] })
+    ).toBe("Sentadilla hacer correcta");
+  });
+
+  it("queryRemove: quita secuencias multi-palabra", () => {
+    expect(
+      buildSearchQuery(ctx({ lang: "en", name: "Squat", nameEn: "Squat" }), {
+        queryRemove: ["how to"],
+      })
+    ).toBe("Squat proper form");
+  });
+
+  it("queryRemove + queryAdd combinados: primero quita, luego suma", () => {
+    expect(
+      buildSearchQuery(ctx({ name: "Sentadilla" }), {
+        queryRemove: ["cómo hacer técnica correcta"],
+        queryAdd: ["tutorial"],
+      })
+    ).toBe("Sentadilla tutorial");
+  });
 });

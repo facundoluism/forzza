@@ -733,7 +733,31 @@
       "rankingEmpty": "Todavía no hay pedidos de video",
       "rankingEmptyDesc": "Cuando los alumnos pidan videos de ejercicios, aparecerán acá.",
       "rankingErrorTitle": "Error al cargar los pedidos",
-      "rankingShowing": "Mostrando los {shown} más pedidos de {total} ejercicios sin video"
+      "rankingShowing": "Mostrando los {shown} más pedidos de {total} ejercicios sin video",
+      "discardModal": {
+        "title": "Descartar video",
+        "subtitle": "El video se va a eliminar. Podés dejar directivas para que el pipeline no vuelva a traer resultados similares.",
+        "reasonsLabel": "Motivo (opcional, podés elegir varios)",
+        "reason_bad_channel": "Canal malo / clickbait",
+        "reason_wrong_variant": "Variante equivocada",
+        "reason_is_short": "Es un short / quiero tutorial",
+        "reason_wrong_lang": "Idioma equivocado / doblado",
+        "queryAddLabel": "Términos a sumar a la búsqueda (CSV)",
+        "queryAddPlaceholder": "p. ej. tutorial, paso a paso",
+        "queryRemoveLabel": "Términos a quitar de la búsqueda (CSV)",
+        "queryRemovePlaceholder": "p. ej. shorts, reel",
+        "pinLabel": "Fijar este video en su lugar (URL o ID de YouTube, opcional)",
+        "pinPlaceholder": "https://www.youtube.com/watch?v=... o solo el ID",
+        "pinHint": "Si lo completás, el pipeline va a usar ese video directamente para este ejercicio e idioma.",
+        "noteLabel": "Nota libre (opcional)",
+        "notePlaceholder": "Cualquier aclaración adicional para el equipo…",
+        "alwaysBlocks": "Siempre se va a registrar un bloqueo del video {youtubeId} del canal {channelTitle} para que no vuelva a aparecer.",
+        "errorVariantTermsRequired": "Si elegís "Variante equivocada", tenés que especificar al menos un término para agregar o quitar.",
+        "errorPinInvalid": "La URL o ID de YouTube ingresada no es válida. Revisá el link.",
+        "btnCancel": "Cancelar",
+        "btnConfirm": "Descartar video",
+        "btnConfirmLoading": "Descartando…"
+      }
     },
     "configuracion": {
       "metaTitle": "Configuración — Forzza Admin",

@@ -221,6 +221,8 @@ export default async function VideosPage({ params, searchParams }: Props) {
                       <VideoReviewActions
                         videoId={video.id}
                         currentStatus={video.status}
+                        youtubeId={video.youtube_id}
+                        channelTitle={video.channel_title ?? ""}
                       />
                     </td>
                   </tr>

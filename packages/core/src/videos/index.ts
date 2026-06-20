@@ -4,3 +4,4 @@
 export * from "./types";
 export * from "./query";
 export * from "./scoring";
+export * from "./feedback";
