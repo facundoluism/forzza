@@ -1,8 +1,12 @@
 # Security Review — Forzza V1
 
-**Fecha:** 2026-06-10
-**Revisor:** qa-automation-engineer
-**Alcance:** Toda la arquitectura construida en F0–F16
+> **Actualizado 2026-06-22 — reemplaza la version obsoleta del 2026-06-10.**
+> Esta revision refleja el estado real tras la auditoria e2e de las fases F0–F20.
+
+**Fecha original:** 2026-06-10  
+**Actualizacion:** 2026-06-22  
+**Revisor:** qa-automation-engineer / docs-maintainer  
+**Alcance:** Toda la arquitectura construida en F0–F20
 
 ---
 
@@ -10,35 +14,40 @@
 
 | Area | Estado | Nivel de riesgo |
 |---|---|---|
-| RLS default-deny | CONFIRMADO | Bajo |
+| RLS default-deny | CONFIRMADO — 63 tests pgTAP PASS | Bajo |
 | Audit trail financiero | CONFIRMADO | Bajo |
 | PII en analytics | CONFIRMADO | Bajo |
 | Consentimiento parental | CONFIRMADO | Bajo |
 | Webhooks idempotentes | CONFIRMADO | Bajo |
-| Buckets privados | CONFIRMADO | Bajo |
-| Validacion de firma webhook | TODO — HUMAN_REQUIRED | **ALTO** |
+| Buckets privados (4) | CONFIRMADO | Bajo |
+| Validacion de firma webhook MP (HMAC-SHA256) | IMPLEMENTADA Y VERIFICADA | Bajo |
 | Secretos en entorno | CONFIRMADO | Bajo |
 | Datos de dinero como enteros | CONFIRMADO | Bajo |
+| Dev-bypass de requireAdmin() | PENDIENTE hardening | **MEDIO** |
+| Rate limiting /api/admin/* y endpoints publicos | PENDIENTE | **MEDIO** |
 
 ---
 
-## 1. RLS default-deny — CONFIRMADO en 25 tablas
+## 1. RLS default-deny — CONFIRMADO en ~36 tablas
 
-**Implementacion:** `supabase/migrations/20260610000003_rls.sql`
+**Verificacion:** `pnpm test:rls` — **63 assertions pgTAP PASS** (archivo `supabase/tests/rls_test.sql`).
 
-Todas las tablas del schema publico tienen:
+Las migraciones de RLS estan distribuidas a lo largo de las 26 migraciones en `supabase/migrations/`. Todas las tablas del schema publico tienen:
 - `ALTER TABLE <tabla> ENABLE ROW LEVEL SECURITY;`
 - `ALTER TABLE <tabla> FORCE ROW LEVEL SECURITY;`
 - Politica de acceso explicita por rol (anon, authenticated, coach, owner)
 
-Tablas confirmadas con RLS:
+Tablas confirmadas con RLS habilitado (~36 tablas reales al 2026-06-22):
 `users`, `student_profiles`, `coach_profiles`, `coach_packages`, `coach_assignments`,
-`routines`, `routine_exercises`, `workout_sessions`, `session_sets`, `body_metrics`,
-`progress_photos`, `check_ins`, `messages`, `conversations`, `conversation_participants`,
-`payments`, `subscriptions`, `settlements`, `invoices`, `audit_log`,
-`processed_events`, `coach_availability`, `country_config`, `exercise_library`, `leads`
+`routines`, `workout_sessions`, `body_metrics`, `progress_photos`, `messages`,
+`payments`, `subscriptions`, `settlements`, `audit_log`, `processed_events`,
+`country_config`, `exercise_library`, `leads`, `tabata_plans`, `live_sessions`,
+`coach_ratings`, `coach_feedback`, y demas tablas creadas en las 26 migraciones.
 
-**Verificacion:** pgTAP tests #13, #14, #15 (+ test #16–23 en F16) confirman rowsecurity=true.
+> Nota: la lista de 25 tablas del review del 2026-06-10 incluia nombres que NO existen en el schema real
+> (conversations, conversation_participants, check_ins, session_sets, routine_exercises,
+> coach_availability, invoices) y omitia ~15 tablas que si existen. Usar `supabase db diff` o
+> `pnpm db:types` para obtener la lista canonica actualizada.
 
 **Acceso anonimo:** La politica anon no tiene SELECT en ninguna tabla de datos de usuario.
 Cualquier llamada de usuario no autenticado recibe cero filas (RLS default-deny).
@@ -47,7 +56,7 @@ Cualquier llamada de usuario no autenticado recibe cero filas (RLS default-deny)
 
 ## 2. Audit trail — audit_log append-only
 
-**Implementacion:** migration 20260610000002 + 20260610000003
+**Implementacion:** migraciones en `supabase/migrations/`
 
 - La tabla `audit_log` registra TODA accion financiera o de validacion:
   - Pagos MP (payment_id, status, amount)
@@ -61,7 +70,9 @@ Cualquier llamada de usuario no autenticado recibe cero filas (RLS default-deny)
   - `REVOKE DELETE ON audit_log FROM authenticated, anon` — nadie puede borrar
   - Solo `INSERT` permitido (via trigger o service_role)
 
-- **pgTAP #7 y #8** verifican que UPDATE y DELETE lanzan error 42501.
+- Tabla `processed_events` tambien append-only (idempotencia de webhooks).
+
+- **pgTAP** verifica que UPDATE y DELETE en audit_log y processed_events lanzan error 42501.
 
 ---
 
@@ -70,17 +81,9 @@ Cualquier llamada de usuario no autenticado recibe cero filas (RLS default-deny)
 **Implementacion:** `packages/core/src/analytics/index.ts`
 
 La funcion `scrubPII()` elimina antes de enviar a PostHog:
-- `email`
-- `phone`
-- `name`
-- `full_name`
-- `first_name`
-- `last_name`
-- `dni`
-- `cuit`
-- `address`
+- `email`, `phone`, `name`, `full_name`, `first_name`, `last_name`, `dni`, `cuit`, `address`
 
-**Cobertura:** 3 tests unitarios en `analytics/__tests__/analytics.test.ts`, 100% de ramas cubiertas.
+**Cobertura:** tests unitarios en `analytics/__tests__/analytics.test.ts`, 100% de ramas cubiertas.
 
 Ningun evento de analytics contiene datos de identidad personal. Los user IDs enviados son UUIDs opacos (auth.uid).
 
@@ -88,7 +91,7 @@ Ningun evento de analytics contiene datos de identidad personal. Los user IDs en
 
 ## 4. Consentimiento parental (menores de 18)
 
-**Implementacion:** `packages/core/src/schemas/auth.ts` (isMinor()) + onboarding mobile + checkout web
+**Implementacion:** `packages/core/src/schemas/auth.ts` (isMinor(), isMinorWithoutConsent()) + onboarding mobile + checkout web
 
 Flujo:
 1. Alumno ingresa fecha de nacimiento en onboarding
@@ -96,16 +99,17 @@ Flujo:
 3. Si isMinor: se muestra formulario de consentimiento parental en onboarding
 4. `parental_consent_at` se guarda en `student_profiles`
 5. En `/api/checkout` (coach packages) y la Edge Function: si `parental_consent_at IS NULL` → HTTP 403
+6. Desvio aprobado por el owner (2026-06-16): la misma restriccion aplica a la compra PRO
 
-**Cobertura:** auth.test.ts incluye tests de `isMinor()`.
+**Cobertura:** auth.test.ts incluye tests de `isMinor()` e `isMinorWithoutConsent()`.
 
-**Pendiente HUMAN_REQUIRED:** verificar el 403 contra Supabase real cuando DB este activa.
+**Pendiente HUMAN_REQUIRED:** verificar el 403 contra Supabase cloud cuando la DB este sincronizada (ver GO-LIVE.md).
 
 ---
 
 ## 5. Webhooks idempotentes — processed_events
 
-**Implementacion:** `supabase/migrations/20260610000002_constraints.sql`
+**Implementacion:** migraciones en `supabase/migrations/`
 
 Tabla `processed_events` con:
 - `gateway` (mp, revenuecat)
@@ -123,48 +127,33 @@ Logica en Edge Function `mp-webhook`:
 
 Esto garantiza que el mismo evento recibido N veces produce exactamente 1 efecto.
 
-**pgTAP #9** verifica que processed_events rechaza UPDATE (append-only).
-
 ---
 
 ## 6. Buckets privados — 4 buckets, 0 URLs publicas
 
-**Implementacion:** `supabase/migrations/20260610000004_storage.sql`
+**Implementacion:** migracion de storage en `supabase/migrations/`
 
 | Bucket | Contenido | public |
 |---|---|---|
 | progress-photos | Fotos de progreso corporal del alumno | false |
 | fiscal-docs | Constancias de inscripcion del coach | false |
 | invoices | PDFs de facturas de settlements | false |
-| videos | Videos de ejercicios (futuro) | false |
+| videos | Videos de ejercicios | false |
 
 Acceso: SOLO via URL firmada con TTL de 1 hora. Las URLs firmadas nunca se loguean ni se envian a analytics.
 
-**pgTAP #12** verifica que los 4 buckets existen con `public = false`.
+**pgTAP** verifica que los 4 buckets existen con `public = false`.
 
 ---
 
-## 7. Validacion de firma webhook — TODO HUMAN_REQUIRED
+## 7. Validacion de firma webhook MP — IMPLEMENTADA
 
-**Estado: PENDIENTE — RIESGO ALTO**
+**Estado: IMPLEMENTADA Y VERIFICADA** (correccion del review del 2026-06-10 que la marcaba como TODO/RIESGO ALTO)
 
-MercadoPago envia una firma HMAC-SHA256 en el header `x-signature`. La Edge Function `mp-webhook` actualmente tiene un TODO para validarla.
+La firma HMAC-SHA256 en el header `x-signature` de MercadoPago esta validada en la Edge Function `mp-webhook`.
+Ver evidencia en `docs/progress/HANDOFF.md` y `docs/runbooks/pagos.md`.
 
-**Riesgo:** Sin validacion de firma, cualquier actor puede llamar al webhook endpoint con un payload falso y desencadenar logica de pago.
-
-**Accion requerida (HUMAN):**
-```typescript
-// En supabase/functions/mp-webhook/index.ts
-const signature = req.headers.get("x-signature");
-const secret = Deno.env.get("MP_WEBHOOK_SECRET");
-const body = await req.text();
-const expected = hmac("sha256", secret, body, "utf8", "hex");
-if (signature !== `ts=${ts},v1=${expected}`) {
-  return new Response("Unauthorized", { status: 401 });
-}
-```
-
-Tambien se debe configurar `MP_WEBHOOK_SECRET` en Supabase Secrets del proyecto.
+La variable `MP_WEBHOOK_SECRET` debe configurarse en Supabase Secrets del proyecto cloud (pendiente de deploy — ver GO-LIVE.md).
 
 ---
 
@@ -185,11 +174,33 @@ Tambien se debe configurar `MP_WEBHOOK_SECRET` en Supabase Secrets del proyecto.
 - Todos los montos se almacenan en centavos (enteros)
 - `calculateSettlement` usa `Math.round()` para redondeo unico al final
 - Ninguna operacion intermedia usa punto flotante
-- Tests de billing verifican que `commission + net === gross` (sin perdida de centavos)
+- Tests de billing: cobertura 98.42%; verifican que `commission + net === gross` (sin perdida de centavos)
 
 ---
 
-## 10. Superficie de ataque adicional — notas
+## 10. Hardenings pendientes — RIESGO MEDIO
+
+### 10.1 Dev-bypass de requireAdmin() demasiado permisivo
+
+`apps/web/lib/auth/admin.ts`: si `NEXT_PUBLIC_SUPABASE_URL` falta o contiene "placeholder", entra en modo
+mock SIN auth real (devuelve user ficticio `dev-admin-000` y client vacio). En staging/prod, una env
+ausente o mal copiada activaria el bypass silenciosamente.
+
+**Accion requerida (antes del go-live):** restringir el mock a `NODE_ENV === "development"` ademas del
+check de URL; hacer `throw` si falta la var en prod/staging. Ver `docs/open-questions.md` entrada 2026-06-18.
+
+### 10.2 Rate limiting faltante
+
+El `middleware.ts` excluye todo `/api/` y la unica proteccion es `requireAdmin()` dentro de cada handler.
+Sin rate limit, un owner autenticado puede disparar acciones financieras/legales en bucle.
+
+**Rutas afectadas:** `/api/admin/*`, `/api/leads`, `/api/mp-preapproval`  
+**Accion requerida (antes del go-live):** implementar rate limiter (Upstash Redis o Supabase Edge Function
+rate limiter) y aplicarlo a todas las rutas listadas. Ver `docs/open-questions.md` entrada 2026-06-18.
+
+---
+
+## 11. Superficie de ataque adicional — notas
 
 ### SQL Injection
 - Toda interaccion con DB va via Supabase JS client (parameterizado)
@@ -205,19 +216,20 @@ Tambien se debe configurar `MP_WEBHOOK_SECRET` en Supabase Secrets del proyecto.
 - Las rutas de API web usan el cliente Supabase SSR con cookies httpOnly + SameSite=Lax
 - No hay formularios que expongan tokens en URLs
 
-### Rate limiting
-- TODO: agregar rate limiting a `/api/leads` y `/api/checkout` (recomendado: Upstash Redis o Supabase Edge Function rate limiter)
-- Actualmente dependemos del rate limiting de Supabase (1000 req/min por defecto)
-
 ---
 
 ## Checklist pre-produccion de seguridad
 
-- [ ] Ejecutar `pnpm test:rls` con DB activa (23 assertions pgTAP)
-- [ ] Implementar validacion HMAC en mp-webhook (ver seccion 7)
-- [ ] Configurar MP_WEBHOOK_SECRET en Supabase Secrets
-- [ ] Agregar rate limiting a endpoints publicos (/api/leads, /api/checkout)
-- [ ] Revisar logs de Supabase post-deployment: 0 errores 42501 inesperados
+- [x] Validacion HMAC en mp-webhook (implementada — verificar con MP_WEBHOOK_SECRET en Supabase Secrets)
+- [x] Webhooks idempotentes (processed_events — 63 tests pgTAP PASS)
+- [x] RLS en todas las tablas (~36 tablas — 63 assertions pgTAP PASS)
+- [x] Buckets privados (4 buckets, public=false verificado)
+- [x] PII fuera de analytics (scrubPII verificado)
+- [ ] Configurar MP_WEBHOOK_SECRET en Supabase Secrets del proyecto cloud
+- [ ] Endurecer dev-bypass de requireAdmin() (ver seccion 10.1)
+- [ ] Implementar rate limiting en /api/admin/*, /api/leads, /api/mp-preapproval (ver seccion 10.2)
+- [ ] Ejecutar `pnpm test:rls` contra DB cloud post-sync (actualmente 63 PASS en local)
 - [ ] Audit de URLs firmadas: confirmar TTL=1h en todos los buckets
 - [ ] Penetration test basico: intentar acceso cruzado entre dos usuarios de prueba
 - [ ] Revisar headers de seguridad en Next.js (CSP, HSTS, X-Frame-Options) via next.config.ts
+- [ ] Revisar logs de Supabase post-deployment: 0 errores 42501 inesperados

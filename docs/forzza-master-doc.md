@@ -104,6 +104,13 @@ Ficha 2.1.12 — Tabata
 Observado: timer con configuración; ad de 10 s para Free antes de iniciar (gating implementado). Pendiente: tiempos adaptativos por grupo muscular (empuje/tirón 90 s, piernas 120 s, HIIT 30 s — Sprint 3).
 Recomendación: mantener. P1.
 
+DESVIO APROBADO POR EL DUENO (2026-06-18): el Tabata SÍ persiste datos en V1. Contrario a lo que
+esta ficha describía originalmente (prototipo sin backend), por decision explicita del dueno se
+implemento la tabla `tabata_plans` (migración 20260618000001_tabata_plans.sql) con RLS ownership
+(student_id = auth.uid()). El modo avanzado requiere isPro() — enforcement en DB via funcion
+public.is_pro(uuid) SECURITY DEFINER (migración 20260618000002_tabata_advanced_pro_enforcement.sql).
+Ver docs/open-questions.md entradas 2026-06-18 para detalle completo.
+
 Ficha 2.1.13 — Chat (Coach)
 
 Observado: conversación con coach, mock. Pendiente: adjuntar video/foto con visor inline (Sprint 3).
@@ -278,6 +285,14 @@ Coach: perfil público (bio, tags, certificaciones con archivo adjunto, precios 
 isPro(user) y hasCoach(user) como única fuente de verdad (server-side, cacheada en el cliente). Free: 3 rutinas predefinidas, historial 10 días, autopromo 10 s pre-rutina/Tabata, marketplace solo lectura. PRO: todo salvo coach. PRO+COACH por paquete (Starter/Pro/Elite).
 Caso borde crítico: downgrade PRO→Free con 12 rutinas creadas → las rutinas quedan en solo-lectura (no se borran); historial se trunca en vista, no en datos. Pago de paquete falla en renovación → gracia de 5 días con avisos, luego paquete suspendido (chat en solo lectura, coach notificado).
 Métricas: upgrade_modal_shown→upgrade_started→payment_succeeded; churn por plan.
+
+DESVIO APROBADO POR EL DUENO (2026-06-18): el Tabata SÍ persiste planes en V1 (tabla tabata_plans).
+El modo avanzado del Tabata requiere isPro() — gating enforcement en DB (RLS + funcion SECURITY DEFINER).
+Ver Ficha 2.1.12 y docs/open-questions.md entradas 2026-06-18.
+
+DESVIO APROBADO POR EL DUENO (2026-06-16): menores de 18 sin parental_consent_at tampoco pueden
+comprar PRO (extensión de §7). Implementado server-side en /api/mp-preapproval y en la Edge Function
+mp-create-preapproval. Ver docs/open-questions.md entrada 2026-06-16.
 
 6.6 Entrenamientos / rutinas
 

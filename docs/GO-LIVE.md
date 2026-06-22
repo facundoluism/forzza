@@ -2,19 +2,29 @@
 
 ## Infra
 - [ ] Supabase cloud project creado (prod)
-- [ ] `supabase db push` ejecutado contra cloud (4 migrations)
+- [ ] `supabase db push` ejecutado contra cloud (26 migraciones en supabase/migrations/)
+      ATENCION: el cloud staging solo tiene 8 migraciones aplicadas (hasta 2026-06-15); faltan 18.
+      Revisar el diff con `supabase db diff --linked` antes de hacer push. Decision y revision del
+      dueno requerida antes de ejecutar (ver open-questions.md entrada "Cloud sync 2026-06-22").
 - [ ] Seeds ejecutados en cloud (country_config AR)
-- [ ] Storage buckets creados en cloud (4 buckets privados)
+- [ ] Storage buckets creados en cloud (4 buckets privados: progress-photos, fiscal-docs, invoices, videos)
 - [ ] Edge Functions deployed: `supabase functions deploy --all`
 - [ ] pg_cron configurado: generate-settlements (1er día del mes), dunning-cron (diario), checkin-reminder (semanal)
 - [ ] Vercel proyecto creado, dominio forzza.app asignado
 - [ ] Variables de entorno cargadas en Vercel (todas las de .env.example sin MOCK_OK)
 - [ ] `node scripts/validate-env.js --env production` → 0 errores
 
+## Seguridad (pendientes pre-go-live)
+- [ ] Endurecer dev-bypass de requireAdmin(): restringir mock a NODE_ENV==="development" y hacer throw
+      si falta NEXT_PUBLIC_SUPABASE_URL en prod/staging (ver security-review.md §10.1 y open-questions.md)
+- [ ] Rate limiting en /api/admin/*, /api/leads y /api/mp-preapproval (ver security-review.md §10.2)
+- [ ] Configurar MP_WEBHOOK_SECRET en Supabase Secrets del proyecto cloud
+
 ## Pagos
 - [ ] MP access token de PRODUCCIÓN cargado
 - [ ] Webhook de MP apuntando a: https://forzza.app/api/mp-webhook (o Edge Function URL)
-- [ ] Webhook signature validation implementada (ver security-review.md)
+- [ ] Webhook signature validation: YA IMPLEMENTADA en mp-webhook (ver security-review.md §7 y docs/runbooks/pagos.md)
+      Verificar que MP_WEBHOOK_SECRET este cargado en Supabase Secrets antes de procesar pagos reales.
 - [ ] Test de pago real con tarjeta de prueba antes de lanzar
 
 ## Email

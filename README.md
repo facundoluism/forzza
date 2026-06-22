@@ -40,13 +40,22 @@ forzza/
 └── reference/       # Prototipo visual (solo referencia, no importar)
 ```
 
-## Estado actual (2026-06-14)
+## Estado actual (2026-06-22)
 
-La plataforma está al 85% funcional para staging. TypeScript compila en 0 errores (6/6 paquetes). Los 48 tests unitarios de reglas de negocio pasan al 100%. Las 10 Edge Functions de Supabase tenían bugs de columnas que fueron corregidos. Las 13 reglas de negocio innegociables están implementadas y verificadas.
+Las fases F0–F20 están completas. El código compila y todos los tests pasan:
 
-Lo que falta son acciones de infraestructura fuera del código: credenciales reales (Mercado Pago, RevenueCat, Resend, Sentry), Docker + Supabase CLI para ejecutar los 23 tests de RLS (Row Level Security), y assets mobile finales de diseño. Ver `docs/progress/auditoria-final.md` para la tabla completa de funcionalidades y la lista HUMAN_REQUIRED.
+- TypeScript: 6/6 paquetes PASS (0 errores)
+- Tests unitarios: 271 passed + 5 skipped en @forzza/core (14 archivos); 127 en @forzza/ui
+- Cobertura @forzza/core: 96.29% global — billing 98.42%, gating 100%
+- Tests RLS (pgTAP): 63 assertions PASS (`pnpm test:rls`, archivo `supabase/tests/rls_test.sql`)
+- Lint: web 0 warnings; mobile 285 warnings (0 errores, no afectan runtime)
+- Migraciones: 26 archivos en `supabase/migrations/`; ~36 tablas con RLS habilitado; 4 buckets privados
 
-Problemas pendientes menores: `pnpm lint` falla en `packages/ui` y `packages/core` por ausencia de `eslint` en devDependencies (no afecta runtime ni builds). Los textos legales en `/legales/terminos` y `/legales/privacidad` son DRAFT y requieren revisión de abogado antes del launch.
+Las reglas de negocio innegociables están implementadas y verificadas. La firma HMAC de webhooks MP está implementada. El backoffice del dueño (/admin) y del coach (/coach) están funcionales.
+
+Pendientes antes del go-live (fuera del código): credenciales reales de producción (Mercado Pago, RevenueCat, Resend, Sentry, MP_WEBHOOK_SECRET), sincronizar 18 migraciones pendientes al cloud (decisión del dueño), assets mobile finales de diseño, hardening de requireAdmin() y rate limiting. Ver `docs/GO-LIVE.md` para el checklist completo y `docs/open-questions.md` para decisiones pendientes del dueño.
+
+Los textos legales en `/legales/terminos` y `/legales/privacidad` son DRAFT y requieren revisión de abogado antes del launch.
 
 ## Fases completadas
 
@@ -54,9 +63,11 @@ Problemas pendientes menores: `pnpm lint` falla en `packages/ui` y `packages/cor
 - [x] Fase 1 — Schema alignment: migración DB, db-types, 10 edge functions
 - [x] Fase 2 — Mobile bootstrap: fuentes Google, splash screen, Sentry
 - [x] Fase 3 — Web V1: checkout coach web, cobros, gráfico alumnos
-- [x] Fase 4 — Reglas de negocio: 48 tests, HMAC webhooks, idempotencia atómica
+- [x] Fase 4 — Reglas de negocio: 271 tests core + 127 ui, HMAC webhooks, idempotencia atómica
+- [x] Fase 5 — RLS: 63 tests pgTAP PASS, tabata_plans, live_sessions, coach_ratings
 - [x] Fase 6 — UI/UX: active state sidebars, logo, empty states, contraste
-- [ ] Smoke test — PENDING (requiere servidor activo)
+- [x] Fases 7–20 — Notificaciones, Tabata, backoffice admin/coach, videos, auditoria
+- [ ] Smoke test — PENDING (requiere servidor activo con credenciales de producción)
 
 ## Docs clave
 
