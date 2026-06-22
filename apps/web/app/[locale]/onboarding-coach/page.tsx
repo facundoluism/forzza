@@ -4,6 +4,7 @@ import { useState, useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { LEGAL_DOCS_VERSION } from "@forzza/config";
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -18,6 +19,8 @@ interface CoachData {
   /** Alias CBU para AR */
   alias_cbu: string;
   constancia_file: File | null;
+  /** Debe ser true para poder enviar el formulario */
+  terms_accepted: boolean;
 }
 
 export default function OnboardingCoachPage() {
@@ -35,6 +38,7 @@ export default function OnboardingCoachPage() {
     cbu: "",
     alias_cbu: "",
     constancia_file: null,
+    terms_accepted: false,
   });
 
   const steps = [
@@ -49,6 +53,12 @@ export default function OnboardingCoachPage() {
   }
 
   async function handleFinish() {
+    // Términos obligatorios — bloquear antes de cualquier llamada de red
+    if (!data.terms_accepted) {
+      setError(t("step4.termsError"));
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -108,6 +118,15 @@ export default function OnboardingCoachPage() {
         .from("users")
         .update({ role: "coach" })
         .eq("id", user.id);
+
+      // Registrar aceptación de términos en audit_log — non-blocking
+      try {
+        await supabase.rpc("accept_terms", {
+          p_version: LEGAL_DOCS_VERSION,
+        });
+      } catch (rpcErr) {
+        console.error("[onboarding-coach] accept_terms RPC failed:", rpcErr);
+      }
 
       router.push("/onboarding-coach/pendiente");
     } catch (err) {
@@ -339,14 +358,76 @@ export default function OnboardingCoachPage() {
               />
             </div>
 
+            {/* Términos y Política de Privacidad — OBLIGATORIO */}
+            <div style={{ marginBottom: "24px" }}>
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: "10px",
+                  cursor: loading ? "not-allowed" : "pointer",
+                  lineHeight: 1.5,
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={data.terms_accepted}
+                  onChange={(e) => {
+                    updateData({ terms_accepted: e.target.checked });
+                    if (e.target.checked && error === t("step4.termsError")) {
+                      setError(null);
+                    }
+                  }}
+                  disabled={loading}
+                  style={{
+                    marginTop: "3px",
+                    accentColor: "#C8FF00",
+                    width: "16px",
+                    height: "16px",
+                    flexShrink: 0,
+                    cursor: loading ? "not-allowed" : "pointer",
+                  }}
+                  aria-required="true"
+                />
+                <span style={{ color: "var(--color-muted)", fontSize: "14px" }}>
+                  {t("step4.termsLabel")}{" "}
+                  <Link
+                    href="/legales/terminos"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: "#C8FF00", textDecoration: "underline" }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {t("step4.termsLinkTerms")}
+                  </Link>{" "}
+                  {t("step4.termsLinkAnd")}{" "}
+                  <Link
+                    href="/legales/privacidad"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: "#C8FF00", textDecoration: "underline" }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {t("step4.termsLinkPrivacy")}
+                  </Link>
+                </span>
+              </label>
+            </div>
+
             {error && <p style={{ color: "#FF4466", marginBottom: "16px", fontSize: "14px" }}>{error}</p>}
 
             <div style={{ display: "flex", gap: "12px" }}>
               <button onClick={() => setStep(3)} style={secondaryButtonStyle}>{t("back")}</button>
               <button
                 onClick={() => { void handleFinish(); }}
-                disabled={loading}
-                style={{ ...buttonStyle, flex: 1, backgroundColor: loading ? "#4A4A4A" : "#C8FF00" }}
+                disabled={loading || !data.terms_accepted}
+                style={{
+                  ...buttonStyle,
+                  flex: 1,
+                  backgroundColor: loading || !data.terms_accepted ? "#4A4A4A" : "#C8FF00",
+                  color: loading || !data.terms_accepted ? "#6A6A6A" : "#0A0A0A",
+                  cursor: loading || !data.terms_accepted ? "not-allowed" : "pointer",
+                }}
               >
                 {loading ? t("step4.submitLoading") : t("step4.submit")}
               </button>

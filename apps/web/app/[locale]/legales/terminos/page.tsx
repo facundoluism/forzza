@@ -17,6 +17,11 @@ export async function generateMetadata({
   };
 }
 
+interface LegalSection {
+  title: string;
+  body: string;
+}
+
 export default async function TerminosPage({
   params,
 }: {
@@ -26,6 +31,7 @@ export default async function TerminosPage({
   setRequestLocale(locale as Locale);
 
   const t = await getTranslations({ locale, namespace: "legal" });
+  const sections = t.raw("terms.sections") as LegalSection[];
 
   return (
     <main className="bg-bg min-h-screen px-6 py-16 max-w-[800px] mx-auto text-[#FAFAFA]">
@@ -41,13 +47,29 @@ export default async function TerminosPage({
         </p>
       </div>
       <div className="text-muted leading-[1.8] text-base">
-        <p>{t("terms.intro")}</p>
-        <h2 className="text-[#FAFAFA] text-2xl font-bold mt-8 mb-3">{t("terms.section1Title")}</h2>
-        <p>{t("terms.section1Body")}</p>
-        <h2 className="text-[#FAFAFA] text-2xl font-bold mt-8 mb-3">{t("terms.section2Title")}</h2>
-        <p>{t("terms.section2Body")}</p>
-        <h2 className="text-[#FAFAFA] text-2xl font-bold mt-8 mb-3">{t("terms.section3Title")}</h2>
-        <p>{t("terms.section3Body")}</p>
+        <p className="mb-6">{t("terms.intro")}</p>
+        {sections.map((section) => (
+          <div key={section.title}>
+            <h2 className="text-[#FAFAFA] text-2xl font-bold mt-8 mb-3">{section.title}</h2>
+            {section.body.split("\n\n").map((paragraph, pIdx) => (
+              <p key={pIdx} className="mb-4 whitespace-pre-line">{paragraph}</p>
+            ))}
+          </div>
+        ))}
+      </div>
+      <div className="mt-12 pt-8 border-t border-[#2A2A2A]">
+        <p className="text-muted text-sm mb-3">{t("crossLinks.heading")}</p>
+        <div className="flex flex-wrap gap-4">
+          <Link href="/legales/privacidad" className="text-[#C8FF00] text-sm hover:text-[#b8ef00] transition-colors">
+            {t("crossLinks.privacy")}
+          </Link>
+          <Link href="/legales/ia" className="text-[#C8FF00] text-sm hover:text-[#b8ef00] transition-colors">
+            {t("crossLinks.aiPolicy")}
+          </Link>
+          <Link href="/legales/disclaimer-salud" className="text-[#C8FF00] text-sm hover:text-[#b8ef00] transition-colors">
+            {t("crossLinks.healthDisclaimer")}
+          </Link>
+        </div>
       </div>
     </main>
   );

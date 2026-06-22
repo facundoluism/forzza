@@ -325,7 +325,15 @@
       "continueBtn": "Continuar →",
       "loginLink": "¿Ya tenés cuenta? Iniciar sesión",
       "goalSectionLabel": "¿CUÁL ES TU OBJETIVO PRINCIPAL?",
-      "levelSectionLabel": "TU NIVEL DE EXPERIENCIA"
+      "levelSectionLabel": "TU NIVEL DE EXPERIENCIA",
+      "healthNotice": "La información de Forzza es orientativa y no reemplaza el asesoramiento médico profesional. Consultá a un profesional antes de empezar.",
+      "termsTitle": "Para finalizar tu registro",
+      "termsConsentLabel": "Acepto los",
+      "termsLink": "Términos y Condiciones",
+      "termsAnd": "y la",
+      "privacyLink": "Política de Privacidad",
+      "errorTerms": "Tenés que aceptar los Términos y Condiciones para continuar.",
+      "errorTermsRpc": "No se pudo registrar tu aceptación. Intentá de nuevo."
     },
     "forgotPassword": {
       "title": "Recuperar contraseña",
@@ -484,7 +492,8 @@
     "emptyDesc": "Tu coach todavía no agregó ejercicios.",
     "activeWorkoutTitle": "Ya tenés un entreno activo",
     "continueWorkout": "Continuar entreno",
-    "startWorkout": "Iniciar entreno"
+    "startWorkout": "Iniciar entreno",
+    "healthNotice": "La información de Forzza es orientativa y no reemplaza el asesoramiento médico profesional. Consultá a un profesional antes de empezar."
   },
   "notifications": {
     "screenTitle": "Notificaciones",

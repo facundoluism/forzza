@@ -83,3 +83,12 @@ export const EXERCISE_VIDEO_CHANNEL_ALLOWLIST: readonly string[] = [
  * revisión manual.
  */
 export const EXERCISE_VIDEO_AUTOPUBLISH_THRESHOLD = 0.7;
+
+// ─── Legal ───────────────────────────────────────────────────────────────────
+
+/**
+ * Versión vigente de los documentos legales (Términos + Política de Privacidad).
+ * Se pasa al RPC `accept_terms(p_version)` y se persiste en users.terms_version.
+ * Al actualizar los textos legales, incrementar esta constante.
+ */
+export const LEGAL_DOCS_VERSION = '2026-06-22' as const;

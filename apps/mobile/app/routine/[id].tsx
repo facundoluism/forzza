@@ -17,7 +17,7 @@ import { useWorkoutStore } from "@/stores/workoutStore";
 import type { RoutineExerciseDefinition } from "@/stores/workoutStore";
 import { getExerciseIcon } from "@/constants/exerciseIcons";
 import { ExercisePreviewSheet } from "@/components/ExercisePreviewSheet";
-import { Button, EmptyState, ScreenHeader } from "@forzza/ui/native";
+import { Button, EmptyState, ScreenHeader, HealthNotice } from "@forzza/ui/native";
 import { colors, fontSize, spacing, typography, radius } from "@forzza/ui/tokens";
 
 // Shape canónico del JSONB routines.exercises (coordinado con el seed)
@@ -269,6 +269,7 @@ export default function RoutineDetailScreen() {
             })
           )}
         </View>
+        <HealthNotice text={t('routineDetail.healthNotice')} />
       </ScrollView>
 
       <View style={styles.footer}>

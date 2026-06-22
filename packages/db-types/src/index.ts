@@ -2025,3 +2025,4 @@ export type LegalEntityType = Database["public"]["Enums"]["legal_entity_type"];
 export type NotificationChannel = Database["public"]["Enums"]["notification_channel"];
 // No existe enum en DB: plan de suscripción es un literal de dominio.
 export type SubscriptionPlan = "free" | "pro" | "elite";
+

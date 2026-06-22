@@ -6,16 +6,21 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
+  Linking,
 } from "react-native";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { supabase } from "@/lib/supabase";
 import { isMinor, TRACKED_EVENTS } from "@forzza/core";
+import { LEGAL_DOCS_VERSION } from "@forzza/config";
 import { track } from "@/lib/analytics";
 import type { TablesInsert } from "@forzza/db-types";
-import { Input } from "@forzza/ui/native";
+import { Input, HealthNotice } from "@forzza/ui/native";
 import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
+
+const TERMS_URL = "https://forzza.app/legales/terminos";
+const PRIVACY_URL = "https://forzza.app/legales/privacidad";
 
 type Step = 1 | 2 | 3;
 
@@ -58,6 +63,9 @@ export default function OnboardingScreen() {
   const [parentalEmail, setParentalEmail] = useState("");
   const [parentalConsent, setParentalConsent] = useState(false);
   const [needsParentalConsent, setNeedsParentalConsent] = useState(false);
+
+  // Aceptación de términos y política (obligatorio para todos)
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   function toggleGoal(goal: string) {
     setSelectedGoals((prev) =>
@@ -103,6 +111,10 @@ export default function OnboardingScreen() {
       setError(t('auth.onboarding.errorParental'));
       return;
     }
+    if (!termsAccepted) {
+      setError(t('auth.onboarding.errorTerms'));
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -133,6 +145,16 @@ export default function OnboardingScreen() {
 
     if (profileError) {
       setError(t('auth.onboarding.errorSave'));
+      setLoading(false);
+      return;
+    }
+
+    // Registrar aceptación de términos server-side
+    const { error: termsError } = await supabase.rpc('accept_terms', {
+      p_version: LEGAL_DOCS_VERSION,
+    });
+    if (termsError) {
+      setError(t('auth.onboarding.errorTermsRpc'));
       setLoading(false);
       return;
     }
@@ -296,6 +318,39 @@ export default function OnboardingScreen() {
                 </TouchableOpacity>
               </View>
             )}
+
+            {/* Aceptación de Términos y Política de Privacidad */}
+            <View style={styles.termsBox}>
+              <TouchableOpacity
+                style={styles.checkboxRow}
+                onPress={() => setTermsAccepted(!termsAccepted)}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: termsAccepted }}
+              >
+                <View style={[styles.checkbox, termsAccepted && styles.checkboxChecked]}>
+                  {termsAccepted && <Text style={styles.checkboxTick}>✓</Text>}
+                </View>
+                <Text style={styles.checkboxLabel}>
+                  {t('auth.onboarding.termsConsentLabel')}{" "}
+                  <Text
+                    style={styles.termsLink}
+                    onPress={() => void Linking.openURL(TERMS_URL)}
+                  >
+                    {t('auth.onboarding.termsLink')}
+                  </Text>
+                  {" "}{t('auth.onboarding.termsAnd')}{" "}
+                  <Text
+                    style={styles.termsLink}
+                    onPress={() => void Linking.openURL(PRIVACY_URL)}
+                  >
+                    {t('auth.onboarding.privacyLink')}
+                  </Text>
+                  .
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <HealthNotice text={t('auth.onboarding.healthNotice')} />
 
             {error && <Text style={styles.error}>{error}</Text>}
           </View>
@@ -574,6 +629,20 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 13,
     lineHeight: 18,
+  },
+  checkboxTick: {
+    color: colors.black,
+    fontSize: 12,
+    lineHeight: 16,
+    textAlign: "center",
+  },
+  termsBox: {
+    marginTop: spacing[4],
+    marginBottom: spacing[4],
+  },
+  termsLink: {
+    color: colors.lime,
+    textDecorationLine: "underline",
   },
   // Footer
   footer: {

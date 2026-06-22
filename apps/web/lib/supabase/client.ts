@@ -38,6 +38,7 @@ function createMockClient(): ReturnType<typeof createBrowserClient<Database>> {
   };
   return {
     from: () => mockQuery(),
+    rpc: async () => ({ data: null, error: null }),
     auth: {
       getUser: async () => ({ data: { user: null }, error: null }),
       getSession: async () => ({ data: { session: null }, error: null }),
@@ -46,6 +47,7 @@ function createMockClient(): ReturnType<typeof createBrowserClient<Database>> {
       exchangeCodeForSession: async () => ({ data: { session: null }, error: null }),
       signInWithPassword: async () => ({ data: { user: null, session: null }, error: null }),
       signInWithOAuth: async () => ({ data: { provider: "google", url: null }, error: null }),
+      signUp: async () => ({ data: { user: { id: "dev-user-id" }, session: null }, error: null }),
       signOut: async () => ({ error: null }),
     },
   } as unknown as ReturnType<typeof createBrowserClient<Database>>;

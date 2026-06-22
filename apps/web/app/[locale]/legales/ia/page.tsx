@@ -13,7 +13,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "legal" });
   return {
-    title: t("privacy.metaTitle"),
+    title: t("aiPolicy.metaTitle"),
   };
 }
 
@@ -22,7 +22,7 @@ interface LegalSection {
   body: string;
 }
 
-export default async function PrivacidadPage({
+export default async function AIPolicyPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
@@ -31,7 +31,7 @@ export default async function PrivacidadPage({
   setRequestLocale(locale as Locale);
 
   const t = await getTranslations({ locale, namespace: "legal" });
-  const sections = t.raw("privacy.sections") as LegalSection[];
+  const sections = t.raw("aiPolicy.sections") as LegalSection[];
 
   return (
     <main className="bg-bg min-h-screen px-6 py-16 max-w-[800px] mx-auto text-[#FAFAFA]">
@@ -39,7 +39,7 @@ export default async function PrivacidadPage({
         {t("backToHome")}
       </Link>
       <h1 className="text-4xl font-black text-[#FAFAFA] mt-6 mb-6 tracking-tight">
-        {t("privacy.title")}
+        {t("aiPolicy.title")}
       </h1>
       <div className="bg-[#1A1A1A] border border-[#FFAA00] rounded-lg p-4 mb-6">
         <p className="text-[#FFAA00] m-0 text-sm">
@@ -47,7 +47,7 @@ export default async function PrivacidadPage({
         </p>
       </div>
       <div className="text-muted leading-[1.8] text-base">
-        <p className="mb-6">{t("privacy.intro")}</p>
+        <p className="mb-6">{t("aiPolicy.intro")}</p>
         {sections.map((section) => (
           <div key={section.title}>
             <h2 className="text-[#FAFAFA] text-2xl font-bold mt-8 mb-3">{section.title}</h2>
@@ -63,8 +63,8 @@ export default async function PrivacidadPage({
           <Link href="/legales/terminos" className="text-[#C8FF00] text-sm hover:text-[#b8ef00] transition-colors">
             {t("crossLinks.terms")}
           </Link>
-          <Link href="/legales/ia" className="text-[#C8FF00] text-sm hover:text-[#b8ef00] transition-colors">
-            {t("crossLinks.aiPolicy")}
+          <Link href="/legales/privacidad" className="text-[#C8FF00] text-sm hover:text-[#b8ef00] transition-colors">
+            {t("crossLinks.privacy")}
           </Link>
           <Link href="/legales/disclaimer-salud" className="text-[#C8FF00] text-sm hover:text-[#b8ef00] transition-colors">
             {t("crossLinks.healthDisclaimer")}

@@ -7,6 +7,7 @@ import { Link } from "@/i18n/navigation";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import type { Locale } from "@/i18n/routing";
 import { quoteOfTheDay, quoteText } from "@forzza/core";
+import { HealthNotice } from "@forzza/ui/web";
 
 export const dynamic = "force-dynamic";
 
@@ -935,11 +936,13 @@ export default async function HomePage({
                 ["footer.links.plans", "/upgrade"],
                 ["footer.links.terms", "/legales/terminos"],
                 ["footer.links.privacy", "/legales/privacidad"],
+                ["footer.links.aiPolicy", "/legales/ia"],
+                ["footer.links.healthDisclaimer", "/legales/disclaimer-salud"],
               ] as [string, string][]
             ).map(([key, href]) => (
               <Link
                 key={key}
-                href={href as "/coaches" | "/upgrade" | "/legales/terminos" | "/legales/privacidad"}
+                href={href as "/coaches" | "/upgrade" | "/legales/terminos" | "/legales/privacidad" | "/legales/ia" | "/legales/disclaimer-salud"}
                 style={{
                   color: "var(--color-muted)",
                   fontSize: "14px",
@@ -963,6 +966,11 @@ export default async function HomePage({
             </p>
             <LanguageSwitcher />
           </div>
+          <HealthNotice
+            text={t("footer.healthNotice")}
+            href="/legales/disclaimer-salud"
+            linkLabel={t("footer.healthNoticeLink")}
+          />
         </div>
       </footer>
     </main>

@@ -203,6 +203,18 @@ export default function LoginPage() {
             </Link>
           </div>
 
+          <div style={{ marginTop: "12px", textAlign: "center" }}>
+            <span style={{ color: "var(--color-muted)", fontSize: "14px" }}>
+              {t("noAccount")}{" "}
+            </span>
+            <Link
+              href="/signup"
+              style={{ color: "var(--color-lime)", fontSize: "14px" }}
+            >
+              {t("signupLink")}
+            </Link>
+          </div>
+
           {SHOW_SSO && (
             <>
               {/* Divider */}

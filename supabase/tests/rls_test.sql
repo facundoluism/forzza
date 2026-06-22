@@ -33,7 +33,7 @@
 
 BEGIN;
 
-SELECT plan(63);
+SELECT plan(66);
 
 -- =============================================================================
 -- FIXTURES: insertados como superusuario (bypassa RLS y REVOKE).
@@ -1615,6 +1615,135 @@ SELECT ok(
   (SELECT COUNT(*) >= 1 FROM public.exercise_video_request_counts
    WHERE exercise_id = 'ee100e01-0000-4000-8000-000000000001'::uuid),
   'T62: vista exercise_video_request_counts devuelve el ejercicio con pedido (acceso service-role/superusuario)'
+);
+
+-- =============================================================================
+-- T64: accept_terms() setea terms_accepted_at y terms_version en users (RPC permitido)
+--
+-- Simula que student1 llama al RPC. Verificamos que:
+--   a) La función ejecuta sin excepción.
+--   b) Las columnas quedan seteadas con la versión correcta.
+--   c) Se generó una entrada en audit_log con action='terms.accepted'.
+-- =============================================================================
+DO $t64$
+DECLARE
+  v_terms_at  TIMESTAMPTZ;
+  v_terms_ver TEXT;
+  v_audit_cnt INTEGER;
+BEGIN
+  -- Simular llamada autenticada de student1 vía set_config de JWT claims.
+  -- accept_terms() es SECURITY DEFINER: lee auth.uid() del JWT claim 'sub'.
+  PERFORM set_config(
+    'request.jwt.claims',
+    json_build_object('sub', 'a3a00003-0000-4000-8000-000000000003', 'role', 'authenticated')::text,
+    true
+  );
+
+  -- Llamar al RPC como superusuario (quien llama no importa porque es SECURITY DEFINER
+  -- y lee auth.uid() de los JWT claims que acabamos de fijar).
+  PERFORM public.accept_terms('2026-06-22');
+
+  -- Limpiar claims
+  PERFORM set_config('request.jwt.claims', '', true);
+
+  -- Verificar columnas en users (lectura como superusuario, bypasa RLS)
+  SELECT terms_accepted_at, terms_version
+    INTO v_terms_at, v_terms_ver
+  FROM public.users
+  WHERE id = 'a3a00003-0000-4000-8000-000000000003'::uuid;
+
+  IF v_terms_at IS NULL THEN
+    RAISE EXCEPTION 'T64 FALLO: terms_accepted_at sigue NULL tras accept_terms()';
+  END IF;
+
+  IF v_terms_ver IS DISTINCT FROM '2026-06-22' THEN
+    RAISE EXCEPTION 'T64 FALLO: terms_version es % (esperado 2026-06-22)', v_terms_ver;
+  END IF;
+
+  -- Verificar entrada en audit_log
+  SELECT COUNT(*) INTO v_audit_cnt
+  FROM public.audit_log
+  WHERE actor_id   = 'a3a00003-0000-4000-8000-000000000003'::uuid
+    AND action     = 'terms.accepted'
+    AND entity_type = 'user'
+    AND entity_id  = 'a3a00003-0000-4000-8000-000000000003'::uuid
+    AND payload->>'version' = '2026-06-22';
+
+  IF v_audit_cnt = 0 THEN
+    RAISE EXCEPTION 'T64 FALLO: no se generó entrada en audit_log con action=terms.accepted';
+  END IF;
+END $t64$;
+
+SELECT ok(true, 'T64: accept_terms() setea columnas legales y registra en audit_log');
+
+-- =============================================================================
+-- T65: UPDATE directo de terms_accepted_at como authenticated es rechazado (trigger)
+--
+-- student1 intenta modificar terms_accepted_at directamente vía UPDATE.
+-- El trigger trg_protect_terms_columns (SECURITY INVOKER) debe lanzar excepción.
+-- Usamos SET LOCAL ROLE para cambiar current_user a 'authenticated' dentro
+-- del DO block; el trigger SECURITY INVOKER verá current_user='authenticated'
+-- y bloqueará la modificación de las columnas protegidas.
+-- =============================================================================
+DO $t65$
+DECLARE
+  v_sentinel  TIMESTAMPTZ := now() + interval '10 years';  -- valor centinela claramente futuro
+  v_after     TIMESTAMPTZ;
+  v_ok        BOOLEAN := false;
+BEGIN
+  -- Intentar UPDATE directo como rol authenticated (simula cliente PostgREST).
+  -- SET LOCAL ROLE cambia current_user a 'authenticated' dentro del DO block.
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a3a00003-0000-4000-8000-000000000003', 'role', 'authenticated')::text,
+    true);
+  BEGIN
+    UPDATE public.users
+      SET terms_accepted_at = v_sentinel
+    WHERE id = 'a3a00003-0000-4000-8000-000000000003'::uuid;
+    -- Si llega aquí sin excepción, el trigger no bloqueó.
+    -- Puede que RLS haya afectado 0 filas o el trigger bloqueó silenciosamente.
+    v_ok := false;
+  EXCEPTION WHEN OTHERS THEN
+    v_ok := true;  -- Trigger lanzó excepción (comportamiento esperado)
+  END;
+  RESET ROLE;
+
+  -- Verificar como superusuario que el valor centinela NO fue escrito.
+  -- Independientemente de si hubo excepción o 0 filas afectadas, el valor
+  -- no debe ser el centinela (protección efectiva).
+  SELECT terms_accepted_at INTO v_after
+  FROM public.users
+  WHERE id = 'a3a00003-0000-4000-8000-000000000003'::uuid;
+
+  -- Si el valor centinela NO se escribió, la protección es efectiva.
+  IF v_after IS DISTINCT FROM v_sentinel THEN
+    v_ok := true;
+  END IF;
+
+  IF NOT v_ok THEN
+    RAISE EXCEPTION
+      'T65 FALLO: UPDATE directo de terms_accepted_at escribió el valor centinela (trigger no protegió)';
+  END IF;
+END $t65$;
+
+SELECT ok(true, 'T65: UPDATE directo de terms_accepted_at no persiste (trigger o RLS protegen la columna)');
+
+-- =============================================================================
+-- T66: accept_terms() con auth.uid() NULL lanza excepción (usuario no autenticado)
+-- =============================================================================
+SELECT throws_ok(
+  $t66$
+    DO $inner$
+    BEGIN
+      -- Sin JWT claims: auth.uid() devuelve NULL
+      PERFORM set_config('request.jwt.claims', '', true);
+      PERFORM public.accept_terms('2026-06-22');
+    END $inner$;
+  $t66$,
+  '42501',
+  NULL,
+  'T66: accept_terms() sin auth.uid() lanza insufficient_privilege (42501)'
 );
 
 -- =============================================================================
