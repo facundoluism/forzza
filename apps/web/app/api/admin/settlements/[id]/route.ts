@@ -56,9 +56,7 @@ export async function PATCH(
       serviceKey
     );
 
-    // TODO: regenerate db-types after applying 20260616000001_settlement_approval_flow.sql.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: settlement } = await (adminClient as any)
+    const { data: settlement } = await adminClient
       .from("settlements")
       .select("id, status, invoice_number, invoice_path")
       .eq("id", id)
@@ -77,8 +75,10 @@ export async function PATCH(
       typeof settlement.invoice_path === "string" &&
       settlement.invoice_path.trim().length > 0;
 
-    let nextStatus: string;
-    const patch: Record<string, unknown> = {};
+    let nextStatus: NonNullable<
+      Database["public"]["Tables"]["settlements"]["Update"]["status"]
+    >;
+    const patch: Database["public"]["Tables"]["settlements"]["Update"] = {};
 
     if (body.action === "approve") {
       if (settlement.status !== "invoiced" || !invoiceReady) {
@@ -119,8 +119,7 @@ export async function PATCH(
       patch.transferred_at = new Date().toISOString();
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: updateError } = await (adminClient as any)
+    const { error: updateError } = await adminClient
       .from("settlements")
       .update(patch)
       .eq("id", id);

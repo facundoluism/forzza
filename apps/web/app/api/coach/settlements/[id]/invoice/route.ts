@@ -60,7 +60,8 @@ export async function POST(
 
     if (
       settlement.status !== "pending" &&
-      settlement.status !== "pending_invoice"
+      settlement.status !== "pending_invoice" &&
+      settlement.status !== "rejected"
     ) {
       return NextResponse.json(
         { error: "Esta liquidación no acepta facturas en este estado" },
@@ -147,7 +148,7 @@ export async function POST(
       })
       .eq("id", settlementId)
       .eq("coach_id", coachProfile.id)
-      .in("status", ["pending", "pending_invoice"]);
+      .in("status", ["pending", "pending_invoice", "rejected"]);
 
     if (updateError) {
       console.error("Error updating settlement:", updateError);

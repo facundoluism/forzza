@@ -980,6 +980,7 @@
       "statusApproved": "Approved",
       "statusRejected": "Rejected",
       "statusTransferred": "Transferred",
+      "rejectionReason": "Rejection reason",
       "btnUploadInvoice": "Upload invoice",
       "btnViewInvoice": "View invoice",
       "upload": {

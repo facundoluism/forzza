@@ -1004,6 +1004,7 @@
       "statusApproved": "Aprobada",
       "statusRejected": "Rechazada",
       "statusTransferred": "Transferida",
+      "rejectionReason": "Motivo del rechazo",
       "btnUploadInvoice": "Subir factura",
       "btnViewInvoice": "Ver factura",
       "upload": {

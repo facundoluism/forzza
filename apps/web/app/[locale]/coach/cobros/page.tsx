@@ -30,6 +30,7 @@ interface Settlement {
   net_amount: number;
   status: SettlementStatus;
   invoice_path: string | null;
+  invoice_rejection_reason: string | null;
   transferred_at: string | null;
   invoice_signed_url?: string | null;
 }
@@ -82,7 +83,7 @@ export default async function CobrosPage({ params }: Props) {
   const { data: settlements, error } = await supabase
     .from("settlements")
     .select(
-      "id, period_start, period_end, gross_amount, commission, net_amount, status, invoice_path, transferred_at"
+      "id, period_start, period_end, gross_amount, commission, net_amount, status, invoice_path, invoice_rejection_reason, transferred_at"
     )
     .eq("coach_id", coachProfileId)
     .order("period_start", { ascending: false });
@@ -219,13 +220,18 @@ export default async function CobrosPage({ params }: Props) {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    {(s.status === "pending" || s.status === "pending_invoice") && (
+                    {s.status === "rejected" && s.invoice_rejection_reason && (
+                      <p className="text-red-400 text-xs mb-1.5 max-w-[240px] ml-auto text-right">
+                        {t("cobros.rejectionReason")}: {s.invoice_rejection_reason}
+                      </p>
+                    )}
+                    {(s.status === "pending" || s.status === "pending_invoice" || s.status === "rejected") && (
                       <InvoiceUploadButton settlementId={s.id} />
                     )}
                     {(s.status === "invoiced" || s.status === "approved" || s.status === "rejected" || s.status === "transferred") && s.invoice_signed_url && (
                       <InvoiceViewButton signedUrl={s.invoice_signed_url} />
                     )}
-                    {(s.status === "invoiced" || s.status === "approved" || s.status === "rejected" || s.status === "transferred") && !s.invoice_signed_url && (
+                    {(s.status === "invoiced" || s.status === "approved" || s.status === "transferred") && !s.invoice_signed_url && (
                       <span className="text-muted text-xs opacity-60">{t("cobros.pending")}</span>
                     )}
                     {s.status === "transferred" && s.transferred_at && (
