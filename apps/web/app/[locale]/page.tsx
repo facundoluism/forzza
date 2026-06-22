@@ -125,7 +125,7 @@ export default async function HomePage({
             {t("nav.coaches")}
           </Link>
           <Link
-            href="/login"
+            href="/ingresar"
             className="btn-outline hide-mobile"
             style={{
               fontSize: "14px",
@@ -139,7 +139,7 @@ export default async function HomePage({
             {t("nav.login")}
           </Link>
           <Link
-            href="/login"
+            href="/ingresar"
             className="btn-lime"
             style={{
               fontSize: "14px",
@@ -249,7 +249,7 @@ export default async function HomePage({
           }}
         >
           <Link
-            href="/login"
+            href="/ingresar"
             className="btn-lime"
             style={{
               padding: "16px 36px",
@@ -687,7 +687,7 @@ export default async function HomePage({
               ))}
             </ul>
             <Link
-              href="/login"
+              href="/ingresar"
               className="btn-outline"
               style={{
                 display: "block",

@@ -1045,5 +1045,40 @@
       "successSaved": "Perfil guardado correctamente",
       "validationPrice": "Precio mínimo: {min} centavos"
     }
+  },
+  "ingresar": {
+    "metadata": {
+      "title": "Ingresar — Forzza",
+      "description": "¿Sos coach o alumno? Elegí tu perfil para continuar."
+    },
+    "headline": "¿Cómo querés usar Forzza?",
+    "subheadline": "Elegí tu perfil para continuar.",
+    "coach": {
+      "title": "Soy coach",
+      "desc": "Registrate o iniciá sesión para gestionar tus alumnos, rutinas y cobros.",
+      "cta": "Ingresar como coach →"
+    },
+    "student": {
+      "title": "Soy alumno",
+      "desc": "La app de Forzza para alumnos es para celular. Descargala gratis.",
+      "cta": "Ver cómo descargar ↓"
+    },
+    "download": {
+      "badge": "MOBILE ONLY",
+      "heading": "Forzza para alumnos es para el celular",
+      "body": "La experiencia del alumno — rutinas, check-ins, progreso y chat con tu coach — está diseñada para el celular. Descargá la app gratis.",
+      "qrAlt": "QR para descargar la app de Forzza",
+      "qrHint": "Escaneá con la cámara del celular",
+      "ios": {
+        "eyebrow": "Disponible en el",
+        "label": "App Store"
+      },
+      "android": {
+        "eyebrow": "Disponible en",
+        "label": "Google Play"
+      },
+      "testingNote": "La app está en testing cerrado. Las tiendas se habilitan próximamente.",
+      "backToOptions": "← Volver a las opciones"
+    }
   }
 }

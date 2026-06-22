@@ -6,7 +6,8 @@
  * No authentication is required. Tests run against whatever BASE_URL is
  * configured (default: http://localhost:3000).
  *
- * NOTE: The landing page links to /login (not /auth/login).
+ * NOTE: The landing page nav CTAs ("Ingresar", "Empezar gratis") now point to
+ * /ingresar — the user-type entry screen — instead of /login directly.
  * The Next.js route group (auth) does NOT add path segments:
  *   app/(auth)/login/page.tsx  → /login
  */
@@ -39,11 +40,11 @@ test.describe('Landing page', () => {
     await expect(page.getByText(/Entrenamiento con coach que realmente funciona/i).first()).toBeVisible();
   });
 
-  test('hero has primary CTA button linking to /login', async ({ page }) => {
-    // "Empezar gratis →" — the primary call-to-action links to /login
+  test('hero has primary CTA button linking to /ingresar', async ({ page }) => {
+    // "Empezar gratis →" — the primary call-to-action links to /ingresar (entry gate)
     const cta = page.getByRole('link', { name: /empezar gratis/i }).first();
     await expect(cta).toBeVisible();
-    await expect(cta).toHaveAttribute('href', '/login');
+    await expect(cta).toHaveAttribute('href', '/ingresar');
   });
 
   test('hero has secondary CTA button linking to /coaches', async ({ page }) => {
@@ -59,10 +60,10 @@ test.describe('Landing page', () => {
   });
 
   test('nav has Ingresar link', async ({ page }) => {
-    // Nav "Ingresar" links to /login (route group (auth) maps to /login)
+    // Nav "Ingresar" links to /ingresar (user-type entry gate)
     const link = page.locator('nav').getByRole('link', { name: /ingresar/i });
     await expect(link).toBeVisible();
-    await expect(link).toHaveAttribute('href', '/login');
+    await expect(link).toHaveAttribute('href', '/ingresar');
   });
 
   test('features section renders all 6 feature cards', async ({ page }) => {
@@ -149,12 +150,11 @@ test.describe('Landing page', () => {
     await expect(page.getByText(/Entrenamiento con coach/i).first()).toBeVisible();
   });
 
-  test('clicking Empezar gratis navigates to /login', async ({ page }) => {
-    // The CTA links to /login (route group (auth) → /login)
+  test('clicking Empezar gratis navigates to /ingresar', async ({ page }) => {
+    // The CTA links to /ingresar (user-type entry gate → coach or student)
     const cta = page.getByRole('link', { name: /empezar gratis/i }).first();
     await cta.click();
-    await page.waitForURL(/\/login/, { timeout: 8_000 });
-    // Confirm the login page loaded
-    await expect(page).toHaveURL(/\/login/);
+    await page.waitForURL(/\/ingresar/, { timeout: 8_000 });
+    await expect(page).toHaveURL(/\/ingresar/);
   });
 });

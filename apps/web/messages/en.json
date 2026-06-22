@@ -1021,5 +1021,40 @@
       "successSaved": "Profile saved successfully",
       "validationPrice": "Minimum price: {min} cents"
     }
+  },
+  "ingresar": {
+    "metadata": {
+      "title": "Sign in — Forzza",
+      "description": "Are you a coach or a student? Choose your profile to continue."
+    },
+    "headline": "How do you want to use Forzza?",
+    "subheadline": "Choose your profile to continue.",
+    "coach": {
+      "title": "I'm a coach",
+      "desc": "Sign up or sign in to manage your students, routines, and payouts.",
+      "cta": "Sign in as a coach →"
+    },
+    "student": {
+      "title": "I'm a student",
+      "desc": "The Forzza app for students is mobile-only. Download it for free.",
+      "cta": "See how to download ↓"
+    },
+    "download": {
+      "badge": "MOBILE ONLY",
+      "heading": "Forzza for students is a mobile app",
+      "body": "The student experience — routines, check-ins, progress, and chat with your coach — is designed for mobile. Download the app for free.",
+      "qrAlt": "QR code to download the Forzza app",
+      "qrHint": "Scan with your phone camera",
+      "ios": {
+        "eyebrow": "Available on the",
+        "label": "App Store"
+      },
+      "android": {
+        "eyebrow": "Available on",
+        "label": "Google Play"
+      },
+      "testingNote": "The app is in closed testing. Store listings coming soon.",
+      "backToOptions": "← Back to options"
+    }
   }
 }
