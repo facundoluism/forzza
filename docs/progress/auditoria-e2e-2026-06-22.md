@@ -280,8 +280,35 @@ Commits de esta auditoría:
 
 Estado final de la batería tras los fixes: typecheck 6/6 PASS, unit 271+127 PASS, RLS 63 PASS.
 
-Pendientes para Facu (REQUIERE_DECISIÓN / migraciones — no tocados):
-- A0 cloud sync (db push de 18 migraciones), A1 precio PRO, A2 pisos coach, A3 ratings, M-SEC1
-  rotación de credenciales, M-SEC2 mecanismo dev-bypass, M-BIZ2/M-BIZ3 (nuevos triggers/migraciones
-  para "no revierte comisión" y límite de 3 rutinas server-side — conviene batchearlos con A0),
-  destino del alumno en login web.
+Pendientes para Facu (no tocados):
+- **M-SEC1** rotación de credenciales MP; **M-SEC2** mecanismo dev-bypass — diferidos por decisión
+  del dueño ("más adelante, cuando esté todo funcionando").
+
+---
+
+## Tanda de features post-auditoría (decisiones del dueño 2026-06-22)
+
+Ejecutada tras el cloud sync, todo verificado por mí (local + cloud):
+
+- **A1 precio PRO = $9.999** (master-doc corregido). ✅
+- **A3 ratings**: desvío **aprobado**; verificado el trigger de promedio (insert→avg 5.00/count 1,
+  delete→0/0) y que las páginas que los muestran cargan sin errores. ✅
+- **#3 sin piso de coach**: `min_coach_price=0` (AR/CL) en local y cloud; el coach pone su precio,
+  Forzza retiene 20%. Migración `20260622120000_no_price_floor.sql`. ✅
+- **M-BIZ2 anti-reversión de comisión**: trigger `coach_billing_model_anti_reversion`
+  (`20260622120001`). Verificado: el UPDATE comisión→fija falla. ✅
+- **M-BIZ3 límite 3 rutinas Free server-side**: trigger `routines_free_limit_check`
+  (`20260622120002`). Verificado: 4ª rutina propia de free falla; rutina de coach no se bloquea. ✅
+- **#4 avatar de coach**: bucket público `coach-avatars` (`20260622120003`) + UI subir/eliminar en
+  `/coach/perfil` (commit `9ab48d8`). Verificado: upload escribe en `{uid}/` y setea `avatar_url`;
+  delete limpia archivo y columna. ✅
+- **#7 login web usuario/coach**: nueva ruta `/ingresar` (alumno→QR + tarjetas Apple/Android con
+  URLs configurables por env; coach→login). Commits `6cbf2c0`/`a5b0baa`. Verificado: render OK,
+  QR data-URL presente, typecheck verde. ✅
+
+**Cloud final:** 30/30 migraciones sincronizadas (segundo push 2026-06-22 de las 4 nuevas);
+`min_coach_price=0` y bucket `coach-avatars` confirmados vía REST. Typecheck 6/6, unit 271+127,
+RLS 63 — todo verde.
+
+Pendiente operativo (no bloqueante): subir el seed de videos al cloud (`pnpm videos:push-cloud`)
+cuando termine la curación; smoke en emulador del flujo mobile del alumno.
