@@ -63,6 +63,20 @@ const nextConfig: NextConfig = {
         hostname: "*.supabase.co",
         pathname: "/storage/v1/object/**",
       },
+      {
+        // Supabase local (dev) — http://127.0.0.1:54321
+        protocol: "http",
+        hostname: "127.0.0.1",
+        port: "54321",
+        pathname: "/storage/v1/object/**",
+      },
+      {
+        // Supabase local (dev) — http://localhost:54321
+        protocol: "http",
+        hostname: "localhost",
+        port: "54321",
+        pathname: "/storage/v1/object/**",
+      },
     ],
   },
 

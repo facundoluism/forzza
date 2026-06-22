@@ -1,6 +1,7 @@
 import { requireCoach } from "@/lib/auth/coach";
 import type { Metadata } from "next";
 import { PerfilForm } from "./PerfilForm";
+import { AvatarUpload } from "./AvatarUpload";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -22,7 +23,7 @@ export default async function PerfilPage({ params }: Props) {
   const { data: coachProfile } = await supabase
     .from("coach_profiles")
     .select(
-      "id, display_name, bio, specialties, years_experience, country"
+      "id, display_name, bio, specialties, years_experience, country, avatar_url"
     )
     .eq("id", coachProfileId)
     .single();
@@ -49,6 +50,8 @@ export default async function PerfilPage({ params }: Props) {
           {t("perfil.subtitle")}
         </p>
       </div>
+
+      <AvatarUpload currentAvatarUrl={coachProfile?.avatar_url ?? null} />
 
       <PerfilForm
         initialProfile={{
