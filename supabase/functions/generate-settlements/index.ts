@@ -75,8 +75,17 @@ serve(async (_req) => {
       .eq("country", coachUser?.country ?? "AR")
       .single();
 
-    const commissionRate = config?.commission_rate ?? 0.20;
-    const currency = config?.currency ?? "ARS";
+    // Regla de negocio #1: la comisión se lee SIEMPRE de country_config, jamás
+    // se hardcodea. Si falta config para el país del coach, se omite la
+    // liquidación (no se aplica una tasa por defecto) y se loguea para corregir.
+    if (config?.commission_rate == null || config?.currency == null) {
+      console.error(
+        `generate-settlements: sin country_config para país '${coachUser?.country ?? "?"}' (coach ${coachId}); se omite la liquidación en vez de aplicar comisión hardcodeada.`
+      );
+      continue;
+    }
+    const commissionRate = config.commission_rate;
+    const currency = config.currency;
     const grossAmount = data.total;
     const commission = Math.round(grossAmount * commissionRate);
     const netAmount = grossAmount - commission;

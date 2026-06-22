@@ -656,7 +656,7 @@
     "tickets": {
       "metaTitle": "Tickets — Forzza Admin",
       "title": "Tickets de soporte",
-      "subtitle": "{open} abierto{openPlural}, {inProgress} en progreso",
+      "subtitle": "{open, plural, one {# abierto} other {# abiertos}}, {inProgress} en progreso",
       "filterAll": "Todos",
       "emptyState": "No hay tickets para mostrar.",
       "emptySubtitle": "Los tickets de soporte aparecerán acá.",

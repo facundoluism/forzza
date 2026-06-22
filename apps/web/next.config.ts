@@ -31,8 +31,8 @@ const CSP = [
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   // Google Fonts font files
   "font-src 'self' https://fonts.gstatic.com",
-  // Supabase storage for images/avatars
-  "img-src 'self' data: blob: https://*.supabase.co",
+  // Supabase storage for images/avatars + YouTube thumbnails de videos de ejercicios
+  "img-src 'self' data: blob: https://*.supabase.co https://img.youtube.com https://i.ytimg.com",
   // Supabase API, Mercado Pago SDK, PostHog, Sentry
   "connect-src 'self' https://*.supabase.co http://127.0.0.1:54321 http://localhost:54321 https://api.mercadopago.com https://app.posthog.com https://ingest.sentry.io",
   "object-src 'none'",

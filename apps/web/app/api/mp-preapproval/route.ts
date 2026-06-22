@@ -17,10 +17,13 @@ export async function POST(_req: NextRequest) {
     }
   );
 
+  // getUser() verifica la firma del JWT contra el servidor de auth (getSession()
+  // confía en la cookie sin re-validar). Esta es una ruta de checkout PRO: el
+  // primer gate debe ser robusto ante cookies manipuladas.
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  if (!session) {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
@@ -31,7 +34,7 @@ export async function POST(_req: NextRequest) {
   const { data: studentProfile } = await supabase
     .from("student_profiles")
     .select("birth_date, parental_consent_at")
-    .eq("user_id", session.user.id)
+    .eq("user_id", user.id)
     .single();
 
   if (
