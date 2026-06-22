@@ -201,7 +201,8 @@
     "packages": "Paquetes disponibles",
     "noPackages": "Este coach no tiene paquetes publicados todavía.",
     "pricePerMonth": "{price}/mes",
-    "hire": "Contratar"
+    "hire": "Contratar",
+    "packageIncludes": "Incluye"
   },
   "checkout": {
     "metaTitle": "Checkout — Forzza",

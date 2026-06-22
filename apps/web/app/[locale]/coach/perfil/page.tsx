@@ -31,7 +31,7 @@ export default async function PerfilPage({ params }: Props) {
   // Fetch packages
   const { data: packages } = await supabase
     .from("coach_packages")
-    .select("id, title, description, price, active")
+    .select("id, title, description, price, active, features")
     .eq("coach_id", coachProfileId)
     .order("created_at", { ascending: true });
 
@@ -67,7 +67,7 @@ export default async function PerfilPage({ params }: Props) {
             description: p.description ?? "",
             price_cents: p.price,
             billing_type: "mensual" as const,
-            features: [],
+            features: p.features ?? [],
             is_active: p.active ?? true,
           }))
         }

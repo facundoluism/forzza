@@ -134,6 +134,7 @@ export async function PATCH(request: Request) {
             description: pkg.description ?? null,
             price: pkg.price_cents,
             active: pkg.is_active,
+            features: pkg.features ?? [],
           })
           .eq("id", pkg.id)
           .eq("coach_id", coachProfileId);
@@ -146,6 +147,7 @@ export async function PATCH(request: Request) {
           price: pkg.price_cents,
           tier: "starter" as const,
           active: pkg.is_active,
+          features: pkg.features ?? [],
         });
       }
     }

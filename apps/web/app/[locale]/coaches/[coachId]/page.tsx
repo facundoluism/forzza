@@ -16,6 +16,7 @@ interface CoachPackage {
   price: number;
   tier: "starter" | "pro" | "elite";
   active: boolean;
+  features: string[];
 }
 
 interface CoachProfile {
@@ -88,7 +89,7 @@ export default async function CoachProfilePage({ params }: PageProps) {
     const { data: coach } = await (supabase as any)
       .from("coach_profiles")
       .select(
-        "id, display_name, bio, specialties, avatar_url, years_experience, packages:coach_packages(id, title, description, price, tier, active)"
+        "id, display_name, bio, specialties, avatar_url, years_experience, packages:coach_packages(id, title, description, price, tier, active, features)"
       )
       .eq("id", coachId)
       .eq("status", "approved")
@@ -202,6 +203,22 @@ export default async function CoachProfilePage({ params }: PageProps) {
                       <p className="text-muted text-sm leading-relaxed m-0">
                         {pkg.description}
                       </p>
+                    )}
+
+                    {pkg.features && pkg.features.length > 0 && (
+                      <div className="flex flex-col gap-1.5">
+                        <p className="text-muted text-xs font-bold uppercase tracking-[1.5px]">
+                          {t("packageIncludes")}
+                        </p>
+                        <ul className="flex flex-col gap-1 m-0 p-0 list-none">
+                          {pkg.features.map((feature, i) => (
+                            <li key={i} className="flex items-start gap-2 text-sm text-[#FAFAFA]">
+                              <span className="text-[#C8FF00] font-bold mt-0.5 shrink-0">✓</span>
+                              <span>{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     )}
 
                     <div className="flex items-center gap-3 mt-2 flex-wrap">
