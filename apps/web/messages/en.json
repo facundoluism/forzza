@@ -1041,7 +1041,7 @@
       "breakdownStudent": "Student pays:",
       "breakdownForzza": "Forzza retains ({pct}%):",
       "breakdownCoach": "You earn:",
-      "commissionTooltip": "Forzza retains a {pct}% commission on the plan price. You receive the rest in your bi-weekly settlement.",
+      "commissionTooltip": "The price the student sees is your net plus Forzza's {pct}% commission. It's calculated as: student price = what you want to earn ÷ 0.80. You receive exactly what you set; the student covers the commission on top.",
       "commissionTooltipLabel": "Commission info"
     }
   },

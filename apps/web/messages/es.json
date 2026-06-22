@@ -1065,7 +1065,7 @@
       "breakdownStudent": "El alumno paga:",
       "breakdownForzza": "Forzza retiene ({pct}%):",
       "breakdownCoach": "Vos cobrás:",
-      "commissionTooltip": "Forzza retiene el {pct}% de comisión sobre el precio del plan. Vos recibís el resto en tu liquidación quincenal.",
+      "commissionTooltip": "El precio que ve el alumno es tu neto más la comisión de Forzza ({pct}%). Se calcula así: precio al alumno = lo que querés cobrar ÷ 0,80. Vos recibís exactamente lo que pusiste; la comisión la paga el alumno por encima.",
       "commissionTooltipLabel": "Info sobre comisión"
     }
   },
