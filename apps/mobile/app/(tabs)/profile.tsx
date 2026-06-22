@@ -29,6 +29,8 @@ import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens
 import { useState, useEffect } from "react";
 import { useAnalyticsConsentStore } from "@/stores/analyticsConsentStore";
 import { initAnalyticsIfAllowed, optOutAndReset } from "@/lib/analytics";
+import { File as EFSFile, Paths } from "expo-file-system";
+import * as Sharing from "expo-sharing";
 
 const LANGUAGES: { code: AppLanguage; label: string; native: string }[] = [
   { code: "es", label: "ES", native: "Español" },
@@ -374,6 +376,8 @@ export default function ProfileTab() {
   const [deletingAccount, setDeletingAccount] = useState(false);
   // Cancel coach plan state
   const [cancelingCoach, setCancelingCoach] = useState(false);
+  // Export data state
+  const [exportingData, setExportingData] = useState(false);
   // Expandable sections
   const [showNotifications, setShowNotifications] = useState(false);
   const [showLanguage, setShowLanguage] = useState(false);
@@ -392,6 +396,37 @@ export default function ProfileTab() {
 
   function handlePrivacyPolicy() {
     void Linking.openURL("https://forzza.app/legales/privacidad");
+  }
+
+  async function handleExportData() {
+    setExportingData(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("export-user-data", {
+        method: "GET",
+      });
+      if (error) throw error;
+
+      // Serialize to JSON string and write using expo-file-system v19 API
+      const json = JSON.stringify(data, null, 2);
+      const fileName = `forzza-datos-${new Date().toISOString().slice(0, 10)}.json`;
+      const file = new EFSFile(Paths.cache, fileName);
+      file.write(json);
+
+      const canShare = await Sharing.isAvailableAsync();
+      if (!canShare) {
+        Alert.alert(t("exportData.error_title"), t("exportData.sharing_unavailable"));
+        return;
+      }
+
+      await Sharing.shareAsync(file.uri, {
+        mimeType: "application/json",
+        dialogTitle: t("exportData.menuLabel"),
+      });
+    } catch {
+      Alert.alert(t("exportData.error_title"), t("exportData.error_desc"));
+    } finally {
+      setExportingData(false);
+    }
   }
 
   const localCompletedSessions = completedSessionsFromQueue(syncQueue, user?.id);
@@ -721,6 +756,19 @@ export default function ProfileTab() {
             }
           />
         )}
+
+        {/* Descargar mis datos (P1.3 — Ley 25.326) */}
+        <MenuItem
+          icon="📥"
+          label={t("profile.menuExportData")}
+          subtitle={t("profile.menuExportDataSub")}
+          onPress={() => { void handleExportData(); }}
+          rightElement={
+            exportingData
+              ? <ActivityIndicator color={colors.muted} size="small" />
+              : <Text style={menuStyles.arrow}>›</Text>
+          }
+        />
 
         {/* Cerrar sesión */}
         <MenuItem

@@ -233,7 +233,28 @@
     "noPackages": "This coach has no published packages yet.",
     "pricePerMonth": "{price}/month",
     "hire": "Hire",
-    "packageIncludes": "Includes"
+    "packageIncludes": "Includes",
+    "report": {
+      "btn": "Report",
+      "modalTitle": "Report profile",
+      "reasonLabel": "Reason",
+      "reasonPlaceholder": "Select a reason",
+      "reasonSpam": "Spam or misleading advertising",
+      "reasonFake": "Fake or fraudulent profile",
+      "reasonInappropriate": "Inappropriate content",
+      "reasonHarassment": "Harassment or abusive behavior",
+      "reasonOther": "Other",
+      "detailsLabel": "Additional details (optional)",
+      "detailsPlaceholder": "Tell us more about the issue…",
+      "submit": "Submit report",
+      "submitting": "Submitting…",
+      "cancel": "Cancel",
+      "successTitle": "Report received",
+      "successBody": "Thank you, we received your report. We will review it shortly.",
+      "errorNetwork": "Network error. Please try again.",
+      "errorGeneric": "Could not send the report. Please try again.",
+      "errorReasonRequired": "Please select a reason."
+    }
   },
   "checkout": {
     "metaTitle": "Checkout — Forzza",
@@ -1269,7 +1290,15 @@
       "breakdownCoach": "You earn:",
       "commissionTooltip": "The price the student sees is your net plus Forzza's {pct}% commission. It's calculated as: student price = what you want to earn ÷ 0.80. You receive exactly what you set; the student covers the commission on top.",
       "commissionTooltipLabel": "Commission info",
-      "privacySection": "Privacy"
+      "privacySection": "Privacy",
+      "exportData": {
+        "btn": "Download my data",
+        "btnLoading": "Downloading…",
+        "description": "You will receive a JSON file with all your data stored in Forzza (right of access).",
+        "errorNetwork": "Network error. Please try again.",
+        "errorGeneric": "Download failed. Please try again.",
+        "successNotice": "Download started."
+      }
     }
   },
   "analyticsBanner": {

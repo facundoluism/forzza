@@ -18,6 +18,7 @@ import { useAuth } from "@/providers/AuthProvider";
 import { useState } from "react";
 import { Card, Pill, Skeleton, ErrorState, EmptyState, ScreenHeader } from "@forzza/ui/native";
 import { colors, spacing, typography, radius, fontSize } from "@forzza/ui/tokens";
+import { ReportModal } from "@/components/ReportModal";
 
 // Columnas reales de coach_packages: id, coach_id, tier, title, description, price, active, features
 interface CoachPackage {
@@ -471,6 +472,8 @@ export default function CoachProfileScreen() {
   const { user } = useAuth();
   const insets = useSafeAreaInsets();
 
+  const [reportCoachVisible, setReportCoachVisible] = useState(false);
+
   const { data: coach, isLoading, isError, refetch } = useQuery({
     queryKey: ["coach_profile", coachId],
     queryFn: async (): Promise<CoachProfile | null> => {
@@ -690,7 +693,27 @@ export default function CoachProfileScreen() {
           ratingCount={coach.rating_count}
         />
       )}
+
+      {/* P1.5 — Report coach profile */}
+      <TouchableOpacity
+        style={styles.reportBtn}
+        onPress={() => setReportCoachVisible(true)}
+        activeOpacity={0.7}
+        testID="report-coach-btn"
+      >
+        <Text style={styles.reportBtnText}>{t("report.btn_coach")}</Text>
+      </TouchableOpacity>
       </ScrollView>
+
+      {/* Report modal */}
+      {coachId !== undefined && (
+        <ReportModal
+          visible={reportCoachVisible}
+          targetType="coach_profile"
+          targetId={coachId}
+          onClose={() => setReportCoachVisible(false)}
+        />
+      )}
     </View>
   );
 }
@@ -1083,5 +1106,19 @@ const styles = StyleSheet.create({
     fontFamily: typography.body,
     color: colors.muted,
     fontSize: fontSize.base,
+  },
+  // Report coach profile
+  reportBtn: {
+    alignSelf: "center",
+    paddingVertical: spacing[3],
+    paddingHorizontal: spacing[4],
+    marginBottom: spacing[4],
+  },
+  reportBtnText: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.sm,
+    textDecorationLine: "underline",
+    textAlign: "center",
   },
 });

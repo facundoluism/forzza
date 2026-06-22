@@ -164,7 +164,9 @@
     "menuCancelCoach": "Cancel plan with my coach",
     "menuCancelCoachSub": "Ends the current cycle",
     "menuSignOut": "Sign out",
-    "menuDeleteAccount": "Delete your account"
+    "menuDeleteAccount": "Delete your account",
+    "menuExportData": "Download my data",
+    "menuExportDataSub": "Law 25.326 · Right of access"
   },
   "manageSubscription": {
     "screenTitle": "Manage subscription",
@@ -752,6 +754,36 @@
     "note": "You can delete your data at any time from your account settings.",
     "errorTitle": "Could not record your consent",
     "errorDesc": "You can continue anyway; we will retry on your next session."
+  },
+  "exportData": {
+    "menuLabel": "Download my data",
+    "menuSub": "Law 25.326 · Right of access",
+    "loading": "Preparing your data...",
+    "success_title": "Data exported",
+    "success_desc": "Your data file has been generated and is ready to share.",
+    "error_title": "Could not export data",
+    "error_desc": "Check your connection and try again.",
+    "sharing_unavailable": "Your device does not support file sharing."
+  },
+  "report": {
+    "title": "Report content",
+    "subtitle": "Help us keep the community safe. Your report is anonymous.",
+    "reason_label": "Reason for report",
+    "reason_spam": "Spam or unwanted advertising",
+    "reason_inappropriate": "Inappropriate or offensive content",
+    "reason_harassment": "Harassment or intimidation",
+    "reason_misinformation": "False or misleading information",
+    "reason_other": "Other reason",
+    "details_label": "Additional details (optional)",
+    "details_placeholder": "Describe the issue in more detail...",
+    "submit": "Submit report",
+    "success_title": "Report submitted",
+    "success_desc": "Thank you for your report. We will review it shortly.",
+    "error_title": "Could not submit report",
+    "error_desc": "Check your connection and try again.",
+    "btn_message": "Report message",
+    "btn_video": "Report video",
+    "btn_coach": "Report coach profile"
   },
   "upgrade": {
     "screenTitle": "Plans",

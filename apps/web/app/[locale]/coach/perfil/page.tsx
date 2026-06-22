@@ -4,6 +4,7 @@ import { PerfilForm } from "./PerfilForm";
 import { AvatarUpload } from "./AvatarUpload";
 import { DeleteAccountButton } from "./DeleteAccountButton";
 import { AnalyticsOptOut } from "@/components/AnalyticsOptOut";
+import { ExportDataButton } from "./ExportDataButton";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -103,6 +104,7 @@ export default async function PerfilPage({ params }: Props) {
           {t("perfil.privacySection")}
         </h2>
         <AnalyticsOptOut />
+        <ExportDataButton />
       </div>
 
       {/* Danger zone — delete account */}

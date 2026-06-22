@@ -45,9 +45,9 @@ El video razona sobre EE. UU. (FTC, CCPA, DMCA y sus USD 150k). `CLAUDE.md` defi
 |---|---|---|---|
 | P1.1 | ✅ **HECHO 2026-06-22** | Banner de primer uso + opt-out (decisión del dueño). Web: `AnalyticsBanner`/`AnalyticsOptOut`, PostHog no carga hasta aceptar (localStorage). Mobile: store Zustand persistido + banner + toggle en perfil. Sobre `scrubPII()`. Typechecks verdes | apps ✅ |
 | P1.2 | ✅ **HECHO 2026-06-22** | UI de borrado en `/coach/perfil` (Danger zone, doble confirmación) reutilizando Edge Fn `delete-account`. ES/EN paritarios, typecheck verde | `web-next-engineer` |
-| P1.3 | 🟡 **BACKEND HECHO 2026-06-22** | Edge Fn `export-user-data` (JSON descargable con datos propios; audit_log; fotos = metadata + URL firmada 1h). **PENDIENTE**: botón "descargar mis datos" en UI mobile+web | `supabase-rls-engineer` ✅ + apps ⏳ |
+| P1.3 | ✅ **HECHO 2026-06-22** | Edge Fn `export-user-data` + botón "descargar mis datos" en perfil web (Blob download) y mobile (`expo-file-system`+`expo-sharing`, share sheet). Audit_log; fotos = URL firmada 1h | `supabase-rls-engineer` ✅ + apps ✅ |
 | P1.4 | ✅ **HECHO 2026-06-22** | Capa de datos (RPC `record_sensitive_consent`) + UI mobile: modal de consentimiento antes de subir fotos de progreso, gateado por `sensitive_data_consent_at`. Enforcement duro RLS = follow-up opcional | `supabase-rls-engineer` ✅ + `mobile-expo-engineer` ✅ |
-| P1.5 | 🟡 **DOC + BACKEND HECHO 2026-06-22** | `docs/compliance/ugc-takedown.md` + Edge Fn `submit-content-report` (canal mínimo: audit_log + notifica owners + email opcional `LEGAL_REPORTS_EMAIL`; sin tabla nueva, decisión del dueño). **PENDIENTE**: botones "reportar" en chat/video/perfil (mobile+web) | `docs-maintainer` ✅ + apps ⏳ |
+| P1.5 | ✅ **HECHO 2026-06-22** | `docs/compliance/ugc-takedown.md` + Edge Fn `submit-content-report` (canal mínimo: audit_log + notifica owners + email opcional `LEGAL_REPORTS_EMAIL`) + botones "reportar" en chat (mensaje), video, perfil de coach (mobile) y perfil de coach (web). HUMAN_REQUIRED: confirmar casilla `LEGAL_REPORTS_EMAIL` | `docs-maintainer` ✅ + apps ✅ |
 
 ### P2 — US/EU prep (activable al internacionalizar)
 

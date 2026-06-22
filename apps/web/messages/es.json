@@ -233,7 +233,28 @@
     "noPackages": "Este coach no tiene paquetes publicados todavía.",
     "pricePerMonth": "{price}/mes",
     "hire": "Contratar",
-    "packageIncludes": "Incluye"
+    "packageIncludes": "Incluye",
+    "report": {
+      "btn": "Reportar",
+      "modalTitle": "Reportar perfil",
+      "reasonLabel": "Motivo",
+      "reasonPlaceholder": "Seleccioná un motivo",
+      "reasonSpam": "Spam o publicidad engañosa",
+      "reasonFake": "Perfil falso o fraudulento",
+      "reasonInappropriate": "Contenido inapropiado",
+      "reasonHarassment": "Acoso o comportamiento abusivo",
+      "reasonOther": "Otro",
+      "detailsLabel": "Detalles adicionales (opcional)",
+      "detailsPlaceholder": "Contanos más sobre el problema…",
+      "submit": "Enviar reporte",
+      "submitting": "Enviando…",
+      "cancel": "Cancelar",
+      "successTitle": "Reporte recibido",
+      "successBody": "Gracias, recibimos tu reporte. Lo vamos a revisar a la brevedad.",
+      "errorNetwork": "Error de red. Intentá de nuevo.",
+      "errorGeneric": "No se pudo enviar el reporte. Intentá de nuevo.",
+      "errorReasonRequired": "Seleccioná un motivo."
+    }
   },
   "checkout": {
     "metaTitle": "Checkout — Forzza",
@@ -1293,7 +1314,15 @@
       "breakdownCoach": "Vos cobrás:",
       "commissionTooltip": "El precio que ve el alumno es tu neto más la comisión de Forzza ({pct}%). Se calcula así: precio al alumno = lo que querés cobrar ÷ 0,80. Vos recibís exactamente lo que pusiste; la comisión la paga el alumno por encima.",
       "commissionTooltipLabel": "Info sobre comisión",
-      "privacySection": "Privacidad"
+      "privacySection": "Privacidad",
+      "exportData": {
+        "btn": "Descargar mis datos",
+        "btnLoading": "Descargando…",
+        "description": "Recibís un archivo JSON con todos tus datos almacenados en Forzza (Ley 25.326, derecho de acceso).",
+        "errorNetwork": "Error de red. Intentá de nuevo.",
+        "errorGeneric": "No se pudo descargar. Intentá de nuevo.",
+        "successNotice": "La descarga comenzó."
+      }
     }
   },
   "analyticsBanner": {

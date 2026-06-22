@@ -21,6 +21,7 @@ import { supabase } from "@/lib/supabase";
 import { EmptyState, ScreenHeader } from "@forzza/ui/native";
 import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
 import type { RealtimeChannel } from "@supabase/supabase-js";
+import { ReportModal } from "@/components/ReportModal";
 
 interface Message {
   id: string;
@@ -35,17 +36,23 @@ function MessageBubble({
   message,
   isOwn,
   timeStr,
+  onLongPress,
 }: {
   message: Message;
   isOwn: boolean;
   timeStr: string;
+  onLongPress?: () => void;
 }): React.JSX.Element {
   return (
-    <View
+    <TouchableOpacity
       style={[
         styles.bubbleWrapper,
         isOwn ? styles.bubbleWrapperOwn : styles.bubbleWrapperOther,
       ]}
+      onLongPress={onLongPress}
+      activeOpacity={0.9}
+      delayLongPress={400}
+      accessible={false}
     >
       <View
         style={[styles.bubble, isOwn ? styles.bubbleOwn : styles.bubbleOther]}
@@ -57,7 +64,7 @@ function MessageBubble({
       <Text style={[styles.bubbleTime, isOwn && styles.bubbleTimeOwn]}>
         {timeStr}
       </Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -85,6 +92,8 @@ export default function ConversationScreen(): React.JSX.Element {
   const [hasMore, setHasMore] = useState(true);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
+  // Report modal state
+  const [reportMessageId, setReportMessageId] = useState<string | null>(null);
 
   function formatTime(iso: string): string {
     return new Date(iso).toLocaleTimeString(undefined, {
@@ -261,13 +270,17 @@ export default function ConversationScreen(): React.JSX.Element {
         ref={flatListRef}
         data={messages}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <MessageBubble
-            message={item}
-            isOwn={item.sender_id === user?.id}
-            timeStr={formatTime(item.created_at)}
-          />
-        )}
+        renderItem={({ item }) => {
+          const isOwn = item.sender_id === user?.id;
+          return (
+            <MessageBubble
+              message={item}
+              isOwn={isOwn}
+              timeStr={formatTime(item.created_at)}
+              {...(!isOwn ? { onLongPress: () => setReportMessageId(item.id) } : {})}
+            />
+          );
+        }}
         contentContainerStyle={styles.messageList}
         onEndReachedThreshold={0.1}
         onStartReached={() => void handleLoadMore()}
@@ -309,6 +322,16 @@ export default function ConversationScreen(): React.JSX.Element {
           )}
         </TouchableOpacity>
       </View>
+
+      {/* P1.5 — Report message modal */}
+      {reportMessageId !== null && (
+        <ReportModal
+          visible={reportMessageId !== null}
+          targetType="message"
+          targetId={reportMessageId}
+          onClose={() => setReportMessageId(null)}
+        />
+      )}
     </KeyboardAvoidingView>
   );
 }

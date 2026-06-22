@@ -164,7 +164,9 @@
     "menuCancelCoach": "Cancelar plan con mi coach",
     "menuCancelCoachSub": "Finaliza el ciclo actual",
     "menuSignOut": "Cerrá sesión",
-    "menuDeleteAccount": "Eliminá tu cuenta"
+    "menuDeleteAccount": "Eliminá tu cuenta",
+    "menuExportData": "Descargar mis datos",
+    "menuExportDataSub": "Ley 25.326 · Derecho de acceso"
   },
   "manageSubscription": {
     "screenTitle": "Gestionar suscripción",
@@ -752,6 +754,36 @@
     "note": "Podés eliminar tus datos en cualquier momento desde los ajustes de tu cuenta.",
     "errorTitle": "No pudimos registrar tu consentimiento",
     "errorDesc": "Podés continuar igual; vamos a reintentar en el próximo inicio de sesión."
+  },
+  "exportData": {
+    "menuLabel": "Descargar mis datos",
+    "menuSub": "Ley 25.326 · Derecho de acceso",
+    "loading": "Preparando tus datos...",
+    "success_title": "Datos exportados",
+    "success_desc": "Tu archivo de datos fue generado y está listo para compartir.",
+    "error_title": "No se pudieron exportar los datos",
+    "error_desc": "Revisá tu conexión e intentá de nuevo.",
+    "sharing_unavailable": "Tu dispositivo no soporta la función de compartir archivos."
+  },
+  "report": {
+    "title": "Reportar contenido",
+    "subtitle": "Ayudanos a mantener la comunidad segura. Tu reporte es anónimo.",
+    "reason_label": "Motivo del reporte",
+    "reason_spam": "Spam o publicidad no deseada",
+    "reason_inappropriate": "Contenido inapropiado u ofensivo",
+    "reason_harassment": "Acoso o intimidación",
+    "reason_misinformation": "Información falsa o engañosa",
+    "reason_other": "Otro motivo",
+    "details_label": "Detalles adicionales (opcional)",
+    "details_placeholder": "Describi el problema con más detalle...",
+    "submit": "Enviar reporte",
+    "success_title": "Reporte enviado",
+    "success_desc": "Gracias por tu reporte. Lo vamos a revisar a la brevedad.",
+    "error_title": "No se pudo enviar el reporte",
+    "error_desc": "Revisá tu conexión e intentá de nuevo.",
+    "btn_message": "Reportar mensaje",
+    "btn_video": "Reportar video",
+    "btn_coach": "Reportar perfil del coach"
   },
   "upgrade": {
     "screenTitle": "Planes",

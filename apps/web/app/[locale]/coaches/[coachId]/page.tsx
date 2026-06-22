@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/server";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
+import { ReportModal } from "./ReportModal";
 
 export const dynamic = "force-dynamic";
 
@@ -109,10 +110,13 @@ export default async function CoachProfilePage({ params }: PageProps) {
   return (
     <main className="bg-bg min-h-screen text-[#FAFAFA]">
       <div className="max-w-[800px] mx-auto px-6 py-16">
-        {/* Back link */}
-        <Link href="/coaches" className="text-muted text-sm hover:text-[#FAFAFA] transition-colors">
-          {t("backToCoaches")}
-        </Link>
+        {/* Back link + report action */}
+        <div className="flex items-center justify-between">
+          <Link href="/coaches" className="text-muted text-sm hover:text-[#FAFAFA] transition-colors">
+            {t("backToCoaches")}
+          </Link>
+          <ReportModal coachId={coachData.id} />
+        </div>
 
         {/* Hero */}
         <div className="flex flex-col items-center text-center gap-4 pt-8 pb-8">

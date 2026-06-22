@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Dimensions,
+  TouchableOpacity,
 } from "react-native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -18,6 +19,7 @@ import { useAuth } from "@/providers/AuthProvider";
 import { useLanguageStore, type AppLanguage } from "@/stores/languageStore";
 import { getExerciseIconKey } from "@/constants/exerciseIcons";
 import { localizeMeta } from "@/constants/exerciseI18n";
+import { ReportModal } from "@/components/ReportModal";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -332,6 +334,7 @@ function VideoTab({ exerciseId, language }: VideoTabProps): React.JSX.Element {
   const { t } = useTranslation();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [reportVideoId, setReportVideoId] = useState<string | null>(null);
 
   const {
     data: video,
@@ -450,26 +453,48 @@ function VideoTab({ exerciseId, language }: VideoTabProps): React.JSX.Element {
   }
 
   return (
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.tabContent}
-      testID="video-tab-content"
-    >
-      <View style={styles.playerWrapper}>
-        <YoutubePlayer
-          height={PLAYER_HEIGHT}
-          videoId={video.youtube_id}
+    <>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.tabContent}
+        testID="video-tab-content"
+      >
+        <View style={styles.playerWrapper}>
+          <YoutubePlayer
+            height={PLAYER_HEIGHT}
+            videoId={video.youtube_id}
+          />
+        </View>
+        <View style={styles.videoMeta}>
+          <Text style={styles.videoTitle} numberOfLines={2}>
+            {video.title}
+          </Text>
+          <Text style={styles.videoChannel}>
+            {t("exercisePreview.video_channel", { channel: video.channel_title })}
+          </Text>
+        </View>
+
+        {/* P1.5 — Report video button */}
+        <TouchableOpacity
+          style={styles.reportVideoBtn}
+          onPress={() => setReportVideoId(video.youtube_id)}
+          activeOpacity={0.7}
+          testID="report-video-btn"
+        >
+          <Text style={styles.reportVideoBtnText}>{t("report.btn_video")}</Text>
+        </TouchableOpacity>
+      </ScrollView>
+
+      {/* Report video modal */}
+      {reportVideoId !== null && (
+        <ReportModal
+          visible={reportVideoId !== null}
+          targetType="video"
+          targetId={reportVideoId}
+          onClose={() => setReportVideoId(null)}
         />
-      </View>
-      <View style={styles.videoMeta}>
-        <Text style={styles.videoTitle} numberOfLines={2}>
-          {video.title}
-        </Text>
-        <Text style={styles.videoChannel}>
-          {t("exercisePreview.video_channel", { channel: video.channel_title })}
-        </Text>
-      </View>
-    </ScrollView>
+      )}
+    </>
   );
 }
 
@@ -983,5 +1008,19 @@ const styles = StyleSheet.create({
     fontFamily: typography.body,
     color: colors.muted,
     fontSize: fontSize.xs,
+  },
+  // P1.5 — Report video link
+  reportVideoBtn: {
+    alignSelf: "center",
+    paddingVertical: spacing[2],
+    paddingHorizontal: spacing[3],
+    marginTop: spacing[2],
+  },
+  reportVideoBtnText: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.sm,
+    textDecorationLine: "underline",
+    textAlign: "center",
   },
 });
