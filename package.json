@@ -25,6 +25,7 @@
     "smoke-test:staging": "node scripts/smoke-test.js --url https://staging.forzza.app",
     "videos:generate": "tsx scripts/build-exercise-videos.ts",
     "videos:generate:dry": "tsx scripts/build-exercise-videos.ts --dry-run",
+    "videos:push-cloud": "node scripts/push-videos-cloud.js",
     "icons:backfill": "tsx scripts/backfill-svg-icons.ts",
     "icons:backfill:dry": "tsx scripts/backfill-svg-icons.ts --dry-run"
   },
