@@ -33,7 +33,7 @@
 
 BEGIN;
 
-SELECT plan(66);
+SELECT plan(69);
 
 -- =============================================================================
 -- FIXTURES: insertados como superusuario (bypassa RLS y REVOKE).
@@ -1744,6 +1744,124 @@ SELECT throws_ok(
   '42501',
   NULL,
   'T66: accept_terms() sin auth.uid() lanza insufficient_privilege (42501)'
+);
+
+-- =============================================================================
+-- T67: record_sensitive_consent() setea sensitive_data_consent_at en student_profiles
+--      y registra entrada en audit_log (RPC permitido)
+--
+-- Simula que student1 llama al RPC. Verificamos que:
+--   a) La función ejecuta sin excepción.
+--   b) student_profiles.sensitive_data_consent_at queda seteado (NOT NULL).
+--   c) Se generó una entrada en audit_log con action='sensitive_data.consented'.
+-- =============================================================================
+DO $t67$
+DECLARE
+  v_consent_at TIMESTAMPTZ;
+  v_audit_cnt  INTEGER;
+BEGIN
+  -- Fijar JWT claims para student1 (el RPC es SECURITY DEFINER y lee auth.uid()).
+  PERFORM set_config(
+    'request.jwt.claims',
+    json_build_object('sub', 'a3a00003-0000-4000-8000-000000000003', 'role', 'authenticated')::text,
+    true
+  );
+
+  -- Llamar al RPC (puede ser como superusuario porque SECURITY DEFINER usa el JWT claim).
+  PERFORM public.record_sensitive_consent();
+
+  -- Limpiar claims.
+  PERFORM set_config('request.jwt.claims', '', true);
+
+  -- Verificar columna en student_profiles (lectura como superusuario, bypasa RLS).
+  SELECT sensitive_data_consent_at
+    INTO v_consent_at
+  FROM public.student_profiles
+  WHERE user_id = 'a3a00003-0000-4000-8000-000000000003'::uuid;
+
+  IF v_consent_at IS NULL THEN
+    RAISE EXCEPTION 'T67 FALLO: sensitive_data_consent_at sigue NULL tras record_sensitive_consent()';
+  END IF;
+
+  -- Verificar entrada en audit_log.
+  SELECT COUNT(*) INTO v_audit_cnt
+  FROM public.audit_log
+  WHERE actor_id    = 'a3a00003-0000-4000-8000-000000000003'::uuid
+    AND action      = 'sensitive_data.consented'
+    AND entity_type = 'student_profile'
+    AND entity_id   = 'a3a00003-0000-4000-8000-000000000003'::uuid;
+
+  IF v_audit_cnt = 0 THEN
+    RAISE EXCEPTION 'T67 FALLO: no se generó entrada en audit_log con action=sensitive_data.consented';
+  END IF;
+END $t67$;
+
+SELECT ok(true, 'T67: record_sensitive_consent() setea sensitive_data_consent_at y registra en audit_log');
+
+-- =============================================================================
+-- T68: UPDATE directo de sensitive_data_consent_at como authenticated es rechazado (trigger)
+--
+-- student1 intenta modificar sensitive_data_consent_at directamente vía UPDATE.
+-- El trigger trg_protect_sensitive_consent_column (SECURITY INVOKER) debe lanzar
+-- excepción o dejar el valor sin cambios.
+-- Verificamos también como superusuario que el valor centinela NO fue escrito.
+-- =============================================================================
+DO $t68$
+DECLARE
+  v_sentinel  TIMESTAMPTZ := now() + interval '10 years';
+  v_after     TIMESTAMPTZ;
+  v_ok        BOOLEAN := false;
+BEGIN
+  -- Intentar UPDATE directo como rol authenticated (simula cliente PostgREST).
+  SET LOCAL ROLE authenticated;
+  PERFORM set_config('request.jwt.claims',
+    json_build_object('sub', 'a3a00003-0000-4000-8000-000000000003', 'role', 'authenticated')::text,
+    true);
+  BEGIN
+    UPDATE public.student_profiles
+      SET sensitive_data_consent_at = v_sentinel
+    WHERE user_id = 'a3a00003-0000-4000-8000-000000000003'::uuid;
+    -- Si llega aquí sin excepción, el trigger no bloqueó o RLS afectó 0 filas.
+    v_ok := false;
+  EXCEPTION WHEN OTHERS THEN
+    v_ok := true;  -- Trigger lanzó excepción (comportamiento esperado).
+  END;
+  RESET ROLE;
+
+  -- Verificar como superusuario que el valor centinela NO fue escrito.
+  SELECT sensitive_data_consent_at INTO v_after
+  FROM public.student_profiles
+  WHERE user_id = 'a3a00003-0000-4000-8000-000000000003'::uuid;
+
+  -- Si el valor centinela NO se escribió, la protección es efectiva.
+  IF v_after IS DISTINCT FROM v_sentinel THEN
+    v_ok := true;
+  END IF;
+
+  IF NOT v_ok THEN
+    RAISE EXCEPTION
+      'T68 FALLO: UPDATE directo de sensitive_data_consent_at escribió el valor centinela (trigger no protegió)';
+  END IF;
+END $t68$;
+
+SELECT ok(true, 'T68: UPDATE directo de sensitive_data_consent_at no persiste (trigger protege la columna)');
+
+-- =============================================================================
+-- T69: record_sensitive_consent() con auth.uid() NULL lanza excepción
+--      (usuario no autenticado)
+-- =============================================================================
+SELECT throws_ok(
+  $t69$
+    DO $inner$
+    BEGIN
+      -- Sin JWT claims: auth.uid() devuelve NULL.
+      PERFORM set_config('request.jwt.claims', '', true);
+      PERFORM public.record_sensitive_consent();
+    END $inner$;
+  $t69$,
+  '42501',
+  NULL,
+  'T69: record_sensitive_consent() sin auth.uid() lanza insufficient_privilege (42501)'
 );
 
 -- =============================================================================

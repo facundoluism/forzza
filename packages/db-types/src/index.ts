@@ -1510,6 +1510,7 @@ export type Database = {
           level: string | null
           parental_consent_at: string | null
           parental_email: string | null
+          sensitive_data_consent_at: string | null
           updated_at: string
           user_id: string
         }
@@ -1523,6 +1524,7 @@ export type Database = {
           level?: string | null
           parental_consent_at?: string | null
           parental_email?: string | null
+          sensitive_data_consent_at?: string | null
           updated_at?: string
           user_id: string
         }
@@ -1536,6 +1538,7 @@ export type Database = {
           level?: string | null
           parental_consent_at?: string | null
           parental_email?: string | null
+          sensitive_data_consent_at?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -1800,6 +1803,7 @@ export type Database = {
         Returns: boolean
       }
       is_pro: { Args: { p_user_id: string }; Returns: boolean }
+      record_sensitive_consent: { Args: never; Returns: undefined }
       student_has_pro_or_elite_package: {
         Args: { p_coach_id: string; p_student_id: string }
         Returns: boolean
@@ -2025,4 +2029,3 @@ export type LegalEntityType = Database["public"]["Enums"]["legal_entity_type"];
 export type NotificationChannel = Database["public"]["Enums"]["notification_channel"];
 // No existe enum en DB: plan de suscripción es un literal de dominio.
 export type SubscriptionPlan = "free" | "pro" | "elite";
-

@@ -1295,6 +1295,24 @@
       "commissionTooltipLabel": "Info sobre comisión"
     }
   },
+  "deleteAccount": {
+    "sectionTitle": "Zona de peligro",
+    "sectionDesc": "Una vez que eliminás tu cuenta, todos tus datos se borran permanentemente. Esta acción no se puede deshacer.",
+    "trigger": "Eliminar mi cuenta",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "confirm1Title": "¿Querés eliminar tu cuenta?",
+    "confirm1Body": "Esto cancelará tus paquetes activos, notificará a tus alumnos y programará la eliminación permanente de todos tus datos.",
+    "confirm1Btn": "Sí, quiero eliminarla",
+    "confirm2Title": "Confirmación final",
+    "confirm2Body": "Esta es tu última oportunidad de cancelar. Después de confirmar, el proceso es irreversible.",
+    "scheduledNotice": "Tu cuenta y todos tus datos se eliminarán en 30 días. Durante ese período no podrás recuperarla.",
+    "confirm2Btn": "Eliminar mi cuenta definitivamente",
+    "loadingTitle": "Eliminando cuenta…",
+    "loadingBody": "Estamos procesando tu solicitud. No cerrés esta ventana.",
+    "errorTitle": "Error al eliminar la cuenta",
+    "errorGeneric": "No se pudo eliminar la cuenta. Si el problema persiste, escribinos a soporte@forzza.app."
+  },
   "ingresar": {
     "metadata": {
       "title": "Ingresar — Forzza",

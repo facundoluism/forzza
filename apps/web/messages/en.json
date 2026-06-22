@@ -1271,6 +1271,24 @@
       "commissionTooltipLabel": "Commission info"
     }
   },
+  "deleteAccount": {
+    "sectionTitle": "Danger zone",
+    "sectionDesc": "Once you delete your account, all your data is permanently removed. This action cannot be undone.",
+    "trigger": "Delete my account",
+    "cancel": "Cancel",
+    "close": "Close",
+    "confirm1Title": "Do you want to delete your account?",
+    "confirm1Body": "This will cancel your active packages, notify your students, and schedule the permanent deletion of all your data.",
+    "confirm1Btn": "Yes, I want to delete it",
+    "confirm2Title": "Final confirmation",
+    "confirm2Body": "This is your last chance to cancel. After confirming, the process is irreversible.",
+    "scheduledNotice": "Your account and all your data will be deleted in 30 days. During that period it cannot be recovered.",
+    "confirm2Btn": "Permanently delete my account",
+    "loadingTitle": "Deleting account…",
+    "loadingBody": "We are processing your request. Do not close this window.",
+    "errorTitle": "Error deleting account",
+    "errorGeneric": "Could not delete the account. If the problem persists, write to us at soporte@forzza.app."
+  },
   "ingresar": {
     "metadata": {
       "title": "Sign in — Forzza",

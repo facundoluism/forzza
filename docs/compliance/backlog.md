@@ -44,10 +44,10 @@ El video razona sobre EE. UU. (FTC, CCPA, DMCA y sus USD 150k). `CLAUDE.md` defi
 | ID | Gap | Acción | Agente(s) |
 |---|---|---|---|
 | P1.1 | Analytics sin consentimiento (PostHog host EU) | Banner / opt-out persistente; no cargar analytics no esenciales hasta opt-in. Se monta sobre `scrubPII()`, no lo reemplaza | apps |
-| P1.2 | Borrado de cuenta solo en mobile | UI en web reutilizando Edge Fn `delete-account` | `web-next-engineer` |
+| P1.2 | ✅ **HECHO 2026-06-22** | UI de borrado en `/coach/perfil` (Danger zone, doble confirmación) reutilizando Edge Fn `delete-account`. ES/EN paritarios, typecheck verde | `web-next-engineer` |
 | P1.3 | Sin export de datos (solo email manual) | Endpoint de export (perfil, métricas, sesiones, pagos propios) — derecho de acceso L25.326 / portabilidad GDPR; UI mobile+web | `supabase-rls-engineer` + apps |
-| P1.4 | Datos sensibles sin consentimiento dedicado | Consentimiento previo a subir fotos de progreso / cargar `body_metrics`; persistir timestamp; registrar en `audit_log` | `supabase-rls-engineer` + `mobile-expo-engineer` |
-| P1.5 | Sin política UGC ni canal de takedown/reporte | `docs/compliance/ugc-takedown.md`; botón "reportar" en chat y videos de coach; política de reincidentes; canal público de reclamos | `docs-maintainer` + apps + `notifications-realtime-engineer` |
+| P1.4 | 🟡 **DATA HECHA 2026-06-22** | Migración `20260622170000_sensitive_data_consent.sql`: columna `student_profiles.sensitive_data_consent_at` + RPC `record_sensitive_consent()` + trigger + audit_log + tests T67-69. **PENDIENTE**: UI de consentimiento previo a subir fotos/cargar métricas (mobile) y enforcement duro RLS (follow-up) | `supabase-rls-engineer` ✅ + `mobile-expo-engineer` ⏳ |
+| P1.5 | 🟡 **DOC HECHO 2026-06-22** | `docs/compliance/ugc-takedown.md` completo (superficies, prohibido, takedown, reincidentes, moderación, Play, DMCA-P2; 7 HUMAN_REQUIRED). **PENDIENTE**: tabla `content_reports`, botones "reportar" (chat/video/perfil), `user_blocks`, notificación al owner | `docs-maintainer` ✅ + apps ⏳ + `notifications-realtime-engineer` ⏳ |
 
 ### P2 — US/EU prep (activable al internacionalizar)
 
