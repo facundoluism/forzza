@@ -75,6 +75,50 @@ export type Database = {
           },
         ]
       }
+      billing_profiles: {
+        Row: {
+          address: string | null
+          created_at: string
+          doc_number: string
+          doc_type: string
+          id: string
+          legal_name: string
+          tax_condition: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          doc_number: string
+          doc_type: string
+          id?: string
+          legal_name: string
+          tax_condition: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          doc_number?: string
+          doc_type?: string
+          id?: string
+          legal_name?: string
+          tax_condition?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "billing_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       body_metrics: {
         Row: {
           body_fat_pct: number | null
@@ -1644,6 +1688,8 @@ export type Database = {
           deleted_at: string | null
           id: string
           role: Database["public"]["Enums"]["user_role"]
+          terms_accepted_at: string | null
+          terms_version: string | null
           updated_at: string
         }
         Insert: {
@@ -1652,6 +1698,8 @@ export type Database = {
           deleted_at?: string | null
           id: string
           role?: Database["public"]["Enums"]["user_role"]
+          terms_accepted_at?: string | null
+          terms_version?: string | null
           updated_at?: string
         }
         Update: {
@@ -1660,6 +1708,8 @@ export type Database = {
           deleted_at?: string | null
           id?: string
           role?: Database["public"]["Enums"]["user_role"]
+          terms_accepted_at?: string | null
+          terms_version?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -1739,6 +1789,7 @@ export type Database = {
       }
     }
     Functions: {
+      accept_terms: { Args: { p_version: string }; Returns: undefined }
       auth_coach_profile_id: { Args: never; Returns: string }
       auth_role: {
         Args: never
