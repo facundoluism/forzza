@@ -43,8 +43,7 @@ export async function GET(request: Request) {
         student_id,
         routine_id,
         assignment_id,
-        routines!routine_schedule_routine_id_fkey(id, title),
-        student_profiles!routine_schedule_student_id_fkey(display_name, user_id)
+        routines!routine_schedule_routine_id_fkey(id, title)
       `)
       .eq("coach_id", coachProfile.id)
       .gte("scheduled_date", from)
@@ -56,7 +55,26 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Error al cargar el calendario" }, { status: 500 });
     }
 
-    return NextResponse.json({ items: data ?? [] });
+    // Fetch student_profiles separately (routine_schedule.student_id → users(id), no direct FK)
+    const scheduleItems = data ?? [];
+    const studentIds = [...new Set(scheduleItems.map((e) => e.student_id).filter(Boolean))];
+    const { data: profilesData } = studentIds.length > 0
+      ? await supabase
+          .from("student_profiles")
+          .select("user_id, display_name")
+          .in("user_id", studentIds)
+      : { data: [] };
+
+    const profileByUserId = new Map(
+      (profilesData ?? []).map((p) => [p.user_id, p])
+    );
+
+    const enrichedItems = scheduleItems.map((entry) => ({
+      ...entry,
+      student_profiles: profileByUserId.get(entry.student_id) ?? null,
+    }));
+
+    return NextResponse.json({ items: enrichedItems });
   } catch {
     return NextResponse.json({ error: "Error interno" }, { status: 500 });
   }

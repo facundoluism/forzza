@@ -29,7 +29,7 @@ interface Answer {
 interface CheckinResponse {
   id: string;
   submitted_at: string;
-  answers: Record<string, Answer> | Answer[];
+  answers: Record<string, unknown> | unknown[];
   student_profiles: { display_name: string | null; user_id: string } | null;
 }
 
@@ -74,7 +74,7 @@ export default async function RespuestasPage({ params }: Props) {
     questionsArray.map((q, i) => [String(i), q.label])
   );
 
-  // Fetch responses
+  // Fetch responses (without student_profiles embed — no direct FK from checkin_responses to student_profiles)
   const { data: responses, error } = await supabase
     .from("checkin_responses")
     .select(
@@ -82,7 +82,7 @@ export default async function RespuestasPage({ params }: Props) {
       id,
       submitted_at,
       answers,
-      student_profiles!checkin_responses_student_id_fkey(display_name, user_id)
+      student_id
     `
     )
     .eq("template_id", templateId)
@@ -92,7 +92,30 @@ export default async function RespuestasPage({ params }: Props) {
     console.error("Error fetching responses:", error);
   }
 
-  const rows = (responses ?? []) as unknown as CheckinResponse[];
+  const rawResponses = responses ?? [];
+
+  // Fetch student_profiles separately (checkin_responses.student_id → users(id), no direct FK)
+  const studentIds = [...new Set(rawResponses.map((r) => (r as unknown as { student_id: string }).student_id).filter(Boolean))];
+  const { data: profilesData } = studentIds.length > 0
+    ? await supabase
+        .from("student_profiles")
+        .select("user_id, display_name")
+        .in("user_id", studentIds)
+    : { data: [] };
+
+  const profileByUserId = new Map(
+    (profilesData ?? []).map((p) => [p.user_id, p])
+  );
+
+  const rows: CheckinResponse[] = rawResponses.map((r) => {
+    const raw = r as unknown as { id: string; submitted_at: string; answers: Record<string, unknown>; student_id: string };
+    return {
+      id: raw.id,
+      submitted_at: raw.submitted_at,
+      answers: raw.answers,
+      student_profiles: profileByUserId.get(raw.student_id) ?? null,
+    };
+  });
 
   return (
     <div className="max-w-4xl">

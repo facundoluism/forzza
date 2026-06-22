@@ -90,8 +90,7 @@ export default async function RutinaDetailPage({ params }: Props) {
       updated_at,
       coach_id,
       student_id,
-      exercises,
-      student_profiles!routines_student_id_fkey(display_name)
+      exercises
     `
     )
     .eq("id", routineId)
@@ -105,6 +104,15 @@ export default async function RutinaDetailPage({ params }: Props) {
   if (routine.coach_id !== coachProfileId) {
     notFound();
   }
+
+  // Fetch student_profiles separately (routines.student_id → users(id), no direct FK to student_profiles)
+  const { data: studentProfileRaw } = routine.student_id
+    ? await supabase
+        .from("student_profiles")
+        .select("display_name")
+        .eq("user_id", routine.student_id)
+        .single()
+    : { data: null };
 
   // --- Parsear ejercicios del JSONB ---
   let exercisesRaw: RoutineExercise[] = [];
@@ -148,10 +156,8 @@ export default async function RutinaDetailPage({ params }: Props) {
     library: e.exercise_id ? libraryMap.get(e.exercise_id) : undefined,
   }));
 
-  // --- Tipo para la relación student_profiles ---
-  const studentProfile = (
-    routine as unknown as { student_profiles: { display_name: string | null } | null }
-  ).student_profiles;
+  // student_profiles fetched via separate query above
+  const studentProfile = studentProfileRaw;
 
   const difficultyLabel: Record<string, string> = {
     beginner: t("rutinas.nueva.diffBeginner"),

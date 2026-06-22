@@ -18,6 +18,7 @@ interface StudentAssignment {
   id: string;
   status: AssignmentStatus;
   started_at: string | null;
+  student_id: string;
   student_profiles: {
     display_name: string | null;
     user_id: string;
@@ -59,7 +60,6 @@ export default async function AlumnosPage({ params }: Props) {
       status,
       started_at,
       student_id,
-      student_profiles!coach_assignments_student_id_fkey(display_name, user_id),
       coach_packages!coach_assignments_package_id_fkey(title)
     `
     )
@@ -76,7 +76,26 @@ export default async function AlumnosPage({ params }: Props) {
     );
   }
 
-  const rows = (assignments ?? []) as unknown as StudentAssignment[];
+  const rawAssignments = assignments ?? [];
+
+  // Fetch student_profiles separately (student_id → users(id), no direct FK to student_profiles)
+  const studentIds = rawAssignments.map((a) => a.student_id).filter(Boolean);
+  const { data: studentProfilesData } = studentIds.length > 0
+    ? await supabase
+        .from("student_profiles")
+        .select("user_id, display_name")
+        .in("user_id", studentIds)
+    : { data: [] };
+
+  const profileByUserId = new Map(
+    (studentProfilesData ?? []).map((p) => [p.user_id, p])
+  );
+
+  const rows: StudentAssignment[] = rawAssignments.map((a) => ({
+    ...a,
+    student_profiles: profileByUserId.get(a.student_id) ?? null,
+    coach_packages: (a as unknown as { coach_packages: { title: string } | null }).coach_packages,
+  }));
 
   const statusLabel: Record<AssignmentStatus, string> = {
     pending: t("alumnos.statusPaused"),

@@ -42,8 +42,7 @@ export default async function RutinasPage({ params }: Props) {
       id,
       title,
       created_at,
-      student_id,
-      student_profiles!routines_student_id_fkey(display_name)
+      student_id
     `
     )
     .eq("coach_id", coachProfileId)
@@ -59,7 +58,27 @@ export default async function RutinasPage({ params }: Props) {
     );
   }
 
-  const rows = (routines ?? []) as unknown as Routine[];
+  const rawRoutines = routines ?? [];
+
+  // Fetch student_profiles separately (routines.student_id → users(id), no direct FK to student_profiles)
+  const studentIds = rawRoutines
+    .map((r) => r.student_id)
+    .filter((id): id is string => Boolean(id));
+  const { data: studentProfilesData } = studentIds.length > 0
+    ? await supabase
+        .from("student_profiles")
+        .select("user_id, display_name")
+        .in("user_id", studentIds)
+    : { data: [] };
+
+  const profileByUserId = new Map(
+    (studentProfilesData ?? []).map((p) => [p.user_id, p])
+  );
+
+  const rows: Routine[] = rawRoutines.map((r) => ({
+    ...r,
+    student_profiles: r.student_id ? (profileByUserId.get(r.student_id) ?? null) : null,
+  }));
 
   return (
     <div>

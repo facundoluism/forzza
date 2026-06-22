@@ -40,8 +40,7 @@ export default async function CalendarioPage({ params }: Props) {
         student_id,
         routine_id,
         assignment_id,
-        routines!routine_schedule_routine_id_fkey(id, title),
-        student_profiles!routine_schedule_student_id_fkey(display_name, user_id)
+        routines!routine_schedule_routine_id_fkey(id, title)
       `)
       .eq("coach_id", coachProfileId)
       .gte("scheduled_date", from)
@@ -53,8 +52,7 @@ export default async function CalendarioPage({ params }: Props) {
       .from("coach_assignments")
       .select(`
         id,
-        student_id,
-        student_profiles!coach_assignments_student_id_fkey(display_name, user_id)
+        student_id
       `)
       .eq("coach_id", coachProfileId)
       .eq("status", "active"),
@@ -72,17 +70,27 @@ export default async function CalendarioPage({ params }: Props) {
 
   // For each active student, fetch their routines from this coach
   const activeAssignments = assignmentsResult.data ?? [];
-  const studentIds = activeAssignments.map((a) => a.student_id);
+  const studentIds = activeAssignments.map((a) => a.student_id).filter(Boolean);
 
-  const routinesResult =
+  // Fetch student_profiles and routines in parallel
+  // (student_id references users(id), no direct FK to student_profiles)
+  const [routinesResult, studentProfilesResult] = await Promise.all([
     studentIds.length > 0
-      ? await supabase
+      ? supabase
           .from("routines")
           .select("id, title, student_id")
           .eq("coach_id", coachProfileId)
           .in("student_id", studentIds)
           .eq("active", true)
-      : { data: [], error: null };
+      : Promise.resolve({ data: [], error: null }),
+
+    studentIds.length > 0
+      ? supabase
+          .from("student_profiles")
+          .select("user_id, display_name")
+          .in("user_id", studentIds)
+      : Promise.resolve({ data: [], error: null }),
+  ]);
 
   const routinesByStudent = new Map<string, Array<{ id: string; title: string }>>();
   for (const r of routinesResult.data ?? []) {
@@ -91,17 +99,31 @@ export default async function CalendarioPage({ params }: Props) {
     routinesByStudent.set(r.student_id, list);
   }
 
-  type RawAssignment = {
-    id: string;
-    student_id: string;
-    student_profiles: { display_name: string | null; user_id: string } | null;
-  };
+  const profileByUserId = new Map(
+    (studentProfilesResult.data ?? []).map((p) => [p.user_id, p])
+  );
 
-  const students: Student[] = (activeAssignments as unknown as RawAssignment[]).map((a) => ({
+  const students: Student[] = activeAssignments.map((a) => ({
     assignment_id: a.id,
     student_id: a.student_id,
-    display_name: a.student_profiles?.display_name ?? null,
+    display_name: profileByUserId.get(a.student_id)?.display_name ?? null,
     routines: routinesByStudent.get(a.student_id) ?? [],
+  }));
+
+  // Enrich schedule entries with student display_name
+  type RawScheduleEntry = {
+    id: string;
+    scheduled_date: string;
+    notes: string | null;
+    student_id: string;
+    routine_id: string;
+    assignment_id: string;
+    routines: { id: string; title: string } | null;
+  };
+
+  const enrichedSchedule = ((scheduleResult.data ?? []) as unknown as RawScheduleEntry[]).map((entry) => ({
+    ...entry,
+    student_profiles: profileByUserId.get(entry.student_id) ?? null,
   }));
 
   const translations = {
@@ -143,7 +165,7 @@ export default async function CalendarioPage({ params }: Props) {
         <CalendarioClient
           year={year}
           month={month}
-          initialEntries={(scheduleResult.data ?? []) as unknown as ScheduleEntry[]}
+          initialEntries={enrichedSchedule as ScheduleEntry[]}
           students={students}
           t={translations}
         />

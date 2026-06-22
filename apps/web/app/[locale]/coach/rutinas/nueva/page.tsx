@@ -70,16 +70,22 @@ export default function NuevaRutinaPage() {
         const { data: stData } = coachProfileId
           ? await supabase
               .from("coach_assignments")
-              .select("student_id, student_profiles!coach_assignments_student_id_fkey(display_name, user_id)")
+              .select("student_id")
               .eq("coach_id", coachProfileId)
               .eq("status", "active")
           : { data: null };
 
         if (stData) {
-          const studentList = (stData as unknown as { student_profiles: Student | null }[])
-            .map((a) => a.student_profiles)
-            .filter((s): s is Student => s !== null);
-          setStudents(studentList);
+          const studentIds = stData.map((a) => a.student_id).filter(Boolean);
+          if (studentIds.length > 0) {
+            const { data: profilesData } = await supabase
+              .from("student_profiles")
+              .select("user_id, display_name")
+              .in("user_id", studentIds);
+            if (profilesData) {
+              setStudents(profilesData as Student[]);
+            }
+          }
         }
       }
     })();
