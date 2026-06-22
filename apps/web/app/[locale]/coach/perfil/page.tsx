@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { PerfilForm } from "./PerfilForm";
 import { AvatarUpload } from "./AvatarUpload";
 import { DeleteAccountButton } from "./DeleteAccountButton";
+import { AnalyticsOptOut } from "@/components/AnalyticsOptOut";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -78,6 +79,31 @@ export default async function PerfilPage({ params }: Props) {
         currencySymbol={countryConfig?.currency_symbol ?? "$"}
         commissionRate={Number(countryConfig?.commission_rate ?? 0.20)}
       />
+
+      {/* Privacy controls */}
+      <div
+        style={{
+          marginTop: "32px",
+          border: "1px solid #242436",
+          borderRadius: "12px",
+          padding: "20px 24px",
+        }}
+      >
+        <h2
+          style={{
+            color: "var(--color-muted)",
+            fontSize: "11px",
+            fontWeight: 700,
+            textTransform: "uppercase",
+            letterSpacing: "1.5px",
+            marginBottom: "4px",
+            fontFamily: "var(--font-mono)",
+          }}
+        >
+          {t("perfil.privacySection")}
+        </h2>
+        <AnalyticsOptOut />
+      </div>
 
       {/* Danger zone — delete account */}
       <div

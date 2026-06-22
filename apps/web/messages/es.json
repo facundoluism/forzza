@@ -1292,8 +1292,21 @@
       "breakdownForzza": "Forzza retiene ({pct}%):",
       "breakdownCoach": "Vos cobrás:",
       "commissionTooltip": "El precio que ve el alumno es tu neto más la comisión de Forzza ({pct}%). Se calcula así: precio al alumno = lo que querés cobrar ÷ 0,80. Vos recibís exactamente lo que pusiste; la comisión la paga el alumno por encima.",
-      "commissionTooltipLabel": "Info sobre comisión"
+      "commissionTooltipLabel": "Info sobre comisión",
+      "privacySection": "Privacidad"
     }
+  },
+  "analyticsBanner": {
+    "ariaLabel": "Aviso de analytics",
+    "body": "Usamos analytics para mejorar Forzza. Podés aceptar o rechazar en cualquier momento.",
+    "privacyLink": "Política de Privacidad",
+    "accept": "Aceptar",
+    "reject": "Rechazar"
+  },
+  "analyticsOptOut": {
+    "title": "Permitir analytics",
+    "description": "Ayudás a mejorar Forzza al compartir datos de uso anonimizados. Podés desactivarlo cuando quieras.",
+    "ariaLabel": "Activar o desactivar analytics"
   },
   "deleteAccount": {
     "sectionTitle": "Zona de peligro",

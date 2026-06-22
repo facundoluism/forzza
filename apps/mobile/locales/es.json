@@ -733,6 +733,26 @@
     "targetMetric": "métrica",
     "targetPhoto": "foto"
   },
+  "analyticsConsent": {
+    "title": "Mejorá tu experiencia",
+    "body": "Usamos analytics anónimos para entender cómo se usa la app y mejorarla. No recopilamos datos personales ni de salud. Podés cambiar esto en cualquier momento desde tu perfil.",
+    "privacyLink": "Ver política de privacidad",
+    "accept": "Aceptar",
+    "reject": "No, gracias",
+    "note": "Si rechazás, la app funciona igual. No compartimos tu información con terceros.",
+    "settingsLabel": "Analytics",
+    "settingsSub": "Mejora anónima de la app"
+  },
+  "sensitiveConsent": {
+    "title": "Datos sensibles",
+    "body": "Las fotos de progreso y las métricas corporales son datos de salud sensibles. ¿Autorizás su tratamiento según la Política de Privacidad? Solo vos y tu coach pueden acceder a ellos.",
+    "privacyLink": "Ver política de privacidad",
+    "accept": "Autorizar",
+    "reject": "No, volver",
+    "note": "Podés eliminar tus datos en cualquier momento desde los ajustes de tu cuenta.",
+    "errorTitle": "No pudimos registrar tu consentimiento",
+    "errorDesc": "Podés continuar igual; vamos a reintentar en el próximo inicio de sesión."
+  },
   "upgrade": {
     "screenTitle": "Planes",
     "title": "Elegí tu plan",

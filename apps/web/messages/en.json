@@ -1268,8 +1268,21 @@
       "breakdownForzza": "Forzza retains ({pct}%):",
       "breakdownCoach": "You earn:",
       "commissionTooltip": "The price the student sees is your net plus Forzza's {pct}% commission. It's calculated as: student price = what you want to earn ÷ 0.80. You receive exactly what you set; the student covers the commission on top.",
-      "commissionTooltipLabel": "Commission info"
+      "commissionTooltipLabel": "Commission info",
+      "privacySection": "Privacy"
     }
+  },
+  "analyticsBanner": {
+    "ariaLabel": "Analytics notice",
+    "body": "We use analytics to improve Forzza. You can accept or reject at any time.",
+    "privacyLink": "Privacy Policy",
+    "accept": "Accept",
+    "reject": "Reject"
+  },
+  "analyticsOptOut": {
+    "title": "Allow analytics",
+    "description": "Help us improve Forzza by sharing anonymised usage data. You can turn it off anytime.",
+    "ariaLabel": "Enable or disable analytics"
   },
   "deleteAccount": {
     "sectionTitle": "Danger zone",

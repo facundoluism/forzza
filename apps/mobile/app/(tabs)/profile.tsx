@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Switch,
   TextInput,
+  Linking,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -26,6 +27,8 @@ import { supabase } from "@/lib/supabase";
 import { Pill, Skeleton } from "@forzza/ui/native";
 import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
 import { useState, useEffect } from "react";
+import { useAnalyticsConsentStore } from "@/stores/analyticsConsentStore";
+import { initAnalyticsIfAllowed, optOutAndReset } from "@/lib/analytics";
 
 const LANGUAGES: { code: AppLanguage; label: string; native: string }[] = [
   { code: "es", label: "ES", native: "Español" },
@@ -375,6 +378,22 @@ export default function ProfileTab() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showLanguage, setShowLanguage] = useState(false);
 
+  // Analytics consent
+  const { analyticsEnabled, setAnalyticsEnabled } = useAnalyticsConsentStore();
+
+  function handleAnalyticsToggle(enabled: boolean) {
+    setAnalyticsEnabled(enabled);
+    if (enabled) {
+      initAnalyticsIfAllowed();
+    } else {
+      optOutAndReset();
+    }
+  }
+
+  function handlePrivacyPolicy() {
+    void Linking.openURL("https://forzza.app/legales/privacidad");
+  }
+
   const localCompletedSessions = completedSessionsFromQueue(syncQueue, user?.id);
   const { data: remoteCompletedSessions = [], isLoading: sessionsLoading } = useQuery({
     queryKey: ["completed-workout-sessions", user?.id, "profile"],
@@ -660,6 +679,23 @@ export default function ProfileTab() {
             </View>
           </View>
         )}
+
+        {/* Analytics */}
+        <MenuItem
+          icon="📊"
+          label={t("analyticsConsent.settingsLabel")}
+          subtitle={t("analyticsConsent.settingsSub")}
+          onPress={handlePrivacyPolicy}
+          rightElement={
+            <Switch
+              value={analyticsEnabled}
+              onValueChange={handleAnalyticsToggle}
+              trackColor={{ false: colors.surface3, true: colors.lime }}
+              thumbColor={colors.white}
+              testID="analytics-toggle"
+            />
+          }
+        />
 
         {/* Sesiones en vivo — solo si hasCoach */}
         {hasCoach && (

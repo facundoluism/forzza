@@ -733,6 +733,26 @@
     "targetMetric": "metric",
     "targetPhoto": "photo"
   },
+  "analyticsConsent": {
+    "title": "Improve your experience",
+    "body": "We use anonymous analytics to understand how the app is used and improve it. We do not collect personal or health data. You can change this anytime from your profile.",
+    "privacyLink": "View privacy policy",
+    "accept": "Accept",
+    "reject": "No thanks",
+    "note": "If you decline, the app works the same. We do not share your information with third parties.",
+    "settingsLabel": "Analytics",
+    "settingsSub": "Anonymous app improvement"
+  },
+  "sensitiveConsent": {
+    "title": "Sensitive data",
+    "body": "Progress photos and body metrics are sensitive health data. Do you authorize their processing according to the Privacy Policy? Only you and your coach can access them.",
+    "privacyLink": "View privacy policy",
+    "accept": "Authorize",
+    "reject": "No, go back",
+    "note": "You can delete your data at any time from your account settings.",
+    "errorTitle": "Could not record your consent",
+    "errorDesc": "You can continue anyway; we will retry on your next session."
+  },
   "upgrade": {
     "screenTitle": "Plans",
     "title": "Choose your plan",

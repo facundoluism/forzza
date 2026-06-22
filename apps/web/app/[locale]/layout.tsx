@@ -3,6 +3,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { InstallPrompt } from "@/components/InstallPrompt";
+import { AnalyticsBanner } from "@/components/AnalyticsBanner";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +40,7 @@ export default async function LocaleLayout({
     <NextIntlClientProvider locale={locale} messages={messages}>
       {children}
       <InstallPrompt />
+      <AnalyticsBanner />
     </NextIntlClientProvider>
   );
 }

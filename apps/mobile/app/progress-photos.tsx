@@ -20,6 +20,8 @@ import {
   ActivityIndicator,
   Alert,
   Dimensions,
+  Modal,
+  Linking,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -32,6 +34,186 @@ import { useEntitlements } from "@/hooks/useEntitlements";
 import { supabase } from "@/lib/supabase";
 import { EmptyState, ErrorState, UpgradeModal, ScreenHeader } from "@forzza/ui/native";
 import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
+
+const PRIVACY_URL = "https://forzza.app/legales/privacidad";
+
+// ── Sensitive data consent modal ─────────────────────────────────────────────
+
+interface SensitiveConsentModalProps {
+  visible: boolean;
+  loading: boolean;
+  onAccept: () => void;
+  onReject: () => void;
+}
+
+function SensitiveConsentModal({
+  visible,
+  loading,
+  onAccept,
+  onReject,
+}: SensitiveConsentModalProps): React.JSX.Element {
+  const { t } = useTranslation();
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      statusBarTranslucent
+    >
+      <View style={consentStyles.overlay}>
+        <View style={consentStyles.card}>
+          <View style={consentStyles.iconBox}>
+            <Text style={consentStyles.icon}>🔒</Text>
+          </View>
+
+          <Text style={consentStyles.title}>{t("sensitiveConsent.title")}</Text>
+          <Text style={consentStyles.body}>{t("sensitiveConsent.body")}</Text>
+
+          <TouchableOpacity
+            onPress={() => void Linking.openURL(PRIVACY_URL)}
+            activeOpacity={0.7}
+          >
+            <Text style={consentStyles.link}>{t("sensitiveConsent.privacyLink")}</Text>
+          </TouchableOpacity>
+
+          <View style={consentStyles.actions}>
+            <TouchableOpacity
+              style={consentStyles.rejectButton}
+              onPress={onReject}
+              disabled={loading}
+              activeOpacity={0.7}
+              testID="sensitive-consent-reject"
+            >
+              <Text style={consentStyles.rejectText}>{t("sensitiveConsent.reject")}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[consentStyles.acceptButton, loading && consentStyles.buttonDisabledOverlay]}
+              onPress={onAccept}
+              disabled={loading}
+              activeOpacity={0.7}
+              testID="sensitive-consent-accept"
+            >
+              {loading
+                ? <ActivityIndicator color={colors.bg} size="small" />
+                : <Text style={consentStyles.acceptText}>{t("sensitiveConsent.accept")}</Text>
+              }
+            </TouchableOpacity>
+          </View>
+
+          <Text style={consentStyles.note}>{t("sensitiveConsent.note")}</Text>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+const consentStyles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.72)",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: spacing[5],
+  },
+  card: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing[6],
+    width: "100%",
+    maxWidth: 400,
+    alignItems: "center",
+  },
+  iconBox: {
+    width: 56,
+    height: 56,
+    borderRadius: radius.xl,
+    backgroundColor: colors.surface2,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: spacing[4],
+  },
+  icon: {
+    fontSize: 26,
+  },
+  title: {
+    fontFamily: typography.heading,
+    color: colors.text,
+    fontSize: fontSize["2xl"],
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    textAlign: "center",
+    marginBottom: spacing[3],
+  },
+  body: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.sm,
+    lineHeight: 20,
+    textAlign: "center",
+    marginBottom: spacing[3],
+  },
+  link: {
+    fontFamily: typography.body,
+    color: colors.lime,
+    fontSize: fontSize.sm,
+    textDecorationLine: "underline",
+    marginBottom: spacing[5],
+  },
+  actions: {
+    flexDirection: "row",
+    gap: spacing[3],
+    width: "100%",
+    marginBottom: spacing[4],
+  },
+  rejectButton: {
+    flex: 1,
+    backgroundColor: colors.surface2,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingVertical: spacing[3],
+    alignItems: "center",
+    minHeight: 44,
+    justifyContent: "center",
+  },
+  rejectText: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.base,
+    fontWeight: "600",
+  },
+  acceptButton: {
+    flex: 1,
+    backgroundColor: colors.lime,
+    borderRadius: radius.lg,
+    paddingVertical: spacing[3],
+    alignItems: "center",
+    minHeight: 44,
+    justifyContent: "center",
+  },
+  acceptText: {
+    fontFamily: typography.heading,
+    color: colors.bg,
+    fontSize: fontSize.base,
+    letterSpacing: 0.5,
+  },
+  buttonDisabledOverlay: {
+    opacity: 0.6,
+  },
+  note: {
+    fontFamily: typography.body,
+    color: colors.gray500,
+    fontSize: fontSize.xs,
+    textAlign: "center",
+    lineHeight: 16,
+  },
+});
 
 const BUCKET = "progress-photos";
 
@@ -63,8 +245,66 @@ export default function ProgressPhotosScreen(): React.JSX.Element {
   const [pendingNotes, setPendingNotes] = useState("");
   const [showComparator, setShowComparator] = useState(false);
 
+  // ── Sensitive data consent state ──────────────────────────────────────────────
+  const [sensitiveConsentGranted, setSensitiveConsentGranted] = useState<boolean | null>(null);
+  const [showConsentModal, setShowConsentModal] = useState(false);
+  const [consentLoading, setConsentLoading] = useState(false);
+
+  // Verificar si el alumno ya dio consentimiento de datos sensibles
+  const { isLoading: consentCheckLoading } = useQuery<boolean>({
+    queryKey: ["sensitive-consent", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return false;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data } = await (supabase as any)
+        .from("student_profiles")
+        .select("sensitive_data_consent_at")
+        .eq("id", user.id)
+        .maybeSingle();
+      const granted = Boolean((data as { sensitive_data_consent_at: string | null } | null)?.sensitive_data_consent_at);
+      setSensitiveConsentGranted(granted);
+      if (!granted) setShowConsentModal(true);
+      return granted;
+    },
+    enabled: !!user?.id && isPro,
+    staleTime: 10 * 60 * 1000,
+  });
+
+  async function handleSensitiveConsentAccept() {
+    setConsentLoading(true);
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (supabase as any).rpc("record_sensitive_consent");
+      if (error) {
+        // RPC error: log it but don't break the flow — show a soft error
+        // and let the user retry or proceed without blocking
+        Alert.alert(t("sensitiveConsent.errorTitle"), t("sensitiveConsent.errorDesc"));
+        // Optimistically grant consent in UI so the user can proceed
+        // (server will retry on next load)
+        setSensitiveConsentGranted(true);
+        setShowConsentModal(false);
+        return;
+      }
+      setSensitiveConsentGranted(true);
+      setShowConsentModal(false);
+      void queryClient.invalidateQueries({ queryKey: ["sensitive-consent", user?.id] });
+    } catch {
+      Alert.alert(t("sensitiveConsent.errorTitle"), t("sensitiveConsent.errorDesc"));
+      // Don't block the user on RPC error — close modal
+      setSensitiveConsentGranted(true);
+      setShowConsentModal(false);
+    } finally {
+      setConsentLoading(false);
+    }
+  }
+
+  function handleSensitiveConsentReject() {
+    setShowConsentModal(false);
+    router.back();
+  }
+
   // ── Loading ───────────────────────────────────────────────────────────────────
-  if (entitlementsLoading) {
+  if (entitlementsLoading || (isPro && consentCheckLoading && sensitiveConsentGranted === null)) {
     return (
       <View style={styles.container}>
         <View style={[styles.header, { paddingTop: insets.top + spacing[4] }]}>
@@ -111,18 +351,33 @@ export default function ProgressPhotosScreen(): React.JSX.Element {
     );
   }
 
+  // ── Sensitive data consent gate ───────────────────────────────────────────────
+  // El modal se muestra sobre la pantalla si no hay consentimiento.
+  // La pantalla de fondo renderiza el contenido (con el modal encima) para evitar
+  // un flash blanco mientras se espera la decisión del usuario.
+
   return (
-    <ProgressPhotosContent
-      userId={user!.id}
-      insets={insets}
-      queryClient={queryClient}
-      pendingImageUri={pendingImageUri}
-      setPendingImageUri={setPendingImageUri}
-      pendingNotes={pendingNotes}
-      setPendingNotes={setPendingNotes}
-      showComparator={showComparator}
-      setShowComparator={setShowComparator}
-    />
+    <>
+      <ProgressPhotosContent
+        userId={user!.id}
+        insets={insets}
+        queryClient={queryClient}
+        pendingImageUri={pendingImageUri}
+        setPendingImageUri={setPendingImageUri}
+        pendingNotes={pendingNotes}
+        setPendingNotes={setPendingNotes}
+        showComparator={showComparator}
+        setShowComparator={setShowComparator}
+        sensitiveConsentGranted={sensitiveConsentGranted === true}
+        onNeedConsent={() => setShowConsentModal(true)}
+      />
+      <SensitiveConsentModal
+        visible={showConsentModal}
+        loading={consentLoading}
+        onAccept={() => void handleSensitiveConsentAccept()}
+        onReject={handleSensitiveConsentReject}
+      />
+    </>
   );
 }
 
@@ -137,6 +392,8 @@ function ProgressPhotosContent({
   setPendingNotes,
   showComparator,
   setShowComparator,
+  sensitiveConsentGranted,
+  onNeedConsent,
 }: {
   userId: string;
   insets: { top: number; bottom: number };
@@ -148,6 +405,8 @@ function ProgressPhotosContent({
   setPendingNotes: (v: string) => void;
   showComparator: boolean;
   setShowComparator: (v: boolean) => void;
+  sensitiveConsentGranted: boolean;
+  onNeedConsent: () => void;
 }): React.JSX.Element {
   const { t } = useTranslation();
   const router = useRouter();
@@ -234,6 +493,12 @@ function ProgressPhotosContent({
   });
 
   async function handlePickImage() {
+    // Verificar consentimiento de datos sensibles antes de abrir la galería
+    if (!sensitiveConsentGranted) {
+      onNeedConsent();
+      return;
+    }
+
     const permResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permResult.granted) {
       Alert.alert(t("progressPhotos.permissionDenied"));

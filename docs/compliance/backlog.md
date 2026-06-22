@@ -43,11 +43,11 @@ El video razona sobre EE. UU. (FTC, CCPA, DMCA y sus USD 150k). `CLAUDE.md` defi
 
 | ID | Gap | Acción | Agente(s) |
 |---|---|---|---|
-| P1.1 | Analytics sin consentimiento (PostHog host EU) | Banner / opt-out persistente; no cargar analytics no esenciales hasta opt-in. Se monta sobre `scrubPII()`, no lo reemplaza | apps |
+| P1.1 | ✅ **HECHO 2026-06-22** | Banner de primer uso + opt-out (decisión del dueño). Web: `AnalyticsBanner`/`AnalyticsOptOut`, PostHog no carga hasta aceptar (localStorage). Mobile: store Zustand persistido + banner + toggle en perfil. Sobre `scrubPII()`. Typechecks verdes | apps ✅ |
 | P1.2 | ✅ **HECHO 2026-06-22** | UI de borrado en `/coach/perfil` (Danger zone, doble confirmación) reutilizando Edge Fn `delete-account`. ES/EN paritarios, typecheck verde | `web-next-engineer` |
-| P1.3 | Sin export de datos (solo email manual) | Endpoint de export (perfil, métricas, sesiones, pagos propios) — derecho de acceso L25.326 / portabilidad GDPR; UI mobile+web | `supabase-rls-engineer` + apps |
-| P1.4 | 🟡 **DATA HECHA 2026-06-22** | Migración `20260622170000_sensitive_data_consent.sql`: columna `student_profiles.sensitive_data_consent_at` + RPC `record_sensitive_consent()` + trigger + audit_log + tests T67-69. **PENDIENTE**: UI de consentimiento previo a subir fotos/cargar métricas (mobile) y enforcement duro RLS (follow-up) | `supabase-rls-engineer` ✅ + `mobile-expo-engineer` ⏳ |
-| P1.5 | 🟡 **DOC HECHO 2026-06-22** | `docs/compliance/ugc-takedown.md` completo (superficies, prohibido, takedown, reincidentes, moderación, Play, DMCA-P2; 7 HUMAN_REQUIRED). **PENDIENTE**: tabla `content_reports`, botones "reportar" (chat/video/perfil), `user_blocks`, notificación al owner | `docs-maintainer` ✅ + apps ⏳ + `notifications-realtime-engineer` ⏳ |
+| P1.3 | 🟡 **BACKEND HECHO 2026-06-22** | Edge Fn `export-user-data` (JSON descargable con datos propios; audit_log; fotos = metadata + URL firmada 1h). **PENDIENTE**: botón "descargar mis datos" en UI mobile+web | `supabase-rls-engineer` ✅ + apps ⏳ |
+| P1.4 | ✅ **HECHO 2026-06-22** | Capa de datos (RPC `record_sensitive_consent`) + UI mobile: modal de consentimiento antes de subir fotos de progreso, gateado por `sensitive_data_consent_at`. Enforcement duro RLS = follow-up opcional | `supabase-rls-engineer` ✅ + `mobile-expo-engineer` ✅ |
+| P1.5 | 🟡 **DOC + BACKEND HECHO 2026-06-22** | `docs/compliance/ugc-takedown.md` + Edge Fn `submit-content-report` (canal mínimo: audit_log + notifica owners + email opcional `LEGAL_REPORTS_EMAIL`; sin tabla nueva, decisión del dueño). **PENDIENTE**: botones "reportar" en chat/video/perfil (mobile+web) | `docs-maintainer` ✅ + apps ⏳ |
 
 ### P2 — US/EU prep (activable al internacionalizar)
 

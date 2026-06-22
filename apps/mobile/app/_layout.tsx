@@ -19,12 +19,22 @@ import { initSentry } from "@/lib/sentry";
 // Lee el idioma persistido del store; si no hay, usa el locale del dispositivo.
 import { initI18n } from "@/lib/i18n";
 import { useLanguageStore } from "@/stores/languageStore";
+import { AnalyticsConsentBanner } from "@/components/AnalyticsConsentBanner";
+import { initAnalyticsIfAllowed } from "@/lib/analytics";
+import { getConsent } from "@/stores/analyticsConsentStore";
 
 // Leer idioma persistido SINCRÓNICAMENTE antes del primer render.
 // useLanguageStore.getState() está disponible sin montar el store porque
 // Zustand crea el store en el módulo (singleton).
 const persistedLanguage = useLanguageStore.getState().language;
 initI18n(persistedLanguage);
+
+// Inicializar analytics SOLO si el usuario ya dio consentimiento en una sesión anterior.
+// Si decided === false, el banner lo iniciará cuando el usuario acepte.
+const { decided, analyticsEnabled } = getConsent();
+if (decided && analyticsEnabled) {
+  initAnalyticsIfAllowed();
+}
 
 LogBox.ignoreLogs([
   "The app is running using the Legacy Architecture",
@@ -129,6 +139,8 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <RootLayoutNav />
+          {/* Banner de consentimiento de analytics — se muestra sobre todo en la primera apertura */}
+          <AnalyticsConsentBanner />
         </AuthProvider>
       </QueryClientProvider>
     </SafeAreaProvider>
