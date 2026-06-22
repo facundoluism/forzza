@@ -1048,7 +1048,7 @@
       "addPackage": "Agregar paquete",
       "packageName": "Nombre",
       "packageBilling": "Modalidad",
-      "packagePrice": "Precio (centavos)",
+      "packagePrice": "Lo que querés cobrar (vos recibís esto)",
       "packageDescription": "Descripción",
       "packageFeatures": "Beneficios",
       "packageActive": "Activo",
@@ -1058,11 +1058,15 @@
       "billingPerSession": "Por sesión",
       "btnSave": "Guardar cambios",
       "btnSaving": "Guardando…",
-      "errorPriceMin": "El precio no puede ser menor al mínimo del país.",
       "errorSave": "Error al guardar",
       "errorNetwork": "Error de red",
       "successSaved": "Perfil guardado correctamente",
-      "validationPrice": "Precio mínimo: {min} centavos"
+      "validationPrice": "Ingresá un precio mayor a cero.",
+      "breakdownStudent": "El alumno paga:",
+      "breakdownForzza": "Forzza retiene ({pct}%):",
+      "breakdownCoach": "Vos cobrás:",
+      "commissionTooltip": "Forzza retiene el {pct}% de comisión sobre el precio del plan. Vos recibís el resto en tu liquidación quincenal.",
+      "commissionTooltipLabel": "Info sobre comisión"
     }
   },
   "ingresar": {

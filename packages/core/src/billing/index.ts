@@ -62,6 +62,38 @@ export function calculateSettlementCents(
   };
 }
 
+// ─── Gross-up helpers: coach inputs net, system stores gross ─────────────────
+
+/**
+ * Convierte el neto que el coach quiere cobrar al precio que pagará el alumno (gross-up).
+ * Fórmula: gross = round(net / (1 - rate))
+ * Ejemplo: netCents=2000000 (ARS 20.000), rate=0.20 → grossCents=2500000 (ARS 25.000)
+ *
+ * IMPORTANTE: el redondeo vive SOLO aquí (regla core/billing).
+ * commissionRate viene de country_config.commission_rate — jamás hardcodeado.
+ */
+export function studentPriceFromCoachNet(
+  netCents: number,
+  commissionRate: CommissionRate
+): number {
+  if (commissionRate >= 1) throw new Error("commissionRate must be < 1");
+  return Math.round(netCents / (1 - commissionRate));
+}
+
+/**
+ * Convierte el precio del alumno (gross) al neto que recibe el coach.
+ * Fórmula: net = round(gross * (1 - rate))
+ * Usar al cargar paquetes existentes para mostrar el neto en el input del form.
+ *
+ * commissionRate viene de country_config.commission_rate — jamás hardcodeado.
+ */
+export function coachNetFromStudentPrice(
+  grossCents: number,
+  commissionRate: CommissionRate
+): number {
+  return Math.round(grossCents * (1 - commissionRate));
+}
+
 // ─── Business rule: coach billing model ───────────────────────────────────────
 
 /**

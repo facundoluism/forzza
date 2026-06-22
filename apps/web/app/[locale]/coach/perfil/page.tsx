@@ -35,10 +35,10 @@ export default async function PerfilPage({ params }: Props) {
     .eq("coach_id", coachProfileId)
     .order("created_at", { ascending: true });
 
-  // Fetch min_coach_price from country_config
+  // Fetch min_coach_price, commission_rate and currency from country_config
   const { data: countryConfig } = await supabase
     .from("country_config")
-    .select("min_coach_price, currency_symbol")
+    .select("min_coach_price, currency_symbol, commission_rate")
     .eq("country", coachProfile?.country ?? "AR")
     .single();
 
@@ -73,6 +73,7 @@ export default async function PerfilPage({ params }: Props) {
         }
         minCoachPrice={countryConfig?.min_coach_price ?? 0}
         currencySymbol={countryConfig?.currency_symbol ?? "$"}
+        commissionRate={Number(countryConfig?.commission_rate ?? 0.20)}
       />
     </div>
   );

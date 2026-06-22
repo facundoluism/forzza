@@ -1024,7 +1024,7 @@
       "addPackage": "Add package",
       "packageName": "Name",
       "packageBilling": "Billing type",
-      "packagePrice": "Price (cents)",
+      "packagePrice": "What you want to earn (you receive this)",
       "packageDescription": "Description",
       "packageFeatures": "Features",
       "packageActive": "Active",
@@ -1034,11 +1034,15 @@
       "billingPerSession": "Per session",
       "btnSave": "Save changes",
       "btnSaving": "Saving…",
-      "errorPriceMin": "Price cannot be below the country minimum.",
       "errorSave": "Error saving",
       "errorNetwork": "Network error",
       "successSaved": "Profile saved successfully",
-      "validationPrice": "Minimum price: {min} cents"
+      "validationPrice": "Enter a price greater than zero.",
+      "breakdownStudent": "Student pays:",
+      "breakdownForzza": "Forzza retains ({pct}%):",
+      "breakdownCoach": "You earn:",
+      "commissionTooltip": "Forzza retains a {pct}% commission on the plan price. You receive the rest in your bi-weekly settlement.",
+      "commissionTooltipLabel": "Commission info"
     }
   },
   "ingresar": {

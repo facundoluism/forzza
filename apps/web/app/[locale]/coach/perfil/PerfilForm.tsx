@@ -2,12 +2,17 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import {
+  studentPriceFromCoachNet,
+  coachNetFromStudentPrice,
+} from "@forzza/core";
 
 interface PackageEntry {
   id?: string;
   name: string;
   description: string;
-  price_cents: number;
+  /** Neto que el coach quiere cobrar, en centavos. El gross se calcula al guardar. */
+  net_cents: number;
   billing_type: "mensual" | "paquete";
   features: string[];
   is_active: boolean;
@@ -23,9 +28,17 @@ interface ProfileData {
 
 interface Props {
   initialProfile: ProfileData;
-  initialPackages: (PackageEntry & { id: string })[];
+  /** Paquetes iniciales con price_cents en GROSS (como se guarda en DB). */
+  initialPackages: (Omit<PackageEntry, "net_cents"> & { id: string; price_cents: number })[];
   minCoachPrice: number;
   currencySymbol: string;
+  /** Leído de country_config.commission_rate — nunca hardcodeado. */
+  commissionRate: number;
+}
+
+/** Formatea centavos a string con separador de miles, sin decimales. */
+function formatCents(cents: number, locale = "es-AR"): string {
+  return (cents / 100).toLocaleString(locale, { maximumFractionDigits: 0 });
 }
 
 export function PerfilForm({
@@ -33,14 +46,28 @@ export function PerfilForm({
   initialPackages,
   minCoachPrice,
   currencySymbol,
+  commissionRate,
 }: Props) {
   const t = useTranslations("coach");
+
+  // Convertir paquetes iniciales de gross → neto para mostrar en el form
+  const initialPackagesNet: PackageEntry[] = initialPackages.map((p) => ({
+    id: p.id,
+    name: p.name,
+    description: p.description,
+    net_cents: coachNetFromStudentPrice(p.price_cents, commissionRate),
+    billing_type: p.billing_type,
+    features: p.features,
+    is_active: p.is_active,
+  }));
+
   const [profile, setProfile] = useState<ProfileData>(initialProfile);
-  const [packages, setPackages] = useState<PackageEntry[]>(initialPackages);
+  const [packages, setPackages] = useState<PackageEntry[]>(initialPackagesNet);
   const [specialtyInput, setSpecialtyInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [tooltipOpen, setTooltipOpen] = useState<number | null>(null);
 
   function addSpecialty() {
     const trimmed = specialtyInput.trim();
@@ -62,8 +89,7 @@ export function PerfilForm({
       {
         name: "",
         description: "",
-        // minCoachPrice is already in centavos (from country_config.min_coach_price)
-        price_cents: minCoachPrice,
+        net_cents: 0,
         billing_type: "mensual",
         features: [],
         is_active: true,
@@ -85,7 +111,6 @@ export function PerfilForm({
     setPackages((prev) => {
       const pkg = prev[index];
       if (pkg?.id) {
-        // Mark existing for deletion
         return prev.map((p, i) => (i === index ? { ...p, _deleted: true } : p));
       }
       return prev.filter((_, i) => i !== index);
@@ -117,19 +142,15 @@ export function PerfilForm({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    // Validate packages price
-    // minCoachPrice and price_cents are both in centavos (country_config.min_coach_price)
+    // Validar: neto > 0 (sin piso de país — regla actualizada)
     const activePackages = packages.filter((p) => !p._deleted);
     for (const pkg of activePackages) {
       if (!pkg.name.trim()) {
         setError(t("perfil.errorSave"));
         return;
       }
-      if (pkg.price_cents < minCoachPrice) {
-        const minDisplay = (minCoachPrice / 100).toLocaleString("es-AR");
-        setError(
-          t("perfil.validationPrice", { symbol: currencySymbol, min: minDisplay })
-        );
+      if (pkg.net_cents <= 0) {
+        setError(t("perfil.validationPrice"));
         return;
       }
     }
@@ -152,7 +173,11 @@ export function PerfilForm({
             id: p.id,
             name: p.name,
             description: p.description || null,
-            price_cents: p.price_cents,
+            // Convertir neto → gross al guardar; el cálculo de dinero NO vive en el cliente
+            // pero la conversión usa la función core que es pura y sin estado de servidor.
+            price_cents: p._deleted
+              ? 0
+              : studentPriceFromCoachNet(p.net_cents, commissionRate),
             billing_type: p.billing_type,
             features: p.features,
             is_active: p.is_active,
@@ -293,7 +318,16 @@ export function PerfilForm({
           <div className="space-y-4">
             {packages.map((pkg, index) => {
               if (pkg._deleted) return null;
-              const isPriceInvalid = pkg.price_cents < minCoachPrice;
+
+              const netCents = pkg.net_cents;
+              const isNetInvalid = netCents <= 0;
+              // Calcular gross y comision en vivo para el desglose
+              const grossCents = netCents > 0
+                ? studentPriceFromCoachNet(netCents, commissionRate)
+                : 0;
+              const commissionCents = grossCents - netCents;
+              const commissionPct = Math.round(commissionRate * 100);
+
               return (
                 <div
                   key={index}
@@ -361,36 +395,92 @@ export function PerfilForm({
                     </div>
                   </div>
 
+                  {/* Precio neto — lo que el coach quiere cobrar */}
                   <div>
                     <label className="block text-muted text-xs mb-1">
-                      {t("perfil.packagePrice")} ({currencySymbol}) — {t("perfil.errorPriceMin")}{" "}
-                      {currencySymbol} {(minCoachPrice / 100).toLocaleString("es-AR")}
+                      {t("perfil.packagePrice")} ({currencySymbol})
                     </label>
                     <input
                       type="number"
-                      min={minCoachPrice / 100}
+                      min={1}
                       step={1}
-                      value={pkg.price_cents / 100}
+                      value={netCents > 0 ? netCents / 100 : ""}
                       onChange={(e) =>
                         updatePackage(
                           index,
-                          "price_cents",
+                          "net_cents",
                           Math.round(parseFloat(e.target.value || "0") * 100)
                         )
                       }
+                      placeholder="Ej: 20000"
                       className={`w-full px-3 py-2 bg-surface rounded-lg text-text text-sm focus:outline-none transition-colors ${
-                        isPriceInvalid
+                        isNetInvalid
                           ? "border-2 border-red-500 focus:border-red-500"
                           : "border border-border focus:border-[#C8FF00]"
                       }`}
                     />
-                    {isPriceInvalid && (
+                    {isNetInvalid && (
                       <p className="text-red-400 text-xs mt-1">
-                        {t("perfil.validationPrice", {
-                          symbol: currencySymbol,
-                          min: (minCoachPrice / 100).toLocaleString("es-AR"),
-                        })}
+                        {t("perfil.validationPrice")}
                       </p>
+                    )}
+
+                    {/* Desglose en vivo */}
+                    {netCents > 0 && (
+                      <div className="mt-2 rounded-lg bg-surface border border-border px-3 py-2 space-y-0.5">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-muted">{t("perfil.breakdownStudent")}</span>
+                          <span className="font-mono text-text">
+                            {currencySymbol} {formatCents(grossCents)}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-muted">
+                            {t("perfil.breakdownForzza", { pct: commissionPct })}
+                          </span>
+                          <span className="font-mono text-muted">
+                            {currencySymbol} {formatCents(commissionCents)}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs border-t border-border pt-1 mt-1">
+                          <div className="flex items-center gap-1">
+                            <span className="text-lime font-medium">{t("perfil.breakdownCoach")}</span>
+                            {/* Tooltip info */}
+                            <div className="relative">
+                              <button
+                                type="button"
+                                aria-label={t("perfil.commissionTooltipLabel")}
+                                onClick={() =>
+                                  setTooltipOpen(tooltipOpen === index ? null : index)
+                                }
+                                className="text-muted hover:text-text transition-colors leading-none"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
+                                  className="w-3.5 h-3.5"
+                                  aria-hidden="true"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              </button>
+                              {tooltipOpen === index && (
+                                <div className="absolute bottom-full left-0 mb-1 w-56 z-10 rounded-lg border border-border bg-surface shadow-lg px-3 py-2 text-xs text-muted leading-relaxed">
+                                  {t("perfil.commissionTooltip", { pct: commissionPct })}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <span className="font-mono text-lime font-semibold">
+                            {currencySymbol} {formatCents(netCents)}
+                          </span>
+                        </div>
+                      </div>
                     )}
                   </div>
 

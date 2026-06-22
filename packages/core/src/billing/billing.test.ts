@@ -3,6 +3,8 @@ import {
   calculateSettlement,
   isEligibleForCommissionModel,
   canTransferSettlement,
+  studentPriceFromCoachNet,
+  coachNetFromStudentPrice,
 } from "./index";
 
 describe("calculateSettlement", () => {
@@ -57,6 +59,72 @@ describe("calculateSettlement", () => {
     });
     expect(result.commission).toBe(50000);
     expect(result.net).toBe(0);
+  });
+});
+
+describe("studentPriceFromCoachNet", () => {
+  it("caso exacto: neto 20000, rate 0.20 → gross 25000", () => {
+    expect(studentPriceFromCoachNet(2000000, 0.20)).toBe(2500000);
+  });
+
+  it("caso exacto en unidades: neto 20_000_00 centavos ARS → 25_000_00", () => {
+    // Mismo caso, notación centavos explícita
+    expect(studentPriceFromCoachNet(2000000, 0.20)).toBe(2500000);
+  });
+
+  it("redondeo cuando el resultado no es entero exacto", () => {
+    // neto = 100, rate = 0.30 → gross = 100/0.70 = 142.857... → 143
+    expect(studentPriceFromCoachNet(100, 0.30)).toBe(143);
+  });
+
+  it("rate desde parámetro — rate 0.15 produce gross correcto", () => {
+    // neto = 8500, rate = 0.15 → gross = 8500/0.85 = 10000
+    expect(studentPriceFromCoachNet(8500, 0.15)).toBe(10000);
+  });
+
+  it("neto 0 → gross 0", () => {
+    expect(studentPriceFromCoachNet(0, 0.20)).toBe(0);
+  });
+
+  it("lanza error si rate >= 1", () => {
+    expect(() => studentPriceFromCoachNet(1000, 1)).toThrow();
+  });
+
+  it("round-trip aproximado: gross→net→gross ≈ gross original", () => {
+    const originalGross = 2500000;
+    const net = coachNetFromStudentPrice(originalGross, 0.20);
+    const recoveredGross = studentPriceFromCoachNet(net, 0.20);
+    // El round-trip es exacto cuando gross * (1-rate) es entero
+    expect(recoveredGross).toBe(originalGross);
+  });
+});
+
+describe("coachNetFromStudentPrice", () => {
+  it("caso exacto: gross 25000 centavos, rate 0.20 → neto 20000", () => {
+    expect(coachNetFromStudentPrice(2500000, 0.20)).toBe(2000000);
+  });
+
+  it("redondeo: gross 333, rate 0.20 → net 267 (Math.round(333*0.8)=266→266)", () => {
+    // 333 * 0.80 = 266.4 → Math.round = 266
+    expect(coachNetFromStudentPrice(333, 0.20)).toBe(266);
+  });
+
+  it("rate desde parámetro — rate 0.15", () => {
+    // gross = 10000, rate = 0.15 → net = 10000 * 0.85 = 8500
+    expect(coachNetFromStudentPrice(10000, 0.15)).toBe(8500);
+  });
+
+  it("gross 0 → net 0", () => {
+    expect(coachNetFromStudentPrice(0, 0.20)).toBe(0);
+  });
+
+  it("gross = commission + net siempre se cumple a nivel de round", () => {
+    const gross = 9999;
+    const rate = 0.20;
+    const net = coachNetFromStudentPrice(gross, rate);
+    const commission = Math.round(gross * rate);
+    // Puede haber diferencia de ±1 centavo por redondeo independiente; toleramos 1
+    expect(Math.abs(net + commission - gross)).toBeLessThanOrEqual(1);
   });
 });
 
