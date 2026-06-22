@@ -88,6 +88,23 @@ export async function POST(
       );
     }
 
+    // Número de factura único por coach: no reutilizar un comprobante ya cargado
+    // en otra liquidación (el coach puede SELECT sus propias settlements).
+    const { data: dupInvoice } = await supabase
+      .from("settlements")
+      .select("id")
+      .eq("coach_id", coachProfile.id)
+      .eq("invoice_number", invoiceNumber.trim())
+      .neq("id", settlementId)
+      .limit(1);
+
+    if (dupInvoice && dupInvoice.length > 0) {
+      return NextResponse.json(
+        { error: "Ese número de factura ya está registrado en otra liquidación" },
+        { status: 409 }
+      );
+    }
+
     // Validate type
     const allowed = ["application/pdf", "image/jpeg", "image/png"];
     if (!allowed.includes(file.type)) {
