@@ -7,7 +7,7 @@ Qué es Forzza. Una plataforma fitness de tres caras: (1) app móvil para alumno
 Qué problema resuelve. Dos dolores reales y verificables: (a) el alumno de gimnasio sin coach entrena sin estructura ni registro (hoy usa papel, notas del celular o nada); (b) el coach online en LatAm gestiona alumnos con WhatsApp + Excel + transferencias manuales, sin herramienta de cobro, agenda ni seguimiento unificada. El problema (b) es el que sostiene el negocio; el (a) es el embudo de adquisición.
 Modelo de negocio recomendado (V1). Híbrido ya esbozado en el prototipo, con correcciones:
 
-B2C freemium: plan Free con publicidad y límites → PRO de pago (ARS 4.500 / CLP 4.990 equivalentes).
+B2C freemium: plan Free con publicidad y límites → PRO de pago (ARS 9.999 / CLP 4.990 equivalentes).
 Marketplace coach–alumno: Forzza cobra al alumno el paquete completo y retiene comisión. Corrección crítica: la comisión del 15% definida en el prototipo deja un neto efectivo de ~7–9% en Argentina después de pasarela e IIBB. Recomiendo 20% de comisión (o 15% + fee de procesamiento trasladado), de lo contrario el marketplace no paga su propia operación.
 Suscripción fija del coach (ARS 9.900) solo hasta el 3er alumno, luego pasa a comisión — regla ya definida en el plan de implementación, se mantiene.
 
@@ -213,13 +213,13 @@ Eliminar: "3 coaches especializados" y "Análisis IA semanal" de Elite (promesas
 ModeloCómo funcionaQuién pagaVentajasRiesgosComplejidad op./téc.Margen estimadoVeredictoB2C suscripción (PRO)Alumno paga mensual por featuresAlumnoIngreso predecible, ya diseñadoCAC alto vs. apps gratis (Hevy); IAP de Apple se lleva 15–30% en iOSBaja / Media70–85% bruto (web), 55–70% (iOS IAP)Adoptar V1Freemium con adsFree con publicidad de videoAnunciante (marginal)Embudo de adquisiciónCon <50k usuarios el ingreso por ads es despreciable (eCPM video LatAm ~USD 2–6, supuesto); puede dañar UXBaja / BajaIrrelevante como ingresoAdoptar como embudo, no como ingreso. El ad de 10 s puede ser autopromoción de PRO en V1 (costo cero, sin SDK de ads, menos fricción en review)Marketplace comisión por transacciónForzza cobra al alumno y retiene % del paquete de coachAlumno (el coach cede %)Alinea incentivos; escala con GMV; ya diseñadoAl 15% el neto es ~7–9% en AR (ver 4.3); leakage (coach arregla por fuera); Forzza es agente de cobro (carga fiscal)Alta / Alta7–9% neto al 15%; 12–14% al 20%Adoptar V1 con comisión 20%SaaS para coach (sub fija)Coach paga mensual por las herramientasCoachSimple, sin tocar el dinero del alumnoEl coach chico no paga sin alumnos; no captura upsideBaja / Baja~85% brutoAdoptar como puente: sub fija ARS 9.900 hasta 3 alumnos (ya definido), luego comisiónB2B gimnasiosLicencia a gimnasios para sus coachesGimnasioTickets grandesCiclo de venta largo, producto distinto (multi-coach, kiosko)Alta / Alta—No priorizar (V3 si hay tracción)Promotores por comisiónTerceros refieren coaches/alumnos por % recurrenteForzza pagaCAC variable, entrada a EU sin invertirFiscal/laboral por país; fraude de referidos; complejidad de payout internacionalMedia / MediaReduce margen del referido en 20–30% del netoAdoptar V1.5 con contrato de referido y pago como servicio facturadoHíbrido (todo lo anterior)CombinaciónMixtoDiversificaciónComplejidad de comunicarAlta / Alta—Es la recomendación: B2C + marketplace + puente SaaS + promotores
 4.2 Recomendación por versión
 
-V1 (AR): Free (con autopromo en vez de ads de terceros) → PRO ARS 4.500 → Marketplace con comisión 20% + sub puente del coach ARS 9.900 (hasta 3 alumnos). Cobro vía Mercado Pago Suscripciones. En iOS, PRO vía IAP; paquetes de coach vía web/MP (ver justificación 8.1).
+V1 (AR): Free (con autopromo en vez de ads de terceros) → PRO ARS 9.999 → Marketplace con comisión 20% + sub puente del coach ARS 9.900 (hasta 3 alumnos). Cobro vía Mercado Pago Suscripciones. En iOS, PRO vía IAP; paquetes de coach vía web/MP (ver justificación 8.1).
 V2 (CL + ES + promotores): mismo modelo; Chile con MP; España con Stripe; módulo promotores activo (códigos de referido, 20% del revenue neto de Forzza por referido durante 12 meses — recomendado, ver 5).
 V3 (UK/DE/DK, marketplace avanzado): localización EN/DE, Stripe Connect para payouts automáticos (reemplaza el flujo manual de facturas), ratings reales, grupos, sesiones en vivo, nutrición.
 
 4.3 Unit economics (escenario base, Argentina, junio 2026)
 Supuestos declarados: MP suscripciones ≈ tarifa online 4,99% + IVA ≈ 6,04% efectivo (fuente: sodi.com.ar, consultado 10-jun-2026; pendiente de validación en panel propio — la tarifa de suscripciones puede diferir); IIBB sobre cobros ≈ 2% (varía por jurisdicción, supuesto); infra ≈ USD 0,05/usuario activo/mes a escala de miles (supuesto, ver Fase 8 costos).
-PRO (ARS 4.500/mes, vía web/Android):
+PRO (ARS 9.999/mes, vía web/Android):
 
 Pasarela: −272 (6,04%) → neto pasarela ≈ 4.228
 IIBB ≈ −90 → neto ≈ ARS 4.138 (~92% del precio, antes de IVA débito fiscal e impuestos a las ganancias)
@@ -414,7 +414,7 @@ Sección coaches: H2: "Coacheá más alumnos. Administrá menos." Copy: "Cobros 
 Planes y precios (selector de país AR/CL):
 
 GRATIS $0 — Registrá entrenos, Tabata, 3 rutinas, historial 10 días. CTA "Empezar gratis".
-PRO $4.500/mes — Rutinas ilimitadas, plan semanal, gráficos completos, fotos de progreso, sin publicidad. CTA "Hacerme PRO". Badge "Más elegido".
+PRO $9.999/mes — Rutinas ilimitadas, plan semanal, gráficos completos, fotos de progreso, sin publicidad. CTA "Hacerme PRO". Badge "Más elegido".
 PRO + COACH desde $22.000/mes — Todo PRO + tu coach personal: rutinas a medida, chat directo, check-in semanal. "El precio lo define cada coach." CTA "Ver coaches".
 
 

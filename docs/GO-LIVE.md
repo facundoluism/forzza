@@ -2,10 +2,9 @@
 
 ## Infra
 - [ ] Supabase cloud project creado (prod)
-- [ ] `supabase db push` ejecutado contra cloud (26 migraciones en supabase/migrations/)
-      ATENCION: el cloud staging solo tiene 8 migraciones aplicadas (hasta 2026-06-15); faltan 18.
-      Revisar el diff con `supabase db diff --linked` antes de hacer push. Decision y revision del
-      dueno requerida antes de ejecutar (ver open-questions.md entrada "Cloud sync 2026-06-22").
+- [x] `supabase db push` ejecutado contra cloud staging — **2026-06-22**: 26/26 migraciones
+      sincronizadas (las 18 pendientes aplicadas sin error, todas aditivas). Pendiente: repetir
+      contra el proyecto de PROD cuando exista, y subir el seed de videos (`pnpm videos:push-cloud`).
 - [ ] Seeds ejecutados en cloud (country_config AR)
 - [ ] Storage buckets creados en cloud (4 buckets privados: progress-photos, fiscal-docs, invoices, videos)
 - [ ] Edge Functions deployed: `supabase functions deploy --all`

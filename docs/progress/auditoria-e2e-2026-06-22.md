@@ -38,8 +38,9 @@ de reglas de negocio sin enforcement en DB**, (3) **scope creep no trazado (rati
 El proyecto cloud `plrjiglohbygqivhjzgz` tiene solo 8 migraciones (hasta 15-jun); faltan 18,
 incluidas las 3 tablas de videos. Cualquier deploy/push actual falla (`relation exercise_videos
 does not exist`). Riesgo: la "fuente de verdad" productiva no refleja el código.
-**Estado:** REQUIERE_DECISIÓN — `supabase db push` es operación sobre prod, la decide Facu tras
-revisar qué traen esas 18 migraciones.
+**Estado:** ✅ RESUELTO 2026-06-22 — el dueño autorizó; se ejecutó `supabase db push` (18 migraciones
+aditivas aplicadas sin error). Remoto 26/26 sincronizado; 10 tablas nuevas verificadas vía PostgREST.
+Pendiente aparte: seed de videos al cloud cuando termine la curación.
 
 **A6 — Backoffice del coach roto contra el schema real (embed PGRST200)** ⬅ hallazgo de smoke
 8 queries en 7 archivos del backoffice coach embeben `student_profiles` vía un FK que en realidad
@@ -58,9 +59,9 @@ el schema real: el e2e Playwright corría en dev-bypass con datos mock. Archivos
 (antes: PGRST200). Typecheck completo en verde.
 
 **A1 — Precio PRO contradictorio: master-doc ARS 4.500 vs seed/código ARS 9.999**
-`forzza-master-doc.md` §4.2/§10.1 dice PRO = **ARS 4.500/mes**; `20260615000002_seed_country_config.sql:17`
-siembra `999900` = **ARS 9.999** (~2,2×). Afecta unit economics, landing y checkout reales.
-**Estado:** REQUIERE_DECISIÓN — definir el precio canónico y conciliar.
+`forzza-master-doc.md` §4.2/§10.1 decía PRO = **ARS 4.500/mes**; el seed siembra `999900` = **ARS 9.999**.
+**Estado:** ✅ RESUELTO 2026-06-22 — el dueño confirmó **ARS 9.999**; master-doc corregido (§0, §4.2,
+§10). El seed ya estaba en 9.999.
 
 **A2 — Pisos de coach (`min_coach_price`) no coinciden con la spec**
 Spec §5/§13: piso paquete coach AR ≈ **$29.900**; seed AR = `500000` = **$5.000** (un orden de
