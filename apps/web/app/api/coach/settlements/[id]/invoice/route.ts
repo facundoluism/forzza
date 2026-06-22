@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
+import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
+import type { Database } from "@forzza/db-types";
 
 export async function POST(
   request: Request,
@@ -121,10 +123,21 @@ export async function POST(
       );
     }
 
-    // Update settlement: set invoice_path and change status to 'invoiced'
-    // TODO: regenerar db-types para invoice_rejection_reason.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: updateError } = await (supabase as any)
+    // Update settlement: set invoice_path and change status to 'invoiced'.
+    // El coach NO tiene política RLS de UPDATE sobre settlements (solo SELECT),
+    // así que el update se hace con service-role tras validar propiedad y estado
+    // arriba en código. Mismos filtros (.eq/.in) como defensa adicional.
+    const serviceKey = process.env["SUPABASE_SERVICE_ROLE_KEY"];
+    const supabaseUrl = process.env["NEXT_PUBLIC_SUPABASE_URL"];
+    if (!serviceKey || !supabaseUrl) {
+      return NextResponse.json(
+        { error: "Falta configuración de Supabase" },
+        { status: 500 }
+      );
+    }
+    const admin = createServiceClient<Database>(supabaseUrl, serviceKey);
+
+    const { error: updateError } = await admin
       .from("settlements")
       .update({
         invoice_number: invoiceNumber.trim(),
