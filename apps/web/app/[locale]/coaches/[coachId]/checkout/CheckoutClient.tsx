@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { createBrowserClient } from "@supabase/ssr";
@@ -19,6 +19,22 @@ interface CheckoutClientProps {
 }
 
 type CheckoutState = "idle" | "loading" | "error";
+type BillingState = "idle" | "loading" | "error";
+
+type TaxCondition =
+  | "consumidor_final"
+  | "monotributo"
+  | "responsable_inscripto"
+  | "exento";
+type DocType = "DNI" | "CUIT" | "CUIL";
+
+interface BillingForm {
+  legal_name: string;
+  tax_condition: TaxCondition;
+  doc_type: DocType;
+  doc_number: string;
+  address: string;
+}
 
 function formatPrice(cents: number, symbol: string): string {
   return `${symbol} ${(cents / 100).toLocaleString("es-AR", {
@@ -41,19 +57,93 @@ export function CheckoutClient({
 }: CheckoutClientProps) {
   const t = useTranslations("checkout");
   const [state, setState] = useState<CheckoutState>("idle");
+  const [billingState, setBillingState] = useState<BillingState>("idle");
   const [clientError, setClientError] = useState<string | null>(null);
+  const [billingError, setBillingError] = useState<string | null>(null);
+
+  const [billing, setBilling] = useState<BillingForm>({
+    legal_name: "",
+    tax_condition: "consumidor_final",
+    doc_type: "DNI",
+    doc_number: "",
+    address: "",
+  });
 
   const displayError = errorMessage ?? clientError;
-
-  // Si hay error de configuración o coach/paquete no disponible, mostrar solo el error
   const hasInitialError = errorMessage !== null;
+
+  // Pre-cargar billing profile existente
+  useEffect(() => {
+    if (hasInitialError || isMinorWithoutConsent) return;
+
+    setBillingState("loading");
+    fetch("/api/billing-profile")
+      .then((r) => r.json())
+      .then((data: { profile?: BillingForm | null; error?: string }) => {
+        if (data.profile) {
+          setBilling({
+            legal_name: data.profile.legal_name ?? "",
+            tax_condition:
+              (data.profile.tax_condition as TaxCondition) ??
+              "consumidor_final",
+            doc_type: (data.profile.doc_type as DocType) ?? "DNI",
+            doc_number: data.profile.doc_number ?? "",
+            address: data.profile.address ?? "",
+          });
+        }
+        setBillingState("idle");
+      })
+      .catch(() => {
+        // Non-blocking: if we can't prefill, the user fills it manually
+        setBillingState("idle");
+      });
+  }, [hasInitialError, isMinorWithoutConsent]);
 
   async function handlePagar() {
     if (isMinorWithoutConsent || hasInitialError) return;
 
+    // Validate billing fields
+    if (
+      !billing.legal_name.trim() ||
+      !billing.tax_condition ||
+      !billing.doc_type ||
+      !billing.doc_number.trim()
+    ) {
+      setBillingError(t("billing.errorRequired"));
+      return;
+    }
+
     setState("loading");
     setClientError(null);
+    setBillingError(null);
 
+    // 1. Guardar billing profile primero
+    try {
+      const bpRes = await fetch("/api/billing-profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          legal_name: billing.legal_name.trim(),
+          tax_condition: billing.tax_condition,
+          doc_type: billing.doc_type,
+          doc_number: billing.doc_number.trim(),
+          address: billing.address.trim() || null,
+        }),
+      });
+
+      if (!bpRes.ok) {
+        const bpData = (await bpRes.json()) as { error?: string };
+        setBillingError(bpData.error ?? t("billing.errorSave"));
+        setState("error");
+        return;
+      }
+    } catch {
+      setBillingError(t("billing.errorNetwork"));
+      setState("error");
+      return;
+    }
+
+    // 2. Iniciar pago con Mercado Pago
     try {
       const supabaseUrl = process.env["NEXT_PUBLIC_SUPABASE_URL"] ?? "";
       const supabaseAnonKey = process.env["NEXT_PUBLIC_SUPABASE_ANON_KEY"] ?? "";
@@ -94,7 +184,6 @@ export function CheckoutClient({
         return;
       }
 
-      // Redirigir a Mercado Pago
       window.location.href = data.init_point;
     } catch {
       setClientError(t("errorNetwork"));
@@ -148,7 +237,7 @@ export function CheckoutClient({
           </div>
         )}
 
-        {/* Resumen del paquete */}
+        {/* Resumen del paquete + datos fiscales */}
         {!hasInitialError && (
           <>
             <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-5 flex flex-col gap-3">
@@ -195,6 +284,162 @@ export function CheckoutClient({
               </p>
             </div>
 
+            {/* Datos de facturación */}
+            {!isMinorWithoutConsent && (
+              <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-5 flex flex-col gap-4">
+                <div>
+                  <h2 className="text-[#FAFAFA] text-sm font-semibold">
+                    {t("billing.sectionTitle")}
+                  </h2>
+                  <p className="text-[#6A6A6A] text-xs mt-1">
+                    {t("billing.sectionHint")}
+                  </p>
+                </div>
+
+                {billingState === "loading" ? (
+                  <div className="h-8 rounded bg-[#2A2A2A] animate-pulse" />
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    {/* Nombre / razón social */}
+                    <div className="flex flex-col gap-1">
+                      <label
+                        htmlFor="bp-legal-name"
+                        className="text-[#6A6A6A] text-xs uppercase tracking-wider"
+                      >
+                        {t("billing.legalNameLabel")}
+                      </label>
+                      <input
+                        id="bp-legal-name"
+                        type="text"
+                        value={billing.legal_name}
+                        onChange={(e) =>
+                          setBilling((prev) => ({
+                            ...prev,
+                            legal_name: e.target.value,
+                          }))
+                        }
+                        placeholder={t("billing.legalNamePlaceholder")}
+                        className="w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-2.5 text-[#FAFAFA] text-sm placeholder:text-[#3A3A3A] focus:outline-none focus:border-[#C8FF00] transition-colors"
+                      />
+                    </div>
+
+                    {/* Condición IVA */}
+                    <div className="flex flex-col gap-1">
+                      <label
+                        htmlFor="bp-tax-condition"
+                        className="text-[#6A6A6A] text-xs uppercase tracking-wider"
+                      >
+                        {t("billing.taxConditionLabel")}
+                      </label>
+                      <select
+                        id="bp-tax-condition"
+                        value={billing.tax_condition}
+                        onChange={(e) =>
+                          setBilling((prev) => ({
+                            ...prev,
+                            tax_condition: e.target.value as TaxCondition,
+                          }))
+                        }
+                        className="w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-2.5 text-[#FAFAFA] text-sm focus:outline-none focus:border-[#C8FF00] transition-colors"
+                      >
+                        <option value="consumidor_final">
+                          {t("billing.taxConditionConsumidorFinal")}
+                        </option>
+                        <option value="monotributo">
+                          {t("billing.taxConditionMonotributo")}
+                        </option>
+                        <option value="responsable_inscripto">
+                          {t("billing.taxConditionResponsableInscripto")}
+                        </option>
+                        <option value="exento">
+                          {t("billing.taxConditionExento")}
+                        </option>
+                      </select>
+                    </div>
+
+                    {/* Tipo y número de documento */}
+                    <div className="flex gap-3">
+                      <div className="flex flex-col gap-1 w-28 shrink-0">
+                        <label
+                          htmlFor="bp-doc-type"
+                          className="text-[#6A6A6A] text-xs uppercase tracking-wider"
+                        >
+                          {t("billing.docTypeLabel")}
+                        </label>
+                        <select
+                          id="bp-doc-type"
+                          value={billing.doc_type}
+                          onChange={(e) =>
+                            setBilling((prev) => ({
+                              ...prev,
+                              doc_type: e.target.value as DocType,
+                            }))
+                          }
+                          className="w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-2.5 text-[#FAFAFA] text-sm focus:outline-none focus:border-[#C8FF00] transition-colors"
+                        >
+                          <option value="DNI">{t("billing.docTypeDNI")}</option>
+                          <option value="CUIT">{t("billing.docTypeCUIT")}</option>
+                          <option value="CUIL">{t("billing.docTypeCUIL")}</option>
+                        </select>
+                      </div>
+                      <div className="flex flex-col gap-1 flex-1">
+                        <label
+                          htmlFor="bp-doc-number"
+                          className="text-[#6A6A6A] text-xs uppercase tracking-wider"
+                        >
+                          {t("billing.docNumberLabel")}
+                        </label>
+                        <input
+                          id="bp-doc-number"
+                          type="text"
+                          inputMode="numeric"
+                          value={billing.doc_number}
+                          onChange={(e) =>
+                            setBilling((prev) => ({
+                              ...prev,
+                              doc_number: e.target.value,
+                            }))
+                          }
+                          placeholder={t("billing.docNumberPlaceholder")}
+                          className="w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-2.5 text-[#FAFAFA] text-sm placeholder:text-[#3A3A3A] focus:outline-none focus:border-[#C8FF00] transition-colors"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Domicilio fiscal */}
+                    <div className="flex flex-col gap-1">
+                      <label
+                        htmlFor="bp-address"
+                        className="text-[#6A6A6A] text-xs uppercase tracking-wider"
+                      >
+                        {t("billing.addressLabel")}
+                      </label>
+                      <input
+                        id="bp-address"
+                        type="text"
+                        value={billing.address}
+                        onChange={(e) =>
+                          setBilling((prev) => ({
+                            ...prev,
+                            address: e.target.value,
+                          }))
+                        }
+                        placeholder={t("billing.addressPlaceholder")}
+                        className="w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-2.5 text-[#FAFAFA] text-sm placeholder:text-[#3A3A3A] focus:outline-none focus:border-[#C8FF00] transition-colors"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Error de validación de billing */}
+                {billingError && (
+                  <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2">
+                    <p className="text-red-400 text-xs">{billingError}</p>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Error de cliente (MP o red) */}
             {state === "error" && clientError && (
               <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3">
@@ -207,7 +452,7 @@ export function CheckoutClient({
               <button
                 type="button"
                 onClick={() => void handlePagar()}
-                disabled={state === "loading"}
+                disabled={state === "loading" || billingState === "loading"}
                 className="w-full bg-[#C8FF00] hover:bg-[#b8ef00] disabled:opacity-60 disabled:cursor-not-allowed text-black font-bold text-base rounded-xl py-4 transition-colors"
               >
                 {state === "loading" ? t("submitLoading") : t("submit")}

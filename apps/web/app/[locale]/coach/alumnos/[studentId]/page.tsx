@@ -8,6 +8,20 @@ import { FeedbackForm } from "./FeedbackForm";
 import { LiveSessionForm } from "./LiveSessionForm";
 import { LiveSessionStatusButton } from "./LiveSessionStatusButton";
 
+type TaxConditionKey =
+  | "consumidor_final"
+  | "monotributo"
+  | "responsable_inscripto"
+  | "exento";
+
+interface BillingProfile {
+  legal_name: string;
+  tax_condition: string;
+  doc_type: string;
+  doc_number: string;
+  address: string | null;
+}
+
 type Props = { params: Promise<{ locale: string; studentId: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -250,6 +264,16 @@ export default async function StudentDetailPage({ params }: Props) {
     existing.push(fb);
     feedbackByTarget.set(fb.target_id, existing);
   }
+
+  // Billing profile del alumno (accesible por RLS para el coach asignado)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: billingProfileRaw } = await (supabase as any)
+    .from("billing_profiles")
+    .select("legal_name, tax_condition, doc_type, doc_number, address")
+    .eq("user_id", studentId)
+    .single();
+
+  const billingProfile = billingProfileRaw as BillingProfile | null;
 
   // Live sessions for this student (by this coach), ordered newest first
   const { data: liveSessionsRaw } = await supabase
@@ -582,6 +606,114 @@ export default async function StudentDetailPage({ params }: Props) {
               {t("alumnos.detail.noSessions")}
             </p>
           </div>
+        )}
+      </div>
+
+      {/* Datos de facturación del alumno */}
+      <div className="rounded-xl border border-border bg-surface p-5">
+        <h2 className="text-xs uppercase tracking-wider text-muted mb-4">
+          {t("alumnos.detail.billingProfile.sectionTitle")}
+        </h2>
+
+        {billingProfile ? (
+          <div className="flex flex-col gap-4">
+            {/* Datos fiscales */}
+            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <dt className="text-muted text-xs uppercase tracking-wider mb-1">
+                  {t("alumnos.detail.billingProfile.legalNameLabel")}
+                </dt>
+                <dd className="text-text text-sm font-medium">
+                  {billingProfile.legal_name}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-muted text-xs uppercase tracking-wider mb-1">
+                  {t("alumnos.detail.billingProfile.taxConditionLabel")}
+                </dt>
+                <dd className="text-text text-sm font-medium">
+                  {billingProfile.tax_condition === "consumidor_final"
+                    ? t("alumnos.detail.billingProfile.taxConditionConsumidorFinal")
+                    : billingProfile.tax_condition === "monotributo"
+                      ? t("alumnos.detail.billingProfile.taxConditionMonotributo")
+                      : billingProfile.tax_condition === "responsable_inscripto"
+                        ? t("alumnos.detail.billingProfile.taxConditionResponsableInscripto")
+                        : t("alumnos.detail.billingProfile.taxConditionExento")}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-muted text-xs uppercase tracking-wider mb-1">
+                  {t("alumnos.detail.billingProfile.docLabel")}
+                </dt>
+                <dd className="text-text text-sm font-medium font-mono">
+                  {billingProfile.doc_type} {billingProfile.doc_number}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-muted text-xs uppercase tracking-wider mb-1">
+                  {t("alumnos.detail.billingProfile.addressLabel")}
+                </dt>
+                <dd className="text-text text-sm">
+                  {billingProfile.address ??
+                    t("alumnos.detail.billingProfile.noAddress")}
+                </dd>
+              </div>
+            </dl>
+
+            {/* Instructivo de facturación — BORRADOR */}
+            <div className="rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-4 mt-2">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="inline-flex items-center rounded-full border border-yellow-500/30 bg-yellow-500/10 px-2.5 py-0.5 text-xs font-semibold text-yellow-400">
+                  {t("alumnos.detail.billingProfile.draftBadge")}
+                </span>
+              </div>
+              <h3 className="text-text text-sm font-semibold mb-3">
+                {t("alumnos.detail.billingProfile.instructivoTitle")}
+              </h3>
+              {(() => {
+                const tc = billingProfile.tax_condition as TaxConditionKey;
+                const taxLabel =
+                  tc === "consumidor_final"
+                    ? t("alumnos.detail.billingProfile.taxConditionConsumidorFinal")
+                    : tc === "monotributo"
+                      ? t("alumnos.detail.billingProfile.taxConditionMonotributo")
+                      : tc === "responsable_inscripto"
+                        ? t("alumnos.detail.billingProfile.taxConditionResponsableInscripto")
+                        : t("alumnos.detail.billingProfile.taxConditionExento");
+
+                const steps: string[] = [
+                  t("alumnos.detail.billingProfile.step1"),
+                  t("alumnos.detail.billingProfile.step2", {
+                    legal_name: billingProfile.legal_name,
+                    tax_condition: taxLabel,
+                    doc_type: billingProfile.doc_type,
+                    doc_number: billingProfile.doc_number,
+                  }),
+                  t("alumnos.detail.billingProfile.step3"),
+                  t("alumnos.detail.billingProfile.step4"),
+                ];
+
+                return (
+                  <ol className="flex flex-col gap-2 list-none">
+                    {steps.map((step, i) => (
+                      <li key={i} className="flex gap-3 items-start">
+                        <span className="shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-yellow-500/20 text-yellow-400 text-xs font-bold mt-0.5">
+                          {i + 1}
+                        </span>
+                        <span className="text-muted text-sm leading-relaxed">
+                          {step}
+                        </span>
+                      </li>
+                    ))}
+                  </ol>
+                );
+              })()}
+            </div>
+          </div>
+        ) : (
+          <p className="text-muted text-sm opacity-50">
+            {t("alumnos.detail.billingProfile.empty")}
+          </p>
         )}
       </div>
 

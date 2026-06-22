@@ -114,9 +114,13 @@
         "coaches": "Coaches",
         "plans": "Plans",
         "terms": "Terms",
-        "privacy": "Privacy"
+        "privacy": "Privacy",
+        "aiPolicy": "AI Policy",
+        "healthDisclaimer": "Health Disclaimer"
       },
-      "copy": "© 2026 Forzza · Argentina"
+      "copy": "© 2026 Forzza · Argentina",
+      "healthNotice": "The information in Forzza is for guidance only and does not replace professional medical advice. Consult a professional before starting.",
+      "healthNoticeLink": "Learn more"
     },
     "quote": {
       "unverifiedNote": "Attribution pending verification"
@@ -146,7 +150,9 @@
       "ssoOr": "or continue with",
       "ssoGoogle": "Continue with Google",
       "ssoApple": "Continue with Apple",
-      "ssoError": "Could not sign in with that provider. Please try again."
+      "ssoError": "Could not sign in with that provider. Please try again.",
+      "noAccount": "Don't have an account?",
+      "signupLink": "Sign up"
     },
     "forgotPassword": {
       "title": "Reset your password",
@@ -173,6 +179,31 @@
       "successTitle": "Password updated",
       "successDescription": "You can now sign in with your new password.",
       "successLink": "Go to sign in"
+    },
+    "signup": {
+      "title": "Create account",
+      "nameLabel": "Full name",
+      "namePlaceholder": "Your name",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@email.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "••••••••",
+      "confirmPasswordLabel": "Confirm password",
+      "confirmPasswordPlaceholder": "••••••••",
+      "termsLabel": "I accept the",
+      "termsLinkTerms": "Terms and Conditions",
+      "termsLinkAnd": "and the",
+      "termsLinkPrivacy": "Privacy Policy",
+      "termsError": "You must accept the Terms and Privacy Policy to continue.",
+      "submitLoading": "Creating account...",
+      "submit": "Create account",
+      "loginLink": "Already have an account?",
+      "loginLinkCta": "Sign in",
+      "errorGeneric": "Could not create the account. Please try again.",
+      "errorEmailInUse": "An account with that email already exists.",
+      "errorInvalid": "Invalid data",
+      "successTitle": "Account created",
+      "successBody": "Welcome to Forzza! Download the app to get started."
     }
   },
   "offline": {
@@ -232,7 +263,30 @@
     "selectedPackageFallback": "Selected package",
     "errorDevMode": "Service not available in development mode.",
     "errorCoachUnavailable": "The coach is not available or has not been approved.",
-    "errorPackageNotAvailable": "The selected package is not available."
+    "errorPackageNotAvailable": "The selected package is not available.",
+    "billing": {
+      "sectionTitle": "Billing information",
+      "sectionHint": "Your coach needs this information to issue your invoice.",
+      "legalNameLabel": "Name or business name *",
+      "legalNamePlaceholder": "As it appears in your tax ID",
+      "taxConditionLabel": "VAT condition *",
+      "taxConditionPlaceholder": "Select your condition",
+      "taxConditionConsumidorFinal": "Final consumer",
+      "taxConditionMonotributo": "Monotax",
+      "taxConditionResponsableInscripto": "Registered taxpayer",
+      "taxConditionExento": "Exempt",
+      "docTypeLabel": "Document type *",
+      "docTypeDNI": "DNI",
+      "docTypeCUIT": "CUIT",
+      "docTypeCUIL": "CUIL",
+      "docNumberLabel": "Document number *",
+      "docNumberPlaceholder": "20-12345678-9",
+      "addressLabel": "Fiscal address (optional)",
+      "addressPlaceholder": "Street, number, city",
+      "errorRequired": "Please fill in all required fields before continuing.",
+      "errorSave": "Could not save your billing information. Check the fields and try again.",
+      "errorNetwork": "Network error while saving billing information."
+    }
   },
   "upgrade": {
     "metaTitle": "Choose your plan — Forzza",
@@ -318,7 +372,12 @@
       "descriptionLabel": "Description (optional)",
       "descriptionPlaceholder": "Tell us who you are, what sets you apart as a coach...",
       "submitLoading": "Saving...",
-      "submit": "Submit application"
+      "submit": "Submit application",
+      "termsLabel": "I accept the",
+      "termsLinkTerms": "Terms and Conditions",
+      "termsLinkAnd": "and the",
+      "termsLinkPrivacy": "Privacy Policy",
+      "termsError": "You must accept the Terms and Privacy Policy to continue."
     },
     "dropzone": {
       "labelRequired": "Registration certificate *",
@@ -347,28 +406,173 @@
   },
   "legal": {
     "backToHome": "← Back to home",
-    "draftNotice": "Draft — pending legal review",
+    "draftNotice": "DRAFT — This document is preliminary and does not constitute legal advice. Pending review and validation by a qualified attorney before public go-live.",
+    "crossLinks": {
+      "heading": "See also:",
+      "terms": "Terms and conditions",
+      "privacy": "Privacy policy",
+      "aiPolicy": "AI policy",
+      "healthDisclaimer": "Health disclaimer"
+    },
     "privacy": {
       "metaTitle": "Privacy policy — Forzza",
       "title": "Privacy policy",
-      "intro": "This policy describes how Forzza collects, uses, and protects your personal information.",
-      "section1Title": "Data we collect",
-      "section1Body": "We collect information you provide when signing up (name, email, country), usage data (workouts, sets, weights), and payment data processed by Mercado Pago (we do not store card details).",
-      "section2Title": "Sensitive data",
-      "section2Body": "Progress photos are stored on private servers, accessible only to you and your contracted coach. They are never shared with third parties or used to train AI models.",
-      "section3Title": "Your rights",
-      "section3Body": "You can request deletion of your account and all data at any time from the profile section, or by writing to privacidad@forzza.app. We respond within 30 business days."
+      "intro": "This policy describes how Forzza collects, uses, and protects your personal information. Last updated: June 22, 2026. [PENDING — legal validation]",
+      "sections": [
+        {
+          "title": "1. Data controller and contact",
+          "body": "The data controller is Forzza (final legal name and tax ID: [PENDING — legal validation]), domiciled in Argentina.\n\nFor inquiries or to exercise your rights, contact us at: privacidad@forzza.app. We respond within 30 business days.\n\nForzza's user database is in the process of registration with the Agencia de Acceso a la Información Pública (AAIP) as required by Law 25,326. [PENDING — legal validation: confirm AAIP registration and registration number]"
+        },
+        {
+          "title": "2. Data we collect",
+          "body": "We collect the following categories of personal data:\n\nIdentification and account: email, username, country, platform role (student/coach). Purpose: login, transactional notifications, access control.\n\nFitness usage data: routines, exercises, sets, reps and weights for each training session. Purpose: show your progress and allow your coach to track your evolution.\n\nSensitive health and fitness data (see section 3): weight, height, body fat percentage, metric notes, fitness goals, training level, body progress photos, wellness check-in responses. These data are treated with additional protections.\n\nCoach-uploaded content (UGC): profile photo (public), AFIP/SII tax certificates (private), invoices in PDF (private), exercise videos (private), additional coach profile images (private, with restricted access). Purpose: operating the marketplace and verifying the coach's tax identity.\n\nCoach fiscal data: CUIT/RUT, CBU/bank alias, legal entity type. Purpose: processing settlements and complying with tax obligations. Treated as high-risk patrimonial data.\n\nPayments: amount, currency, payment status, gateway external ID. We do not store credit/debit card data — payment data is processed directly by Mercado Pago in their own secure interface.\n\nMinors data: date of birth, responsible adult's email, parental consent timestamp. Purpose: verify age and comply with the legal requirement for parental consent for users under 18."
+        },
+        {
+          "title": "3. Sensitive health data",
+          "body": "Body metrics (weight, height, body fat percentage, body composition), progress photos and wellness check-in responses are health data under article 2 of Law 25,326.\n\nFor these data:\n- We require prior express and informed consent before collecting them. [PENDING — legal validation: implement granular consent, P1.4]\n- They are stored on private servers with access restricted solely to you and your currently contracted active coach.\n- They are not shared with third parties without your consent.\n- They are not used for advertising, commercial profiling or to train artificial intelligence models.\n- They are not sold under any circumstances."
+        },
+        {
+          "title": "4. Purposes of processing",
+          "body": "We process your data for the following purposes:\n\n- Service delivery (Law 25,326 art. 5 inc. a — contract performance): registration, authentication, routine delivery, progress tracking, coach communication, payment processing and subscriptions.\n- Legal obligations compliance (art. 5 inc. c): coach tax verification, retention of receipts for tax periods, parental consent for minors.\n- Product analytics and service improvement (with consent, P1.1 pending): anonymised usage events sent to PostHog with PII scrubbing applied.\n- Error diagnostics (legitimate interest): app error stack traces sent to Sentry with personal data removed beforehand.\n- Transactional communications (contract performance): payment confirmation emails, password recovery, push notifications about your workouts."
+        },
+        {
+          "title": "5. Third parties and data processors",
+          "body": "We work with the following providers who process data on our behalf:\n\nSupabase (database and storage): receives all platform data. Servers on AWS us-east-1 (United States) — international transfer. Data encrypted at rest; RLS enabled on all tables.\n\nPostHog (product analytics): receives anonymised usage events (plan, role, country, hashed coach ID). EU server (eu.posthog.com) — international transfer to the European Union. We apply PII scrubbing before each send: email, name, date of birth, payment data, tokens and private URLs are blocked and never reach PostHog. [PENDING — legal validation: analytics consent banner, P1.1]\n\nSentry (error monitoring): receives error stack traces without personal data. Servers in the United States — international transfer. IP anonymised; email, name, tokens and payment data blocked by beforeSend().\n\nMercado Pago (payment processor): receives the data necessary to process payments in Argentina. Local operator — not an international transfer under Argentine regulations.\n\nRevenueCat (IAP subscriptions): receives the subscription ID and user plan to manage in-app purchases on iOS/Android. Servers in the United States — international transfer. Only active for mobile purchases.\n\nResend (transactional email): receives only the recipient's email address to send platform emails. Servers in the United States — international transfer. Does not receive health or fiscal data.\n\nExpo / FCM (Google) / APNs (Apple): receives the device push token and notification payload (without health data or amounts) to deliver push notifications. International transfer."
+        },
+        {
+          "title": "6. International data transfers",
+          "body": "Several of our technical providers have servers outside Argentina (primarily the United States and the European Union). These transfers are necessary to operate the service.\n\nIn all cases we apply technical security measures (encryption in transit and at rest, access control, PII scrubbing before analytics and monitoring sends) to protect your data.\n\n[PENDING — legal validation: assess whether international transfers require AAIP authorisation under Law 25,326 art. 12 and confirm whether destination countries have an adequate level of protection or whether standard contractual clauses are required.]"
+        },
+        {
+          "title": "7. Retention and deletion",
+          "body": "We retain your data for as long as necessary for each purpose:\n\n- Account and usage data: while your account is active + 30 days after deletion, then automatic anonymisation.\n- Progress photos and sensitive health data: until you delete them yourself + 30 days.\n- Coach fiscal data (CUIT, CBU, certificates, invoices): up to 5–10 years per AFIP/SII tax obligations.\n- Audit log records (financial and validation actions): permanent per legal obligation.\n- Analytics events (PostHog): per the retention configured in PostHog EU.\n- Error logs (Sentry): per the retention configured in Sentry.\n\nYou can request deletion of your account and all your data at any time from the profile section of the app, or by writing to privacidad@forzza.app. We execute deletion and anonymisation within a maximum of 30 days."
+        },
+        {
+          "title": "8. Your rights",
+          "body": "Under Law 25,326 (Personal Data Protection of Argentina), you have the following rights over your data:\n\n- Access: request what data we have stored about you.\n- Rectification: correct inaccurate or incomplete data.\n- Erasure: delete your data (subject to legal retention obligations).\n- Objection: oppose the processing of your data for purposes other than those declared.\n\nTo exercise these rights, write to privacidad@forzza.app indicating your identity and the right you wish to exercise. We respond within 30 business days.\n\nIf you are not satisfied with our response, you can file a complaint with the Agencia de Acceso a la Información Pública (AAIP): www.argentina.gob.ar/aaip.\n\nFor users in California (USA): you have additional rights under CCPA/CPRA, including the right to know, the right to delete, and the right to opt-out of the sale/sharing of personal data. Forzza does not sell or share your personal data for advertising purposes. [PENDING — legal validation for US, P2.3]\n\nFor users in the European Union: you have additional rights under the GDPR, including data portability, restriction of processing, and the right to lodge a complaint with your supervisory authority. [PENDING — legal validation for EU, P2.4]"
+        },
+        {
+          "title": "9. Minors under 18",
+          "body": "If you are under 18, you need the express consent of your parent or legal guardian to use certain Forzza features (hiring coach packages, accessing the PRO plan).\n\nWe collect date of birth to detect whether you are a minor. If applicable, we send a consent request email to the responsible adult you indicate. The service is not available to users under 13.\n\nDate of birth and responsible adult data are processed exclusively to comply with this legal obligation and are never shared with third parties not linked to the service."
+        },
+        {
+          "title": "10. Security",
+          "body": "We implement technical and organisational measures to protect your data:\n\n- Encryption in transit (HTTPS/TLS) and at rest on all our servers.\n- Row Level Security (RLS) on the database: each user accesses only their own data.\n- Private storage buckets with signed URLs with temporary access (TTL 1 hour) for progress photos, tax certificates, invoices and videos.\n- PII removal before sending events to analytics (scrubPII) and before reporting errors to Sentry (beforeSend).\n- Append-only audit log of all financial and validation actions.\n\nNo system is 100% infallible. If you detect any vulnerability, report it to privacidad@forzza.app."
+        },
+        {
+          "title": "11. Changes to this policy",
+          "body": "We may update this privacy policy when necessary. We will notify you of material changes by email with at least 30 days' notice. The current version will always be available at forzza.app/legales/privacidad.\n\nDate of last update: June 22, 2026."
+        }
+      ]
     },
     "terms": {
       "metaTitle": "Terms and conditions — Forzza",
       "title": "Terms and conditions",
-      "intro": "By using Forzza you accept these terms. If you disagree, do not use the service.",
-      "section1Title": "1. Acceptance of terms",
-      "section1Body": "By registering or using the Forzza platform (mobile app, website, and backoffice) you accept these terms as currently in force. Forzza may update them with 30 days' notice.",
-      "section2Title": "2. Service",
-      "section2Body": "Forzza is a platform connecting students and fitness coaches. We are not employers of the coaches and do not guarantee athletic results. Each coach is an independent professional.",
-      "section3Title": "3. Payments",
-      "section3Body": "Payments are processed through Mercado Pago. Forzza retains a 20% commission on each payment to the coach. Prices are expressed in the local currency of the coach's country."
+      "intro": "By using Forzza you accept these terms as currently in force. If you disagree, do not use the service. Last updated: June 22, 2026. [PENDING — legal validation]",
+      "sections": [
+        {
+          "title": "1. Acceptance and modifications",
+          "body": "By registering or using the Forzza platform (iOS/Android mobile app, website and backoffice) you accept these Terms and Conditions as currently in force.\n\nForzza may modify these terms. We will notify you by email with at least 30 days' notice before changes take effect. If you continue using the service after the notice, you will be deemed to have accepted the new terms. If you disagree with the modifications, you may close your account before the effective date."
+        },
+        {
+          "title": "2. Service description",
+          "body": "Forzza is a marketplace platform connecting students with independent fitness coaches. It allows you to hire personalised routines, track progress, chat with your coach and manage payments.\n\nForzza is not an employer of coaches. Each coach is an independent professional who provides their services through the platform. Forzza acts as a technology intermediary.\n\nForzza does not guarantee athletic, physical or health results. Results depend on effort, consistency and each student's individual conditions. Consult a health professional before starting any training programme."
+        },
+        {
+          "title": "3. Accounts and eligibility",
+          "body": "To register you must be at least 13 years old. If you are under 18, to hire coach packages or subscribe to the PRO plan you need the express consent of your parent or legal guardian.\n\nYou are responsible for maintaining the confidentiality of your access credentials and all activity that occurs in your account. Notify us immediately of any unauthorised use at privacidad@forzza.app.\n\nForzza may suspend or close accounts that violate these terms, post prohibited content or engage in fraudulent activities."
+        },
+        {
+          "title": "4. PRO subscription and coach packages",
+          "body": "PRO subscription: unlocks advanced tracking features and unlimited access to history. The monthly price is shown in your country's local currency (read dynamically from our configuration; not hardcoded).\n\nAutomatic renewal: the PRO subscription renews automatically at the end of each period unless you cancel it beforehand.\n\nCancellation:\n- On iOS and Android: cancel from your account settings in the App Store or Google Play at least 24 hours before the renewal date.\n- On web (Mercado Pago): cancel from your profile on the platform or by contacting soporte@forzza.app.\n\nRefunds: refunds are governed by the policies of Apple (iOS), Google (Android) or Mercado Pago (web) depending on the purchase channel. Forzza does not process refunds directly. [PENDING — legal validation: refund policy under Consumer Protection Law 24,240]\n\nCoach packages: personalised training packages with a coach are contracted and paid exclusively through the web via Mercado Pago. Coach packages cannot be purchased through in-app purchases (App Store / Google Play).\n\nCommission: Forzza retains a 20% commission on each payment to the coach. This percentage is read from the country configuration and may be updated with prior notice.\n\nPRO subscription purchase channel:\n- iOS and Android: in-app purchase managed by RevenueCat / App Store / Google Play.\n- Web: Mercado Pago."
+        },
+        {
+          "title": "5. User and coach-uploaded content (UGC)",
+          "body": "By uploading content to Forzza (profile photos, progress photos, tax certificates, invoices, exercise videos, coach profile images or other material), you declare and warrant that:\n\na) You are the owner of the intellectual property rights over the content, or you have express authorisation from the rights holder to use and sublicense it.\nb) The content does not infringe copyright, trademarks, image rights or any other third-party rights.\nc) The content is not illegal, misleading, defamatory, obscene or violates the dignity of persons.\n\nLicence you grant to Forzza: by uploading content you grant Forzza a non-exclusive, worldwide, royalty-free licence for the time necessary to operate the service (displaying your profile, delivering routines, processing payments, etc.). This licence ends when you delete the content or close your account, subject to legal retention periods. Forzza does not claim ownership of your content.\n\nProhibited content: it is not permitted to upload material that infringes third-party rights, hate content, explicit sexual material, material identifying minors without the responsible adult's consent, or any content illegal under Argentine law.\n\nForzza reserves the right to remove content that violates these terms."
+        },
+        {
+          "title": "6. Copyright and content takedown procedure",
+          "body": "Forzza respects intellectual property rights and expects users to do the same.\n\nIf you believe that content published on Forzza infringes your copyright or other intellectual property rights, you can notify us at legal@forzza.app indicating: (a) identification of the infringing content with its exact location; (b) identification of the original work allegedly infringed; (c) a good faith statement that the use is not authorised; (d) your contact details.\n\nForzza will evaluate the notification and, if appropriate, will remove the content. Users who repeatedly infringe third-party rights may have their account suspended or cancelled.\n\n[Note: the detailed operational procedure (in-product complaint channel, moderation panel, repeat-infringer policy) will be implemented in compliance backlog phase P1.5. This clause establishes the contractual framework.]"
+        },
+        {
+          "title": "7. Health and disclaimer",
+          "body": "Training content and routines available on Forzza are for informational and guidance purposes only. They do not constitute and do not replace the diagnosis, treatment or advice of a licensed health, nutrition or psychology professional.\n\nForzza does not guarantee physical, athletic or health results. Results vary according to each person's individual conditions.\n\nBefore starting any training programme, we recommend consulting a doctor or licensed health professional, especially if you have pre-existing health conditions, are pregnant or breastfeeding, or are resuming physical activity after a prolonged period of inactivity.\n\nCoaches on Forzza are independent professionals. Forzza does not verify their licences or certifications and is not responsible for the content of their routines. Use the service at your own risk."
+        },
+        {
+          "title": "8. Limitation of liability",
+          "body": "To the maximum extent permitted by Argentine law, Forzza will not be liable for indirect, incidental, special, consequential or punitive damages arising from the use or inability to use the service.\n\nOur total liability for any claim will not exceed the amount you have paid to Forzza in the 12 months prior to the event that gave rise to the claim.\n\nThis limitation does not apply in cases of Forzza's wilful misconduct or gross negligence, nor in situations where Argentine law prohibits the limitation of liability. [PENDING — legal validation]"
+        },
+        {
+          "title": "9. Governing law and jurisdiction",
+          "body": "These Terms are governed by the laws of the Argentine Republic. Any dispute arising from the use of the service will be submitted to the ordinary courts of the Autonomous City of Buenos Aires, with express waiver of any other jurisdiction.\n\n[PENDING — legal validation: arbitration clause for the US market. CAUTION: arbitration clauses are of disputed validity in consumer relationships under Law 24,240 in Argentina. Do not apply generically. Requires review by a specialist attorney before activating for US users. See backlog P2.2.]"
+        },
+        {
+          "title": "10. B2B contracts (gyms and organisations) — Future",
+          "body": "Conditions for contracts with gyms, sports organisations or other companies wishing to integrate Forzza into their operations will be the subject of a specific commercial agreement.\n\n[PENDING — this section will be developed when the B2B model is activated. Not applicable in V1 of the platform.]"
+        }
+      ]
+    },
+    "aiPolicy": {
+      "metaTitle": "Artificial intelligence policy — Forzza",
+      "title": "Artificial intelligence policy",
+      "intro": "This policy describes Forzza's current and future use of artificial intelligence. Last updated: June 22, 2026. [PENDING — legal validation]",
+      "sections": [
+        {
+          "title": "1. Current status: no AI in production",
+          "body": "As of the date of this document, Forzza does not use artificial intelligence or machine learning systems in production to analyse, process or generate content related to your health data, body photos or personal information.\n\nThe AI body scan flag (AI_BODY_SCAN) is disabled in the platform configuration."
+        },
+        {
+          "title": "2. Planned future use",
+          "body": "When we activate AI features (which will be communicated with prior notice and an update to this policy), these will be assistive and guidance-oriented in nature:\n\n- Analysis of body progress photos to automatically estimate metrics (body composition, visual evolution).\n- All AI output will be subject to human review by the coach before being communicated to the student.\n- AI suggestions will be presented as indicative estimates, not medical diagnoses.\n\nBefore activating any AI feature that processes health data, we will update this policy, request additional express consent, and conduct a privacy impact assessment. [PENDING — legal validation]"
+        },
+        {
+          "title": "3. What Forzza's AI will never do",
+          "body": "With or without AI activation, Forzza commits that its artificial intelligence systems will never:\n\n- Diagnose, treat, cure or prescribe medical, nutritional or mental health treatments.\n- Replace the judgement of a licensed health professional.\n- Guarantee physical or athletic results.\n- Use your body photos, health metrics or personal data to train Forzza or third-party AI models.\n- Sell or share your data for external AI training purposes."
+        },
+        {
+          "title": "4. Data used by AI",
+          "body": "When AI is active, it will only process the data strictly necessary for the specific function (for example, progress photos for the body scan). Access will be limited to the account holder and their currently contracted active coach.\n\nData will not be transferred to third-party AI providers without your additional express consent. Any external AI provider processing health data must comply with Law 25,326 and be listed in the updated Privacy Policy. [PENDING — define AI provider if activated]"
+        },
+        {
+          "title": "5. No guarantee of results",
+          "body": "Estimates and suggestions generated by AI are indicative and based on statistical models. They may contain errors. They are not a substitute for the judgement of a health professional.\n\nForzza is not responsible for decisions made based solely on AI outputs without professional supervision."
+        },
+        {
+          "title": "6. Contact",
+          "body": "For inquiries about the use of AI at Forzza, write to privacidad@forzza.app."
+        }
+      ]
+    },
+    "healthDisclaimer": {
+      "metaTitle": "Health and fitness disclaimer — Forzza",
+      "title": "Health and fitness disclaimer",
+      "intro": "Please read this information carefully before using the service. [PENDING — legal validation]",
+      "sections": [
+        {
+          "title": "1. Guidance information, not medical advice",
+          "body": "All content available on Forzza (routines, training plans, exercise videos, coach suggestions, progress metrics, wellness check-ins) is for informational, educational and guidance purposes only.\n\nThis content does NOT constitute:\n- Medical diagnosis or health evaluation.\n- Medical treatment, prescription or advice.\n- Professional nutritional or dietary advice.\n- Psychological or mental health counselling.\n\nForzza is not a healthcare service provider."
+        },
+        {
+          "title": "2. Consult a professional before starting",
+          "body": "Before starting any training programme or change in physical activity, we strongly recommend consulting a doctor or licensed health professional, especially if:\n\n- You have cardiovascular, metabolic, joint or other chronic or acute health conditions.\n- You are pregnant or breastfeeding.\n- You are recovering from an injury or surgery.\n- You are over 50 or resuming training after a prolonged period of inactivity.\n- You have doubts about whether an exercise or load is appropriate for your current health status.\n\nThis recommendation also applies to plans designed by a coach on Forzza."
+        },
+        {
+          "title": "3. Independent coaches",
+          "body": "Coaches operating on Forzza are independent professionals who provide their services through the platform. Forzza does not verify, certify or endorse the licences, certifications, academic training or specific competencies of coaches.\n\nForzza acts as a technology intermediary and is not responsible for the specific content of the routines, recommendations or instructions the coach provides to you. The training contract is directly between you and the coach."
+        },
+        {
+          "title": "4. No guarantee of results",
+          "body": "Forzza and coaches on the platform do not guarantee physical, athletic or aesthetic results. The results of a training programme depend on multiple individual factors: genetics, nutrition, rest, adherence to the plan, pre-existing health condition, and other factors outside the control of the platform or the coach.\n\nReferences to results of other users or coaches (photos, testimonials, statistics) are illustrative and do not guarantee you will achieve the same results."
+        },
+        {
+          "title": "5. Inherent risk of exercise",
+          "body": "Physical exercise carries inherent risks of injury. By using Forzza and following training routines, you accept that you do so at your own risk.\n\nIf during training you feel acute pain, dizziness, difficulty breathing, chest pain or any unusual physical symptom, stop the activity immediately and consult a doctor."
+        },
+        {
+          "title": "6. Contact",
+          "body": "For questions about health and safety in the use of the platform, you can write to us at soporte@forzza.app."
+        }
+      ]
     }
   },
   "admin": {
@@ -823,6 +1027,25 @@
           "errorSave": "Error saving the comment",
           "errorNetwork": "Network error",
           "proOnly": "Metrics and photo feedback is only available for PRO or elite packages."
+        },
+        "billingProfile": {
+          "sectionTitle": "Billing information",
+          "legalNameLabel": "Name or business name",
+          "taxConditionLabel": "VAT condition",
+          "docLabel": "Document",
+          "addressLabel": "Address",
+          "noAddress": "Not provided",
+          "empty": "The student has not yet completed their billing information.",
+          "draftBadge": "Draft — pending accounting confirmation",
+          "instructivoTitle": "How to issue the invoice",
+          "step1": "Log in to AFIP/ARCA (Online Receipts) or your billing system.",
+          "step2": "Issue an invoice in the name of {legal_name} ({tax_condition}, {doc_type} {doc_number}).",
+          "step3": "For the total amount paid by the student.",
+          "step4": "Upload the invoice in the Payments section.",
+          "taxConditionConsumidorFinal": "Final consumer",
+          "taxConditionMonotributo": "Monotax",
+          "taxConditionResponsableInscripto": "Registered taxpayer",
+          "taxConditionExento": "Exempt"
         },
         "liveSessions": {
           "title": "Live sessions",

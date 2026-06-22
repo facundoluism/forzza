@@ -114,9 +114,13 @@
         "coaches": "Coaches",
         "plans": "Planes",
         "terms": "Términos",
-        "privacy": "Privacidad"
+        "privacy": "Privacidad",
+        "aiPolicy": "Política de IA",
+        "healthDisclaimer": "Disclaimer de salud"
       },
-      "copy": "© 2026 Forzza · Argentina"
+      "copy": "© 2026 Forzza · Argentina",
+      "healthNotice": "La información de Forzza es orientativa y no reemplaza el asesoramiento médico profesional. Consultá a un profesional antes de empezar.",
+      "healthNoticeLink": "Más info"
     },
     "quote": {
       "unverifiedNote": "Atribución pendiente de verificación"
@@ -146,7 +150,9 @@
       "ssoOr": "o continuá con",
       "ssoGoogle": "Continuar con Google",
       "ssoApple": "Continuar con Apple",
-      "ssoError": "No se pudo iniciar sesión con el proveedor. Intentá de nuevo."
+      "ssoError": "No se pudo iniciar sesión con el proveedor. Intentá de nuevo.",
+      "noAccount": "¿No tenés cuenta?",
+      "signupLink": "Registrate"
     },
     "forgotPassword": {
       "title": "Recuperar contraseña",
@@ -173,6 +179,31 @@
       "successTitle": "Contraseña actualizada",
       "successDescription": "Ya podés iniciar sesión con tu nueva contraseña.",
       "successLink": "Ir a iniciar sesión"
+    },
+    "signup": {
+      "title": "Crear cuenta",
+      "nameLabel": "Nombre completo",
+      "namePlaceholder": "Tu nombre",
+      "emailLabel": "Email",
+      "emailPlaceholder": "tu@email.com",
+      "passwordLabel": "Contraseña",
+      "passwordPlaceholder": "••••••••",
+      "confirmPasswordLabel": "Confirmá la contraseña",
+      "confirmPasswordPlaceholder": "••••••••",
+      "termsLabel": "Acepto los",
+      "termsLinkTerms": "Términos y Condiciones",
+      "termsLinkAnd": "y la",
+      "termsLinkPrivacy": "Política de Privacidad",
+      "termsError": "Tenés que aceptar los Términos y la Política de Privacidad para continuar.",
+      "submitLoading": "Creando cuenta...",
+      "submit": "Crear cuenta",
+      "loginLink": "¿Ya tenés cuenta?",
+      "loginLinkCta": "Iniciá sesión",
+      "errorGeneric": "No se pudo crear la cuenta. Intentá de nuevo.",
+      "errorEmailInUse": "Ya existe una cuenta con ese email.",
+      "errorInvalid": "Datos inválidos",
+      "successTitle": "Cuenta creada",
+      "successBody": "¡Ya sos parte de Forzza! Descargá la app para empezar."
     }
   },
   "offline": {
@@ -232,7 +263,30 @@
     "selectedPackageFallback": "Paquete seleccionado",
     "errorDevMode": "Servicio no disponible en modo desarrollo.",
     "errorCoachUnavailable": "El coach no está disponible o no fue aprobado.",
-    "errorPackageNotAvailable": "El paquete seleccionado no está disponible."
+    "errorPackageNotAvailable": "El paquete seleccionado no está disponible.",
+    "billing": {
+      "sectionTitle": "Datos de facturación",
+      "sectionHint": "Tu coach necesita estos datos para emitirte la factura.",
+      "legalNameLabel": "Nombre o razón social *",
+      "legalNamePlaceholder": "Como figura en tu AFIP",
+      "taxConditionLabel": "Condición frente al IVA *",
+      "taxConditionPlaceholder": "Seleccioná tu condición",
+      "taxConditionConsumidorFinal": "Consumidor final",
+      "taxConditionMonotributo": "Monotributo",
+      "taxConditionResponsableInscripto": "Responsable inscripto",
+      "taxConditionExento": "Exento",
+      "docTypeLabel": "Tipo de documento *",
+      "docTypeDNI": "DNI",
+      "docTypeCUIT": "CUIT",
+      "docTypeCUIL": "CUIL",
+      "docNumberLabel": "Número de documento *",
+      "docNumberPlaceholder": "20-12345678-9",
+      "addressLabel": "Domicilio fiscal (opcional)",
+      "addressPlaceholder": "Calle, número, ciudad",
+      "errorRequired": "Completá los campos obligatorios antes de continuar.",
+      "errorSave": "No se pudieron guardar tus datos de facturación. Revisá los campos e intentá de nuevo.",
+      "errorNetwork": "Error de red al guardar los datos de facturación."
+    }
   },
   "upgrade": {
     "metaTitle": "Elegí tu plan — Forzza",
@@ -318,7 +372,12 @@
       "descriptionLabel": "Descripción (opcional)",
       "descriptionPlaceholder": "Contá quién sos, qué te diferencia como coach...",
       "submitLoading": "Guardando...",
-      "submit": "Enviar solicitud"
+      "submit": "Enviar solicitud",
+      "termsLabel": "Acepto los",
+      "termsLinkTerms": "Términos y Condiciones",
+      "termsLinkAnd": "y la",
+      "termsLinkPrivacy": "Política de Privacidad",
+      "termsError": "Tenés que aceptar los Términos y la Política de Privacidad para continuar."
     },
     "dropzone": {
       "labelRequired": "Constancia de inscripción *",
@@ -347,28 +406,173 @@
   },
   "legal": {
     "backToHome": "← Volver al inicio",
-    "draftNotice": "Borrador — pendiente de revisión legal",
+    "draftNotice": "BORRADOR — Este documento es preliminar y no constituye consejo legal. Pendiente de revisión y validación por abogado matriculado antes del go-live público.",
+    "crossLinks": {
+      "heading": "Ver también:",
+      "terms": "Términos y condiciones",
+      "privacy": "Política de privacidad",
+      "aiPolicy": "Política de IA",
+      "healthDisclaimer": "Disclaimer de salud"
+    },
     "privacy": {
       "metaTitle": "Política de privacidad — Forzza",
       "title": "Política de privacidad",
-      "intro": "Esta política describe cómo Forzza recopila, usa y protege tu información personal.",
-      "section1Title": "Datos que recopilamos",
-      "section1Body": "Recopilamos los datos que nos proporcionás al registrarte (nombre, email, país), datos de uso de la app (rutinas, series, pesos) y datos de pago procesados por Mercado Pago (no almacenamos datos de tarjeta).",
-      "section2Title": "Datos sensibles",
-      "section2Body": "Las fotos de progreso corporal se almacenan en servidores privados, con acceso restringido solo a vos y a tu coach contratado. Nunca se comparten con terceros ni se usan para entrenar modelos de IA.",
-      "section3Title": "Tus derechos",
-      "section3Body": "Podés solicitar la eliminación de tu cuenta y todos tus datos en cualquier momento desde la sección de perfil, o escribiéndonos a privacidad@forzza.app. Respondemos en un plazo máximo de 30 días hábiles."
+      "intro": "Esta política describe cómo Forzza recopila, usa y protege tu información personal. Última actualización: 22 de junio de 2026. [PENDIENTE — validación legal]",
+      "sections": [
+        {
+          "title": "1. Responsable del tratamiento y contacto",
+          "body": "El responsable del tratamiento de los datos personales es Forzza (razón social y CUIT definitivos: [PENDIENTE — validación legal]), con domicilio en Argentina.\n\nPara consultas o ejercicio de derechos, escribinos a: privacidad@forzza.app. Respondemos en un plazo máximo de 30 días hábiles.\n\nLa base de datos de usuarios de Forzza se encuentra en proceso de inscripción ante la Agencia de Acceso a la Información Pública (AAIP) conforme a lo exigido por la Ley 25.326. [PENDIENTE — validación legal: confirmar inscripción ante AAIP y número de registro]"
+        },
+        {
+          "title": "2. Datos que recopilamos",
+          "body": "Recopilamos las siguientes categorías de datos personales:\n\nIdentificación y cuenta: email, nombre de usuario, país, rol en la plataforma (alumno/coach). Finalidad: login, notificaciones transaccionales, control de acceso.\n\nDatos de uso fitness: rutinas, ejercicios, series, repeticiones y pesos de cada sesión de entrenamiento. Finalidad: mostrar tu progreso y permitir al coach seguir tu evolución.\n\nDatos de salud y fitness sensibles (ver sección 3): peso, altura, porcentaje de grasa corporal, notas sobre métricas, objetivos fitness, nivel de entrenamiento, fotos de progreso corporal, respuestas a check-ins de bienestar. Estos datos se tratan con protecciones adicionales.\n\nContenido subido por el coach (UGC): imagen de perfil (pública), constancias fiscales AFIP/SII (privadas), facturas en PDF (privadas), videos de ejercicios (privados), imágenes adicionales del perfil del coach (privadas, con acceso restringido). Finalidad: operar el marketplace y verificar la identidad fiscal del coach.\n\nDatos fiscales del coach: CUIT/RUT, CBU/alias bancario, tipo de entidad fiscal. Finalidad: procesar liquidaciones y cumplir obligaciones impositivas. Se tratan como datos de alto riesgo patrimonial.\n\nPagos: monto, moneda, estado del pago, ID externo del gateway. No almacenamos datos de tarjeta de crédito/débito — los datos de pago son procesados directamente por Mercado Pago en su propia interfaz segura.\n\nDatos de menores: fecha de nacimiento, email del responsable adulto, timestamp de consentimiento parental. Finalidad: verificar la edad y cumplir el requisito legal de consentimiento parental para menores de 18."
+        },
+        {
+          "title": "3. Datos sensibles de salud",
+          "body": "Las métricas corporales (peso, altura, porcentaje de grasa, composición corporal), las fotos de progreso y las respuestas a check-ins de bienestar son datos de salud en los términos del artículo 2 de la Ley 25.326.\n\nPara estos datos:\n- Requerimos consentimiento expreso e informado previo a recopilarlos. [PENDIENTE — validación legal: implementar consentimiento granular, P1.4]\n- Se almacenan en servidores privados con acceso restringido únicamente a vos y a tu coach contratado activo.\n- No se comparten con terceros sin tu consentimiento.\n- No se usan para publicidad, perfilado comercial ni para entrenar modelos de inteligencia artificial.\n- No se venden bajo ninguna circunstancia."
+        },
+        {
+          "title": "4. Finalidades del tratamiento",
+          "body": "Tratamos tus datos para las siguientes finalidades:\n\n- Prestación del servicio (Ley 25.326 art. 5 inc. a — ejecución de contrato): registro, autenticación, entrega de rutinas, seguimiento de progreso, comunicación con tu coach, procesamiento de pagos y suscripciones.\n- Cumplimiento de obligaciones legales (art. 5 inc. c): verificación fiscal del coach, retención de comprobantes por plazos impositivos, consentimiento parental de menores.\n- Análisis de producto y mejora del servicio (con consentimiento, P1.1 pendiente): eventos de uso anonimizados enviados a PostHog con scrubbing de PII aplicado.\n- Diagnóstico de errores (interés legítimo): stack traces de errores de la app enviados a Sentry con datos personales eliminados previamente.\n- Comunicaciones transaccionales (ejecución de contrato): emails de confirmación de pago, recuperación de contraseña, notificaciones push sobre tus entrenamientos."
+        },
+        {
+          "title": "5. Terceros y encargados del tratamiento",
+          "body": "Trabajamos con los siguientes proveedores que procesan datos en nuestro nombre:\n\nSupabase (base de datos y almacenamiento): recibe todos los datos de la plataforma. Servidores en AWS us-east-1 (Estados Unidos) — transferencia internacional. Datos en reposo encriptados; RLS habilitado en todas las tablas.\n\nPostHog (analytics de producto): recibe eventos de uso anonimizados (plan, rol, país, ID del coach hasheado). Servidor EU (eu.posthog.com) — transferencia internacional a la Unión Europea. Aplicamos scrubbing de PII antes de cada envío: email, nombre, fecha de nacimiento, datos de pago, tokens y URLs privadas son bloqueados y nunca llegan a PostHog. [PENDIENTE — validación legal: banner de consentimiento para analytics, P1.1]\n\nSentry (monitoreo de errores): recibe stack traces de errores sin datos personales. Servidores en Estados Unidos — transferencia internacional. IP anonimizada; email, nombre, tokens y datos de pago bloqueados por beforeSend().\n\nMercado Pago (procesador de pagos): recibe los datos necesarios para procesar pagos en Argentina. Operador local — no es transferencia internacional según la normativa argentina.\n\nRevenueCat (suscripciones IAP): recibe el ID de suscripción y el plan del usuario para gestionar compras in-app en iOS/Android. Servidores en Estados Unidos — transferencia internacional. Solo activo para compras mobile.\n\nResend (email transaccional): recibe únicamente el email del destinatario para enviar emails de la plataforma. Servidores en Estados Unidos — transferencia internacional. No recibe datos de salud ni fiscales.\n\nExpo / FCM (Google) / APNs (Apple): recibe el token de push del dispositivo y el payload de notificación (sin datos de salud ni montos) para entregar notificaciones push. Transferencia internacional."
+        },
+        {
+          "title": "6. Transferencia internacional de datos",
+          "body": "Varios de nuestros proveedores técnicos tienen servidores fuera de Argentina (principalmente Estados Unidos y Unión Europea). Estas transferencias son necesarias para operar el servicio.\n\nEn todos los casos aplicamos medidas de seguridad técnicas (encriptación en tránsito y en reposo, control de acceso, scrubbing de PII antes de los envíos a analytics y monitoreo) para proteger tus datos.\n\n[PENDIENTE — validación legal: evaluar si las transferencias internacionales requieren autorización de la AAIP bajo Ley 25.326 art. 12 y confirmar si los países de destino tienen nivel adecuado de protección o si se requieren cláusulas contractuales tipo.]"
+        },
+        {
+          "title": "7. Retención y eliminación",
+          "body": "Conservamos tus datos el tiempo necesario para cada finalidad:\n\n- Datos de cuenta y uso: mientras tu cuenta esté activa + 30 días post-borrado, luego anonimización automática.\n- Fotos de progreso y datos sensibles de salud: hasta que las eliminés vos mismo/a + 30 días.\n- Datos fiscales del coach (CUIT, CBU, constancias, facturas): hasta 5-10 años según obligaciones impositivas AFIP/SII.\n- Registros de audit_log (acciones financieras y de validación): permanentes por obligación legal.\n- Eventos de analytics (PostHog): según la retención configurada en PostHog EU.\n- Logs de errores (Sentry): según la retención configurada en Sentry.\n\nPodés solicitar la eliminación de tu cuenta y todos tus datos en cualquier momento desde la sección de perfil de la app, o escribiéndonos a privacidad@forzza.app. Ejecutamos el borrado y la anonimización en un plazo máximo de 30 días."
+        },
+        {
+          "title": "8. Tus derechos",
+          "body": "Bajo la Ley 25.326 (Protección de Datos Personales de Argentina), tenés los siguientes derechos sobre tus datos:\n\n- Acceso: solicitar qué datos tuyos tenemos almacenados.\n- Rectificación: corregir datos inexactos o incompletos.\n- Supresión: eliminar tus datos (sujeto a obligaciones legales de retención).\n- Confidencialidad: oponerte a que tus datos sean tratados para finalidades distintas a las declaradas.\n\nPara ejercer estos derechos, escribinos a privacidad@forzza.app indicando tu identidad y el derecho que querés ejercer. Respondemos en 30 días hábiles.\n\nSi no estás satisfecho/a con nuestra respuesta, podés presentar una queja ante la Agencia de Acceso a la Información Pública (AAIP): www.argentina.gob.ar/aaip.\n\nPara usuarios en California (EE.UU.): tenés derechos adicionales bajo la CCPA/CPRA, incluyendo el derecho a saber, el derecho a eliminar y el derecho a opt-out de la venta/intercambio de datos personales. Forzza no vende ni comparte tus datos personales con fines publicitarios. [PENDIENTE — validación legal para US, P2.3]\n\nPara usuarios en la Unión Europea: tenés derechos adicionales bajo el GDPR, incluyendo portabilidad de datos, limitación del tratamiento y derecho a presentar queja ante tu autoridad supervisora. [PENDIENTE — validación legal para EU, P2.4]"
+        },
+        {
+          "title": "9. Menores de 18 años",
+          "body": "Si sos menor de 18 años, necesitás el consentimiento expreso de tu padre, madre o tutor/a legal para usar ciertas funciones de Forzza (contratar paquetes de coach, acceder al plan PRO).\n\nRecopilamos la fecha de nacimiento para detectar si sos menor. Si corresponde, enviamos un email de solicitud de consentimiento al adulto responsable que indiques. El servicio no está disponible para menores de 13 años.\n\nLos datos de fecha de nacimiento y del responsable adulto se tratan exclusivamente para cumplir esta obligación legal y nunca se comparten con terceros no vinculados al servicio."
+        },
+        {
+          "title": "10. Seguridad",
+          "body": "Implementamos medidas técnicas y organizativas para proteger tus datos:\n\n- Cifrado en tránsito (HTTPS/TLS) y en reposo en todos nuestros servidores.\n- Control de acceso a nivel de fila (Row Level Security) en la base de datos: cada usuario accede únicamente a sus propios datos.\n- Buckets de almacenamiento privados con URLs firmadas de acceso temporal (TTL 1 hora) para fotos de progreso, constancias fiscales, facturas y videos.\n- Eliminación de PII antes de enviar eventos a analytics (scrubPII) y antes de reportar errores a Sentry (beforeSend).\n- Registro de auditoría append-only de todas las acciones financieras y de validación.\n\nNingún sistema es 100% infalible. Si detectás alguna vulnerabilidad, reportala a privacidad@forzza.app."
+        },
+        {
+          "title": "11. Cambios a esta política",
+          "body": "Podemos actualizar esta política de privacidad cuando sea necesario. Te notificaremos de cambios materiales por email con al menos 30 días de anticipación. La versión vigente siempre estará disponible en forzza.app/legales/privacidad.\n\nFecha de última actualización: 22 de junio de 2026."
+        }
+      ]
     },
     "terms": {
       "metaTitle": "Términos y condiciones — Forzza",
       "title": "Términos y condiciones",
-      "intro": "Al usar Forzza aceptás estos términos. Si no estás de acuerdo, no uses el servicio.",
-      "section1Title": "1. Aceptación de los términos",
-      "section1Body": "Al registrarte o usar la plataforma Forzza (app móvil, sitio web y backoffice) aceptás estos términos en su versión vigente. Forzza puede actualizarlos con 30 días de aviso.",
-      "section2Title": "2. Servicio",
-      "section2Body": "Forzza es una plataforma de conexión entre alumnos y coaches fitness. No somos empleadores de los coaches ni garantizamos resultados deportivos. Cada coach es un profesional independiente.",
-      "section3Title": "3. Pagos",
-      "section3Body": "Los pagos se procesan a través de Mercado Pago. Forzza retiene una comisión del 20 % sobre cada pago al coach. Los precios se expresan en la moneda local del país del coach."
+      "intro": "Al usar Forzza aceptás estos términos en su versión vigente. Si no estás de acuerdo, no uses el servicio. Última actualización: 22 de junio de 2026. [PENDIENTE — validación legal]",
+      "sections": [
+        {
+          "title": "1. Aceptación y modificaciones",
+          "body": "Al registrarte o usar la plataforma Forzza (app móvil iOS/Android, sitio web y backoffice) aceptás estos Términos y Condiciones en su versión vigente.\n\nForzza puede modificar estos términos. Te notificaremos por email con al menos 30 días de anticipación antes de que los cambios entren en vigor. Si continuás usando el servicio después del aviso, se considerará que aceptaste los nuevos términos. Si no estás de acuerdo con las modificaciones, podés cerrar tu cuenta antes de la fecha de vigencia."
+        },
+        {
+          "title": "2. Descripción del servicio",
+          "body": "Forzza es una plataforma de marketplace que conecta alumnos con coaches fitness independientes. Permite contratar rutinas personalizadas, seguir el progreso, chatear con el coach y gestionar pagos.\n\nForzza no es empleadora de los coaches. Cada coach es un profesional independiente que presta sus servicios a través de la plataforma. Forzza actúa como intermediaria tecnológica.\n\nForzza no garantiza resultados deportivos, físicos ni de salud. Los resultados dependen del esfuerzo, la constancia y las condiciones individuales de cada alumno. Consultá a un profesional de la salud antes de comenzar cualquier programa de entrenamiento."
+        },
+        {
+          "title": "3. Cuentas y elegibilidad",
+          "body": "Para registrarte necesitás ser mayor de 13 años. Si sos menor de 18 años, para contratar paquetes de coach o suscribirte al plan PRO necesitás el consentimiento expreso de tu padre, madre o tutor/a legal.\n\nSos responsable de mantener la confidencialidad de tus credenciales de acceso y de toda la actividad que ocurra en tu cuenta. Notificanos de inmediato ante cualquier uso no autorizado a privacidad@forzza.app.\n\nForzza puede suspender o cerrar cuentas que violen estos términos, publiquen contenido prohibido o realicen actividades fraudulentas."
+        },
+        {
+          "title": "4. Suscripción PRO y paquetes de coach",
+          "body": "Suscripción PRO: desbloquea funciones avanzadas de seguimiento y acceso ilimitado al historial. El precio mensual se muestra en la moneda local de tu país (leído dinámicamente de nuestra configuración; no hardcodeado).\n\nRenovación automática: la suscripción PRO se renueva automáticamente al final de cada período salvo que la canceles antes.\n\nCancelación:\n- En iOS y Android: cancelá desde la configuración de tu cuenta en App Store o Google Play al menos 24 horas antes de la fecha de renovación.\n- En web (Mercado Pago): cancelá desde tu perfil en la plataforma o contactando a soporte@forzza.app.\n\nReembolsos: los reembolsos se rigen por las políticas de Apple (iOS), Google (Android) o Mercado Pago (web) según el canal de compra. Forzza no procesa reembolsos directamente. [PENDIENTE — validación legal: política de reembolsos bajo Ley 24.240 Defensa del Consumidor]\n\nPaquetes de coach: los paquetes de entrenamiento personalizado con un coach se contratan y pagan exclusivamente a través de la web mediante Mercado Pago. No se pueden comprar paquetes de coach a través de compras in-app (App Store / Google Play).\n\nComisión: Forzza retiene una comisión del 20% sobre cada pago al coach. Este porcentaje se lee de la configuración del país y puede actualizarse con aviso previo.\n\nCanal de compra de suscripción PRO:\n- iOS y Android: compra in-app gestionada por RevenueCat / App Store / Google Play.\n- Web: Mercado Pago."
+        },
+        {
+          "title": "5. Contenido subido por el usuario y el coach (UGC)",
+          "body": "Al subir contenido a Forzza (fotos de perfil, fotos de progreso, constancias fiscales, facturas, videos de ejercicios, imágenes de perfil del coach u otro material), declarás y garantizás que:\n\na) Sos el titular de los derechos de propiedad intelectual sobre el contenido, o contás con autorización expresa del titular para usarlo y sublicenciarlo.\nb) El contenido no infringe derechos de autor, marcas registradas, derechos de imagen ni ningún otro derecho de terceros.\nc) El contenido no es ilegal, engañoso, difamatorio, obsceno ni viola la dignidad de las personas.\n\nLicencia que otorgás a Forzza: al subir contenido otorgás a Forzza una licencia no exclusiva, mundial, libre de regalías y por el tiempo necesario para operar el servicio (mostrar tu perfil, entregar rutinas, procesar pagos, etc.). Esta licencia termina cuando eliminás el contenido o cerrás tu cuenta, sujeto a los plazos de retención legales. Forzza no reclama propiedad sobre tu contenido.\n\nContenido prohibido: no está permitido subir material que infrinja derechos de terceros, contenido de odio, material sexual explícito, material que identifique a menores sin consentimiento del adulto responsable, ni ningún contenido ilegal bajo la legislación argentina.\n\nForzza se reserva el derecho de retirar contenido que viole estos términos."
+        },
+        {
+          "title": "6. Copyright y procedimiento de retiro de contenido",
+          "body": "Forzza respeta los derechos de propiedad intelectual y espera que los usuarios hagan lo mismo.\n\nSi considerás que algún contenido publicado en Forzza infringe tus derechos de autor u otros derechos de propiedad intelectual, podés notificarnos a legal@forzza.app indicando: (a) identificación del contenido infractor con ubicación exacta; (b) identificación de la obra original presuntamente infringida; (c) declaración de buena fe de que el uso no está autorizado; (d) tus datos de contacto.\n\nForzza evaluará la notificación y, si corresponde, retirará el contenido. Los usuarios que infrinjan reiteradamente derechos de terceros podrán tener su cuenta suspendida o cancelada.\n\n[Nota: el procedimiento operativo detallado (canal de reclamos en producto, panel de moderación, política de reincidentes) se implementará en la fase P1.5 del backlog de compliance. Esta cláusula establece el marco contractual.]"
+        },
+        {
+          "title": "7. Salud y descargo de responsabilidad",
+          "body": "El contenido de entrenamiento y las rutinas disponibles en Forzza tienen fines informativos y orientativos únicamente. No constituyen ni reemplazan el diagnóstico, el tratamiento ni el asesoramiento médico, nutricional o psicológico de un profesional de la salud habilitado.\n\nForzza no garantiza resultados físicos, deportivos ni de salud. Los resultados varían según las condiciones individuales de cada persona.\n\nAntes de comenzar cualquier programa de entrenamiento, te recomendamos consultar con un médico, especialmente si tenés condiciones de salud preexistentes, estás embarazada o en período de lactancia, o si retomás la actividad física tras un período prolongado de inactividad.\n\nLos coaches en Forzza son profesionales independientes. Forzza no verifica sus títulos habilitantes ni certificaciones y no es responsable por el contenido de sus rutinas. Usá el servicio bajo tu propia responsabilidad."
+        },
+        {
+          "title": "8. Limitación de responsabilidad",
+          "body": "En la máxima medida permitida por la ley argentina, Forzza no será responsable por daños indirectos, incidentales, especiales, consecuentes ni punitivos derivados del uso o la imposibilidad de uso del servicio.\n\nNuestra responsabilidad total ante cualquier reclamo no superará el monto que hayás abonado a Forzza en los 12 meses anteriores al evento que generó el reclamo.\n\nEsta limitación no aplica en casos de dolo o culpa grave de Forzza, ni en situaciones donde la ley argentina prohíba la limitación de responsabilidad. [PENDIENTE — validación legal]"
+        },
+        {
+          "title": "9. Ley aplicable y jurisdicción",
+          "body": "Estos Términos se rigen por las leyes de la República Argentina. Cualquier controversia derivada del uso del servicio se someterá a la jurisdicción de los tribunales ordinarios de la Ciudad Autónoma de Buenos Aires, con renuncia expresa a cualquier otro fuero o jurisdicción.\n\n[PENDIENTE — validación legal: cláusula de arbitraje para mercado US. ATENCIÓN: las cláusulas de arbitraje son de validez discutida en relaciones de consumo bajo Ley 24.240 en Argentina. No aplicar genéricamente. Requiere revisión de abogado especializado antes de activar para usuarios de EE.UU. Ver backlog P2.2.]"
+        },
+        {
+          "title": "10. Contratos B2B (gimnasios y organizaciones) — Futuro",
+          "body": "Las condiciones para contratos con gimnasios, organizaciones deportivas u otras empresas que quieran integrar Forzza en sus operaciones serán objeto de un acuerdo comercial específico.\n\n[PENDIENTE — esta sección se desarrollará cuando se active el modelo B2B. No aplicable en V1 de la plataforma.]"
+        }
+      ]
+    },
+    "aiPolicy": {
+      "metaTitle": "Política de inteligencia artificial — Forzza",
+      "title": "Política de inteligencia artificial",
+      "intro": "Esta política describe el uso actual y futuro de inteligencia artificial en Forzza. Última actualización: 22 de junio de 2026. [PENDIENTE — validación legal]",
+      "sections": [
+        {
+          "title": "1. Estado actual: sin IA en producción",
+          "body": "A la fecha de actualización de este documento, Forzza no utiliza sistemas de inteligencia artificial ni de aprendizaje automático en producción para analizar, procesar ni generar contenido relacionado con tus datos de salud, fotos corporales ni información personal.\n\nEl flag de escáner corporal por IA (AI_BODY_SCAN) se encuentra desactivado en la configuración de la plataforma."
+        },
+        {
+          "title": "2. Uso futuro planificado",
+          "body": "Cuando activemos funcionalidades de IA (lo que se comunicará con aviso previo y actualización de esta política), estas serán de carácter asistivo y orientativo:\n\n- Análisis de fotos de progreso corporal para estimar métricas automáticamente (composición corporal, evolución visual).\n- Toda salida de IA estará sujeta a revisión humana del coach antes de ser comunicada al alumno.\n- Las sugerencias de IA serán presentadas como estimaciones orientativas, no como diagnósticos médicos.\n\nAntes de activar cualquier funcionalidad de IA que procese datos de salud, actualizaremos esta política, solicitaremos consentimiento expreso adicional y realizaremos una evaluación de impacto en la privacidad. [PENDIENTE — validación legal]"
+        },
+        {
+          "title": "3. Lo que la IA de Forzza nunca hará",
+          "body": "Con o sin activación de IA, Forzza se compromete a que sus sistemas de inteligencia artificial nunca:\n\n- Diagnosticarán, tratarán, curarán ni prescribirán tratamientos médicos, nutricionales ni de salud mental.\n- Reemplazarán el juicio de un profesional de la salud habilitado.\n- Garantizarán resultados físicos o deportivos.\n- Usarán tus fotos corporales, métricas de salud ni datos personales para entrenar modelos de IA de Forzza ni de terceros.\n- Venderán ni compartirán tus datos con fines de entrenamiento de IA externo."
+        },
+        {
+          "title": "4. Datos usados por la IA",
+          "body": "Cuando la IA esté activa, solo procesará los datos estrictamente necesarios para la función específica (por ejemplo, las fotos de progreso para el escáner corporal). El acceso estará limitado al alumno titular y a su coach contratado activo.\n\nLos datos no serán transferidos a terceros proveedores de IA sin tu consentimiento expreso adicional. Cualquier proveedor de IA externo que procesase datos de salud deberá cumplir con Ley 25.326 y estar listado en la Política de Privacidad actualizada. [PENDIENTE — definir proveedor de IA si se activa]"
+        },
+        {
+          "title": "5. Sin garantía de resultados",
+          "body": "Las estimaciones y sugerencias generadas por IA son orientativas y se basan en modelos estadísticos. Pueden contener errores. No son un sustituto del criterio de un profesional de la salud.\n\nForzza no se responsabiliza por decisiones tomadas en base exclusiva a salidas de IA sin supervisión profesional."
+        },
+        {
+          "title": "6. Contacto",
+          "body": "Para consultas sobre el uso de IA en Forzza, escribinos a privacidad@forzza.app."
+        }
+      ]
+    },
+    "healthDisclaimer": {
+      "metaTitle": "Disclaimer de salud y fitness — Forzza",
+      "title": "Disclaimer de salud y fitness",
+      "intro": "Leé atentamente esta información antes de usar el servicio. [PENDIENTE — validación legal]",
+      "sections": [
+        {
+          "title": "1. Información orientativa, no consejo médico",
+          "body": "Todo el contenido disponible en Forzza (rutinas, planes de entrenamiento, videos de ejercicios, sugerencias de coaches, métricas de progreso, check-ins de bienestar) tiene carácter informativo, educativo y orientativo únicamente.\n\nEste contenido NO constituye:\n- Diagnóstico médico ni evaluación de salud.\n- Tratamiento, prescripción ni asesoramiento médico.\n- Asesoramiento nutricional ni dietético profesional.\n- Asesoramiento psicológico ni de salud mental.\n\nForzza no es un prestador de servicios de salud."
+        },
+        {
+          "title": "2. Consultá a un profesional antes de comenzar",
+          "body": "Antes de iniciar cualquier programa de entrenamiento o cambio en tu actividad física, te recomendamos firmemente consultar con un médico o profesional de la salud habilitado, especialmente si:\n\n- Tenés enfermedades cardiovasculares, metabólicas, articulares u otras condiciones de salud crónicas o agudas.\n- Estás embarazada o en período de lactancia.\n- Estás recuperándote de una lesión o cirugía.\n- Sos mayor de 50 años o retomás el entrenamiento después de un período prolongado de inactividad.\n- Tenés dudas sobre si un ejercicio o carga es adecuado para tu estado de salud actual.\n\nEsta recomendación aplica también a los planes diseñados por un coach en Forzza."
+        },
+        {
+          "title": "3. Coaches independientes",
+          "body": "Los coaches que operan en Forzza son profesionales independientes que prestan sus servicios a través de la plataforma. Forzza no verifica, certifica ni avala los títulos habilitantes, certificaciones, formación académica ni competencias específicas de los coaches.\n\nForzza actúa como intermediaria tecnológica y no es responsable por el contenido específico de las rutinas, recomendaciones o indicaciones que el coach te brinde. La relación contractual de entrenamiento es directamente entre vos y el coach."
+        },
+        {
+          "title": "4. Sin garantía de resultados",
+          "body": "Forzza y los coaches en la plataforma no garantizan resultados físicos, deportivos ni estéticos. Los resultados de un programa de entrenamiento dependen de múltiples factores individuales: genética, alimentación, descanso, adherencia al plan, condición de salud preexistente y otros factores fuera del control de la plataforma o del coach.\n\nLas referencias a resultados de otros usuarios o de los coaches (fotos, testimonios, estadísticas) son ilustrativas y no garantizan que obtendrás los mismos resultados."
+        },
+        {
+          "title": "5. Riesgo inherente al ejercicio",
+          "body": "El ejercicio físico conlleva riesgos inherentes de lesión. Al usar Forzza y seguir rutinas de entrenamiento, aceptás que lo hacés bajo tu propia responsabilidad.\n\nSi durante el entrenamiento sentís dolor agudo, mareos, dificultad para respirar, dolor en el pecho o cualquier síntoma físico inusual, detené la actividad de inmediato y consultá a un médico."
+        },
+        {
+          "title": "6. Contacto",
+          "body": "Para consultas sobre salud y seguridad en el uso de la plataforma, podés escribirnos a soporte@forzza.app."
+        }
+      ]
     }
   },
   "admin": {
@@ -847,6 +1051,25 @@
           "errorSave": "Error al guardar el comentario",
           "errorNetwork": "Error de red",
           "proOnly": "El feedback de métricas y fotos está disponible solo para paquetes PRO o elite."
+        },
+        "billingProfile": {
+          "sectionTitle": "Datos de facturación",
+          "legalNameLabel": "Nombre o razón social",
+          "taxConditionLabel": "Condición IVA",
+          "docLabel": "Documento",
+          "addressLabel": "Domicilio",
+          "noAddress": "No informado",
+          "empty": "El alumno aún no completó sus datos de facturación.",
+          "draftBadge": "Borrador — sujeto a confirmación contable",
+          "instructivoTitle": "Cómo emitir la factura",
+          "step1": "Ingresá a AFIP/ARCA (Comprobantes en línea) o tu sistema de facturación.",
+          "step2": "Emití una factura a nombre de {legal_name} ({tax_condition}, {doc_type} {doc_number}).",
+          "step3": "Por el monto total que pagó el alumno.",
+          "step4": "Subí la factura en la sección Cobros.",
+          "taxConditionConsumidorFinal": "Consumidor final",
+          "taxConditionMonotributo": "Monotributo",
+          "taxConditionResponsableInscripto": "Responsable inscripto",
+          "taxConditionExento": "Exento"
         },
         "liveSessions": {
           "title": "Sesiones en vivo",
