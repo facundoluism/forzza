@@ -3,10 +3,12 @@
 -- =============================================================================
 
 -- country_config: Argentina (activo) y Chile (preparado, no activo)
+-- min_coach_price = 0: el dueño eliminó el piso de precio (decisión 2026-06-22).
+-- El coach puede cobrar cualquier precio > 0; Forzza igual cobra 20% de comisión.
 INSERT INTO country_config (country, commission_rate, currency, currency_symbol, min_coach_price, active)
 VALUES
-  ('AR', 0.2000, 'ARS', '$', 500000, true),   -- AR: piso $5000 ARS (en centavos)
-  ('CL', 0.2000, 'CLP', '$', 2000000, false)   -- CL: piso $20000 CLP, no activo en V1
+  ('AR', 0.2000, 'ARS', '$', 0, true),
+  ('CL', 0.2000, 'CLP', '$', 0, false)  -- CL no activo en V1
 ON CONFLICT (country) DO NOTHING;
 
 -- exercise_library: REEMPLAZADO por supabase/seed/exercises.sql
