@@ -11,6 +11,7 @@ interface CheckoutClientProps {
   coachName: string;
   packageTitle: string;
   packagePrice: number;
+  packageFeatures?: string[];
   currency: string;
   currencySymbol?: string;
   isMinorWithoutConsent: boolean;
@@ -32,6 +33,7 @@ export function CheckoutClient({
   coachName,
   packageTitle,
   packagePrice,
+  packageFeatures = [],
   currency,
   currencySymbol = "$",
   isMinorWithoutConsent,
@@ -164,6 +166,22 @@ export function CheckoutClient({
                   <p className="text-[#FAFAFA] font-semibold">{packageTitle}</p>
                 </div>
               </div>
+
+              {packageFeatures.length > 0 && (
+                <div className="border-t border-[#2A2A2A] pt-3">
+                  <p className="text-[#6A6A6A] text-xs uppercase tracking-wider mb-2">
+                    {t("includes")}
+                  </p>
+                  <ul className="flex flex-col gap-1.5">
+                    {packageFeatures.map((feature, i) => (
+                      <li key={i} className="flex items-start gap-2 text-[#FAFAFA] text-sm">
+                        <span className="text-[#C8FF00] mt-0.5">✓</span>
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               <div className="border-t border-[#2A2A2A] pt-3 flex justify-between items-center">
                 <p className="text-[#6A6A6A] text-sm">{t("labelTotal")}</p>

@@ -20,6 +20,7 @@ interface CoachPackageData {
   active: boolean;
   tier: string;
   description: string | null;
+  features: string[];
 }
 
 interface CoachProfileData {
@@ -132,7 +133,7 @@ export default async function CoachCheckoutPage({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: packageData } = await (supabase as any)
     .from("coach_packages")
-    .select("id, title, price, active, tier, description")
+    .select("id, title, price, active, tier, description, features")
     .eq("id", safePackageId)
     .eq("coach_id", coachId)
     .eq("active", true)
@@ -182,6 +183,7 @@ export default async function CoachCheckoutPage({
       coachName={coach.display_name}
       packageTitle={pkg.title}
       packagePrice={pkg.price}
+      packageFeatures={pkg.features ?? []}
       currency={currency}
       currencySymbol={currencySymbol}
       isMinorWithoutConsent={minorWithoutConsent}

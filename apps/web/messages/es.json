@@ -214,6 +214,7 @@
     "minorConsentTitle": "Necesitás autorización de un adulto",
     "minorConsentBody": "Sos menor de 18 años y todavía no tenemos el consentimiento de tus padres o tutores. Pediles que lo aprueben desde la app.",
     "labelCoach": "Coach",
+    "includes": "Incluye",
     "labelPackage": "Paquete",
     "labelTotal": "Total",
     "paymentNote": "Pago procesado por Mercado Pago ({currency}). El cargo aparecerá en tu resumen de cuenta.",

@@ -214,6 +214,7 @@
     "minorConsentTitle": "You need an adult's authorization",
     "minorConsentBody": "You are under 18 and we don't yet have consent from your parents or guardians. Ask them to approve it from the app.",
     "labelCoach": "Coach",
+    "includes": "Includes",
     "labelPackage": "Package",
     "labelTotal": "Total",
     "paymentNote": "Payment processed by Mercado Pago ({currency}). The charge will appear on your account statement.",
