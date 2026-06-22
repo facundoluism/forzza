@@ -18,7 +18,7 @@ import { useAuth } from "@/providers/AuthProvider";
 import { ErrorState, ScreenHeader } from "@forzza/ui/native";
 import { colors, spacing, typography, radius, fontSize } from "@forzza/ui/tokens";
 
-// Columnas reales de coach_packages: id, coach_id, tier, title, description, price, active
+// Columnas reales de coach_packages: id, coach_id, tier, title, description, price, active, features
 interface CheckoutPackage {
   id: string;
   title: string;
@@ -26,6 +26,7 @@ interface CheckoutPackage {
   price: number; // entero en centavos
   tier: "starter" | "pro" | "elite";
   active: boolean;
+  features: string[];
   // join embed a coach_profiles (solo display_name)
   coach: {
     display_name: string;
@@ -67,7 +68,7 @@ export default function CheckoutScreen() {
       const { data, error } = await (supabase as any)
         .from("coach_packages")
         .select(
-          "id, title, description, price, tier, active, coach:coach_profiles(display_name)"
+          "id, title, description, price, tier, active, features, coach:coach_profiles(display_name)"
         )
         .eq("id", package_id!)
         .eq("coach_id", coach_id!)
@@ -202,6 +203,16 @@ export default function CheckoutScreen() {
         {pkg.description ? (
           <Text style={styles.summaryDesc}>{pkg.description}</Text>
         ) : null}
+        {pkg.features.length > 0 && (
+          <View style={styles.checkoutFeaturesContainer}>
+            {pkg.features.map((feature, index) => (
+              <View key={index} style={styles.checkoutFeatureRow}>
+                <Text style={styles.checkoutFeatureCheck}>✓</Text>
+                <Text style={styles.checkoutFeatureText}>{feature}</Text>
+              </View>
+            ))}
+          </View>
+        )}
         <View style={styles.divider} />
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>{t('marketplace.checkout.labelPrice').toUpperCase()}</Text>
@@ -424,5 +435,28 @@ const styles = StyleSheet.create({
     fontSize: fontSize.md,
     textAlign: "center",
     paddingHorizontal: spacing[6],
+  },
+  checkoutFeaturesContainer: {
+    gap: spacing[2],
+    paddingVertical: spacing[1],
+  },
+  checkoutFeatureRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: spacing[2],
+  },
+  checkoutFeatureCheck: {
+    fontFamily: typography.body,
+    color: colors.lime,
+    fontSize: fontSize.sm,
+    lineHeight: 20,
+    minWidth: 16,
+  },
+  checkoutFeatureText: {
+    fontFamily: typography.body,
+    color: colors.gray300,
+    fontSize: fontSize.sm,
+    lineHeight: 20,
+    flex: 1,
   },
 });

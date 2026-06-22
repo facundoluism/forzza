@@ -19,7 +19,7 @@ import { useState } from "react";
 import { Card, Pill, Skeleton, ErrorState, EmptyState, ScreenHeader } from "@forzza/ui/native";
 import { colors, spacing, typography, radius, fontSize } from "@forzza/ui/tokens";
 
-// Columnas reales de coach_packages: id, coach_id, tier, title, description, price, active
+// Columnas reales de coach_packages: id, coach_id, tier, title, description, price, active, features
 interface CoachPackage {
   id: string;
   title: string;
@@ -27,6 +27,7 @@ interface CoachPackage {
   price: number; // entero en centavos
   tier: "starter" | "pro" | "elite";
   active: boolean;
+  features: string[];
 }
 
 interface CoachProfile {
@@ -145,16 +146,19 @@ function PackageCard({
   currencySymbol,
   onContratar,
   hireLabel,
+  featuresLabel,
 }: {
   pkg: CoachPackage;
   currencySymbol: string;
   onContratar: (packageId: string) => void;
   hireLabel: string;
+  featuresLabel: string;
 }) {
   // Precio en centavos → mostrar formateado
   const price = (pkg.price / 100).toLocaleString("es-AR");
   // El paquete pro recibe estilo destacado
   const isHighlighted = pkg.tier === "pro";
+  const hasFeatures = pkg.features.length > 0;
 
   return (
     <View
@@ -172,6 +176,18 @@ function PackageCard({
       {pkg.description ? (
         <Text style={styles.packageDesc}>{pkg.description}</Text>
       ) : null}
+
+      {hasFeatures && (
+        <View style={styles.featuresContainer}>
+          <Text style={styles.featuresLabel}>{featuresLabel}</Text>
+          {pkg.features.map((feature, index) => (
+            <View key={index} style={styles.featureRow}>
+              <Text style={styles.featureCheck}>✓</Text>
+              <Text style={styles.featureText}>{feature}</Text>
+            </View>
+          ))}
+        </View>
+      )}
 
       <View style={styles.packageFooter}>
         <Text style={[styles.packagePriceAmount, isHighlighted && styles.packagePriceHighlighted]}>
@@ -462,7 +478,7 @@ export default function CoachProfileScreen() {
       const { data, error } = await (supabase as any)
         .from("coach_profiles")
         .select(
-          "id, user_id, display_name, bio, specialties, avatar_url, years_experience, status, avg_rating, rating_count, packages:coach_packages(id, title, description, price, tier, active)"
+          "id, user_id, display_name, bio, specialties, avatar_url, years_experience, status, avg_rating, rating_count, packages:coach_packages(id, title, description, price, tier, active, features)"
         )
         .eq("id", coachId!)
         .eq("status", "approved")
@@ -659,6 +675,7 @@ export default function CoachProfileScreen() {
               currencySymbol={currencySymbol}
               onContratar={handleContratar}
               hireLabel={t("marketplace.coach.hire")}
+              featuresLabel={t("marketplace.coach.featuresLabel")}
             />
           ))
         )}
@@ -871,6 +888,38 @@ const styles = StyleSheet.create({
     fontSize: fontSize.base,
     letterSpacing: 0.5,
     textTransform: "uppercase",
+  },
+  featuresContainer: {
+    gap: spacing[2],
+    paddingTop: spacing[1],
+  },
+  featuresLabel: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.xs,
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: spacing[1],
+  },
+  featureRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: spacing[2],
+  },
+  featureCheck: {
+    fontFamily: typography.body,
+    color: colors.lime,
+    fontSize: fontSize.sm,
+    lineHeight: 20,
+    minWidth: 16,
+  },
+  featureText: {
+    fontFamily: typography.body,
+    color: colors.gray300,
+    fontSize: fontSize.sm,
+    lineHeight: 20,
+    flex: 1,
   },
   noPackagesCard: {
     backgroundColor: colors.surface3,

@@ -378,7 +378,8 @@
       "studentsCount": "{{count}} students",
       "ratingLabel": "Rating",
       "resultsTitle": "RESULTS",
-      "packageRecommended": "RECOMMENDED"
+      "packageRecommended": "RECOMMENDED",
+      "featuresLabel": "Includes"
     },
     "checkout": {
       "screenTitle": "Hire coach",

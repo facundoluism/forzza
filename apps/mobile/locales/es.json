@@ -378,7 +378,8 @@
       "studentsCount": "{{count}} alumnos",
       "ratingLabel": "Valoración",
       "resultsTitle": "RESULTADOS",
-      "packageRecommended": "RECOMENDADO"
+      "packageRecommended": "RECOMENDADO",
+      "featuresLabel": "Incluye"
     },
     "checkout": {
       "screenTitle": "Contratar coach",
