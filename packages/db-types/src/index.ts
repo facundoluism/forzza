@@ -328,6 +328,51 @@ export type Database = {
           },
         ]
       }
+      coach_exercise_personalizations: {
+        Row: {
+          coach_id: string
+          created_at: string
+          exercise_id: string
+          id: string
+          tips: string | null
+          updated_at: string
+          video_path: string | null
+        }
+        Insert: {
+          coach_id: string
+          created_at?: string
+          exercise_id: string
+          id?: string
+          tips?: string | null
+          updated_at?: string
+          video_path?: string | null
+        }
+        Update: {
+          coach_id?: string
+          created_at?: string
+          exercise_id?: string
+          id?: string
+          tips?: string | null
+          updated_at?: string
+          video_path?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coach_exercise_personalizations_coach_id_fkey"
+            columns: ["coach_id"]
+            isOneToOne: false
+            referencedRelation: "coach_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coach_exercise_personalizations_exercise_id_fkey"
+            columns: ["exercise_id"]
+            isOneToOne: false
+            referencedRelation: "exercise_library"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       coach_feedback: {
         Row: {
           coach_id: string
