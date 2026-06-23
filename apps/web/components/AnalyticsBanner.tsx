@@ -24,6 +24,18 @@ export function AnalyticsBanner() {
     }
   }, []);
 
+  // Mientras el banner está visible, reservar espacio al pie para que el banner
+  // fixed no tape el contenido del final de la página (ej. botón de eliminar
+  // cuenta, tarjetas de paquete). Se restaura al decidir/ocultar.
+  useEffect(() => {
+    if (!visible) return;
+    const prev = document.body.style.paddingBottom;
+    document.body.style.paddingBottom = "160px";
+    return () => {
+      document.body.style.paddingBottom = prev;
+    };
+  }, [visible]);
+
   function handleDecision(value: ConsentValue) {
     setConsent(value);
     setVisible(false);
