@@ -328,6 +328,53 @@ export type Database = {
           },
         ]
       }
+      coach_mp_accounts: {
+        Row: {
+          id: string
+          coach_id: string
+          mp_user_id: string
+          access_token: string
+          refresh_token: string
+          token_expires_at: string
+          scope: string
+          status: string
+          connected_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          coach_id: string
+          mp_user_id: string
+          access_token: string
+          refresh_token: string
+          token_expires_at: string
+          scope?: string
+          status?: string
+          connected_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          coach_id?: string
+          mp_user_id?: string
+          access_token?: string
+          refresh_token?: string
+          token_expires_at?: string
+          scope?: string
+          status?: string
+          connected_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coach_mp_accounts_coach_id_fkey"
+            columns: ["coach_id"]
+            isOneToOne: true
+            referencedRelation: "coach_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       coach_exercise_personalizations: {
         Row: {
           coach_id: string

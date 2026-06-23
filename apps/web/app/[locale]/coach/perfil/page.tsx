@@ -7,6 +7,7 @@ import { VideoUpload } from "./VideoUpload";
 import { DeleteAccountButton } from "./DeleteAccountButton";
 import { AnalyticsOptOut } from "@/components/AnalyticsOptOut";
 import { ExportDataButton } from "./ExportDataButton";
+import { MpConnectButton } from "./MpConnectButton";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { createClient as createSupabaseAdminClient } from "@supabase/supabase-js";
 import type { Database } from "@forzza/db-types";
@@ -68,6 +69,19 @@ export default async function PerfilPage({ params }: Props) {
     .eq("country", coachProfile?.country ?? "AR")
     .single();
 
+  // Fetch MP connection status — solo columnas no-sensibles (sin tokens)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: mpAccount } = await (supabase as any)
+    .from("coach_mp_accounts")
+    .select("mp_user_id, status, connected_at")
+    .eq("coach_id", coachProfileId)
+    .maybeSingle();
+
+  const mpConnected: boolean =
+    (mpAccount as { status?: string } | null)?.status === "connected";
+  const mpUserId: string | null =
+    (mpAccount as { mp_user_id?: string } | null)?.mp_user_id ?? null;
+
   const tDel = await getTranslations({ locale, namespace: "deleteAccount" });
 
   return (
@@ -84,6 +98,9 @@ export default async function PerfilPage({ params }: Props) {
       <GalleryUpload />
 
       <VideoUpload currentVideoSignedUrl={presentationVideoSignedUrl} />
+
+      {/* Vinculación de Mercado Pago (Split Payments) */}
+      <MpConnectButton connected={mpConnected} mpUserId={mpUserId} />
 
       <PerfilForm
         initialProfile={{
