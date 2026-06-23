@@ -7,10 +7,12 @@ import {
   ActivityIndicator,
   Dimensions,
   TouchableOpacity,
+  Linking,
 } from "react-native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import YoutubePlayer from "react-native-youtube-iframe";
+import { WebView } from "react-native-webview";
 import type { Database } from "@forzza/db-types";
 import { Sheet, Tabs, Pill, ErrorState, EmptyState, ExerciseIcon, Button } from "@forzza/ui/native";
 import { colors, spacing, fontSize, typography, radius } from "@forzza/ui/tokens";
@@ -71,6 +73,55 @@ async function fetchExerciseVideo(
   const preferred = data.find((v) => v.lang === language);
   if (preferred) return preferred;
   return data[0] ?? null;
+}
+
+// ─── Tipos coach ──────────────────────────────────────────────────────────────
+
+type CoachPersonalizationRow =
+  Database["public"]["Tables"]["coach_exercise_personalizations"]["Row"];
+
+// ─── Fetch coach ──────────────────────────────────────────────────────────────
+
+/** Devuelve el coach_id del assignment activo del alumno, o null si no tiene. */
+async function fetchActiveCoachId(userId: string): Promise<string | null> {
+  const { data, error } = await supabase
+    .from("coach_assignments")
+    .select("coach_id")
+    .eq("student_id", userId)
+    .eq("status", "active")
+    .maybeSingle();
+  if (error) throw error;
+  return data?.coach_id ?? null;
+}
+
+/**
+ * Devuelve la personalización del coach para el ejercicio, o null si no existe.
+ * RLS garantiza que solo pueden leer los alumnos activos del coach.
+ */
+async function fetchCoachPersonalization(
+  coachId: string,
+  exerciseId: string,
+): Promise<CoachPersonalizationRow | null> {
+  const { data, error } = await supabase
+    .from("coach_exercise_personalizations")
+    .select("*")
+    .eq("coach_id", coachId)
+    .eq("exercise_id", exerciseId)
+    .maybeSingle();
+  if (error) throw error;
+  return data ?? null;
+}
+
+/**
+ * Genera la signed URL para reproducir el video del coach (TTL 1 hora).
+ * Devuelve null si no hay video_path.
+ */
+async function fetchCoachVideoSignedUrl(videoPath: string): Promise<string | null> {
+  const { data, error } = await supabase.storage
+    .from("coach-exercise-videos")
+    .createSignedUrl(videoPath, 3600);
+  if (error) throw error;
+  return data?.signedUrl ?? null;
 }
 
 // Ancho de pantalla para calcular el alto 16:9 del player
@@ -498,6 +549,155 @@ function VideoTab({ exerciseId, language }: VideoTabProps): React.JSX.Element {
   );
 }
 
+// ─── Tab: De tu coach ─────────────────────────────────────────────────────────
+
+interface CoachTabProps {
+  exerciseId: string;
+  coachId: string;
+}
+
+function CoachVideoPlayer({ videoPath }: { videoPath: string }): React.JSX.Element {
+  const { t } = useTranslation();
+
+  const {
+    data: signedUrl,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["coach_video_signed_url", videoPath],
+    queryFn: () => fetchCoachVideoSignedUrl(videoPath),
+    staleTime: 1000 * 60 * 50, // 50 min (TTL es 60 min)
+  });
+
+  if (isLoading) {
+    return (
+      <View style={styles.coachVideoLoading} testID="coach-video-loading">
+        <ActivityIndicator color={colors.lime} />
+      </View>
+    );
+  }
+
+  if (isError || !signedUrl) {
+    return (
+      <View style={styles.coachVideoError} testID="coach-video-error">
+        <Text style={styles.coachVideoErrorText}>
+          {t("exercisePreview.coach_video_error")}
+        </Text>
+        <TouchableOpacity
+          onPress={() => { void refetch(); }}
+          style={styles.coachVideoRetryBtn}
+        >
+          <Text style={styles.coachVideoRetryText}>{t("common.retry")}</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // HTML mínimo para reproducir el video con controles nativos dentro de WebView
+  const html = `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#000}video{width:100%;height:100vh;object-fit:contain}</style></head><body><video src="${signedUrl}" controls playsinline preload="metadata"></video></body></html>`;
+
+  return (
+    <View style={styles.coachVideoWrapper} testID="coach-video-player">
+      <WebView
+        source={{ html }}
+        style={styles.coachVideoWebView}
+        allowsInlineMediaPlayback
+        mediaPlaybackRequiresUserAction={false}
+        scrollEnabled={false}
+        originWhitelist={["*"]}
+      />
+      <TouchableOpacity
+        style={styles.coachVideoOpenBtn}
+        onPress={() => { void Linking.openURL(signedUrl); }}
+        activeOpacity={0.7}
+        testID="coach-video-open-link"
+      >
+        <Text style={styles.coachVideoOpenBtnText}>
+          {t("exercisePreview.coach_video_open_external")}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+function CoachTab({ exerciseId, coachId }: CoachTabProps): React.JSX.Element {
+  const { t } = useTranslation();
+
+  const {
+    data: personalization,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["coach_exercise_personalization", coachId, exerciseId],
+    queryFn: () => fetchCoachPersonalization(coachId, exerciseId),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer} testID="coach-tab-loading">
+        <ActivityIndicator color={colors.lime} size="large" />
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <ErrorState
+        title={t("exercisePreview.coach_error_title")}
+        description={t("exercisePreview.coach_error_desc")}
+        onRetry={() => { void refetch(); }}
+      />
+    );
+  }
+
+  if (!personalization || (!personalization.tips && !personalization.video_path)) {
+    return (
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.tabContent}
+        testID="coach-tab-empty"
+      >
+        <EmptyState
+          title={t("exercisePreview.coach_empty_title")}
+          description={t("exercisePreview.coach_empty_desc")}
+          icon="🏋️"
+        />
+      </ScrollView>
+    );
+  }
+
+  return (
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={styles.tabContent}
+      testID="coach-tab-content"
+    >
+      {/* Tips del coach */}
+      {personalization.tips !== null && personalization.tips.trim().length > 0 && (
+        <View style={styles.coachTipsBox} testID="coach-tips-box">
+          <Text style={styles.coachTipsLabel}>
+            {t("exercisePreview.coach_tips_label")}
+          </Text>
+          <Text style={styles.coachTipsText}>{personalization.tips}</Text>
+        </View>
+      )}
+
+      {/* Video del coach */}
+      {personalization.video_path !== null && (
+        <View testID="coach-video-section">
+          <Text style={styles.coachVideoLabel}>
+            {t("exercisePreview.coach_video_label")}
+          </Text>
+          <CoachVideoPlayer videoPath={personalization.video_path} />
+        </View>
+      )}
+    </ScrollView>
+  );
+}
+
 // ─── Contenido del sheet (estado success) ─────────────────────────────────────
 
 function ExerciseDetailContent({
@@ -513,15 +713,35 @@ function ExerciseDetailContent({
 }): React.JSX.Element {
   const { t } = useTranslation();
   const language = useLanguageStore((s) => s.language);
+  const { user } = useAuth();
 
-  const DETAIL_TABS = [
+  // Obtener el coach_id del assignment activo para mostrar el tab "De tu coach"
+  const { data: activeCoachId } = useQuery({
+    queryKey: ["active_coach_id", user?.id],
+    queryFn: () => fetchActiveCoachId(user!.id),
+    enabled: user !== null,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const hasCoach = activeCoachId != null;
+
+  const BASE_TABS = [
     { key: "ejecucion", label: t("exercisePreview.tabs.execution") },
     { key: "errores",   label: t("exercisePreview.tabs.errors") },
     { key: "musculos",  label: t("exercisePreview.tabs.muscles") },
     { key: "video",     label: t("exercisePreview.tabs.video") },
   ] as const;
 
-  type DetailTabKey = (typeof DETAIL_TABS)[number]["key"];
+  type BaseTabKey = (typeof BASE_TABS)[number]["key"];
+  type DetailTabKey = BaseTabKey | "coach";
+
+  const DETAIL_TABS: { key: DetailTabKey; label: string }[] = [
+    ...BASE_TABS,
+    ...(hasCoach
+      ? [{ key: "coach" as const, label: t("exercisePreview.tabs.coach") }]
+      : []),
+  ];
+
   const [activeTab, setActiveTab] = useState<DetailTabKey>("ejecucion");
 
   // Nombre según idioma: name_en cuando EN, fallback a name si null.
@@ -625,6 +845,9 @@ function ExerciseDetailContent({
         )}
         {activeTab === "video" && (
           <VideoTab exerciseId={exercise.id} language={language} />
+        )}
+        {activeTab === "coach" && hasCoach && activeCoachId !== undefined && (
+          <CoachTab exerciseId={exercise.id} coachId={activeCoachId} />
         )}
       </View>
     </>
@@ -1017,6 +1240,98 @@ const styles = StyleSheet.create({
     marginTop: spacing[2],
   },
   reportVideoBtnText: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.sm,
+    textDecorationLine: "underline",
+    textAlign: "center",
+  },
+
+  // ── Tab De tu coach ──
+  coachTipsBox: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.lg,
+    padding: spacing[4],
+    gap: spacing[2],
+  },
+  coachTipsLabel: {
+    fontFamily: typography.body,
+    color: colors.lime,
+    fontSize: fontSize.xs,
+    fontWeight: "700",
+    letterSpacing: 0.5,
+  },
+  coachTipsText: {
+    fontFamily: typography.body,
+    color: colors.text,
+    fontSize: fontSize.md,
+    lineHeight: 22,
+  },
+  coachVideoLabel: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.xs,
+    fontWeight: "700",
+    letterSpacing: 0.5,
+    marginBottom: spacing[2],
+    marginTop: spacing[1],
+  },
+  coachVideoWrapper: {
+    gap: spacing[2],
+  },
+  coachVideoWebView: {
+    width: PLAYER_WIDTH,
+    height: PLAYER_HEIGHT,
+    borderRadius: radius.lg,
+    overflow: "hidden",
+    backgroundColor: colors.surface3,
+  },
+  coachVideoLoading: {
+    width: PLAYER_WIDTH,
+    height: PLAYER_HEIGHT,
+    backgroundColor: colors.surface3,
+    borderRadius: radius.lg,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  coachVideoError: {
+    width: PLAYER_WIDTH,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing[4],
+    alignItems: "center",
+    gap: spacing[3],
+  },
+  coachVideoErrorText: {
+    fontFamily: typography.body,
+    color: colors.error,
+    fontSize: fontSize.sm,
+    textAlign: "center",
+  },
+  coachVideoRetryBtn: {
+    paddingVertical: spacing[2],
+    paddingHorizontal: spacing[4],
+    backgroundColor: colors.surface3,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  coachVideoRetryText: {
+    fontFamily: typography.body,
+    color: colors.text,
+    fontSize: fontSize.sm,
+  },
+  coachVideoOpenBtn: {
+    alignSelf: "center",
+    paddingVertical: spacing[2],
+    paddingHorizontal: spacing[3],
+    marginTop: spacing[1],
+  },
+  coachVideoOpenBtnText: {
     fontFamily: typography.body,
     color: colors.muted,
     fontSize: fontSize.sm,

@@ -205,7 +205,8 @@
       "execution": "Ejecución",
       "errors": "Errores",
       "muscles": "Músculos",
-      "video": "Video"
+      "video": "Video",
+      "coach": "Tu coach"
     },
     "video_empty_title": "Sin video todavía",
     "video_empty_desc": "Todavía no hay un video demostrativo para este ejercicio.",
@@ -233,7 +234,15 @@
     "tags": "Etiquetas",
     "noEquipment": "Sin equipamiento",
     "error_title": "No se pudo cargar el ejercicio",
-    "error_desc": "Verificá tu conexión e intentá de nuevo."
+    "error_desc": "Verificá tu conexión e intentá de nuevo.",
+    "coach_tips_label": "TIPS DE TU COACH",
+    "coach_video_label": "VIDEO DE TU COACH",
+    "coach_video_error": "No se pudo cargar el video del coach.",
+    "coach_video_open_external": "Abrir video en el navegador",
+    "coach_empty_title": "Sin contenido del coach",
+    "coach_empty_desc": "Tu coach todavía no agregó tips ni video para este ejercicio.",
+    "coach_error_title": "No se pudo cargar el contenido del coach",
+    "coach_error_desc": "Revisá tu conexión e intentá de nuevo."
   },
   "auth": {
     "login": {

@@ -205,7 +205,8 @@
       "execution": "Execution",
       "errors": "Errors",
       "muscles": "Muscles",
-      "video": "Video"
+      "video": "Video",
+      "coach": "Your coach"
     },
     "video_empty_title": "No video yet",
     "video_empty_desc": "There is no demo video for this exercise yet.",
@@ -233,7 +234,15 @@
     "tags": "Tags",
     "noEquipment": "No equipment",
     "error_title": "Couldn't load the exercise",
-    "error_desc": "Check your connection and try again."
+    "error_desc": "Check your connection and try again.",
+    "coach_tips_label": "YOUR COACH'S TIPS",
+    "coach_video_label": "YOUR COACH'S VIDEO",
+    "coach_video_error": "Could not load the coach's video.",
+    "coach_video_open_external": "Open video in browser",
+    "coach_empty_title": "No content from your coach",
+    "coach_empty_desc": "Your coach hasn't added tips or a video for this exercise yet.",
+    "coach_error_title": "Could not load coach content",
+    "coach_error_desc": "Check your connection and try again."
   },
   "auth": {
     "login": {
