@@ -418,6 +418,41 @@ export type Database = {
           },
         ]
       }
+      coach_gallery: {
+        Row: {
+          coach_id: string
+          created_at: string
+          display_order: number
+          file_path: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          coach_id: string
+          created_at?: string
+          display_order?: number
+          file_path: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          coach_id?: string
+          created_at?: string
+          display_order?: number
+          file_path?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coach_gallery_coach_id_fkey"
+            columns: ["coach_id"]
+            isOneToOne: false
+            referencedRelation: "coach_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       coach_packages: {
         Row: {
           active: boolean
@@ -484,9 +519,11 @@ export type Database = {
           display_name: string
           fiscal_id: string | null
           id: string
+          interests: string[]
           legal_entity_type:
             | Database["public"]["Enums"]["legal_entity_type"]
             | null
+          presentation_video_path: string | null
           rating_count: number
           specialties: string[] | null
           status: Database["public"]["Enums"]["coach_status"]
@@ -509,9 +546,11 @@ export type Database = {
           display_name: string
           fiscal_id?: string | null
           id?: string
+          interests?: string[]
           legal_entity_type?:
             | Database["public"]["Enums"]["legal_entity_type"]
             | null
+          presentation_video_path?: string | null
           rating_count?: number
           specialties?: string[] | null
           status?: Database["public"]["Enums"]["coach_status"]
@@ -534,9 +573,11 @@ export type Database = {
           display_name?: string
           fiscal_id?: string | null
           id?: string
+          interests?: string[]
           legal_entity_type?:
             | Database["public"]["Enums"]["legal_entity_type"]
             | null
+          presentation_video_path?: string | null
           rating_count?: number
           specialties?: string[] | null
           status?: Database["public"]["Enums"]["coach_status"]
