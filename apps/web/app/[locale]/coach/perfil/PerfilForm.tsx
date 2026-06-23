@@ -23,6 +23,7 @@ interface ProfileData {
   display_name: string;
   bio: string;
   specialties: string[];
+  interests: string[];
   years_experience: number | null;
 }
 
@@ -64,6 +65,7 @@ export function PerfilForm({
   const [profile, setProfile] = useState<ProfileData>(initialProfile);
   const [packages, setPackages] = useState<PackageEntry[]>(initialPackagesNet);
   const [specialtyInput, setSpecialtyInput] = useState("");
+  const [interestInput, setInterestInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -80,6 +82,20 @@ export function PerfilForm({
     setProfile((p) => ({
       ...p,
       specialties: p.specialties.filter((s) => s !== tag),
+    }));
+  }
+
+  function addInterest() {
+    const trimmed = interestInput.trim();
+    if (!trimmed || profile.interests.includes(trimmed)) return;
+    setProfile((p) => ({ ...p, interests: [...p.interests, trimmed] }));
+    setInterestInput("");
+  }
+
+  function removeInterest(tag: string) {
+    setProfile((p) => ({
+      ...p,
+      interests: p.interests.filter((s) => s !== tag),
     }));
   }
 
@@ -167,6 +183,7 @@ export function PerfilForm({
           profile: {
             bio: profile.bio || null,
             specialties: profile.specialties,
+            interests: profile.interests,
             years_experience: profile.years_experience,
           },
           packages: packages.map((p) => ({
@@ -284,6 +301,54 @@ export function PerfilForm({
                   <button
                     type="button"
                     onClick={() => removeSpecialty(tag)}
+                    className="text-muted hover:text-red-400 transition-colors ml-1"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Interests */}
+        <div>
+          <label className="block text-sm font-medium text-text mb-2">
+            {t("perfil.fieldInterests")}
+          </label>
+          <div className="flex gap-2 mb-3">
+            <input
+              type="text"
+              value={interestInput}
+              onChange={(e) => setInterestInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  addInterest();
+                }
+              }}
+              placeholder="Ej: Montañismo"
+              className="flex-1 px-4 py-2 bg-surface-2 border border-border rounded-lg text-text placeholder-[#444444] focus:outline-none focus:border-[#C8FF00] transition-colors text-sm"
+            />
+            <button
+              type="button"
+              onClick={addInterest}
+              className="px-3 py-2 bg-surface-2 border border-border rounded-lg text-lime hover:border-[#C8FF00] transition-colors text-sm"
+            >
+              {t("perfil.addInterest")}
+            </button>
+          </div>
+          {profile.interests.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {profile.interests.map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex items-center gap-1 px-3 py-1 bg-surface-2 border border-border rounded-full text-xs text-muted"
+                >
+                  {tag}
+                  <button
+                    type="button"
+                    onClick={() => removeInterest(tag)}
                     className="text-muted hover:text-red-400 transition-colors ml-1"
                   >
                     ×

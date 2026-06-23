@@ -2,10 +2,14 @@ import { requireCoach } from "@/lib/auth/coach";
 import type { Metadata } from "next";
 import { PerfilForm } from "./PerfilForm";
 import { AvatarUpload } from "./AvatarUpload";
+import { GalleryUpload } from "./GalleryUpload";
+import { VideoUpload } from "./VideoUpload";
 import { DeleteAccountButton } from "./DeleteAccountButton";
 import { AnalyticsOptOut } from "@/components/AnalyticsOptOut";
 import { ExportDataButton } from "./ExportDataButton";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { createClient as createSupabaseAdminClient } from "@supabase/supabase-js";
+import type { Database } from "@forzza/db-types";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -22,14 +26,33 @@ export default async function PerfilPage({ params }: Props) {
 
   const { supabase, coachProfileId } = await requireCoach();
 
+  // Service-role client for signed URLs
+  const serviceKey = process.env["SUPABASE_SERVICE_ROLE_KEY"];
+  const supabaseUrl = process.env["NEXT_PUBLIC_SUPABASE_URL"];
+  const adminClient =
+    serviceKey && supabaseUrl
+      ? createSupabaseAdminClient<Database>(supabaseUrl, serviceKey)
+      : null;
+
   // Fetch coach profile
-  const { data: coachProfile } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: coachProfile } = await (supabase as any)
     .from("coach_profiles")
     .select(
-      "id, display_name, bio, specialties, years_experience, country, avatar_url"
+      "id, display_name, bio, specialties, interests, years_experience, country, avatar_url, presentation_video_path"
     )
     .eq("id", coachProfileId)
     .single();
+
+  // Generate signed URL for presentation video
+  let presentationVideoSignedUrl: string | null = null;
+  const videoPresentationPath = (coachProfile as { presentation_video_path?: string | null } | null)?.presentation_video_path;
+  if (adminClient && videoPresentationPath) {
+    const { data: signedData } = await adminClient.storage
+      .from("coach-gallery")
+      .createSignedUrl(videoPresentationPath, 3600);
+    presentationVideoSignedUrl = signedData?.signedUrl ?? null;
+  }
 
   // Fetch packages
   const { data: packages } = await supabase
@@ -58,11 +81,16 @@ export default async function PerfilPage({ params }: Props) {
 
       <AvatarUpload currentAvatarUrl={coachProfile?.avatar_url ?? null} />
 
+      <GalleryUpload />
+
+      <VideoUpload currentVideoSignedUrl={presentationVideoSignedUrl} />
+
       <PerfilForm
         initialProfile={{
           display_name: coachProfile?.display_name ?? "",
           bio: coachProfile?.bio ?? "",
           specialties: coachProfile?.specialties ?? [],
+          interests: (coachProfile as { interests?: string[] | null } | null)?.interests ?? [],
           years_experience: coachProfile?.years_experience ?? null,
         }}
         initialPackages={

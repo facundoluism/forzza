@@ -2,9 +2,12 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/server";
+import { createClient as createSupabaseAdminClient } from "@supabase/supabase-js";
+import type { Database } from "@forzza/db-types";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { ReportModal } from "./ReportModal";
+import { GalleryCarousel } from "./GalleryCarousel";
 
 export const dynamic = "force-dynamic";
 
@@ -20,14 +23,23 @@ interface CoachPackage {
   features: string[];
 }
 
+interface CoachGalleryItem {
+  id: string;
+  file_path: string;
+  display_order: number;
+}
+
 interface CoachProfile {
   id: string;
   display_name: string;
   bio: string | null;
   specialties: string[];
+  interests: string[];
   avatar_url: string | null;
   years_experience: number | null;
+  presentation_video_path: string | null;
   packages: CoachPackage[];
+  gallery: CoachGalleryItem[];
 }
 
 interface PageProps {
@@ -83,14 +95,26 @@ export default async function CoachProfilePage({ params }: PageProps) {
   }
 
   let coachData: CoachProfile;
+  let gallerySignedUrls: string[] = [];
+  let presentationVideoUrl: string | null = null;
+
   try {
     const supabase = await createClient();
+
+    // Service role client for signed URLs
+    const serviceKey = process.env["SUPABASE_SERVICE_ROLE_KEY"];
+    const supabaseUrl = process.env["NEXT_PUBLIC_SUPABASE_URL"];
+    const adminClient =
+      serviceKey && supabaseUrl
+        ? createSupabaseAdminClient<Database>(supabaseUrl, serviceKey)
+        : null;
+
     // TODO: regenerar db-types para eliminar el cast
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: coach } = await (supabase as any)
       .from("coach_profiles")
       .select(
-        "id, display_name, bio, specialties, avatar_url, years_experience, packages:coach_packages(id, title, description, price, tier, active, features)"
+        "id, display_name, bio, specialties, interests, avatar_url, years_experience, presentation_video_path, packages:coach_packages(id, title, description, price, tier, active, features), gallery:coach_gallery(id, file_path, display_order)"
       )
       .eq("id", coachId)
       .eq("status", "approved")
@@ -100,6 +124,29 @@ export default async function CoachProfilePage({ params }: PageProps) {
       notFound();
     }
     coachData = coach as unknown as CoachProfile;
+
+    // Generate signed URLs server-side
+    if (adminClient) {
+      const sortedGallery = [...(coachData.gallery ?? [])].sort(
+        (a, b) => a.display_order - b.display_order
+      );
+      gallerySignedUrls = await Promise.all(
+        sortedGallery.map(async (item) => {
+          const { data } = await adminClient.storage
+            .from("coach-gallery")
+            .createSignedUrl(item.file_path, 3600);
+          return data?.signedUrl ?? "";
+        })
+      );
+      gallerySignedUrls = gallerySignedUrls.filter(Boolean);
+
+      if (coachData.presentation_video_path) {
+        const { data: vidData } = await adminClient.storage
+          .from("coach-gallery")
+          .createSignedUrl(coachData.presentation_video_path, 3600);
+        presentationVideoUrl = vidData?.signedUrl ?? null;
+      }
+    }
   } catch {
     notFound();
   }
@@ -155,7 +202,52 @@ export default async function CoachProfilePage({ params }: PageProps) {
               ))}
             </div>
           )}
+
+          {coachData.interests && coachData.interests.length > 0 && (
+            <div className="mt-2">
+              <p className="text-muted text-xs font-bold uppercase tracking-[2px] mb-2">
+                {t("interests")}
+              </p>
+              <div className="flex flex-wrap gap-2 justify-center">
+                {coachData.interests.map((interest) => (
+                  <span
+                    key={interest}
+                    className="bg-[#1A2A10] text-[#C8FF00]/70 rounded-full px-3 py-1 text-[13px] font-medium border border-[#C8FF00]/20"
+                  >
+                    {interest}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
+
+        {/* Gallery */}
+        {gallerySignedUrls.length > 0 && (
+          <section className="mb-10">
+            <h2 className="text-muted text-xs font-bold uppercase tracking-[2px] mb-3">
+              {t("gallery")}
+            </h2>
+            <GalleryCarousel images={gallerySignedUrls} />
+          </section>
+        )}
+
+        {/* Presentation Video */}
+        {presentationVideoUrl && (
+          <section className="mb-10">
+            <h2 className="text-muted text-xs font-bold uppercase tracking-[2px] mb-3">
+              {t("presentationVideo")}
+            </h2>
+            <div className="rounded-xl overflow-hidden border border-[#2A2A2A] bg-[#111]">
+              {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+              <video
+                controls
+                src={presentationVideoUrl}
+                className="w-full max-h-96 object-contain"
+              />
+            </div>
+          </section>
+        )}
 
         {/* Bio */}
         {coachData.bio && (

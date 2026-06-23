@@ -17,6 +17,7 @@ const perfilSchema = z.object({
   profile: z.object({
     bio: z.string().max(2000).nullable().optional(),
     specialties: z.array(z.string()).optional().default([]),
+    interests: z.array(z.string()).optional().default([]),
     years_experience: z.number().int().min(0).max(60).nullable().optional(),
   }),
   packages: z.array(packageSchema).optional().default([]),
@@ -95,11 +96,13 @@ export async function PATCH(request: Request) {
     }
 
     // Update coach_profiles
-    const { error: profileError } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: profileError } = await (supabase as any)
       .from("coach_profiles")
       .update({
         bio: profile.bio ?? null,
         specialties: profile.specialties,
+        interests: profile.interests,
         years_experience: profile.years_experience ?? null,
       })
       .eq("user_id", user.id);
