@@ -1181,7 +1181,22 @@
           "groupLegs": "Legs",
           "groupShoulders": "Shoulders",
           "groupArms": "Arms",
-          "groupCore": "Core"
+          "groupCore": "Core",
+          "personalizationTitle": "Your tips and video",
+          "personalizationSubtitle": "(for your students)",
+          "personalizationTipsLabel": "Custom tips",
+          "personalizationTipsPlaceholder": "Add cues, corrections or tips for your students when performing this exercise…",
+          "personalizationVideoLabel": "Add video",
+          "personalizationVideoReplace": "Replace video",
+          "personalizationVideoHint": "MP4, MOV or WebM · max {max} MB",
+          "personalizationCurrentVideo": "Current video",
+          "personalizationRemoveVideo": "Remove video",
+          "personalizationVideoSelected": "Selected: {name} ({size} MB)",
+          "personalizationBtnSave": "Save",
+          "personalizationBtnSaving": "Saving…",
+          "personalizationSuccess": "✓ Saved",
+          "personalizationErrorSize": "Video exceeds the {max} MB limit.",
+          "personalizationErrorGeneric": "Error saving"
         }
       },
       "detail": {

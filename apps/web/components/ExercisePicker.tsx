@@ -331,6 +331,17 @@ const DETAIL_TABS: { key: DetailTab; label: string }[] = [
   { key: "musculos",  label: "Músculos" },
 ];
 
+const VIDEO_ACCEPT = "video/mp4,video/quicktime,video/webm";
+const VIDEO_MAX_MB = 200;
+
+type PersonalizationState = {
+  tips: string;
+  video_path: string | null;
+  video_signed_url: string | null;
+};
+
+type SaveState = "idle" | "loading" | "success" | "error";
+
 function ExerciseDetailPanel({
   exercise,
   lang,
@@ -346,6 +357,126 @@ function ExerciseDetailPanel({
   const iconKey = getIconKey(exercise);
   const displayName =
     lang === "en" && exercise.name_en ? exercise.name_en : exercise.name;
+
+  // Personalization state
+  const [personalization, setPersonalization] = useState<PersonalizationState>({
+    tips: "",
+    video_path: null,
+    video_signed_url: null,
+  });
+  const [loadingPersonalization, setLoadingPersonalization] = useState(true);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [removeVideo, setRemoveVideo] = useState(false);
+  const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Preload existing personalization when panel opens
+  useEffect(() => {
+    let cancelled = false;
+    setLoadingPersonalization(true);
+    setSaveState("idle");
+    setSaveError(null);
+    setSelectedFile(null);
+    setRemoveVideo(false);
+
+    fetch(`/api/coach/exercise-personalization?exercise_id=${exercise.id}`)
+      .then((r) => r.json())
+      .then((json: { data: (PersonalizationState & { id?: string; updated_at?: string }) | null; error?: string }) => {
+        if (cancelled) return;
+        if (json.data) {
+          setPersonalization({
+            tips: json.data.tips ?? "",
+            video_path: json.data.video_path ?? null,
+            video_signed_url: json.data.video_signed_url ?? null,
+          });
+        } else {
+          setPersonalization({ tips: "", video_path: null, video_signed_url: null });
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setPersonalization({ tips: "", video_path: null, video_signed_url: null });
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingPersonalization(false);
+      });
+
+    return () => { cancelled = true; };
+  }, [exercise.id]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    if (!file) return;
+    if (file.size > VIDEO_MAX_MB * 1024 * 1024) {
+      setSaveError(`El video supera el límite de ${VIDEO_MAX_MB} MB.`);
+      e.target.value = "";
+      return;
+    }
+    setSaveError(null);
+    setSelectedFile(file);
+    setRemoveVideo(false);
+  };
+
+  const handleRemoveVideo = () => {
+    setRemoveVideo(true);
+    setSelectedFile(null);
+    setPersonalization((p) => ({ ...p, video_signed_url: null, video_path: null }));
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleSave = async () => {
+    setSaveState("loading");
+    setSaveError(null);
+
+    try {
+      const fd = new FormData();
+      fd.append("exercise_id", exercise.id);
+      fd.append("tips", personalization.tips);
+      if (removeVideo) {
+        fd.append("remove_video", "true");
+      }
+      if (selectedFile) {
+        fd.append("video", selectedFile);
+      }
+
+      const res = await fetch("/api/coach/exercise-personalization", {
+        method: "POST",
+        body: fd,
+      });
+      const json = (await res.json()) as {
+        ok?: boolean;
+        error?: string;
+        data?: PersonalizationState & { id?: string; updated_at?: string };
+      };
+
+      if (!res.ok || !json.ok) {
+        throw new Error(json.error ?? "Error al guardar");
+      }
+
+      if (json.data) {
+        setPersonalization({
+          tips: json.data.tips ?? "",
+          video_path: json.data.video_path ?? null,
+          video_signed_url: json.data.video_signed_url ?? null,
+        });
+      }
+      setSelectedFile(null);
+      setRemoveVideo(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      setSaveState("success");
+      // Reset success indicator after 3 s
+      setTimeout(() => setSaveState("idle"), 3000);
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Error al guardar");
+      setSaveState("error");
+    }
+  };
+
+  // Computed: what video to show
+  const videoToShow = removeVideo ? null : (personalization.video_signed_url ?? null);
+  const hasVideo = !removeVideo && Boolean(personalization.video_path);
 
   return (
     <>
@@ -405,8 +536,103 @@ function ExerciseDetailPanel({
         )}
       </div>
 
+      {/* ----------------------------------------------------------------- */}
+      {/* Personalization section: Tus tips y video (para tus alumnos)      */}
+      {/* ----------------------------------------------------------------- */}
+      <div className="mt-4 pt-4 border-t border-border space-y-3">
+        <p className="text-text text-sm font-bold">
+          Tus tips y video <span className="text-muted font-normal">(para tus alumnos)</span>
+        </p>
+
+        {loadingPersonalization ? (
+          <div className="space-y-2 animate-pulse">
+            <div className="h-16 rounded-lg bg-surface-2" />
+            <div className="h-8 w-40 rounded-lg bg-surface-2" />
+          </div>
+        ) : (
+          <>
+            {/* Tips textarea */}
+            <div>
+              <label className="block text-muted text-xs mb-1.5">
+                Tips personalizados
+              </label>
+              <textarea
+                rows={3}
+                value={personalization.tips}
+                onChange={(e) =>
+                  setPersonalization((p) => ({ ...p, tips: e.target.value }))
+                }
+                placeholder="Anotá indicaciones, correcciones o tips para tus alumnos al hacer este ejercicio…"
+                className="w-full px-3 py-2 bg-surface-2 border border-border rounded-lg text-text placeholder-[#9898C0] focus:outline-none focus:border-[#C8FF00] text-sm transition-colors resize-none"
+              />
+            </div>
+
+            {/* Current video */}
+            {videoToShow && (
+              <div className="space-y-1.5">
+                <p className="text-muted text-xs">Video actual</p>
+                <video
+                  src={videoToShow}
+                  controls
+                  className="w-full rounded-lg border border-border max-h-40 bg-surface-2"
+                />
+                <button
+                  type="button"
+                  onClick={handleRemoveVideo}
+                  className="text-red-400 text-xs hover:text-red-300 transition-colors"
+                >
+                  Quitar video
+                </button>
+              </div>
+            )}
+
+            {/* File input for new video */}
+            <div>
+              <label className="block text-muted text-xs mb-1.5">
+                {hasVideo || selectedFile ? "Reemplazar video" : "Agregar video"}{" "}
+                <span className="opacity-60">(MP4, MOV o WebM · máx. {VIDEO_MAX_MB} MB)</span>
+              </label>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept={VIDEO_ACCEPT}
+                onChange={handleFileChange}
+                className="w-full text-sm text-muted file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-surface-2 file:text-text hover:file:bg-border cursor-pointer"
+              />
+              {selectedFile && (
+                <p className="text-lime text-xs mt-1">
+                  Seleccionado: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(1)} MB)
+                </p>
+              )}
+            </div>
+
+            {/* Error state */}
+            {saveError && (
+              <p className="text-red-400 text-xs">{saveError}</p>
+            )}
+
+            {/* Save button + success */}
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => void handleSave()}
+                disabled={saveState === "loading"}
+                className="px-4 py-2 bg-lime text-[#0A0A0A] rounded-lg text-sm font-bold hover:bg-[#AADD00] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {saveState === "loading" ? "Guardando…" : "Guardar"}
+              </button>
+              {saveState === "success" && (
+                <span className="text-lime text-xs font-semibold">
+                  ✓ Guardado
+                </span>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+
       {/* Footer actions */}
-      <div className="flex gap-3 pt-4 border-t border-border mt-2">
+      <div className="flex gap-3 pt-4 border-t border-border mt-4">
         <button
           type="button"
           onClick={onClose}

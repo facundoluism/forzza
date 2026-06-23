@@ -1205,7 +1205,22 @@
           "groupLegs": "Piernas",
           "groupShoulders": "Hombros",
           "groupArms": "Brazos",
-          "groupCore": "Core"
+          "groupCore": "Core",
+          "personalizationTitle": "Tus tips y video",
+          "personalizationSubtitle": "(para tus alumnos)",
+          "personalizationTipsLabel": "Tips personalizados",
+          "personalizationTipsPlaceholder": "Anotá indicaciones, correcciones o tips para tus alumnos al hacer este ejercicio…",
+          "personalizationVideoLabel": "Agregar video",
+          "personalizationVideoReplace": "Reemplazar video",
+          "personalizationVideoHint": "MP4, MOV o WebM · máx. {max} MB",
+          "personalizationCurrentVideo": "Video actual",
+          "personalizationRemoveVideo": "Quitar video",
+          "personalizationVideoSelected": "Seleccionado: {name} ({size} MB)",
+          "personalizationBtnSave": "Guardar",
+          "personalizationBtnSaving": "Guardando…",
+          "personalizationSuccess": "✓ Guardado",
+          "personalizationErrorSize": "El video supera el límite de {max} MB.",
+          "personalizationErrorGeneric": "Error al guardar"
         }
       },
       "detail": {
