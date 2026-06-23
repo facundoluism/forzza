@@ -3323,6 +3323,622 @@ ON CONFLICT (exercise_id, lang) DO UPDATE SET
   updated_at = now();
 
 INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'HFf5WDmtHuE', '¡Para de Hacer Elevaciones Laterales con Mancuernas Así! (SALVA A UN AMIGO)', 'UCAR76PvwLHcHqnbqFIos_Xg', 'ATHLEAN-X Español', 46, 0.75, '{"text":0.6666666666666666,"channel":1,"engagement":1,"duration":1,"language":0,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'elevaciones-laterales-a-una-mano'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'HFf5WDmtHuE', '¡Para de Hacer Elevaciones Laterales con Mancuernas Así! (SALVA A UN AMIGO)', 'UCAR76PvwLHcHqnbqFIos_Xg', 'ATHLEAN-X Español', 46, 0.85, '{"text":0.6666666666666666,"channel":1,"engagement":1,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'elevaciones-laterales-a-una-mano'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'zG2xJ0Q5QtI', 'How To: Inside-Grip Bicep Curl With E-Z Bar Curl', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 100, 0.8281, '{"text":0.6666666666666666,"channel":1,"engagement":0.6406627939595856,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'ez-bar-curl'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'M67E8xSxrsA', 'Barra VS Mancuerna en CURL DE BÍCEPS', 'UCh4VdbK3ybBBwleBdta_GMg', 'BlueGym Animation', 182, 0.8573, '{"text":0.75,"channel":1,"engagement":0.9113224590761017,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'ez-bar-curl'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'h2c8V0YCD6c', 'How To Level Up Your AB ROLLOUT', 'UCyPYQTT20IgzVw92LDvtClw', 'Squat University', 53, 0.6691, '{"text":0.3333333333333333,"channel":1,"engagement":0.595308111285196,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'floor-ab-variations'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'F7h0HU4Ukao', 'Patadas de rana en el suelo -  ejercicios de abdomen', 'UCsI_T659q8Dk-RT5sAESfzA', 'Rodrigo Bermejo Trainer', 29, 0.4137, '{"text":0.4,"channel":0,"engagement":0.5017655922895976,"duration":0.9333333333333333,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'floor-ab-variations'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'tpLnfSQJ0gg', 'How To: Dumbbell Pull-Over', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 118, 0.7247, '{"text":0.3333333333333333,"channel":1,"engagement":0.6234579560104546,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'floor-dumbbell-pullover'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'DTdn0Vu-cb0', 'Pull over en el suelo con mancuerna', 'UCAQdvN4FekmcCDgT0QnY3Ag', 'jvc_traindifferent', 12, 0.4685, '{"text":1,"channel":0,"engagement":0.34254806956773304,"duration":0,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'floor-dumbbell-pullover'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'd8CuwaUenR4', 'The SECRET To Shoulder Mobility!😳', 'UCyPYQTT20IgzVw92LDvtClw', 'Squat University', 55, 0.7439, '{"text":0.3333333333333333,"channel":1,"engagement":0.9696165780493885,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'floor-shoulder-rotation'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'c6ZyiCMqjhc', 'Elevación de cadera en suelo', 'UCjB7p8Cp654EAiZNiEEgwkg', 'Bruno Loiacono', 20, 0.2747, '{"text":0.25,"channel":0,"engagement":0.3319753023839811,"duration":0.3333333333333333,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'floor-shoulder-rotation'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'Ip6PTlHWcpA', 'EZ French Press VS Skull Crushers (the Difference)', 'UC5efErrEnb4krh7dwJdj3RA', 'Criticalbench', 332, 0.499, '{"text":0.6,"channel":0,"engagement":0.594916465681782,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'french-press-skull-crusher-bar'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'Loxe7Gh-fwc', 'Tríceps tumbado en banco plano con barra (Press francés)', 'UC40UTbZ9VnbpZb_1JWU4KZw', 'trainido', 56, 0.5217, '{"text":0.75,"channel":0,"engagement":0.4836197015171908,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'french-press-skull-crusher-bar'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'Ip6PTlHWcpA', 'EZ French Press VS Skull Crushers (the Difference)', 'UC5efErrEnb4krh7dwJdj3RA', 'Criticalbench', 332, 0.499, '{"text":0.6,"channel":0,"engagement":0.594916465681782,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'french-press-skull-crusher-dumbbell'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', '4YSHZBrq4Ag', 'Press Francés con Mancuernas para TRÍCEPS', 'UCQQ2X96FF1LezYFe6lUUK0w', 'Zonapablo', 111, 0.8586, '{"text":1,"channel":1,"engagement":0.5432498911954465,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'french-press-skull-crusher-dumbbell'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'rjH934b6pVw', 'How To Target Your Glutes |  Glute Ham Raise Machine', 'UCpEJe8DSrO9jLU-v3FAwd5A', 'Strength-N-U', 45, 0.484, '{"text":0.5,"channel":0,"engagement":0.6698895304950404,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'glute-ham-developer-ghd'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'c13Spuzkaiw', 'Cómo hacer ondas modernas con plancha | Tutorial ghd platinum+', 'UCbMv6eitY7rB1PvSeoOEBQg', 'ghdSpain', 103, 0.4307, '{"text":0.3333333333333333,"channel":0,"engagement":0.6533527246434431,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'glute-ham-developer-ghd'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'dJa_Nf4zdik', 'Build Bigger Glutes With Perfect Training Technique ft. Stephanie Buttermore (Glute Kickback)', 'UC68TLK0mAEzUyHx5x5k-S1Q', 'Jeff Nippard', 433, 0.8823, '{"text":1,"channel":1,"engagement":0.7630566406015831,"duration":0.7972222222222223,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'glute-kickback'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'g-PhDQ_t6L8', '6 Patadas de Glúteo para Tonificar y Levantar Glúteos Caídos | Rutina para Principiantes', 'UC_zaLJ30yLlq5Pd86jdu_Og', 'NAYLA Vlogs', 908, 0.5754, '{"text":1,"channel":0,"engagement":0.8769695144139734,"duration":0,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'glute-kickback'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', '4cxt_Tldugw', '9 Hack Squat Mistakes and How to Fix Them', 'UCfQgsKhHjSyRLOp9mnffqVg', 'Renaissance Periodization', 1127, 0.8095, '{"text":1,"channel":1,"engagement":0.797284871053802,"duration":0,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'hack-squat-machine'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'a7fX4Esq3vo', 'HACK SQUAT | Máquina para cuádriceps, glúteos y femoral', 'UCePPoEq2wyQlNNRCAtXW-Cw', 'Lowfit Huelva', 212, 0.6006, '{"text":1,"channel":0,"engagement":0.5031291155674534,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'hack-squat-machine'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'Pr1ieGZ5atk', 'Hanging Leg Raise | HOW-TO', 'UCe0TLA0EsQbE-MjuHXevj2A', 'ATHLEAN-X™', 276, 0.9591, '{"text":1,"channel":1,"engagement":0.795558732044171,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'hanging-leg-raise'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', '3JTEN5DeYvI', '¿Cómo MARCAR tu ABDOMEN con ELEVACIONES  de pierna?', 'UCj1y2Xo8g36rfvQ0EsOe-7g', 'BejaranoFit', 30, 0.4292, '{"text":0.25,"channel":0,"engagement":0.7708383849587824,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'hanging-leg-raise'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'Pr1ieGZ5atk', 'Hanging Leg Raise | HOW-TO', 'UCe0TLA0EsQbE-MjuHXevj2A', 'ATHLEAN-X™', 276, 0.8841, '{"text":0.75,"channel":1,"engagement":0.795558732044171,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'hanging-leg-raise-bar'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'TE7DFsCyA3A', 'Elevaciones de Piernas en la Barra Fija', 'UC2ceW1T-XTrSANPYdnonyGw', 'Entrenador Thiago Gomes', 52, 0.5609, '{"text":1,"channel":0,"engagement":0.3044504355185288,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'hanging-leg-raise-bar'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'Hl29USTwFkA', 'Here’s 1 way to do a high cable single arm bicep curl 💪', 'UChrQiZffjbzuwDPhkfO3GMQ', 'Brenton Ross', 23, 0.5628, '{"text":1,"channel":0,"engagement":0.5474713981611298,"duration":0.5333333333333333,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'high-cable-curl-single-arm'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'vDnOrc_bZKM', 'ASÍ SE DEBE HACER EL CURL DE BÍCEPS EN POLEA 💪🏼💥', 'UC10CKglGHmJnnWffAwov5kQ', 'Haro Fitness', 30, 0.4673, '{"text":0.5,"channel":0,"engagement":0.5863930732412016,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'high-cable-curl-single-arm'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'GmRSV_n2E_0', 'How To: Hip Adduction (Cybex)', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 139, 0.7776, '{"text":0.5,"channel":1,"engagement":0.6382479522249482,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'hip-abductor-machine'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'dycKfaquQWo', 'Cómo usar la máquina de ABDUCTORES y ADUCTORES 😱  Elimina la Flácidez', 'UCNM9mg8ihJgFPZKIA0u9oag', 'Entrenador Personal - Malagaentrena', 363, 0.609, '{"text":1,"channel":0,"engagement":0.5493578838696853,"duration":0.9916666666666667,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'hip-abductor-machine'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'GmRSV_n2E_0', 'How To: Hip Adduction (Cybex)', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 139, 0.7776, '{"text":0.5,"channel":1,"engagement":0.6382479522249482,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'hip-abductor-machine-2'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'HkT-b8oVoF4', 'DIFERENCIA DE ABDUCTORES Y ADUCTORES PARA PRINCIPIANTES', 'UCKPfh870QTup6SqRXDm4aFw', 'SOYPRINCIPIANTEGYM', 27, 0.4122, '{"text":0.3333333333333333,"channel":0,"engagement":0.6609966785890727,"duration":0.8,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'hip-abductor-machine-2'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'GmRSV_n2E_0', 'How To: Hip Adduction (Cybex)', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 139, 0.7776, '{"text":0.5,"channel":1,"engagement":0.6382479522249482,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'hip-adductor-machine'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', '9EuO_mMQ3i8', 'aductores en máquina', 'UCrMkzCHFSRVVKnaaztcgjvw', 'Fitness Consciente', 135, 0.6127, '{"text":1,"channel":0,"engagement":0.5636177674206801,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'hip-adductor-machine'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'GmRSV_n2E_0', 'How To: Hip Adduction (Cybex)', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 139, 0.7776, '{"text":0.5,"channel":1,"engagement":0.6382479522249482,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'hip-adductor-machine-2'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'YmeJZh1-LGM', 'Máquina Abductores Sentado', 'UCQQ2X96FF1LezYFe6lUUK0w', 'Zonapablo', 72, 0.6286, '{"text":0.5,"channel":1,"engagement":0.39304649903770633,"duration":1,"language":0.5,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'hip-adductor-machine-2'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'SrqOu55lrYU', 'How To: Incline Barbell Bench Press | 3 GOLDEN RULES! (MADE BETTER!)', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 334, 0.9434, '{"text":1,"channel":1,"engagement":0.7169309699217886,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'incline-bench-press'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'TAH8RxOS0VI', 'Cómo hacer PRESS DE BANCA perfecto', 'UCh4VdbK3ybBBwleBdta_GMg', 'BlueGym Animation', 190, 0.8363, '{"text":0.6666666666666666,"channel":1,"engagement":0.931275704165388,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'incline-bench-press'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'ig0NyNlSce4', 'How To: Incline Chest Press (Hammer Strength)', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 105, 0.9288, '{"text":1,"channel":1,"engagement":0.6439553190678715,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'incline-chest-press-machine'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', '-zbesyTNztQ', 'Cómo hacer press INCLINADO, el ejercicio BÁSICO de toda rutina de pecho #gym #pressinclinado  #pecho', 'UCh4VdbK3ybBBwleBdta_GMg', 'BlueGym Animation', 46, 0.9408, '{"text":1,"channel":1,"engagement":0.9537872135783099,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'incline-chest-press-machine'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'soxrZlIl35U', 'How To: Seated Incline Dumbbell Bicep Curl', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 105, 0.9312, '{"text":1,"channel":1,"engagement":0.6559113123170377,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'incline-dumbbell-curl'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'ZY19YNmm7tQ', 'CURL de BÍCEPS en BANCO INCLINADO ¡Hazlo así!', 'UCQoN9oXyVuGcQWLlfcNDRgQ', 'Powerexplosive', 61, 0.867, '{"text":1,"channel":1,"engagement":0.5848051113369179,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'incline-dumbbell-curl'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'bDaIL_zKbGs', 'How To: Incline Dumbbell Fly || Hit Your Chest HARD!', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 141, 0.9281, '{"text":1,"channel":1,"engagement":0.640289265703061,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'incline-dumbbell-fly'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'OtW0EYqBczI', 'Cómo hacer APERTURAS, el ejercicio BÁSICO de toda rutina de pecho #gym #aperturas  #pecho', 'UCh4VdbK3ybBBwleBdta_GMg', 'BlueGym Animation', 45, 0.7366, '{"text":0.3333333333333333,"channel":1,"engagement":0.9329309294939254,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'incline-dumbbell-fly'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'yPis7nlbqdY', 'T Bar Row', 'UCfQgsKhHjSyRLOp9mnffqVg', 'Renaissance Periodization', 16, 0.6513, '{"text":0.75,"channel":1,"engagement":0.5982879968672978,"duration":0.06666666666666667,"language":0.5,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'inverted-t-bar-row'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'pmJKV0pfI3M', '5 errores comunes del REMO 💪💪', 'UCh4VdbK3ybBBwleBdta_GMg', 'BlueGym Animation', 47, 0.71, '{"text":0.25,"channel":1,"engagement":0.925149567019963,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'inverted-t-bar-row'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
 SELECT id, 'en', 'CAwf7n6Luuc', 'How To: Lat Pulldown | 3 GOLDEN RULES', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 342, 0.943, '{"text":1,"channel":1,"engagement":0.714901746486262,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
 FROM public.exercise_library WHERE slug = 'lat-pulldown'
 ON CONFLICT (exercise_id, lang) DO UPDATE SET
@@ -3339,6 +3955,650 @@ ON CONFLICT (exercise_id, lang) DO UPDATE SET
 INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
 SELECT id, 'es', '72q0tKij5uU', 'Cómo Hacer Jalón Para Dorsales ¡EVITA ERRORES!', 'UCAR76PvwLHcHqnbqFIos_Xg', 'ATHLEAN-X Español', 355, 0.7333, '{"text":0.3333333333333333,"channel":1,"engagement":0.9167272621279318,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
 FROM public.exercise_library WHERE slug = 'lat-pulldown'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'SALxEARiMkw', 'How to do Lat Pulldowns (AVOID MISTAKES!)', 'UCe0TLA0EsQbE-MjuHXevj2A', 'ATHLEAN-X™', 355, 0.8067, '{"text":0.5,"channel":1,"engagement":0.7832883115808633,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'lat-pulldown-machine'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'mOvxOLhc7W4', 'Jalón al Pecho en Máquina para Espalda - Vertical', 'UCQQ2X96FF1LezYFe6lUUK0w', 'Zonapablo', 135, 0.8603, '{"text":1,"channel":1,"engagement":0.5514747176354567,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'lat-pulldown-machine'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'CAwf7n6Luuc', 'How To: Lat Pulldown | 3 GOLDEN RULES', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 342, 0.763, '{"text":0.4,"channel":1,"engagement":0.7148708055124321,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'lat-pulldown-narrowneutral-grip'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'VUJYixXx5I8', 'Jalón al Pecho con Polea Alta Cerrado Agarre Neutro', 'UCQQ2X96FF1LezYFe6lUUK0w', 'Zonapablo', 134, 0.7966, '{"text":0.75,"channel":1,"engagement":0.6079800301676633,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'lat-pulldown-narrowneutral-grip'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'CAwf7n6Luuc', 'How To: Lat Pulldown | 3 GOLDEN RULES', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 342, 0.763, '{"text":0.4,"channel":1,"engagement":0.7148708055124321,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'lat-pulldown-reverseunderhand-grip'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'TcYwpzaRS1I', 'Cómo hacer Jalón de Pecho PERFECTO! Tenéis el vídeo completo en mi canal #espalda  #consejos  #gym', 'UCh4VdbK3ybBBwleBdta_GMg', 'BlueGym Animation', 50, 0.7136, '{"text":0.25,"channel":1,"engagement":0.9428568298082297,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'lat-pulldown-reverseunderhand-grip'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'CAwf7n6Luuc', 'How To: Lat Pulldown | 3 GOLDEN RULES', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 342, 0.793, '{"text":0.5,"channel":1,"engagement":0.7148708055124321,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'lat-pulldown-wide-grip'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', '72q0tKij5uU', 'Cómo Hacer Jalón Para Dorsales ¡EVITA ERRORES!', 'UCAR76PvwLHcHqnbqFIos_Xg', 'ATHLEAN-X Español', 355, 0.7083, '{"text":0.25,"channel":1,"engagement":0.9166343449903487,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'lat-pulldown-wide-grip'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', '0o07iGKUarI', 'Machine Lateral Raise', 'UCfQgsKhHjSyRLOp9mnffqVg', 'Renaissance Periodization', 12, 0.7137, '{"text":1,"channel":1,"engagement":0.5685105380811575,"duration":0,"language":0.5,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'lateral-raise-machine'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 't9Cb4hLuGfE', 'Truco para ELEVACIONES LATERALES', 'UCh4VdbK3ybBBwleBdta_GMg', 'BlueGym Animation', 26, 0.9086, '{"text":1,"channel":1,"engagement":0.9262081528335665,"duration":0.7333333333333333,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'lateral-raise-machine'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'YyvSfVjQeL0', 'How To: Leg Extension (Cybex)', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 161, 0.9274, '{"text":1,"channel":1,"engagement":0.6371424780271673,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'leg-extension-machine'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'ebHKo8Caris', 'EXTENSIÓN DE PIERNAS ¡TÉCNICA CORRECTA!🦵🔥 #frankserapion', 'UC2ZFIs_x0vtyrwdXGg8b9Sw', 'FRANK SERAPIÓN', 56, 0.5718, '{"text":0.6666666666666666,"channel":0,"engagement":0.8588508497061692,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'leg-extension-machine'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'YyvSfVjQeL0', 'How To: Leg Extension (Cybex)', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 161, 0.9274, '{"text":1,"channel":1,"engagement":0.6371424780271673,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'leg-extension-machine-2'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'N-euKPQgO84', 'Cómo hacer EXTENSIONES de CUÁDRICEPS', 'UCh4VdbK3ybBBwleBdta_GMg', 'BlueGym Animation', 97, 0.8178, '{"text":0.6666666666666666,"channel":1,"engagement":0.8389256478893863,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'leg-extension-machine-2'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'nDh_BlnLCGc', 'How To Leg Press With Perfect Technique', 'UC68TLK0mAEzUyHx5x5k-S1Q', 'Jeff Nippard', 59, 0.95, '{"text":1,"channel":1,"engagement":1,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'leg-press-machine'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'bNsrqXUIJqc', 'Todo sobre la PRENSA de PIERNA', 'UCh4VdbK3ybBBwleBdta_GMg', 'BlueGym Animation', 277, 0.7369, '{"text":0.3333333333333333,"channel":1,"engagement":0.9343578157820113,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'leg-press-machine'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'nDh_BlnLCGc', 'How To Leg Press With Perfect Technique', 'UC68TLK0mAEzUyHx5x5k-S1Q', 'Jeff Nippard', 59, 0.85, '{"text":0.6666666666666666,"channel":1,"engagement":1,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'leg-press-machine-45'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'KdT2g0iSdG0', '🟢 Prensa de Piernas Inclinada 45 grados 🦵 | Técnica Correcta', 'UCBhk0wiI7HzF3kg-WLYXgoQ', 'Vitar Club', 49, 0.627, '{"text":1,"channel":0,"engagement":0.38503180627483646,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'leg-press-machine-45'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'nDh_BlnLCGc', 'How To Leg Press With Perfect Technique', 'UC68TLK0mAEzUyHx5x5k-S1Q', 'Jeff Nippard', 59, 0.8, '{"text":0.5,"channel":1,"engagement":1,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'leg-press-machine-horizontalseated'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'bQIcBKwcnlM', 'Prensa Horizontal para Pierna TUTORIAL', 'UCQQ2X96FF1LezYFe6lUUK0w', 'Zonapablo', 219, 0.7653, '{"text":0.6666666666666666,"channel":1,"engagement":0.5767346695423012,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'leg-press-machine-horizontalseated'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'eQ_NBB6OBH4', 'HOW TO: Chest "Low-To-High" Cable Fly (BIGGER UPPER CHEST) || PERFECT FORM', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 188, 0.8845, '{"text":1,"channel":1,"engagement":0.672517639956774,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'low-cable-chest-fly'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'M6Dl4D_78rg', 'APERTURAS para PECHO - CRUCES de POLEAS BAJAS ASCENDENTE', 'UCQQ2X96FF1LezYFe6lUUK0w', 'Zonapablo', 70, 0.8545, '{"text":1,"channel":1,"engagement":0.5227140515440397,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'low-cable-chest-fly'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'ezAWSmFSsxM', 'Knee Pain With Lunges? Try These 3 Tips!', 'UCh2w-xqEwSz96sbn2afbOVQ', 'Redefining Strength', 58, 0.668, '{"text":1,"channel":0,"engagement":0.8399803168832262,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'lunges'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', '57W5BL9OqQ4', 'AMARÁS Hacer Zancadas Después de Ver Esto', 'UCAR76PvwLHcHqnbqFIos_Xg', 'ATHLEAN-X Español', 33, 0.7944, '{"text":0.5,"channel":1,"engagement":0.971998246632468,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'lunges'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'jobEeklwrrs', '9 Leg Curl Mistakes and How to Fix Them', 'UCfQgsKhHjSyRLOp9mnffqVg', 'Renaissance Periodization', 743, 0.6925, '{"text":0.6666666666666666,"channel":1,"engagement":0.7125676333407739,"duration":0,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'lying-leg-curl-machine'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'kmtn5RJkvVE', 'Curl de pierna acostado', 'UCrMkzCHFSRVVKnaaztcgjvw', 'Fitness Consciente', 108, 0.5226, '{"text":0.6666666666666666,"channel":0,"engagement":0.6129122666926895,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'lying-leg-curl-machine'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'jobEeklwrrs', '9 Leg Curl Mistakes and How to Fix Them', 'UCfQgsKhHjSyRLOp9mnffqVg', 'Renaissance Periodization', 743, 0.6925, '{"text":0.6666666666666666,"channel":1,"engagement":0.7125676333407739,"duration":0,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'lying-leg-curl-machine-2'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'f9OnW-UkkFk', 'FEMORAL EN MAQUINA TUMBADO', 'UCn2AhpfpkBrLav5JmTNXCOg', 'Priscilla_bc', 60, 0.5362, '{"text":0.5,"channel":0,"engagement":0.9309983699951329,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'lying-leg-curl-machine-2'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', '3nJDO2gRcg4', 'Side lying leg raise (hip abduction) | The MSK Physio', 'UCyrblpdGcIPk6Zne7greO_w', 'The Musculoskeletal Clinic', 53, 0.6167, '{"text":1,"channel":0,"engagement":0.5837271989045918,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'lying-leg-raise'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'xpzLT9Q0MSM', 'Elevaciones de piernas para trabajar el abdomen? #gym #abworkout', 'UCbcJcMixmdj7XwRaxlGAdhA', 'Emilio Trainer', 32, 0.4892, '{"text":0.5,"channel":0,"engagement":0.6959988495501203,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'lying-leg-raise'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'xUm0BiZCWlQ', 'How To: Chest Press (Cybex)', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 158, 0.9314, '{"text":1,"channel":1,"engagement":0.657136137213353,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'machine-chest-press'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', '0SJy6gPw_Ik', 'La postura perfecta para Press de Banca #consejos #ejercicio #entrenamiento #gym', 'UCh4VdbK3ybBBwleBdta_GMg', 'BlueGym Animation', 41, 0.9376, '{"text":1,"channel":1,"engagement":0.9381206490983912,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'machine-chest-press'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'sIf0gaIiY6I', 'Machine Seated Lateral Raise the RIGHT way🔥💪🏽#shoulders #shoulderworkout #lateralraise #gymtips', 'UClFCCX0OA6qqTRlxzTeSwrA', 'QuanBFit', 109, 0.6559, '{"text":1,"channel":0,"engagement":0.7796997077530802,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'machine-lateral-raise'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'NkRQI9rrRN8', 'Elevaciones Laterales en Máquina -  Hombro Lateral', 'UCQQ2X96FF1LezYFe6lUUK0w', 'Zonapablo', 107, 0.8618, '{"text":1,"channel":1,"engagement":0.5591744264069435,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'machine-lateral-raise'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'NYok5zjbDcw', 'the correct way to do a low cable row for max gains', 'UCmSEdfW3LpEKyLiCDWBDdVQ', 'mountaindog1', 30, 0.6273, '{"text":1,"channel":0,"engagement":0.6363659354041259,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'machine-row'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'nG9Vdvf5nzo', 'Qué Le Pasa A Su Cuerpo Si Hace Remo Todos Los Días Durante 30 Días', 'UCJN8o0F2qV4cUeSG4dB-ZTg', 'Músculos Grandes', 233, 0.681, '{"text":1,"channel":0,"engagement":0.6551634224973798,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'machine-row'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'Wqq43dKW1TU', 'How To: Overhead Press (Cybex)', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 137, 0.7822, '{"text":0.5,"channel":1,"engagement":0.6607725644729756,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'machine-shoulder-press'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'TAH8RxOS0VI', 'Cómo hacer PRESS DE BANCA perfecto', 'UCh4VdbK3ybBBwleBdta_GMg', 'BlueGym Animation', 190, 0.9363, '{"text":1,"channel":1,"engagement":0.931275704165388,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'machine-shoulder-press'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'mOvxOLhc7W4', 'Jalón al Pecho en Máquina para Espalda - Vertical', 'UCQQ2X96FF1LezYFe6lUUK0w', 'Zonapablo', 135, 0.6103, '{"text":0.5,"channel":1,"engagement":0.5514747176354567,"duration":1,"language":0,"captionsRecency":0}'::jsonb, 'needs_review'
+FROM public.exercise_library WHERE slug = 'máquina-de-dorsal-jalón-en-máquina'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', '3e-76jcA91w', 'Cómo hacer Jalón de Pecho PERFECTO! Vídeo completo en la descripción #espalda #consejos #gym', 'UCh4VdbK3ybBBwleBdta_GMg', 'BlueGym Animation', 45, 0.7937, '{"text":0.5,"channel":1,"engagement":0.9683476748514919,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'máquina-de-dorsal-jalón-en-máquina'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', '2yjwXTZQDDI', 'How To: Standing Straight-Bar Military / Overhead Press', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 168, 0.8311, '{"text":0.6666666666666666,"channel":1,"engagement":0.6552763470681457,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'military-press-barbell'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'fYxSUvIsxoA', 'Haz Esto SIEMPRE que Hagas Press Frontal con Barra ¡MAYOR FUERZA!', 'UCAR76PvwLHcHqnbqFIos_Xg', 'ATHLEAN-X Español', 358, 0.8553, '{"text":0.75,"channel":1,"engagement":0.9016155580961901,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'military-press-barbell'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'SALxEARiMkw', 'How to do Lat Pulldowns (AVOID MISTAKES!)', 'UCe0TLA0EsQbE-MjuHXevj2A', 'ATHLEAN-X™', 355, 0.7317, '{"text":0.25,"channel":1,"engagement":0.7832883115808633,"duration":1,"language":1,"captionsRecency":1}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'neutral-grip-lat-pulldown'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', 'VUJYixXx5I8', 'Jalón al Pecho con Polea Alta Cerrado Agarre Neutro', 'UCQQ2X96FF1LezYFe6lUUK0w', 'Zonapablo', 134, 0.8716, '{"text":1,"channel":1,"engagement":0.6079800301676633,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'neutral-grip-lat-pulldown'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'en', 'fYqswDVbJDg', 'HOW TO: Overhead Triceps Extension (BEST EXERCISE FOR HUGE TRICEPS) || PERFECT FORM (POWERBOMB)', 'UCEtMRF1ywKMc4sf3EXYyDzw', 'ScottHermanFitness', 202, 0.7346, '{"text":0.5,"channel":1,"engagement":0.6730840441086677,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'overhead-cable-tricep-extension'
+ON CONFLICT (exercise_id, lang) DO UPDATE SET
+  youtube_id = EXCLUDED.youtube_id,
+  title = EXCLUDED.title,
+  channel_id = EXCLUDED.channel_id,
+  channel_title = EXCLUDED.channel_title,
+  duration_seconds = EXCLUDED.duration_seconds,
+  score = EXCLUDED.score,
+  score_breakdown = EXCLUDED.score_breakdown,
+  status = EXCLUDED.status,
+  updated_at = now();
+
+INSERT INTO public.exercise_videos (exercise_id, lang, youtube_id, title, channel_id, channel_title, duration_seconds, score, score_breakdown, status)
+SELECT id, 'es', '8QHpC7aEQAU', 'EXTENSIONES de TRÍCEPS en POLEA ALTA TRASNUCA', 'UCQQ2X96FF1LezYFe6lUUK0w', 'Zonapablo', 118, 0.8557, '{"text":1,"channel":1,"engagement":0.5285942215759735,"duration":1,"language":1,"captionsRecency":0}'::jsonb, 'published'
+FROM public.exercise_library WHERE slug = 'overhead-cable-tricep-extension'
 ON CONFLICT (exercise_id, lang) DO UPDATE SET
   youtube_id = EXCLUDED.youtube_id,
   title = EXCLUDED.title,
