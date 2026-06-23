@@ -7,6 +7,7 @@ import {
   Linking,
   Alert,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -49,6 +50,22 @@ function isMinor(birthDate: string): boolean {
   return age < 18;
 }
 
+// ─── Anti-steering guard ──────────────────────────────────────────────────────
+//
+// Esta ruta permanece en el árbol de expo-router pero es INALCANZABLE desde
+// la navegación en iOS y Android (el botón "contratar" y el handleContratar
+// de [coachId].tsx fueron eliminados/noop en ambas plataformas).
+//
+// Si de alguna manera se llega aquí (deep link externo, etc.), el guard a
+// continuación retorna inmediatamente sin ningún contenido comercial.
+//
+// Fundamento: App Store §3.1.1 / §3.1.3 y Google Play Payments Policy
+// prohíben flujos de compra in-app que dirijan a pagos externos.
+// Ver docs/decisions/contratacion-coach-flujo.md para la decisión completa.
+//
+// NOTA: No remover este archivo — lo usa el web PWA donde sí está habilitado
+// el flujo de checkout. El guard solo actúa sobre iOS y Android.
+
 export default function CheckoutScreen() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -59,6 +76,32 @@ export default function CheckoutScreen() {
   }>();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+
+  // Guard: en iOS y Android esta ruta no debe ser accesible.
+  // Si se llega aquí por cualquier motivo, redirigir inmediatamente al perfil
+  // del coach (si tenemos coach_id) o al marketplace.
+  if (Platform.OS === "ios" || Platform.OS === "android") {
+    return (
+      <View style={styles.screen}>
+        <View style={[styles.screenHeader, { paddingTop: insets.top + spacing[4] }]}>
+          <ScreenHeader
+            title={t("marketplace.coach.screenTitle")}
+            onBack={() => {
+              if (coach_id) {
+                router.replace(`/marketplace/${coach_id}` as never);
+              } else {
+                router.replace("/marketplace" as never);
+              }
+            }}
+          />
+        </View>
+        <ErrorState
+          title={t("marketplace.checkout.packageUnavailable")}
+          description={t("marketplace.checkout.packageUnavailableDesc")}
+        />
+      </View>
+    );
+  }
 
   const { data: pkg, isLoading: pkgLoading } = useQuery({
     queryKey: ["checkout_package", package_id, coach_id],

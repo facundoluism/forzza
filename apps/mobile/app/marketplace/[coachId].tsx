@@ -11,6 +11,7 @@ import {
   Dimensions,
   Linking,
   FlatList,
+  Platform,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -379,6 +380,11 @@ const videoStyles = StyleSheet.create({
 });
 
 // ─── Package card ─────────────────────────────────────────────────────────────
+//
+// infoOnly=true → modo informativo (iOS y Android): se ocultan precio y botón
+// "contratar" para cumplir las políticas de anti-steering de App Store y
+// Google Play (§3.1.1, §3.1.3 Apple; Google Play Payments Policy).
+// Ver docs/decisions/contratacion-coach-flujo.md para el fundamento completo.
 
 function PackageCard({
   pkg,
@@ -386,14 +392,16 @@ function PackageCard({
   onContratar,
   hireLabel,
   featuresLabel,
+  infoOnly,
 }: {
   pkg: CoachPackage;
   currencySymbol: string;
   onContratar: (packageId: string) => void;
   hireLabel: string;
   featuresLabel: string;
+  infoOnly: boolean;
 }) {
-  // Precio en centavos → mostrar formateado
+  // Precio en centavos → mostrar formateado (solo se usa cuando infoOnly=false)
   const price = (pkg.price / 100).toLocaleString("es-AR");
   // El paquete pro recibe estilo destacado
   const isHighlighted = pkg.tier === "pro";
@@ -428,19 +436,22 @@ function PackageCard({
         </View>
       )}
 
-      <View style={styles.packageFooter}>
-        <Text style={[styles.packagePriceAmount, isHighlighted && styles.packagePriceHighlighted]}>
-          {currencySymbol}
-          {price}
-        </Text>
-        <TouchableOpacity
-          style={styles.contratarBtn}
-          activeOpacity={0.8}
-          onPress={() => onContratar(pkg.id)}
-        >
-          <Text style={styles.contratarText}>{hireLabel}</Text>
-        </TouchableOpacity>
-      </View>
+      {/* Anti-steering: precio y CTA de compra se ocultan en iOS y Android */}
+      {!infoOnly && (
+        <View style={styles.packageFooter}>
+          <Text style={[styles.packagePriceAmount, isHighlighted && styles.packagePriceHighlighted]}>
+            {currencySymbol}
+            {price}
+          </Text>
+          <TouchableOpacity
+            style={styles.contratarBtn}
+            activeOpacity={0.8}
+            onPress={() => onContratar(pkg.id)}
+          >
+            <Text style={styles.contratarText}>{hireLabel}</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }
@@ -791,23 +802,15 @@ export default function CoachProfileScreen() {
 
   const currencySymbol = countryConfig?.currency_symbol ?? "$";
 
-  function handleContratar(packageId: string) {
-    if (
-      studentProfile?.birth_date &&
-      isMinor(studentProfile.birth_date) &&
-      !studentProfile.parental_consent_at
-    ) {
-      Alert.alert(
-        t("marketplace.coach.consentRequired"),
-        t("marketplace.coach.consentRequiredDesc"),
-        [{ text: t("common.close") }]
-      );
-      return;
-    }
-
-    router.push(
-      `/marketplace/checkout?coach_id=${coachId}&package_id=${packageId}` as never
-    );
+  // Anti-steering compliance (App Store §3.1.1 / Google Play Payments Policy):
+  // La navegación a /marketplace/checkout está DESHABILITADA en iOS y Android.
+  // Esta función queda como dead code — no se llama desde el render porque
+  // PackageCard se renderiza con infoOnly=true en ambas plataformas.
+  // Si en el futuro se habilita un flujo alternativo, debe revisarse primero
+  // con abogado (ver docs/decisions/contratacion-coach-flujo.md §"Pendiente").
+  function handleContratar(_packageId: string) {
+    // No-op: checkout deshabilitado en mobile (anti-steering)
+    return;
   }
 
   if (isLoading) {
@@ -871,6 +874,19 @@ export default function CoachProfileScreen() {
   const hasGallery = (galleryImages?.length ?? 0) > 0;
   const hasVideo = !!coach.presentation_video_path;
   const hasInterests = coach.interests.length > 0;
+
+  // Anti-steering compliance: en iOS y Android la sección de paquetes es
+  // estrictamente informativa — sin precio, sin botón "contratar", sin CTA
+  // de compra ni copy que oriente hacia un pago externo.
+  // iOS (Opción A endurecida): solo título del plan y descripción/features.
+  // Android (conservador): igual que iOS hasta validación legal.
+  // Ver docs/decisions/contratacion-coach-flujo.md para el fundamento.
+  const packagesInfoOnly = Platform.OS === "ios" || Platform.OS === "android";
+
+  // El título de la sección cambia según modo informativo o comercial
+  const packagesSectionTitle = packagesInfoOnly
+    ? t("marketplace.coach.packagesInfoOnly")
+    : t("marketplace.coach.packages");
 
   return (
     <View style={styles.screen}>
@@ -976,28 +992,52 @@ export default function CoachProfileScreen() {
         </View>
       )}
 
-      {/* Packages */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t("marketplace.coach.packages").toUpperCase()}</Text>
-        {activePackages.length === 0 ? (
-          <View style={styles.noPackagesCard}>
-            <Text style={styles.noPackages}>
-              {t("marketplace.coach.noPackages")}
+      {/* Packages — comportamiento según plataforma (anti-steering) */}
+      {Platform.OS === "ios" ? (
+        // iOS (Opción A endurecida): CERO comercialización.
+        // Solo se muestra este mensaje informativo si el alumno NO tiene
+        // assignment activo. Si tiene assignment, verá "Mi coach" en el
+        // tab de inicio con acceso a su plan.
+        // Prohibido: precio, botón, link, copy que oriente a compra externa.
+        <View style={styles.section}>
+          <View style={styles.assignedInfoCard}>
+            <Text style={styles.assignedInfoText}>
+              {t("marketplace.coach.assignedInfo")}
             </Text>
           </View>
-        ) : (
-          activePackages.map((pkg) => (
-            <PackageCard
-              key={pkg.id}
-              pkg={pkg}
-              currencySymbol={currencySymbol}
-              onContratar={handleContratar}
-              hireLabel={t("marketplace.coach.hire")}
-              featuresLabel={t("marketplace.coach.featuresLabel")}
-            />
-          ))
-        )}
-      </View>
+        </View>
+      ) : (
+        // Android (conservador, igual que iOS al inicio) + web (sin gating).
+        // En Android: paquetes sin precio ni CTA de compra + copy neutro.
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{packagesSectionTitle.toUpperCase()}</Text>
+          {activePackages.length === 0 ? (
+            <View style={styles.noPackagesCard}>
+              <Text style={styles.noPackages}>
+                {t("marketplace.coach.noPackages")}
+              </Text>
+            </View>
+          ) : (
+            activePackages.map((pkg) => (
+              <PackageCard
+                key={pkg.id}
+                pkg={pkg}
+                currencySymbol={currencySymbol}
+                onContratar={handleContratar}
+                hireLabel={t("marketplace.coach.hire")}
+                featuresLabel={t("marketplace.coach.featuresLabel")}
+                infoOnly={packagesInfoOnly}
+              />
+            ))
+          )}
+          {/* Android: copy neutro máximo (sin link ni dirección a pago) */}
+          {Platform.OS === "android" && activePackages.length > 0 && (
+            <Text style={styles.contractingExternalNote}>
+              {t("marketplace.coach.contractingExternal")}
+            </Text>
+          )}
+        </View>
+      )}
 
       {/* Reviews */}
       {user && (
@@ -1426,6 +1466,30 @@ const styles = StyleSheet.create({
     fontFamily: typography.body,
     color: colors.muted,
     fontSize: fontSize.base,
+  },
+  // Anti-steering info card (iOS) y nota Android
+  assignedInfoCard: {
+    backgroundColor: colors.surface3,
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing[5],
+    alignItems: "center",
+  },
+  assignedInfoText: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.md,
+    lineHeight: 22,
+    textAlign: "center",
+  },
+  contractingExternalNote: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.sm,
+    textAlign: "center",
+    marginTop: spacing[2],
+    fontStyle: "italic",
   },
   // Report coach profile
   reportBtn: {

@@ -404,7 +404,11 @@
       "gallery": "Fotos del coach",
       "presentationVideo": "Video de presentación",
       "videoError": "No se pudo cargar el video de presentación.",
-      "videoOpenExternal": "Abrir video en el navegador"
+      "videoOpenExternal": "Abrir video en el navegador",
+      "assignedInfo": "Cuando tengas un coach asignado, vas a ver tu plan y seguimiento desde esta sección.",
+      "contractingExternal": "La contratación de coaches se gestiona fuera de la app.",
+      "myCoachSection": "Tu coach",
+      "packagesInfoOnly": "Planes disponibles"
     },
     "checkout": {
       "screenTitle": "Contratar coach",

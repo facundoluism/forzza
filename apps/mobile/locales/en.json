@@ -404,7 +404,11 @@
       "gallery": "Coach photos",
       "presentationVideo": "Presentation video",
       "videoError": "Could not load the presentation video.",
-      "videoOpenExternal": "Open video in browser"
+      "videoOpenExternal": "Open video in browser",
+      "assignedInfo": "Once you have a coach assigned, you will see your plan and progress tracking in this section.",
+      "contractingExternal": "Coach hiring is managed outside the app.",
+      "myCoachSection": "Your coach",
+      "packagesInfoOnly": "Available plans"
     },
     "checkout": {
       "screenTitle": "Hire coach",
