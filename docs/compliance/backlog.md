@@ -51,6 +51,8 @@ El video razona sobre EE. UU. (FTC, CCPA, DMCA y sus USD 150k). `CLAUDE.md` defi
 
 ### P2 — US/EU prep (activable al internacionalizar)
 
+> **Plan de ejecución detallado: [`p2-plan.md`](p2-plan.md)** — desglose por workstream (código / trámite / abogado), gatillos, secuencia y qué ya cubre P0/P1. Estado: DIFERIDO hasta decisión de lanzar en US/UE.
+
 | ID | Acción | Nota |
 |---|---|---|
 | P2.1 | Agente DMCA en copyright.gov | Solo al operar en EE. UU. HUMAN_REQUIRED (~USD 6 / 3 años + publicar datos del agente + política de reincidentes) |

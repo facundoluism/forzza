@@ -1,138 +1,69 @@
-# Forzza handoff - 2026-06-16
-
-## Actualizacion 2026-06-16 noche
-
-- `pnpm smoke-test:mobile`: PASS en `forzza_pixel` / `emulator-5554`.
-- Cobertura mobile validada: login alumno fixture, rutina de hoy, detalle, ficha de ejercicio, inicio de entreno, carga de 2 sets, descanso, cambio de ejercicio, confirmacion final y regreso a home.
-- Ajustes relevantes: `e2e/flows/03-workout-session.yaml` espera dev-client frio, reentra a rutina despues de validar ficha, cierra teclado antes de loguear sets y usa `FINISH` para el confirm nativo; `_layout.tsx` silencia el warning conocido de Legacy Architecture para que LogBox no tape botones.
-- RevenueCat mobile: `AuthProvider` ya vincula/desvincula el usuario Supabase con `Purchases.logIn/logOut`, el servicio corta limpio si falta la API key de la plataforma actual, y `EXPO_PUBLIC_ENABLE_REVENUECAT_IAP=true` permite QA sandbox/tienda sin cambiar codigo.
-- Historial mobile: `Profile` y `Progress` ahora leen entrenos completados desde `workout_sessions` en Supabase y los mezclan con la cola local, evitando que el alumno pierda contador/racha/historial cuando un entreno ya sincronizo.
-- Nota operativa: antes de repetir Maestro, limpiar `C:\Users\Facu\.maestro\sessions`, asegurar `adb reverse tcp:8081/54321`, Metro caliente y device `emulator-5554` activo.
-- El bloque viejo que marca Maestro como `PARTIAL/BLOCKED_ENV` queda superado por esta actualizacion.
+# Forzza HANDOFF — 2026-06-22
 
 ## Fase actual
 
-Smoke integral y cierre de brechas V1 entre mobile, web coach/admin, Supabase y flujo de negocio.
+Compliance legal/privacidad. P0 + P1 CERRADOS (PASS). P2 planificado y DIFERIDO.
 
 ---
 
-## ⏯️ ESTADO EN VIVO — sesión 2026-06-16 (tarde) — LEER PRIMERO AL RETOMAR
+## Hecho (commits en main)
 
-Sesión de verificación integral pedida por el owner: probar i18n ES/EN, MP end-to-end,
-UI/UX alineada con todas las funciones, Maestro mobile, y commitear pendientes.
+| Commit | Contenido |
+|--------|-----------|
+| `f523560` | P0: data-map, drafts legales ES/EN (`/legales/{terminos,privacidad,ia,disclaimer-salud}`), componente `HealthNotice` en `packages/ui`, `ios.privacyManifests` en `app.config.ts`, migración `20260622150000_terms_acceptance.sql` (RPC `accept_terms` + checkbox bloqueante), `store-privacy-labels.md` (Health App declarada) |
+| `de8b70e` | P1: borrado de cuenta web, migración `20260622170000_sensitive_data_consent.sql` (RPC `record_sensitive_consent`), `ugc-takedown.md` |
+| `7c411af` | P1: consent analytics (banner + opt-out web/mobile), UI consentimiento sensible mobile, Edge Functions `export-user-data` + `submit-content-report` |
+| `f32026d` | P1 UI: botón "descargar mis datos" + botones "reportar" (mobile/web), deps `expo-file-system` / `expo-sharing` |
+| `a906a9d` | fix: banner analytics reserva `padding-bottom` para no tapar contenido al pie |
 
-### Verificado OK por el orquestador (Opus), no por reporte ciego de subagentes
-- Typecheck VERDE: core, ui, db-types, web, **mobile**. core tests VERDE (billing/gating 100% cov).
-- i18n paridad de claves: web 609/609, mobile 307/307. Confirmado renderizando en EN en el emulador.
-- MP sandbox: 119/124 tests (idempotencia, firma HMAC, mapeo status). Checkout llega a init_point real. §5/§6 cubiertas.
-- App mobile real (emulador `forzza_pixel` / emulator-5554): build nativo + install OK; cadena
-  login → rutina de hoy → detalle → ficha de ejercicio → iniciar entreno FUNCIONA end-to-end
-  contra Supabase local (Metro con env override EXPO_PUBLIC_SUPABASE_URL=http://localhost:54321 + `adb reverse tcp:54321`).
+Toda la documentación viva está en `docs/compliance/`:
+`backlog.md`, `data-map.md`, `store-privacy-labels.md`, `ugc-takedown.md`, `ai-policy.md`, `p2-plan.md`.
+Progress de la fase: `docs/progress/compliance.md`.
 
-### DECISIÓN DE ARQUITECTURA DE PAGOS (confirmada con el owner y en código) — §3
-- **Mercado Pago** = paquetes de coach (mobile vía browser `coach-checkout`+Linking ✅, y web) + PRO en web (`/api/mp-preapproval` ✅) + liquidaciones/payouts a coaches. SE QUEDA, es central.
-- **RevenueCat (IAP)** = SOLO PRO comprado dentro de la app mobile (Apple/Google lo exigen). NO toca plata de coaches.
-- BUG: `apps/mobile/app/upgrade.tsx` activa PRO con MP web (`mp-create-preapproval`+Linking) — debe ser RevenueCat IAP. (En migración, ver abajo.)
+## Verificación ejecutada
 
-### Plan de 4 items (elegidos por el owner)
-1. **RevenueCat** ✅ HECHO (commit `feat(F-mobile): PRO mobile vía RevenueCat IAP`): `upgrade.tsx` usa `purchasePro()` IAP; `services/revenuecat.ts` implementa el SDK real; babel + .env.example + plugin. Typecheck verde. PENDIENTE HUMAN_REQUIRED para QA real: productos sandbox `com.forzza.app.pro_monthly` + entitlement `pro` + offering en App Store Connect / Play Console / RevenueCat, claves `EXPO_PUBLIC_REVENUECAT_*_API_KEY`, y flipear FEATURE_FLAGS.APPLE/GOOGLE_PAYMENTS para builds de tienda. `loginRevenueCat(userId)` exportado pero falta wirearlo al sign-in (historia aparte).
-2. **UI/UX ALTA** ✅ HECHO (commit `fix(ui): hallazgos UI/UX ALTA`): auth screens a tokens + Input del DS, perfil mobile enriquecido (racha = TODO sin query workout_sessions), ErrorState en backoffice web, dedup RestTimer, fix th duplicado. Typecheck mobile/web/ui verde, i18n paridad mobile 318/318 web 620/620. Quedan items MEDIA/BAJA de la auditoría sin hacer (ver reporte de auditoría: hex en onboarding-coach web, auth web inline, paleta semántica en marketplace, etc.).
-3. **MP webhook real** ✅ CERRADO a nivel código + verificado con firma REAL de MP (200 OK desde el dashboard). Túnel: `cloudflared` da 404 de ruteo en quick tunnels → usar **ngrok** (`ngrok.exe http 127.0.0.1:54321`; OJO IPv4 explícito, `localhost`→`::1` falla con ERR_NGROK_8012). Secret real cargado en `supabase/functions/.env`. `verify_jwt=false` para mp-webhook/mp-assignment-webhook en config.toml (commit `93fd83a`). **El pago en vivo destapó 3 bugs del flujo PRO (nunca funcionó E2E), TODOS arreglados + CI verde:**
-   - **#1 firma** (`ead669b`): manifest era `id:<x-request-id>;ts:` → debe ser `id:<data.id>;request-id:<x-request-id>;ts:` (data.id del query param). Rechazaba firmas reales de MP.
-   - **#2 matching+tipo** (`881e5ad`): webhook matcheaba por preapproval-id pero se guarda el plan-id; e ignoraba `subscription_preapproval`. Fix: match por `preapproval.preapproval_plan_id`, promueve gateway_subscription_id, reconoce subscription_preapproval.
-   - **#3 insert RLS** (commit `fix(payments): crear la suscripción PRO con service-role`): el INSERT de subscriptions usaba el JWT del alumno → RLS (solo 'owner' escribe) lo bloqueaba en silencio. Ahora service-role.
-   - PENDIENTE: confirmación visual `subscription=active` con un pago real — bloqueado por fricción del sandbox MP (UI: challenge 3DS + deep-links `mercadopago://` en browser desktop; API: `404 Card token service not found` al crear preapproval). Reintentar en Chrome/incógnito o celular real con app MP, o validar en staging (GO-LIVE ya lista "test de pago real"). Helpers: `.tmp/mp-checkout.js` (genera init_point), `.tmp/mp-sign-test.js` (firma sintética).
-4. **Maestro verde** ✅ HECHO (ver "Actualizacion 2026-06-16 noche" arriba): `pnpm smoke-test:mobile` PASS en emulator-5554. El `reps-input` era el autopromo (resuelto con extendedWaitUntil 20s). Para repetir: liberar RAM si el emulador hace ANR.
+Contra schema LOCAL real (no dev-bypass):
+- RLS pgTAP T64-69: PASS
+- RPCs persisten + `audit_log` + trigger bloquea UPDATE directo: PASS
+- Edge Functions `export-user-data` + `submit-content-report`: PASS
+- UI Playwright (login real, no dev-bypass): banner analytics, checkbox bloqueante de ToS, opt-out / export / borrado en `/coach/perfil`, botón reportar: PASS
+- Usuarios smoke: `alumno/coach/owner.smoke@forzza.app` / `ForzzaSmoke123!`
 
-### PROTOCOLO (aprendido esta sesión)
-- Correr `pnpm lint` ADEMÁS de test+typecheck antes de cada commit (CI corre los 3; el lint solo se vio al pushear backlog). Pushear seguido, no acumular commits sin CI.
-- Verificar firmas/contratos de integraciones contra la doc oficial + un test real, no solo unit tests auto-consistentes (los 3 bugs MP pasaban los unit tests porque usaban el mismo generador equivocado).
+Para servir Edge Functions local:
+```
+supabase functions serve --env-file supabase/functions/.env
+```
 
-### IMPORTANTE al retomar
-- Si la sesión se cerró con los agentes a mitad: el working tree puede tener cambios PARCIALES en
-  `apps/mobile/app/upgrade.tsx`, `services/revenuecat.ts`, `package.json`, auth screens
-  (`app/(auth)/*`), `app/(tabs)/profile.tsx`, `app/session.tsx`, y backoffice web
-  (`coach/*`, `admin/*`). REVISAR `git status` + `git diff` antes de commitear; no commitear roto.
-  Verificar con `pnpm --filter mobile typecheck` / `--filter web typecheck` / `--filter @forzza/ui typecheck`.
-- Los 5 commits de código de esta sesión YA están en main local (cab6361 build Windows; c03d288 boot/metro/assets; 3705c88 flow login; + docs). NO pusheados a origin (main local va 25+ commits adelante de origin/main).
+## A medias
 
----
+Nada de compliance. P0 + P1 completos y verificados.
 
-## Hecho en esta tanda
+NOTA: hay cambios sin commitear en el working tree que pertenecen a OTRA sesion concurrente:
+- `apps/mobile/components/ExercisePreviewSheet.tsx`
+- `apps/mobile/locales/*.json`
 
-- Se agrego `packages/core/src/workout/index.ts` con logica pura para sesiones mobile: iniciar rutina, loguear series y finalizar con payload offline compatible con `workout_sessions`.
-- Se agrego `packages/core/src/workout/workout.test.ts` con casos de inicio, sets incrementales, ejercicios manuales y payload final de sync.
-- Se agrego `toWorkoutSessionUpsert()` para que mobile y core compartan el contrato exacto de `workout_sessions`, normalizando `routine_id` vacio a `null`.
-- `packages/core/src/index.ts` exporta `workout`.
-- `apps/mobile/stores/workoutStore.ts` usa las funciones de core y queda como wrapper Zustand/AsyncStorage.
-- `apps/mobile/services/sync.ts` usa el helper de core para construir el upsert antes de llamar a Supabase.
-- `apps/mobile/app/(tabs)/index.tsx` muestra la rutina de hoy como mini-plan: ejercicios, series, minutos estimados, primeros ejercicios y CTA para empezar.
-- `supabase/seed/smoke-flow.sql` ahora crea `workout_sessions.sets_data` con los mismos UUID de ejercicios que la rutina smoke.
-- `scripts/smoke-test.js` valida que la sesion completada del alumno corresponda a la rutina y tenga sets registrados.
-- `supabase/migrations/20260616000004_add_assignment_routine_link.sql` agrega `coach_assignments.routine_id` para representar la rutina asignada actualmente.
-- `POST /api/coach/rutinas` vincula el assignment activo con la rutina creada.
-- `scripts/smoke-test.js` valida que el assignment smoke pagado y activo apunte a la rutina smoke.
-- `apps/web/app/[locale]/admin/page.tsx` corrige redirect localizado para compilar con `@/i18n/navigation`.
-- `docs/progress/smoke-test-integral-2026-06-16.md` registra la nueva cobertura mobile/core.
-- `apps/web/middleware.ts` protege `/coach` como segmento exacto y deja publico `/coaches` marketplace.
-- `apps/web/next.config.ts` permite Supabase local en CSP `connect-src` para smoke auth local.
-- `supabase/seed/smoke-flow.sql` completa tokens auth vacios para que GoTrue local pueda autenticar usuarios smoke.
-- `apps/web/app/[locale]/coach/cobros/InvoiceUploadButton.tsx` agrega label accesible al numero de factura.
-- `scripts/smoke-test.js` valida fixtures REST, login coach/owner, cobros, liquidaciones admin y marketplace con 0 FAIL.
-- `e2e/flows/03-workout-session.yaml` queda convertido en smoke mobile real con alumno fixture: login, rutina de hoy, ficha de ejercicio, inicio de entreno, carga de series, descanso y finalizacion.
-- `apps/mobile` agrega IDs/accesibilidad para login, rutina de hoy, detalle de rutina y sesion de entrenamiento.
-- `packages/ui/native` propaga `testID` en `Card` clickeable y `Sheet`, para que Maestro pueda tocar tarjetas y validar fichas.
-- `package.json` agrega `pnpm smoke-test:mobile`.
-- Android local quedo instalado: Java 17, Maestro 2.6.1, Android SDK, AVD `forzza_pixel`, app debug instalada y Metro sirviendo bundle.
-- `e2e/flows/03-workout-session.yaml` ahora abre Expo dev-client con deep link `forzza://expo-development-client/?url=http%3A%2F%2F127.0.0.1%3A8081`.
-- `apps/mobile/metro.config.js` fue ajustado para Windows/pnpm: watch folders acotados, blocklist de `android/build` y fallback de imports `.js`.
-- `apps/mobile/app/_layout.tsx` y `providers/AuthProvider.tsx` tienen guardas para no quedarse en splash/pantalla negra durante bootstrap.
-- `apps/mobile/app/routine/[id].tsx` usa `routine.student_id` como fallback para iniciar entrenamiento si `AuthContext.user` todavia no hidrato.
-
-## Validacion ejecutada
-
-- `pnpm --filter @forzza/core test`: PASS, 6 files, 55 tests.
-- `pnpm --filter mobile typecheck`: PASS.
-- mobile locales JSON parse: PASS.
-- `pnpm --filter @forzza/core typecheck`: PASS.
-- `pnpm --filter @forzza/db-types typecheck`: PASS.
-- `pnpm --filter web typecheck`: PASS.
-- `node --check scripts/smoke-test.js`: PASS.
-- `git diff --check` sobre archivos tocados: PASS.
-- `pnpm test:rls`: PASS, 32 tests RLS.
-- `supabase db lint`: PASS, no schema errors.
-- `supabase db reset`: PASS, aplica migraciones y seeds incluyendo `smoke-flow.sql`.
-- `pnpm smoke-test:fixtures -- --url http://localhost:3105`: PASS, 45 PASS, 0 FAIL, 3 MANUAL_REQUIRED.
-- `pnpm --filter mobile typecheck`: PASS despues de IDs mobile.
-- `pnpm --filter @forzza/ui typecheck`: PASS.
-- `package.json` parse: PASS.
-- `pnpm --filter mobile typecheck`: PASS despues de fixes de bootstrap/routine.
-- `maestro check-syntax e2e/flows/03-workout-session.yaml`: PASS.
-- `git diff --check`: PASS.
-- `pnpm smoke-test:mobile`: PARTIAL/BLOCKED_ENV. Maestro llego a pasar login, rutina de hoy, detalle de rutina y ficha de ejercicio. La ejecucion completa queda bloqueada por inestabilidad local de Maestro (`gRPC UNAVAILABLE`/lock en `C:\Users\Facu\.maestro\sessions`) y por corrida posterior que volvio a fallar al primer render cuando el lock reaparecio.
-
-## A medias / pendiente
-
-- `pnpm smoke-test:mobile` no queda verde aun por ENTORNO, no por la app. Verificado por el orquestador (Opus):
-  - La cadena login → rutina de hoy → detalle de rutina → ficha de ejercicio → iniciar entreno PASA de verdad contra Supabase local (Metro con env override a http://localhost:54321 via `adb reverse tcp:54321`).
-  - Bug REAL del flow encontrado y corregido: los `inputText` no tapeaban el campo destino → email+password caian ambos en el campo email (login "Invalido"). Fix: `tapOn` explícito por campo en `e2e/flows/03-workout-session.yaml`.
-  - Causa raíz de la intermitencia: el HOST queda con ~1-2 GB libres (qemu + Docker/WSL + Metro + Edge + tooling) y el emulador llega a ANR ("Pixel Launcher isn't responding"), tirando el driver de Maestro (gRPC UNAVAILABLE / lock en `.maestro/sessions`). Para pase verde estable: liberar RAM del host o dar más RAM al AVD, luego repetir.
-  - Pendiente puntual: tras "iniciar entreno" el assert `reps-input` no se pudo aislar por la inestabilidad del emulador (revisar autopromo/entitlements en `session.tsx` en una corrida estable).
-- Mercado Pago sandbox end-to-end y RevenueCat sandbox siguen fuera del entorno local automatizado.
-- BLOQUEANTE PUBLICACION (§3): `apps/mobile/app/upgrade.tsx` activa PRO abriendo el checkout web de Mercado Pago (`mp-create-preapproval` + `Linking.openURL`) en vez de IAP RevenueCat. `services/revenuecat.ts` es un stub (SDK no instalado). Apple/Google rechazan apps que cobran suscripciones digitales fuera de su IAP. Debe migrarse a RevenueCat antes de subir a tiendas.
+No son de compliance. No tocarlos ni incluirlos en commits de esta rama.
 
 ## Proximos 3 pasos exactos
 
-1. Reiniciar emulador/host Maestro, verificar que no haya locks en `C:\Users\Facu\.maestro\sessions`, calentar Metro y repetir `pnpm smoke-test:mobile`.
-2. Probar Mercado Pago sandbox end-to-end con credenciales y webhook tunnel.
-3. Probar RevenueCat restore purchases con productos sandbox App Store/Play.
+1. **Reconciliar desvio de otra sesion:** la migración `20260622120000_no_price_floor.sql` (generada por otra sesión) elimina el piso de precio del coach y ROMPE el test T14, contradiciendo la regla 4 de `CLAUDE.md`. Decidir con el dueño: actualizar regla 4 + arreglar/retirar T14 + cerrar la open-question de pisos de precio.
 
-## HUMAN_REQUIRED
+2. **HUMAN_REQUIRED de stores antes de submission:** transcribir las labels usando `docs/compliance/store-privacy-labels.md` en App Store Connect + Play Console Data Safety + Health Apps declaration; marcar Health/Fitness/Photos como sensibles; configurar variable de entorno `LEGAL_REPORTS_EMAIL` en Supabase.
 
-- Credenciales sandbox Mercado Pago y webhook tunnel para checkout real.
-- Estabilizar entorno Maestro local: el AVD y app ya estan, pero el driver queda con lock/gRPC unavailable tras corridas largas.
-- Productos sandbox App Store/Play para RevenueCat.
+3. **Textos legales a abogado:** los drafts en `/legales/*` están marcados `[PENDIENTE — validación legal]`. Enviar Términos / Privacidad / Política IA / Disclaimer de salud para revisión; completar razón social, CUIT, inscripción AAIP y cláusula de transferencia internacional.
+
+## HUMAN_REQUIRED pendientes
+
+- Validación de abogado de los cuatro textos legales (Términos, Privacidad, IA, Disclaimer de salud).
+- Transcripción de labels de privacidad en App Store Connect y Play Console (usar `docs/compliance/store-privacy-labels.md`).
+- Declaración "Health App" en App Store Connect.
+- Configurar `LEGAL_REPORTS_EMAIL` en variables de entorno de Supabase (producción y staging).
+- Verificación de pods RevenueCat tras el primer build EAS (no se puede testear sin build nativo real).
+- Gap i18n: 22 claves `admin.videos.discardModal.*` ausentes en locale EN (ajeno a compliance, pero bloquea typecheck si se activa strict i18n).
 
 ## Prompt para retomar
 
-Continuar el objetivo activo de Forzza desde `docs/progress/HANDOFF.md`: estabilizar y cerrar `pnpm smoke-test:mobile` (Maestro/AVD ya instalado; revisar lock `C:\Users\Facu\.maestro\sessions`), luego Mercado Pago sandbox y RevenueCat sandbox; smoke web/fixture/RLS local ya estan verdes.
+La sesión nueva arranca leyendo `CLAUDE.md` + este archivo. Dos puntos de entrada posibles:
+
+- **Si el objetivo es reconciliar la arquitectura:** arrancar por el paso 1 (migración `no_price_floor` vs. regla 4 + T14). Abrir `docs/open-questions.md`, localizar la pregunta de pisos de precio y resolverla con el dueño antes de tocar código.
+- **Si el objetivo es submission a stores:** arrancar por el paso 2 (labels) y paso 3 (abogado). P2 de compliance (GDPR/COPPA) está DIFERIDO; ver `docs/compliance/p2-plan.md` para detalle. No arrancar P2 salvo decisión explícita de lanzar en US/UE.
