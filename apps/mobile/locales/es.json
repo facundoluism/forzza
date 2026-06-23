@@ -398,7 +398,13 @@
       "ratingLabel": "Valoración",
       "resultsTitle": "RESULTADOS",
       "packageRecommended": "RECOMENDADO",
-      "featuresLabel": "Incluye"
+      "featuresLabel": "Incluye",
+      "specialties": "Especialidades",
+      "interests": "Intereses",
+      "gallery": "Fotos del coach",
+      "presentationVideo": "Video de presentación",
+      "videoError": "No se pudo cargar el video de presentación.",
+      "videoOpenExternal": "Abrir video en el navegador"
     },
     "checkout": {
       "screenTitle": "Contratar coach",

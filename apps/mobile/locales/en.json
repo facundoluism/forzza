@@ -398,7 +398,13 @@
       "ratingLabel": "Rating",
       "resultsTitle": "RESULTS",
       "packageRecommended": "RECOMMENDED",
-      "featuresLabel": "Includes"
+      "featuresLabel": "Includes",
+      "specialties": "Specialties",
+      "interests": "Interests",
+      "gallery": "Coach photos",
+      "presentationVideo": "Presentation video",
+      "videoError": "Could not load the presentation video.",
+      "videoOpenExternal": "Open video in browser"
     },
     "checkout": {
       "screenTitle": "Hire coach",

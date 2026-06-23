@@ -8,17 +8,28 @@ import {
   Alert,
   TextInput,
   ActivityIndicator,
+  Dimensions,
+  Linking,
+  FlatList,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { WebView } from "react-native-webview";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/providers/AuthProvider";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card, Pill, Skeleton, ErrorState, EmptyState, ScreenHeader } from "@forzza/ui/native";
 import { colors, spacing, typography, radius, fontSize } from "@forzza/ui/tokens";
 import { ReportModal } from "@/components/ReportModal";
+
+// ─── Constantes de tamaño para el player de video ─────────────────────────────
+const SCREEN_WIDTH = Dimensions.get("window").width;
+const VIDEO_WIDTH = SCREEN_WIDTH - spacing[4] * 2;
+const VIDEO_HEIGHT = Math.round(VIDEO_WIDTH * (9 / 16));
+
+// ─── Interfaces ───────────────────────────────────────────────────────────────
 
 // Columnas reales de coach_packages: id, coach_id, tier, title, description, price, active, features
 interface CoachPackage {
@@ -37,12 +48,21 @@ interface CoachProfile {
   display_name: string;
   bio: string | null;
   specialties: string[];
+  interests: string[];
   avatar_url: string | null;
   years_experience: number | null;
   status: string;
   avg_rating: number | null;
   rating_count: number;
+  presentation_video_path: string | null;
   packages: CoachPackage[];
+}
+
+interface GalleryImage {
+  id: string;
+  file_path: string;
+  display_order: number;
+  signedUrl: string;
 }
 
 interface StudentProfile {
@@ -59,6 +79,8 @@ interface CoachRating {
   // joined via student_profiles
   student_display_name: string | null;
 }
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function isMinor(birthDate: string): boolean {
   const age =
@@ -141,6 +163,222 @@ const starStyles = StyleSheet.create({
     color: colors.surface4,
   },
 });
+
+// ─── Carrusel de imágenes de galería ──────────────────────────────────────────
+
+function GalleryCarousel({ images }: { images: GalleryImage[] }): React.JSX.Element {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const flatListRef = useRef<FlatList<GalleryImage>>(null);
+
+  if (images.length === 0) return <View />;
+
+  return (
+    <View style={carouselStyles.container} testID="coach-gallery-carousel">
+      <FlatList
+        ref={flatListRef}
+        data={images}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(item) => item.id}
+        onMomentumScrollEnd={(e) => {
+          const idx = Math.round(e.nativeEvent.contentOffset.x / VIDEO_WIDTH);
+          setActiveIndex(idx);
+        }}
+        renderItem={({ item }) => (
+          <View style={carouselStyles.slide} testID={`gallery-image-${item.id}`}>
+            <Image
+              source={{ uri: item.signedUrl }}
+              style={carouselStyles.image}
+              resizeMode="cover"
+            />
+          </View>
+        )}
+      />
+      {images.length > 1 && (
+        <View style={carouselStyles.dots}>
+          {images.map((_, i) => (
+            <View
+              key={i}
+              style={[carouselStyles.dot, i === activeIndex && carouselStyles.dotActive]}
+            />
+          ))}
+        </View>
+      )}
+    </View>
+  );
+}
+
+const carouselStyles = StyleSheet.create({
+  container: {
+    marginBottom: spacing[4],
+  },
+  slide: {
+    width: VIDEO_WIDTH,
+    height: Math.round(VIDEO_WIDTH * (3 / 4)),
+    borderRadius: radius.lg,
+    overflow: "hidden",
+    backgroundColor: colors.surface3,
+  },
+  image: {
+    width: VIDEO_WIDTH,
+    height: Math.round(VIDEO_WIDTH * (3 / 4)),
+    borderRadius: radius.lg,
+  },
+  dots: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: spacing[1],
+    marginTop: spacing[2],
+  },
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: radius.full,
+    backgroundColor: colors.surface4,
+  },
+  dotActive: {
+    backgroundColor: colors.lime,
+    width: 16,
+  },
+});
+
+// ─── Player de video de presentación (signed URL via WebView) ─────────────────
+
+async function fetchPresentationVideoSignedUrl(videoPath: string): Promise<string | null> {
+  const { data, error } = await supabase.storage
+    .from("coach-gallery")
+    .createSignedUrl(videoPath, 3600);
+  if (error) throw error;
+  return data?.signedUrl ?? null;
+}
+
+function PresentationVideoPlayer({ videoPath }: { videoPath: string }): React.JSX.Element {
+  const { t } = useTranslation();
+
+  const {
+    data: signedUrl,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["coach_presentation_video", videoPath],
+    queryFn: () => fetchPresentationVideoSignedUrl(videoPath),
+    staleTime: 1000 * 60 * 50, // 50 min (TTL es 60 min)
+  });
+
+  if (isLoading) {
+    return (
+      <View style={videoStyles.loading} testID="presentation-video-loading">
+        <ActivityIndicator color={colors.lime} />
+      </View>
+    );
+  }
+
+  if (isError || !signedUrl) {
+    return (
+      <View style={videoStyles.error} testID="presentation-video-error">
+        <Text style={videoStyles.errorText}>
+          {t("marketplace.coach.videoError")}
+        </Text>
+        <TouchableOpacity
+          onPress={() => { void refetch(); }}
+          style={videoStyles.retryBtn}
+        >
+          <Text style={videoStyles.retryText}>{t("common.retry")}</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // HTML mínimo para reproducir el video con controles nativos dentro de WebView
+  const html = `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#000}video{width:100%;height:100vh;object-fit:contain}</style></head><body><video src="${signedUrl}" controls playsinline preload="metadata"></video></body></html>`;
+
+  return (
+    <View style={videoStyles.wrapper} testID="presentation-video-player">
+      <WebView
+        source={{ html }}
+        style={videoStyles.webview}
+        allowsInlineMediaPlayback
+        mediaPlaybackRequiresUserAction={false}
+        scrollEnabled={false}
+        originWhitelist={["*"]}
+      />
+      <TouchableOpacity
+        style={videoStyles.openBtn}
+        onPress={() => { void Linking.openURL(signedUrl); }}
+        activeOpacity={0.7}
+        testID="presentation-video-open-link"
+      >
+        <Text style={videoStyles.openBtnText}>
+          {t("marketplace.coach.videoOpenExternal")}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const videoStyles = StyleSheet.create({
+  wrapper: {
+    gap: spacing[2],
+  },
+  webview: {
+    width: VIDEO_WIDTH,
+    height: VIDEO_HEIGHT,
+    borderRadius: radius.lg,
+    overflow: "hidden",
+    backgroundColor: colors.surface3,
+  },
+  loading: {
+    width: VIDEO_WIDTH,
+    height: VIDEO_HEIGHT,
+    backgroundColor: colors.surface3,
+    borderRadius: radius.lg,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  error: {
+    width: VIDEO_WIDTH,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing[4],
+    alignItems: "center",
+    gap: spacing[3],
+  },
+  errorText: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.sm,
+    textAlign: "center",
+  },
+  retryBtn: {
+    paddingVertical: spacing[2],
+    paddingHorizontal: spacing[4],
+    borderWidth: 1,
+    borderColor: colors.lime,
+    borderRadius: radius.md,
+  },
+  retryText: {
+    fontFamily: typography.body,
+    color: colors.lime,
+    fontSize: fontSize.sm,
+  },
+  openBtn: {
+    alignSelf: "flex-end",
+    paddingVertical: spacing[1],
+    paddingHorizontal: spacing[2],
+  },
+  openBtnText: {
+    fontFamily: typography.body,
+    color: colors.muted,
+    fontSize: fontSize.xs,
+    textDecorationLine: "underline",
+  },
+});
+
+// ─── Package card ─────────────────────────────────────────────────────────────
 
 function PackageCard({
   pkg,
@@ -481,7 +719,7 @@ export default function CoachProfileScreen() {
       const { data, error } = await (supabase as any)
         .from("coach_profiles")
         .select(
-          "id, user_id, display_name, bio, specialties, avatar_url, years_experience, status, avg_rating, rating_count, packages:coach_packages(id, title, description, price, tier, active, features)"
+          "id, user_id, display_name, bio, specialties, interests, avatar_url, years_experience, status, avg_rating, rating_count, presentation_video_path, packages:coach_packages(id, title, description, price, tier, active, features)"
         )
         .eq("id", coachId!)
         .eq("status", "approved")
@@ -490,6 +728,39 @@ export default function CoachProfileScreen() {
       return data as CoachProfile | null;
     },
     enabled: !!coachId,
+  });
+
+  // Galería: SELECT de coach_gallery + signed URLs para cada imagen
+  const { data: galleryImages } = useQuery<GalleryImage[]>({
+    queryKey: ["coach_gallery", coachId],
+    queryFn: async (): Promise<GalleryImage[]> => {
+      if (!coachId) return [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
+        .from("coach_gallery")
+        .select("id, file_path, display_order")
+        .eq("coach_id", coachId)
+        .order("display_order", { ascending: true });
+      if (error || !data) return [];
+
+      // Generar signed URLs para cada imagen del bucket privado
+      const withUrls = await Promise.all(
+        (data as { id: string; file_path: string; display_order: number }[]).map(async (row) => {
+          const { data: signedData } = await supabase.storage
+            .from("coach-gallery")
+            .createSignedUrl(row.file_path, 3600);
+          return {
+            ...row,
+            signedUrl: signedData?.signedUrl ?? "",
+          };
+        })
+      );
+
+      // Filtrar imágenes cuya signed URL se generó correctamente
+      return withUrls.filter((img) => img.signedUrl !== "");
+    },
+    enabled: !!coachId,
+    staleTime: 1000 * 60 * 50, // 50 min (TTL signed URLs es 60 min)
   });
 
   const { data: studentProfile } = useQuery({
@@ -597,6 +868,10 @@ export default function CoachProfileScreen() {
       ? parseFloat(String(coach.avg_rating)).toFixed(1)
       : null;
 
+  const hasGallery = (galleryImages?.length ?? 0) > 0;
+  const hasVideo = !!coach.presentation_video_path;
+  const hasInterests = coach.interests.length > 0;
+
   return (
     <View style={styles.screen}>
       <View style={[styles.screenHeader, { paddingTop: insets.top + spacing[4] }]}>
@@ -653,6 +928,22 @@ export default function CoachProfileScreen() {
         )}
       </View>
 
+      {/* Galería de imágenes — solo si hay imágenes */}
+      {hasGallery && galleryImages !== undefined && (
+        <View style={styles.section} testID="coach-gallery-section">
+          <Text style={styles.sectionTitle}>{t("marketplace.coach.gallery").toUpperCase()}</Text>
+          <GalleryCarousel images={galleryImages} />
+        </View>
+      )}
+
+      {/* Video de presentación — solo si existe */}
+      {hasVideo && coach.presentation_video_path !== null && (
+        <View style={styles.section} testID="coach-video-section">
+          <Text style={styles.sectionTitle}>{t("marketplace.coach.presentationVideo").toUpperCase()}</Text>
+          <PresentationVideoPlayer videoPath={coach.presentation_video_path} />
+        </View>
+      )}
+
       {/* Bio */}
       {coach.bio ? (
         <View style={styles.section}>
@@ -660,6 +951,30 @@ export default function CoachProfileScreen() {
           <Text style={styles.bio}>{coach.bio}</Text>
         </View>
       ) : null}
+
+      {/* Especialidades */}
+      {coach.specialties.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t("marketplace.coach.specialties").toUpperCase()}</Text>
+          <View style={styles.pillsRow}>
+            {coach.specialties.map((s) => (
+              <Pill key={s} label={s} variant="default" />
+            ))}
+          </View>
+        </View>
+      )}
+
+      {/* Intereses — sección diferenciada, pills con variante secundaria */}
+      {hasInterests && (
+        <View style={styles.section} testID="coach-interests-section">
+          <Text style={styles.sectionTitle}>{t("marketplace.coach.interests").toUpperCase()}</Text>
+          <View style={styles.pillsRow}>
+            {coach.interests.map((interest) => (
+              <Pill key={interest} label={interest} color={colors.info} />
+            ))}
+          </View>
+        </View>
+      )}
 
       {/* Packages */}
       <View style={styles.section}>
@@ -822,6 +1137,11 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: spacing[2],
     justifyContent: "center",
+  },
+  pillsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing[2],
   },
   section: {
     marginBottom: spacing[6],
