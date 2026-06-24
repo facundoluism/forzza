@@ -132,6 +132,7 @@ Toda animación: (a) sale de tokens, (b) pasa `review-animations`, (c) respeta r
 ### Pendiente real
 - **Verificar gestos en device/emulador:** correr `expo run:android`/`run:ios` y confirmar que Reanimated arranca (babel worklet OK) y que el swipe-to-dismiss se siente fluido a 60fps.
 
-### Deuda preexistente detectada (NO de motion, no tocada)
-- Errores de lint previos al trabajo de motion (siguen abiertos, confirmados 2026-06-24): `(auth)/signup` (`router` unused), `coach/checkins/[templateId]/respuestas` (`Answer`), `coach/perfil/MpConnectButton` (`<a>` en vez de `<Link>` — probable falso positivo, es ruta `/api/`), `coach/perfil/PerfilForm` (`minCoachPrice` unused), `marketplace/[coachId]` (mobile: `isMinor`/`studentProfile`). Conviene limpiarlos aparte. Nota: las constantes de íconos `S2/S3/S4` (deuda del rediseño de íconos) SÍ se limpiaron para dejar `@forzza/ui` lint-verde.
+### Deuda preexistente — RESUELTA (2026-06-24)
+- Los errores de lint previos al trabajo de motion ya se limpiaron: `(auth)/signup` (`router`), `coach/checkins/[templateId]/respuestas` (`Answer`), `coach/perfil/MpConnectButton` (`<a>` → `eslint-disable`, es ruta `/api/`), `coach/perfil/PerfilForm` (`minCoachPrice`), `marketplace/[coachId]` (dead code de gating de menores: `isMinor`/`studentProfile`/`StudentProfile`), y las constantes de íconos `S2/S3/S4`.
+- **Estado de lint:** `@forzza/ui` y `web` lint-verde total; `mobile` con 0 errores (quedan warnings preexistentes de `no-unsafe-*` por las llamadas any-typed de supabase — fuera de scope).
 - `globals.css @theme` diverge de `tokens.ts` (bg `#0A0A0A` vs `#080810`, fuentes Barlow vs Bebas) — reconciliar el DS web.
