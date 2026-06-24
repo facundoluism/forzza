@@ -1,9 +1,11 @@
 // billing — core financial rules (pure, testeable, no floats)
+// Exported split-payment logic: calculateSplitBreakdown
 
 // Re-export Mercado Pago pure logic and mock (for use in tests and adapters)
 export * from "./mp";
 export * from "./mock-mercadopago";
 export * from "./mp-webhook-handler";
+export * from "./mock-mp-split";
 export type CommissionRate = number; // 0.20 para AR/CL — siempre leído de country_config
 
 export interface SettlementInput {
@@ -92,6 +94,127 @@ export function coachNetFromStudentPrice(
   commissionRate: CommissionRate
 ): number {
   return Math.round(grossCents * (1 - commissionRate));
+}
+
+// ─── Split Payments: desglose para Mercado Pago Marketplace ─────────────────
+
+/**
+ * Input para el cálculo del desglose de Split Payment de MP.
+ *
+ * Unidades: todas en ENTEROS (centavos / unidad mínima de la moneda).
+ *
+ * - gross: lo que paga el alumno (precio del paquete del coach)
+ * - commissionPct: comisión de Forzza como marketplace (leída de country_config.commission_rate)
+ *   Ejemplo: 0.20 para 20%
+ * - mpFeePct: comisión de procesamiento de MP en basis points (leída de country_config.mp_fee_pct)
+ *   Ejemplo: 629 para 6,29%
+ *   Para convertir a tasa decimal: mpFeePct / 10000
+ */
+export interface SplitBreakdownInput {
+  gross: number;         // entero — lo que paga el alumno
+  commissionPct: number; // decimal — ej. 0.20 (leído de country_config.commission_rate)
+  mpFeePct: number;      // basis points INTEGER — ej. 629 (leído de country_config.mp_fee_pct)
+}
+
+/**
+ * Resultado del desglose de Split Payment.
+ *
+ * Todos los campos son ENTEROS (centavos / unidad mínima).
+ *
+ * Campos para la UI del coach (mostrar al setear precio):
+ *   - gross: precio que paga el alumno
+ *   - forzzaCommission: la parte que retiene Forzza como marketplace fee
+ *   - mpFeeTotal: la fee total de MP sobre el gross
+ *   - mpFeeCoachShare: mitad de la fee MP que absorbe el coach (50%)
+ *   - mpFeeForzzaShare: mitad de la fee MP que absorbe Forzza (50%)
+ *   - coachNet: lo que recibe el coach (neto después de comisión Forzza y su parte de la fee MP)
+ *   - marketplaceFee: el `application_fee` / `marketplace_fee` que Forzza declara en el pago MP
+ *     = forzzaCommission − mpFeeForzzaShare
+ *     (Forzza declara esta cifra y MP le retiene a Forzza exactamente este monto del total)
+ *
+ * SUPUESTO SOBRE CÓMO MP DESCUENTA SU FEE (TO-CONFIRM con ejecutivo MP):
+ *   La documentación pública de MP Marketplace indica que la fee de procesamiento
+ *   se descuenta de los fondos del VENDEDOR (coach) y el marketplace_fee se cobra
+ *   SOBRE EL MONTO TOTAL (gross). En la práctica:
+ *     - MP descuenta mpFeeTotal del gross del vendedor.
+ *     - Forzza declara marketplaceFee (su comisión neta de su parte de la fee MP).
+ *     - El coach recibe: gross − mpFeeTotal − forzzaCommission + mpFeeForzzaShare
+ *       = gross − mpFeeCoachShare − forzzaCommission
+ *   Este supuesto puede cambiar según el acuerdo comercial con MP. El punto de
+ *   ajuste es SOLO esta función: el resto del código la consume.
+ */
+export interface SplitBreakdownResult {
+  gross: number;
+  forzzaCommission: number;     // gross × commissionPct (redondeado)
+  mpFeeTotal: number;           // gross × (mpFeePct / 10_000) (redondeado)
+  mpFeeCoachShare: number;      // mpFeeTotal / 2 (redondeado — coach absorbe 50%)
+  mpFeeForzzaShare: number;     // mpFeeTotal − mpFeeCoachShare (Forzza absorbe el resto)
+  coachNet: number;             // lo que recibe el coach
+  marketplaceFee: number;       // forzzaCommission − mpFeeForzzaShare (se declara en MP)
+}
+
+/**
+ * Calcula el desglose completo de un pago con Split Payments de Mercado Pago.
+ *
+ * FÓRMULA (decisión del dueño 2026-06-23: fee MP partida 50/50):
+ *   forzzaCommission  = round(gross × commissionPct)
+ *   mpFeeTotal        = round(gross × mpFeePct / 10_000)
+ *   mpFeeCoachShare   = round(mpFeeTotal / 2)
+ *   mpFeeForzzaShare  = mpFeeTotal − mpFeeCoachShare
+ *   coachNet          = gross − forzzaCommission − mpFeeCoachShare
+ *   marketplaceFee    = forzzaCommission − mpFeeForzzaShare
+ *
+ * PUNTO ÚNICO DE AJUSTE: toda la lógica de reparto vive aquí. Si el acuerdo con
+ * MP cambia (ej: fee descuenta sobre neto del coach, no sobre gross) solo se
+ * modifica esta función y sus tests.
+ *
+ * REGLAS:
+ *   - Dinero en ENTEROS. Math.round solo aquí. Sin floats en ningún otro lugar.
+ *   - commissionPct viene de country_config.commission_rate (NUNCA hardcodeado).
+ *   - mpFeePct viene de country_config.mp_fee_pct (NUNCA hardcodeado).
+ *
+ * @throws Error si gross < 0, commissionPct < 0, mpFeePct < 0
+ */
+export function calculateSplitBreakdown(
+  input: SplitBreakdownInput
+): SplitBreakdownResult {
+  const { gross, commissionPct, mpFeePct } = input;
+
+  if (gross < 0) throw new Error("gross must be >= 0");
+  if (commissionPct < 0) throw new Error("commissionPct must be >= 0");
+  if (mpFeePct < 0) throw new Error("mpFeePct must be >= 0");
+
+  // Comisión de Forzza como marketplace
+  const forzzaCommission = Math.round(gross * commissionPct);
+
+  // Fee total de MP sobre el gross del pago
+  // mpFeePct está en bps (basis points): dividimos por 10_000
+  const mpFeeTotal = Math.round((gross * mpFeePct) / 10_000);
+
+  // Reparto 50/50 de la fee de MP (decisión del dueño 2026-06-23)
+  // El coach absorbe 50%, Forzza absorbe 50%.
+  // Si mpFeeTotal es impar, el coach absorbe la mitad redondeada arriba
+  // (Math.round) y Forzza obtiene el complemento exacto (sin doble redondeo).
+  const mpFeeCoachShare = Math.round(mpFeeTotal / 2);
+  const mpFeeForzzaShare = mpFeeTotal - mpFeeCoachShare;
+
+  // Neto del coach: lo que recibirá en su cuenta MP
+  const coachNet = gross - forzzaCommission - mpFeeCoachShare;
+
+  // marketplace_fee que Forzza declara al crear el pago en MP.
+  // Es la comisión bruta de Forzza menos la parte de la fee MP que Forzza absorbe.
+  // (Forzza declara este monto y MP lo retiene automáticamente de los fondos totales.)
+  const marketplaceFee = forzzaCommission - mpFeeForzzaShare;
+
+  return {
+    gross,
+    forzzaCommission,
+    mpFeeTotal,
+    mpFeeCoachShare,
+    mpFeeForzzaShare,
+    coachNet,
+    marketplaceFee,
+  };
 }
 
 // ─── Business rule: coach billing model ───────────────────────────────────────

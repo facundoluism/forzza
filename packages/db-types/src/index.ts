@@ -697,6 +697,8 @@ export type Database = {
           currency_code: string
           currency_symbol: string
           min_coach_price: number
+          /** Comisión de procesamiento de Mercado Pago en basis points (bps). 629 = 6,29%. */
+          mp_fee_pct: number
           pro_monthly_price_cents: number
           updated_at: string
         }
@@ -709,6 +711,8 @@ export type Database = {
           currency_code?: string
           currency_symbol: string
           min_coach_price: number
+          /** Comisión de procesamiento de Mercado Pago en basis points (bps). 629 = 6,29%. DEFAULT 629. */
+          mp_fee_pct?: number
           pro_monthly_price_cents?: number
           updated_at?: string
         }
@@ -721,6 +725,8 @@ export type Database = {
           currency_code?: string
           currency_symbol?: string
           min_coach_price?: number
+          /** Comisión de procesamiento de Mercado Pago en basis points (bps). 629 = 6,29%. */
+          mp_fee_pct?: number
           pro_monthly_price_cents?: number
           updated_at?: string
         }
