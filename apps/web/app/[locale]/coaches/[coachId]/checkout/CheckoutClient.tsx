@@ -21,6 +21,18 @@ interface CheckoutClientProps {
 type CheckoutState = "idle" | "loading" | "error";
 type BillingState = "idle" | "loading" | "error";
 
+/**
+ * ARCA — umbral de identificación fiscal (Ley AR).
+ * Para operaciones >= $10.000.000 ARS el emisor debe identificar
+ * CUIT / CUIL / CDI o DNI del receptor en el comprobante C.
+ * El precio viene en centavos (entero mínimo), por lo que el umbral
+ * en centavos es 1.000.000.000.
+ * DUDA ABIERTA: confirmar con contador si el monto es el precio total
+ * al alumno (con comisión Forzza incluida) o solo el neto del coach.
+ * Ver docs/open-questions.md.
+ */
+const ARCA_ID_THRESHOLD_CENTS = 1_000_000_000; // $10.000.000 en centavos
+
 type TaxCondition =
   | "consumidor_final"
   | "monotributo"
@@ -60,6 +72,9 @@ export function CheckoutClient({
   const [billingState, setBillingState] = useState<BillingState>("idle");
   const [clientError, setClientError] = useState<string | null>(null);
   const [billingError, setBillingError] = useState<string | null>(null);
+
+  // ARCA: para operaciones >= $10.000.000 ARS identificar al receptor
+  const requiresArcaId = packagePrice >= ARCA_ID_THRESHOLD_CENTS;
 
   const [billing, setBilling] = useState<BillingForm>({
     legal_name: "",
@@ -103,13 +118,15 @@ export function CheckoutClient({
     if (isMinorWithoutConsent || hasInitialError) return;
 
     // Validate billing fields
-    if (
-      !billing.legal_name.trim() ||
-      !billing.tax_condition ||
-      !billing.doc_type ||
-      !billing.doc_number.trim()
-    ) {
+    // Para operaciones >= $10.000.000 ARS (ARCA): nombre + doc son obligatorios.
+    // Para el resto: nombre sigue siendo obligatorio; doc es opcional.
+    const docRequired = requiresArcaId;
+    if (!billing.legal_name.trim() || !billing.tax_condition) {
       setBillingError(t("billing.errorRequired"));
+      return;
+    }
+    if (docRequired && (!billing.doc_type || !billing.doc_number.trim())) {
+      setBillingError(t("billing.errorArcaIdRequired"));
       return;
     }
 
@@ -296,6 +313,18 @@ export function CheckoutClient({
                   </p>
                 </div>
 
+                {/* ARCA — leyenda comprobante C / consumidor final */}
+                <div className="rounded-lg border border-[#2A2A2A] bg-[#0A0A0A] px-3 py-2.5 flex flex-col gap-1">
+                  <p className="text-[#C8FF00] text-xs font-bold uppercase tracking-wider">
+                    {t("billing.arcaVoucherType")}
+                  </p>
+                  <p className="text-[#6A6A6A] text-xs leading-relaxed">
+                    {requiresArcaId
+                      ? t("billing.arcaHintWithId")
+                      : t("billing.arcaHintNoId")}
+                  </p>
+                </div>
+
                 {billingState === "loading" ? (
                   <div className="h-8 rounded bg-[#2A2A2A] animate-pulse" />
                 ) : (
@@ -365,6 +394,9 @@ export function CheckoutClient({
                           className="text-[#6A6A6A] text-xs uppercase tracking-wider"
                         >
                           {t("billing.docTypeLabel")}
+                          {requiresArcaId && (
+                            <span className="text-red-400 ml-1">*</span>
+                          )}
                         </label>
                         <select
                           id="bp-doc-type"
@@ -388,6 +420,9 @@ export function CheckoutClient({
                           className="text-[#6A6A6A] text-xs uppercase tracking-wider"
                         >
                           {t("billing.docNumberLabel")}
+                          {requiresArcaId && (
+                            <span className="text-red-400 ml-1">*</span>
+                          )}
                         </label>
                         <input
                           id="bp-doc-number"
@@ -401,7 +436,12 @@ export function CheckoutClient({
                             }))
                           }
                           placeholder={t("billing.docNumberPlaceholder")}
-                          className="w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-2.5 text-[#FAFAFA] text-sm placeholder:text-[#3A3A3A] focus:outline-none focus:border-[#C8FF00] transition-colors"
+                          aria-required={requiresArcaId}
+                          className={`w-full bg-[#0A0A0A] border rounded-lg px-3 py-2.5 text-[#FAFAFA] text-sm placeholder:text-[#3A3A3A] focus:outline-none focus:border-[#C8FF00] transition-colors ${
+                            requiresArcaId && !billing.doc_number.trim()
+                              ? "border-red-500/60"
+                              : "border-[#2A2A2A]"
+                          }`}
                         />
                       </div>
                     </div>

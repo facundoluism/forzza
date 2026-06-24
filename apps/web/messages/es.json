@@ -310,7 +310,11 @@
       "addressPlaceholder": "Calle, número, ciudad",
       "errorRequired": "Completá los campos obligatorios antes de continuar.",
       "errorSave": "No se pudieron guardar tus datos de facturación. Revisá los campos e intentá de nuevo.",
-      "errorNetwork": "Error de red al guardar los datos de facturación."
+      "errorNetwork": "Error de red al guardar los datos de facturación.",
+      "arcaVoucherType": "Comprobante C — A CONSUMIDOR FINAL (ARCA)",
+      "arcaHintNoId": "Tu coach emite Comprobante tipo C a consumidor final. Para este monto no es necesario informar tu número de documento.",
+      "arcaHintWithId": "Para operaciones ≥ $10.000.000 ARCA exige identificar al receptor. Por eso el número de documento es obligatorio en esta compra.",
+      "errorArcaIdRequired": "Para operaciones ≥ $10.000.000 ARCA exige que informes tu tipo y número de documento (CUIT, CUIL o DNI)."
     }
   },
   "upgrade": {
@@ -1476,5 +1480,39 @@
       "testingNote": "La app está en testing cerrado. Las tiendas se habilitan próximamente.",
       "backToOptions": "← Volver a las opciones"
     }
+  },
+  "misContrataciones": {
+    "metaTitle": "Mis contrataciones — Forzza",
+    "metaDescription": "Revisá y administrá tus paquetes de coach contratados en Forzza.",
+    "backToHome": "← Volver al inicio",
+    "heading": "Mis contrataciones",
+    "subheading": "Aquí encontrás todos los paquetes de coach que contrataste.",
+    "labelCoach": "Coach",
+    "labelPackage": "Paquete",
+    "labelHiredOn": "Contratado el",
+    "labelRefundedOn": "Reembolsado el",
+    "statusActive": "Activo",
+    "statusPending": "Pendiente",
+    "statusCompleted": "Finalizado",
+    "statusCanceled": "Cancelado",
+    "statusRefunded": "Reembolsado",
+    "emptyTitle": "No tenés contrataciones",
+    "emptyBody": "Todavía no contrataste ningún paquete de coach. Explorá los coaches disponibles y encontrá el que mejor se adapte a tus objetivos.",
+    "emptyCtaCoaches": "Ver coaches",
+    "revocationWindowLabel": "Podés revocar esta compra hasta en {days} días",
+    "revokeBtn": "Arrepentirme / Revocar la compra",
+    "revokeModalTitle": "¿Querés revocar esta compra?",
+    "revokeModalBody": "Estás por ejercer tu derecho de arrepentimiento sobre el paquete \"{packageTitle}\" del coach {coachName} (precio: {price}). Si confirmás, la contratación se cancelará y se iniciará el trámite de reembolso.",
+    "revokeModalLegalNote": "Derecho de arrepentimiento — Ley 24.240 (Defensa del Consumidor). El reembolso se acredita en el plazo que establezca Mercado Pago (generalmente 5–15 días hábiles). Una vez confirmado, este proceso no se puede deshacer.",
+    "revokeConfirm": "Confirmar revocación",
+    "revokeConfirmLoading": "Procesando...",
+    "revokeCancel": "No, volver atrás",
+    "revokeSuccessTitle": "Revocación registrada",
+    "revokeSuccessBody": "Tu pedido fue registrado. El reembolso se tramitará en breve. Si no recibís la acreditación en 15 días hábiles, escribinos a soporte@forzza.app.",
+    "revokeErrorGeneric": "No se pudo completar la revocación. Intentá de nuevo o contactá a soporte@forzza.app.",
+    "revokeErrorNetwork": "Error de red. Verificá tu conexión e intentá de nuevo.",
+    "legalNote": "El derecho de arrepentimiento aplica dentro de los 10 días corridos desde la contratación (Ley 24.240). Una vez vencido ese plazo, no podés revocar la compra desde esta pantalla.",
+    "errorLoad": "No se pudieron cargar tus contrataciones. Revisá tu conexión e intentá de nuevo.",
+    "errorDevMode": "Servicio no disponible en modo desarrollo."
   }
 }

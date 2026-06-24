@@ -310,7 +310,11 @@
       "addressPlaceholder": "Street, number, city",
       "errorRequired": "Please fill in all required fields before continuing.",
       "errorSave": "Could not save your billing information. Check the fields and try again.",
-      "errorNetwork": "Network error while saving billing information."
+      "errorNetwork": "Network error while saving billing information.",
+      "arcaVoucherType": "Voucher type C — FINAL CONSUMER (ARCA)",
+      "arcaHintNoId": "Your coach issues a type C voucher (final consumer). For this amount, no document ID is required.",
+      "arcaHintWithId": "For transactions >= ARS 10,000,000 ARCA requires recipient identification. Your document number is mandatory for this purchase.",
+      "errorArcaIdRequired": "For transactions >= ARS 10,000,000 ARCA requires your document type and number (CUIT, CUIL or DNI)."
     }
   },
   "upgrade": {
@@ -1452,5 +1456,39 @@
       "testingNote": "The app is in closed testing. Store listings coming soon.",
       "backToOptions": "← Back to options"
     }
+  },
+  "misContrataciones": {
+    "metaTitle": "My contracts — Forzza",
+    "metaDescription": "Review and manage your hired coach packages on Forzza.",
+    "backToHome": "← Back to home",
+    "heading": "My contracts",
+    "subheading": "Here you can see all the coach packages you have hired.",
+    "labelCoach": "Coach",
+    "labelPackage": "Package",
+    "labelHiredOn": "Hired on",
+    "labelRefundedOn": "Refunded on",
+    "statusActive": "Active",
+    "statusPending": "Pending",
+    "statusCompleted": "Completed",
+    "statusCanceled": "Canceled",
+    "statusRefunded": "Refunded",
+    "emptyTitle": "No contracts yet",
+    "emptyBody": "You have not hired any coach package yet. Browse available coaches and find the one that best suits your goals.",
+    "emptyCtaCoaches": "Browse coaches",
+    "revocationWindowLabel": "You can revoke this purchase within {days} days",
+    "revokeBtn": "Revoke / Cancel purchase",
+    "revokeModalTitle": "Revoke this purchase?",
+    "revokeModalBody": "You are about to exercise your right of revocation for the package \"{packageTitle}\" from coach {coachName} (price: {price}). If confirmed, the contract will be canceled and a refund will be initiated.",
+    "revokeModalLegalNote": "Right of revocation — Argentine Consumer Protection Law 24.240. Refunds are processed according to Mercado Pago timelines (typically 5–15 business days). Once confirmed, this action cannot be undone.",
+    "revokeConfirm": "Confirm revocation",
+    "revokeConfirmLoading": "Processing...",
+    "revokeCancel": "No, go back",
+    "revokeSuccessTitle": "Revocation registered",
+    "revokeSuccessBody": "Your request was registered. The refund will be processed shortly. If you do not receive the credit within 15 business days, contact us at soporte@forzza.app.",
+    "revokeErrorGeneric": "Could not complete the revocation. Try again or contact soporte@forzza.app.",
+    "revokeErrorNetwork": "Network error. Check your connection and try again.",
+    "legalNote": "The right of revocation applies within 10 calendar days from the purchase date (Law 24.240). After that period, you cannot revoke the purchase from this screen.",
+    "errorLoad": "Could not load your contracts. Check your connection and try again.",
+    "errorDevMode": "Service not available in development mode."
   }
 }
