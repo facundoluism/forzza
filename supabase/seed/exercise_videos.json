@@ -6249,5 +6249,537 @@
       "captionsRecency": 0
     },
     "status": "published"
+  },
+  {
+    "slug": "overhead-tricep-extension-dumbbell",
+    "lang": "en",
+    "youtubeId": "-Vyt2QdsR7E",
+    "title": "How To: Standing Overhead Dumbbell Tricep Extension",
+    "channelId": "UCEtMRF1ywKMc4sf3EXYyDzw",
+    "channelTitle": "ScottHermanFitness",
+    "durationSeconds": 103,
+    "score": 0.9323,
+    "scoreBreakdown": {
+      "text": 1,
+      "channel": 1,
+      "engagement": 0.6616223376836524,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 1
+    },
+    "status": "published"
+  },
+  {
+    "slug": "overhead-tricep-extension-dumbbell",
+    "lang": "es",
+    "youtubeId": "hCXanl227XM",
+    "title": "Extensiones sobre la cabeza a dos manos con mancuerna",
+    "channelId": "UC40UTbZ9VnbpZb_1JWU4KZw",
+    "channelTitle": "trainido",
+    "durationSeconds": 51,
+    "score": 0.5826,
+    "scoreBreakdown": {
+      "text": 1,
+      "channel": 0,
+      "engagement": 0.4129438821370986,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "needs_review"
+  },
+  {
+    "slug": "pec-deck-butterfly-machine",
+    "lang": "en",
+    "youtubeId": "g3T7LsEeDWQ",
+    "title": "Best Chest Fly Tutorial Ever Made • Pec Deck Machine",
+    "channelId": "UCwaPTAgqVs0NgbjYgIRWSPA",
+    "channelTitle": "Davis Diley",
+    "durationSeconds": 59,
+    "score": 0.55,
+    "scoreBreakdown": {
+      "text": 0.6666666666666666,
+      "channel": 0,
+      "engagement": 1,
+      "duration": 1,
+      "language": 0.5,
+      "captionsRecency": 0
+    },
+    "status": "needs_review"
+  },
+  {
+    "slug": "pec-deck-butterfly-machine",
+    "lang": "es",
+    "youtubeId": "4VuCF75s6jE",
+    "title": "Los 4 MEJORES ejercicios de PECHO",
+    "channelId": "UCh4VdbK3ybBBwleBdta_GMg",
+    "channelTitle": "BlueGym Animation",
+    "durationSeconds": 316,
+    "score": 0.7226,
+    "scoreBreakdown": {
+      "text": 0.25,
+      "channel": 1,
+      "engagement": 0.988179603743517,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "pec-deck-machine",
+    "lang": "en",
+    "youtubeId": "g3T7LsEeDWQ",
+    "title": "Best Chest Fly Tutorial Ever Made • Pec Deck Machine",
+    "channelId": "UCwaPTAgqVs0NgbjYgIRWSPA",
+    "channelTitle": "Davis Diley",
+    "durationSeconds": 59,
+    "score": 0.65,
+    "scoreBreakdown": {
+      "text": 1,
+      "channel": 0,
+      "engagement": 1,
+      "duration": 1,
+      "language": 0.5,
+      "captionsRecency": 0
+    },
+    "status": "needs_review"
+  },
+  {
+    "slug": "preacher-curl-machine-bicep-machine",
+    "lang": "en",
+    "youtubeId": "M_uPvGrMx_o",
+    "title": "How To: Arm Curl (Cybex)",
+    "channelId": "UCEtMRF1ywKMc4sf3EXYyDzw",
+    "channelTitle": "ScottHermanFitness",
+    "durationSeconds": 100,
+    "score": 0.7257,
+    "scoreBreakdown": {
+      "text": 0.3333333333333333,
+      "channel": 1,
+      "engagement": 0.6283797292416046,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 1
+    },
+    "status": "published"
+  },
+  {
+    "slug": "preacher-curl-machine-bicep-machine",
+    "lang": "es",
+    "youtubeId": "SpIX-V0ogQc",
+    "title": "Hombre vs Curl de Predicador",
+    "channelId": "UCAR76PvwLHcHqnbqFIos_Xg",
+    "channelTitle": "ATHLEAN-X Español",
+    "durationSeconds": 33,
+    "score": 0.85,
+    "scoreBreakdown": {
+      "text": 0.6666666666666666,
+      "channel": 1,
+      "engagement": 1,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "preacher-curl-scott-bench",
+    "lang": "en",
+    "youtubeId": "R-8Sa0_qiws",
+    "title": "How to PROPERLY Do The Machine Preacher Curl (LEARN FAST) | Eb & Swole | Men’s Health Muscle",
+    "channelId": "UCzqQnibrUiju9Zsqcfh-bpg",
+    "channelTitle": "Men’s Health Muscle",
+    "durationSeconds": 460,
+    "score": 0.4932,
+    "scoreBreakdown": {
+      "text": 0.5,
+      "channel": 0,
+      "engagement": 0.6047124641432569,
+      "duration": 0.7222222222222222,
+      "language": 1,
+      "captionsRecency": 1
+    },
+    "status": "needs_review"
+  },
+  {
+    "slug": "preacher-curl-scott-bench",
+    "lang": "es",
+    "youtubeId": "SpIX-V0ogQc",
+    "title": "Hombre vs Curl de Predicador",
+    "channelId": "UCAR76PvwLHcHqnbqFIos_Xg",
+    "channelTitle": "ATHLEAN-X Español",
+    "durationSeconds": 33,
+    "score": 0.71,
+    "scoreBreakdown": {
+      "text": 0.2,
+      "channel": 1,
+      "engagement": 1,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "pull-ups-chin-ups",
+    "lang": "en",
+    "youtubeId": "gy1dyxEdCqc",
+    "title": "The SECRET To Perfect Pull-Ups!",
+    "channelId": "UCyPYQTT20IgzVw92LDvtClw",
+    "channelTitle": "Squat University",
+    "durationSeconds": 59,
+    "score": 0.85,
+    "scoreBreakdown": {
+      "text": 0.6666666666666666,
+      "channel": 1,
+      "engagement": 1,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "pull-ups-chin-ups",
+    "lang": "es",
+    "youtubeId": "BT8ikvivBYc",
+    "title": "Tú PUEDES Hacer Más DOMINADAS ¡Solo Haz Esto!",
+    "channelId": "UCAR76PvwLHcHqnbqFIos_Xg",
+    "channelTitle": "ATHLEAN-X Español",
+    "durationSeconds": 405,
+    "score": 0.9345,
+    "scoreBreakdown": {
+      "text": 1,
+      "channel": 1,
+      "engagement": 0.9850652311504934,
+      "duration": 0.875,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "push-ups",
+    "lang": "en",
+    "youtubeId": "IODxDxX7oi4",
+    "title": "The Perfect Push Up | Do it right!",
+    "channelId": "UCZIIRX8rkNjVpP-oLMHpeDw",
+    "channelTitle": "Calisthenicmovement",
+    "durationSeconds": 218,
+    "score": 0.797,
+    "scoreBreakdown": {
+      "text": 0.5,
+      "channel": 1,
+      "engagement": 0.7352031322028197,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 1
+    },
+    "status": "published"
+  },
+  {
+    "slug": "push-ups",
+    "lang": "es",
+    "youtubeId": "CkX5QdEz4IE",
+    "title": "FONDOS EN BARRA - DESARROLLA PECTORALES Y TRÍCEPS / TÉCNICA DE LOS EJERCICIOS",
+    "channelId": "UC8sjpctmlenyG_ff6I5GK9g",
+    "channelTitle": "NeofitTv",
+    "durationSeconds": 278,
+    "score": 0.5189,
+    "scoreBreakdown": {
+      "text": 0.5,
+      "channel": 0,
+      "engagement": 0.8446142097747994,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "needs_review"
+  },
+  {
+    "slug": "push-ups-2",
+    "lang": "en",
+    "youtubeId": "IODxDxX7oi4",
+    "title": "The Perfect Push Up | Do it right!",
+    "channelId": "UCZIIRX8rkNjVpP-oLMHpeDw",
+    "channelTitle": "Calisthenicmovement",
+    "durationSeconds": 218,
+    "score": 0.797,
+    "scoreBreakdown": {
+      "text": 0.5,
+      "channel": 1,
+      "engagement": 0.7352031322028197,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 1
+    },
+    "status": "published"
+  },
+  {
+    "slug": "push-ups-2",
+    "lang": "es",
+    "youtubeId": "d8IEGU9BrLU",
+    "title": "Por ESTO te Cuesta Hacer los FONDOS en Paralelas | Técnica REAL aquí",
+    "channelId": "UCLNaMWbEx9fa4V6oe5wxEkA",
+    "channelTitle": "PRO-BARRAS",
+    "durationSeconds": 343,
+    "score": 0.5658,
+    "scoreBreakdown": {
+      "text": 0.5,
+      "channel": 0,
+      "engagement": 0.8289416260911223,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 1
+    },
+    "status": "needs_review"
+  },
+  {
+    "slug": "rear-delt-machine-fly",
+    "lang": "en",
+    "youtubeId": "P5CXx_jgTDE",
+    "title": "A Better Way To Train Rear Delts",
+    "channelId": "UC68TLK0mAEzUyHx5x5k-S1Q",
+    "channelTitle": "Jeff Nippard",
+    "durationSeconds": 34,
+    "score": 0.7497,
+    "scoreBreakdown": {
+      "text": 0.3333333333333333,
+      "channel": 1,
+      "engagement": 0.9986178602242349,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "rear-delt-machine-fly",
+    "lang": "es",
+    "youtubeId": "8mhKQQYdAS0",
+    "title": "REMO HORIZONTAL AMPLIO EN MÁQUINA SENTADO",
+    "channelId": "UC-7dDmcjv6tmqS7tEHb1PRA",
+    "channelTitle": "JMF-PersonalTrainer",
+    "durationSeconds": 47,
+    "score": 0.4646,
+    "scoreBreakdown": {
+      "text": 0.6666666666666666,
+      "channel": 0,
+      "engagement": 0.3229800324043469,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "needs_review"
+  },
+  {
+    "slug": "rear-delt-reverse-fly-machine",
+    "lang": "en",
+    "youtubeId": "P5CXx_jgTDE",
+    "title": "A Better Way To Train Rear Delts",
+    "channelId": "UC68TLK0mAEzUyHx5x5k-S1Q",
+    "channelTitle": "Jeff Nippard",
+    "durationSeconds": 34,
+    "score": 0.7247,
+    "scoreBreakdown": {
+      "text": 0.25,
+      "channel": 1,
+      "engagement": 0.9986178602242349,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "rear-delt-reverse-fly-machine",
+    "lang": "es",
+    "youtubeId": "K9RirVc6Rkk",
+    "title": "Los Dos Únicos Ejercicios de DELTOIDES POSTERIORES que Necesitas (NO, ES EN SERIO)",
+    "channelId": "UCAR76PvwLHcHqnbqFIos_Xg",
+    "channelTitle": "ATHLEAN-X Español",
+    "durationSeconds": 210,
+    "score": 0.7773,
+    "scoreBreakdown": {
+      "text": 0.5,
+      "channel": 1,
+      "engagement": 0.8867281261408133,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "remo-en-polea-gironda",
+    "lang": "en",
+    "youtubeId": "I3Wi6GK0QMk",
+    "title": "La técnica correcta del Remo gironda",
+    "channelId": "UCh4VdbK3ybBBwleBdta_GMg",
+    "channelTitle": "BlueGym Animation",
+    "durationSeconds": 38,
+    "score": 0.73,
+    "scoreBreakdown": {
+      "text": 0.6666666666666666,
+      "channel": 1,
+      "engagement": 0.8998205244429305,
+      "duration": 1,
+      "language": 0,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "remo-en-polea-gironda",
+    "lang": "es",
+    "youtubeId": "I3Wi6GK0QMk",
+    "title": "La técnica correcta del Remo gironda",
+    "channelId": "UCh4VdbK3ybBBwleBdta_GMg",
+    "channelTitle": "BlueGym Animation",
+    "durationSeconds": 38,
+    "score": 0.83,
+    "scoreBreakdown": {
+      "text": 0.6666666666666666,
+      "channel": 1,
+      "engagement": 0.8998205244429305,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "resistance-band-lateral-raise",
+    "lang": "en",
+    "youtubeId": "oHCxtt6g7UA",
+    "title": "Build Wider Shoulders with Resistance Bands : Lateral Raise for Middle Deltoid",
+    "channelId": "UC2kDEO88OR_S8WX4o0zEewQ",
+    "channelTitle": "Undersun Fitness",
+    "durationSeconds": 116,
+    "score": 0.5512,
+    "scoreBreakdown": {
+      "text": 0.75,
+      "channel": 0,
+      "engagement": 0.6307557002559767,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "needs_review"
+  },
+  {
+    "slug": "resistance-band-lateral-raise",
+    "lang": "es",
+    "youtubeId": "HFf5WDmtHuE",
+    "title": "¡Para de Hacer Elevaciones Laterales con Mancuernas Así! (SALVA A UN AMIGO)",
+    "channelId": "UCAR76PvwLHcHqnbqFIos_Xg",
+    "channelTitle": "ATHLEAN-X Español",
+    "durationSeconds": 46,
+    "score": 0.85,
+    "scoreBreakdown": {
+      "text": 0.6666666666666666,
+      "channel": 1,
+      "engagement": 1,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "reverse-wrist-curl",
+    "lang": "es",
+    "youtubeId": "VpcU-jQ3BWs",
+    "title": "Haces Triceps con Barra o con Cuerdas?  #gym #triceps  #tips",
+    "channelId": "UCh4VdbK3ybBBwleBdta_GMg",
+    "channelTitle": "BlueGym Animation",
+    "durationSeconds": 33,
+    "score": 0.7316,
+    "scoreBreakdown": {
+      "text": 0.3333333333333333,
+      "channel": 1,
+      "engagement": 0.9078688736411636,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
+  },
+  {
+    "slug": "rotary-torso-machine-2",
+    "lang": "en",
+    "youtubeId": "97boSjZ0erk",
+    "title": "How-To Use the \"Rotary Torso\" Machine",
+    "channelId": "UCO9bDKAeu9nDdnDB8zNuqmw",
+    "channelTitle": "Tri Cities Gold's Gym",
+    "durationSeconds": 104,
+    "score": 0.6133,
+    "scoreBreakdown": {
+      "text": 1,
+      "channel": 0,
+      "engagement": 0.5666394154867767,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "needs_review"
+  },
+  {
+    "slug": "seated-cable-row",
+    "lang": "es",
+    "youtubeId": "JtTusrYzAos",
+    "title": "Remo sentado en polea: Cómo hacerlo correctamente",
+    "channelId": "UCdLhu6EbYPJ--WyxtV-BKgQ",
+    "channelTitle": "EresFitness",
+    "durationSeconds": 94,
+    "score": 0.6609,
+    "scoreBreakdown": {
+      "text": 1,
+      "channel": 0,
+      "engagement": 0.5546191099874878,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 1
+    },
+    "status": "needs_review"
+  },
+  {
+    "slug": "seated-leg-curl-machine",
+    "lang": "es",
+    "youtubeId": "3jug6KZ9iRA",
+    "title": "Máquina de ISQUIOTIBIALES SENTADO [CURL FEMORAL]",
+    "channelId": "UCYv9nLq2_ol7BHZ66RJA9mg",
+    "channelTitle": "Javi NewBody",
+    "durationSeconds": 89,
+    "score": 0.6045,
+    "scoreBreakdown": {
+      "text": 1,
+      "channel": 0,
+      "engagement": 0.5225852209006078,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "needs_review"
+  },
+  {
+    "slug": "side-lying-rear-delt-raise",
+    "lang": "es",
+    "youtubeId": "HFf5WDmtHuE",
+    "title": "¡Para de Hacer Elevaciones Laterales con Mancuernas Así! (SALVA A UN AMIGO)",
+    "channelId": "UCAR76PvwLHcHqnbqFIos_Xg",
+    "channelTitle": "ATHLEAN-X Español",
+    "durationSeconds": 46,
+    "score": 0.725,
+    "scoreBreakdown": {
+      "text": 0.25,
+      "channel": 1,
+      "engagement": 1,
+      "duration": 1,
+      "language": 1,
+      "captionsRecency": 0
+    },
+    "status": "published"
   }
 ]
