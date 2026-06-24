@@ -22,3 +22,4 @@ export * from "./Confetti";
 export * from "./ExerciseIcon";
 export * from "./ScreenHeader";
 export * from "./HealthNotice";
+export * from "./useReducedMotion";

@@ -66,13 +66,23 @@ export function DeleteAccountButton() {
           fontWeight: 700,
           cursor: "pointer",
           fontFamily: "inherit",
-          transition: "background 0.15s",
+          // Sólo background/transform; tokens via CSS vars (sin ms hardcodeados).
+          transition:
+            "background var(--duration-dropdown) var(--ease-out), transform var(--duration-press) var(--ease-out)",
         }}
         onMouseEnter={(e) => {
           (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.08)";
         }}
         onMouseLeave={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+          const el = e.currentTarget as HTMLButtonElement;
+          el.style.background = "transparent";
+          el.style.transform = "scale(1)";
+        }}
+        onMouseDown={(e) => {
+          (e.currentTarget as HTMLButtonElement).style.transform = "scale(var(--press-scale))";
+        }}
+        onMouseUp={(e) => {
+          (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)";
         }}
       >
         {t("trigger")}
@@ -140,14 +150,14 @@ export function DeleteAccountButton() {
                   <button
                     type="button"
                     onClick={handleCancel}
-                    style={secondaryBtnStyle}
+                    style={secondaryBtnStyle} onMouseDown={onBtnPressDown} onMouseUp={onBtnPressUp} onMouseLeave={onBtnPressUp}
                   >
                     {t("cancel")}
                   </button>
                   <button
                     type="button"
                     onClick={handleConfirm1}
-                    style={dangerBtnStyle}
+                    style={dangerBtnStyle} onMouseDown={onBtnPressDown} onMouseUp={onBtnPressUp} onMouseLeave={onBtnPressUp}
                   >
                     {t("confirm1Btn")}
                   </button>
@@ -192,14 +202,14 @@ export function DeleteAccountButton() {
                   <button
                     type="button"
                     onClick={handleCancel}
-                    style={secondaryBtnStyle}
+                    style={secondaryBtnStyle} onMouseDown={onBtnPressDown} onMouseUp={onBtnPressUp} onMouseLeave={onBtnPressUp}
                   >
                     {t("cancel")}
                   </button>
                   <button
                     type="button"
                     onClick={() => { void handleConfirm2(); }}
-                    style={dangerBtnStyle}
+                    style={dangerBtnStyle} onMouseDown={onBtnPressDown} onMouseUp={onBtnPressUp} onMouseLeave={onBtnPressUp}
                   >
                     {t("confirm2Btn")}
                   </button>
@@ -250,7 +260,7 @@ export function DeleteAccountButton() {
                   <button
                     type="button"
                     onClick={handleCancel}
-                    style={secondaryBtnStyle}
+                    style={secondaryBtnStyle} onMouseDown={onBtnPressDown} onMouseUp={onBtnPressUp} onMouseLeave={onBtnPressUp}
                   >
                     {t("close")}
                   </button>
@@ -264,6 +274,15 @@ export function DeleteAccountButton() {
   );
 }
 
+// Press feedback compartido para los botones del modal: sólo transform, tokens via CSS vars.
+const pressTransition = "transform var(--duration-press) var(--ease-out)";
+const onBtnPressDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+  e.currentTarget.style.transform = "scale(var(--press-scale))";
+};
+const onBtnPressUp = (e: React.MouseEvent<HTMLButtonElement>) => {
+  e.currentTarget.style.transform = "scale(1)";
+};
+
 const secondaryBtnStyle: React.CSSProperties = {
   background: "transparent",
   border: "1px solid var(--color-border)",
@@ -274,6 +293,7 @@ const secondaryBtnStyle: React.CSSProperties = {
   fontWeight: 600,
   cursor: "pointer",
   fontFamily: "inherit",
+  transition: pressTransition,
 };
 
 const dangerBtnStyle: React.CSSProperties = {
@@ -286,4 +306,5 @@ const dangerBtnStyle: React.CSSProperties = {
   fontWeight: 700,
   cursor: "pointer",
   fontFamily: "inherit",
+  transition: pressTransition,
 };

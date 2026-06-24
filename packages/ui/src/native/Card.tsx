@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Animated, Pressable, View, StyleSheet, type ViewProps, type PressableProps } from "react-native";
-import { colors, spacing, radius } from "../tokens";
+import { colors, spacing, radius, motion } from "../tokens";
 
 export type CardVariant = "surface" | "surface2" | "surface3";
 
@@ -33,7 +33,7 @@ export function Card({
 
   const onPressIn = () =>
     Animated.spring(scale, {
-      toValue: 0.99,
+      toValue: motion.pressScale,
       useNativeDriver: true,
       speed: 50,
       bounciness: 0,

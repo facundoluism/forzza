@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { colors, spacing } from "@forzza/ui/tokens";
+import { colors, spacing, cssEasing, duration, spring, motion } from "@forzza/ui/tokens";
 import {
   Button,
   Card,
@@ -63,6 +63,191 @@ const CALENDAR_EVENTS = [
   { date: "2026-06-23", color: colors.lime, label: "Fuerza" },
   { date: "2026-06-25", color: colors.orange, label: "Piernas" },
 ];
+
+const EASING_DEMO = [
+  { key: "out", label: "easing.out", use: "Entradas/salidas de UI — default" },
+  { key: "inOut", label: "easing.inOut", use: "Movimiento / morph en pantalla" },
+  { key: "drawer", label: "easing.drawer", use: "Drawers / bottom sheets (iOS)" },
+] as const;
+
+/**
+ * Demo interactiva del sistema de motion: curvas (easing), duraciones, springs y
+ * el press scale. Todo sale de `@forzza/ui/tokens` — cero valores hardcodeados.
+ */
+function MotionShowcase() {
+  const [replay, setReplay] = useState(0);
+  const [pressed, setPressed] = useState(false);
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: `${spacing[6]}px` }}>
+      {/* Keyframe del demo: viaja 280px (track 300 − dot 20). Solo transform. */}
+      <style>{`@keyframes fz-motion-slide { from { transform: translateX(0); } to { transform: translateX(280px); } }`}</style>
+
+      {/* ── Curvas (easing) ── */}
+      <Card padding="md">
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: `${spacing[4]}px`,
+          }}
+        >
+          <SectionLabel>Curvas — easing</SectionLabel>
+          <Button
+            label="Reproducir"
+            size="sm"
+            variant="secondary"
+            onClick={() => setReplay((r) => r + 1)}
+          />
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: `${spacing[5]}px` }}>
+          {EASING_DEMO.map(({ key, label, use }) => (
+            <div key={`${key}-${replay}`}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: `${spacing[2]}px`,
+                }}
+              >
+                <code style={{ color: colors.lime, fontSize: "13px" }}>{label}</code>
+                <span style={{ color: colors.muted, fontSize: "12px" }}>{use}</span>
+              </div>
+              <div
+                style={{
+                  position: "relative",
+                  width: "300px",
+                  maxWidth: "100%",
+                  height: "8px",
+                  background: colors.surface3,
+                  borderRadius: "9999px",
+                }}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "20px",
+                    height: "8px",
+                    borderRadius: "9999px",
+                    background: colors.lime,
+                    animationName: "fz-motion-slide",
+                    animationDuration: `${duration.sheet}ms`,
+                    animationTimingFunction: cssEasing[key],
+                    animationFillMode: "both",
+                  }}
+                />
+              </div>
+              <code style={{ color: colors.gray500, fontSize: "11px" }}>{cssEasing[key]}</code>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* ── Duraciones ── */}
+      <Card padding="md">
+        <SectionLabel style={{ marginBottom: `${spacing[4]}px` }}>
+          Duraciones — duration (ms)
+        </SectionLabel>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: `${spacing[3]}px` }}>
+          {Object.entries(duration).map(([name, ms]) => (
+            <div
+              key={name}
+              style={{
+                border: `1px solid ${colors.border}`,
+                borderRadius: "8px",
+                padding: `${spacing[3]}px ${spacing[4]}px`,
+                minWidth: "96px",
+              }}
+            >
+              <div
+                style={{
+                  color: colors.white,
+                  fontFamily: "SpaceMono, monospace",
+                  fontSize: "20px",
+                }}
+              >
+                {ms}
+                <span style={{ color: colors.muted, fontSize: "12px" }}>ms</span>
+              </div>
+              <code style={{ color: colors.lime, fontSize: "12px" }}>{name}</code>
+            </div>
+          ))}
+        </div>
+        <p style={{ color: colors.muted, fontSize: "12px", marginBottom: 0, marginTop: `${spacing[3]}px` }}>
+          Regla Forzza: UI &lt; 300ms. <code style={{ color: colors.gray400 }}>sheet</code> es la
+          única &gt; 300ms, justificada para drawers.
+        </p>
+      </Card>
+
+      {/* ── Springs ── */}
+      <Card padding="md">
+        <SectionLabel style={{ marginBottom: `${spacing[4]}px` }}>
+          Springs — Reanimated / Framer Motion
+        </SectionLabel>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: `${spacing[3]}px` }}>
+          {Object.entries(spring).map(([name, cfg]) => (
+            <div
+              key={name}
+              style={{
+                border: `1px solid ${colors.border}`,
+                borderRadius: "8px",
+                padding: `${spacing[3]}px ${spacing[4]}px`,
+              }}
+            >
+              <code style={{ color: colors.lime, fontSize: "13px" }}>spring.{name}</code>
+              <div style={{ color: colors.gray400, fontSize: "12px", marginTop: `${spacing[1]}px` }}>
+                damping {cfg.damping} · stiffness {cfg.stiffness} · mass {cfg.mass}
+              </div>
+            </div>
+          ))}
+        </div>
+        <p style={{ color: colors.muted, fontSize: "12px", marginBottom: 0, marginTop: `${spacing[3]}px` }}>
+          <code style={{ color: colors.gray400 }}>bouncy</code> se reserva para drag-to-dismiss; el
+          resto de la UI usa <code style={{ color: colors.gray400 }}>gentle</code> o duraciones.
+        </p>
+      </Card>
+
+      {/* ── Press scale ── */}
+      <Card padding="md">
+        <SectionLabel style={{ marginBottom: `${spacing[4]}px` }}>
+          Press feedback — motion.pressScale
+        </SectionLabel>
+        <div style={{ display: "flex", alignItems: "center", gap: `${spacing[4]}px` }}>
+          <div
+            role="button"
+            tabIndex={0}
+            onMouseDown={() => setPressed(true)}
+            onMouseUp={() => setPressed(false)}
+            onMouseLeave={() => setPressed(false)}
+            style={{
+              width: "120px",
+              height: "64px",
+              borderRadius: "12px",
+              background: colors.lime,
+              color: colors.bg,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: 700,
+              cursor: "pointer",
+              userSelect: "none",
+              transform: pressed ? `scale(${motion.pressScale})` : "scale(1)",
+              transition: `transform ${duration.press}ms ${cssEasing.out}`,
+            }}
+          >
+            Mantené
+          </div>
+          <span style={{ color: colors.muted, fontSize: "13px" }}>
+            scale({motion.pressScale}) · {duration.press}ms · easing.out
+          </span>
+        </div>
+      </Card>
+    </div>
+  );
+}
 
 function SectionHeading({ children }: { children: string }) {
   return (
@@ -136,6 +321,17 @@ export default function StyleguidePage() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* ── Motion ── */}
+      <section style={{ marginBottom: `${spacing[10]}px` }}>
+        <SectionHeading>Motion</SectionHeading>
+        <p style={{ color: colors.muted, marginTop: 0, marginBottom: `${spacing[4]}px`, fontSize: "14px" }}>
+          Curvas, duraciones y springs del sistema de animación. Todo sale de{" "}
+          <code style={{ color: colors.gray400 }}>@forzza/ui/tokens</code> — nunca hardcodear
+          cubic-beziers ni ms. Ver la skill <code style={{ color: colors.gray400 }}>forzza-ui-motion</code>.
+        </p>
+        <MotionShowcase />
       </section>
 
       {/* ── SectionLabel ── */}

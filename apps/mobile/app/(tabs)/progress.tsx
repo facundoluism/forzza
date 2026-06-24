@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,8 @@ import {
   ActivityIndicator,
   TextInput,
   TouchableOpacity,
+  Animated,
+  Easing,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
@@ -23,8 +25,48 @@ import {
   mergeCompletedWorkoutSessions,
   type CompletedWorkoutSession,
 } from "@/services/workoutHistory";
-import { EmptyState, ErrorState, Card, UpgradeModal, LineChart } from "@forzza/ui/native";
-import { colors, fontSize, spacing, radius, typography } from "@forzza/ui/tokens";
+import { EmptyState, ErrorState, Card, UpgradeModal, LineChart, useReducedMotion } from "@forzza/ui/native";
+import { colors, fontSize, spacing, radius, typography, easing, duration, motion } from "@forzza/ui/tokens";
+
+// Items más allá de este índice entran juntos (sin stagger acumulado) para no demorar listas largas.
+const STAGGER_CAP = 10;
+
+// Wrapper de entrada para items de lista: opacity 0→1 + translateY(8→0),
+// escalonado por índice (motion.stagger), topeado a STAGGER_CAP. Decorativo,
+// nunca bloquea interacción. Con reduced motion muestra el estado final sin animar.
+function AnimatedListItem({ index, children }: { index: number; children: ReactNode }): React.JSX.Element {
+  const reducedMotion = useReducedMotion();
+  const progress = useRef(new Animated.Value(reducedMotion ? 1 : 0)).current;
+
+  useEffect(() => {
+    if (reducedMotion) {
+      progress.setValue(1);
+      return;
+    }
+    const animation = Animated.timing(progress, {
+      toValue: 1,
+      duration: duration.dropdown,
+      delay: Math.min(index, STAGGER_CAP) * motion.stagger,
+      easing: Easing.bezier(...easing.out),
+      useNativeDriver: true,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [index, reducedMotion, progress]);
+
+  return (
+    <Animated.View
+      style={{
+        opacity: progress,
+        transform: [
+          { translateY: progress.interpolate({ inputRange: [0, 1], outputRange: [8, 0] }) },
+        ],
+      }}
+    >
+      {children}
+    </Animated.View>
+  );
+}
 
 // ─── Coach Feedback ───────────────────────────────────────────────────────────
 
@@ -117,8 +159,9 @@ function CoachFeedbackSection({ userId }: { userId: string }): React.JSX.Element
 
   return (
     <View style={feedbackStyles.list} testID="coach-feedback-list">
-      {feedbackItems.map((item) => (
-        <Card key={item.id} style={feedbackStyles.card} testID={`coach-feedback-item-${item.id}`}>
+      {feedbackItems.map((item, idx) => (
+        <AnimatedListItem key={item.id} index={idx}>
+        <Card style={feedbackStyles.card} testID={`coach-feedback-item-${item.id}`}>
           <View style={feedbackStyles.header}>
             {item.coach_display_name ? (
               <Text style={feedbackStyles.coachName}>{item.coach_display_name}</Text>
@@ -141,6 +184,7 @@ function CoachFeedbackSection({ userId }: { userId: string }): React.JSX.Element
             })}
           </Text>
         </Card>
+        </AnimatedListItem>
       ))}
     </View>
   );
@@ -624,8 +668,10 @@ export default function ProgressTab(): React.JSX.Element {
                 icon="📊"
               />
             ) : (
-              lastFive.map((session) => (
-                <SessionItem key={session.client_uuid} session={session} />
+              lastFive.map((session, idx) => (
+                <AnimatedListItem key={session.client_uuid} index={idx}>
+                  <SessionItem session={session} />
+                </AnimatedListItem>
               ))
             )}
 
@@ -688,8 +734,10 @@ export default function ProgressTab(): React.JSX.Element {
               icon="📊"
             />
           ) : (
-            lastFive.map((session) => (
-              <SessionItem key={session.client_uuid} session={session} />
+            lastFive.map((session, idx) => (
+              <AnimatedListItem key={session.client_uuid} index={idx}>
+                <SessionItem session={session} />
+              </AnimatedListItem>
             ))
           )}
         </View>

@@ -165,3 +165,47 @@ export const fontSize = {
   // Título estándar de pantalla de lista (tabs + screens con header de lista)
   screenTitle: 32,
 } as const;
+
+// ── Motion / animaciones ─────────────────────────────────────────────────────
+// Fuente única de curvas, duraciones y springs. Regla: NUNCA hardcodear
+// cubic-beziers ni milisegundos sueltos en componentes — siempre desde acá.
+// Ver skill `forzza-ui-motion` para el cómo (web CSS/Framer Motion + mobile Reanimated).
+
+// Puntos de control bezier (fuerte; los easings nativos del browser son débiles).
+// Web:    cssEasing.out                       → 'cubic-bezier(0.23, 1, 0.32, 1)'
+// Mobile: Easing.bezier(...easing.out)         (react-native-reanimated)
+export const easing = {
+  out: [0.23, 1, 0.32, 1],     // entradas/salidas de UI (default): arranca rápido, responsivo
+  inOut: [0.77, 0, 0.175, 1],  // movimiento/morph en pantalla
+  drawer: [0.32, 0.72, 0, 1],  // curva tipo iOS para drawers/sheets
+} as const;
+
+// Strings listos para CSS/Tailwind (solo web).
+export const cssEasing = {
+  out: `cubic-bezier(${easing.out.join(", ")})`,
+  inOut: `cubic-bezier(${easing.inOut.join(", ")})`,
+  drawer: `cubic-bezier(${easing.drawer.join(", ")})`,
+} as const;
+
+// Duraciones en ms. Regla Forzza: UI < 300ms (crisp y rápido, no lento).
+export const duration = {
+  press: 140,    // feedback de botón al presionar
+  tooltip: 160,  // tooltips, popovers chicos
+  dropdown: 200, // dropdowns, selects, menús
+  sheet: 320,    // modales, drawers, bottom sheets (única > 300ms, justificada)
+} as const;
+
+// Springs estilo Apple. Compatibles con Reanimated `withSpring` y Framer Motion.
+// Reservar `bouncy` para drag-to-dismiss / interacciones jugadas; el resto de la
+// UI usa `gentle` o duraciones. bounce sutil — nunca exagerado.
+export const spring = {
+  gentle: { damping: 26, stiffness: 220, mass: 1 },
+  bouncy: { damping: 18, stiffness: 200, mass: 1 },
+} as const;
+
+// Escala de feedback al presionar cualquier elemento pulsable. Nunca scale(0).
+export const motion = {
+  pressScale: 0.97, // transform: scale(0.97) en :active / onPressIn
+  enterScale: 0.95, // entradas: arrancar en 0.95 + opacity, jamás en 0
+  stagger: 50,      // delay entre items de un grupo (30–80ms)
+} as const;

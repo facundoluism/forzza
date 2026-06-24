@@ -21,6 +21,18 @@ export function AvatarUpload({ currentAvatarUrl }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  // Press feedback: transform-only scale, sólo transform/opacity. Tokens via CSS vars.
+  const pressStyle = { transition: "transform var(--duration-press) var(--ease-out)" };
+  const onPressDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.transform = "scale(var(--press-scale))";
+  };
+  const onPressUp = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.transform = "scale(1)";
+  };
+
+  // Estado de carga/borrado: opacity/scale suave en el preview mientras hay actividad.
+  const busy = uploading || deleting;
+
   function clearFeedback() {
     setError(null);
     setSuccess(null);
@@ -110,8 +122,16 @@ export function AvatarUpload({ currentAvatarUrl }: Props) {
       </h2>
 
       <div className="flex items-center gap-5">
-        {/* Avatar preview */}
-        <div className="relative flex-shrink-0">
+        {/* Avatar preview — feedback visual durante actividad (opacity + scale suave) */}
+        <div
+          className="relative flex-shrink-0"
+          style={{
+            opacity: busy ? 0.6 : 1,
+            transform: busy ? "scale(var(--press-scale))" : "scale(1)",
+            transition:
+              "opacity var(--duration-dropdown) var(--ease-out), transform var(--duration-dropdown) var(--ease-out)",
+          }}
+        >
           {avatarUrl ? (
             <Image
               src={avatarUrl}
@@ -133,7 +153,11 @@ export function AvatarUpload({ currentAvatarUrl }: Props) {
           <button
             type="button"
             onClick={() => { clearFeedback(); inputRef.current?.click(); }}
+            onMouseDown={onPressDown}
+            onMouseUp={onPressUp}
+            onMouseLeave={onPressUp}
             disabled={uploading || deleting}
+            style={pressStyle}
             className="px-4 py-2 bg-[#C8FF00] text-[#0A0A0A] rounded-lg text-sm font-semibold hover:bg-[#AADD00] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {uploading
@@ -148,7 +172,11 @@ export function AvatarUpload({ currentAvatarUrl }: Props) {
             <button
               type="button"
               onClick={() => void handleDelete()}
+              onMouseDown={onPressDown}
+              onMouseUp={onPressUp}
+              onMouseLeave={onPressUp}
               disabled={uploading || deleting}
+              style={pressStyle}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                 confirmDelete
                   ? "bg-red-600 text-white hover:bg-red-700"

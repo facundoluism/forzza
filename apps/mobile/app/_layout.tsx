@@ -12,6 +12,7 @@ import {
 } from "@expo-google-fonts/dm-sans";
 import { SpaceMono_400Regular } from "@expo-google-fonts/space-mono";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { LogBox } from "react-native";
 import { AuthProvider, useAuth } from "@/providers/AuthProvider";
 import { initSentry } from "@/lib/sentry";
@@ -135,14 +136,19 @@ export default function RootLayout() {
   if (!readyToRender) return null;
 
   return (
-    <SafeAreaProvider>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <RootLayoutNav />
-          {/* Banner de consentimiento de analytics — se muestra sobre todo en la primera apertura */}
-          <AnalyticsConsentBanner />
-        </AuthProvider>
-      </QueryClientProvider>
-    </SafeAreaProvider>
+    // GestureHandlerRootView debe ser el contenedor MÁS externo para que los
+    // gestos de Gesture Handler (swipe-to-dismiss en Sheet/Toast) funcionen en
+    // toda la app. flex:1 es obligatorio.
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <RootLayoutNav />
+            {/* Banner de consentimiento de analytics — se muestra sobre todo en la primera apertura */}
+            <AnalyticsConsentBanner />
+          </AuthProvider>
+        </QueryClientProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

@@ -5,9 +5,10 @@ import {
   StyleSheet,
   Pressable,
   Animated,
+  Easing,
   TouchableOpacity,
 } from "react-native";
-import { useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
@@ -18,10 +19,50 @@ import { useWorkoutStore } from "@/stores/workoutStore";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { useLanguageStore } from "@/stores/languageStore";
 import { quoteOfTheDay, quoteText } from "@forzza/core";
-import { EmptyState, ErrorState, Card, Skeleton } from "@forzza/ui/native";
-import { colors, fontSize, spacing, radius, typography } from "@forzza/ui/tokens";
+import { EmptyState, ErrorState, Card, Skeleton, useReducedMotion } from "@forzza/ui/native";
+import { colors, fontSize, spacing, radius, typography, easing, duration, motion } from "@forzza/ui/tokens";
 
 const TEN_DAYS_MS = 10 * 24 * 60 * 60 * 1000;
+
+// Tope de stagger: las secciones posteriores entran juntas para no demorar el montaje.
+const STAGGER_CAP = 10;
+
+// Micro-entrada al montar: opacity 0→1 + translateY(8→0), escalonada por índice
+// (motion.stagger), topeada a STAGGER_CAP. Decorativa, nunca bloquea interacción.
+// Con reduced motion muestra el estado final sin animar.
+function AnimatedSection({ index, children }: { index: number; children: ReactNode }): React.JSX.Element {
+  const reducedMotion = useReducedMotion();
+  const progress = useRef(new Animated.Value(reducedMotion ? 1 : 0)).current;
+
+  useEffect(() => {
+    if (reducedMotion) {
+      progress.setValue(1);
+      return;
+    }
+    const animation = Animated.timing(progress, {
+      toValue: 1,
+      duration: duration.dropdown,
+      delay: Math.min(index, STAGGER_CAP) * motion.stagger,
+      easing: Easing.bezier(...easing.out),
+      useNativeDriver: true,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [index, reducedMotion, progress]);
+
+  return (
+    <Animated.View
+      style={{
+        opacity: progress,
+        transform: [
+          { translateY: progress.interpolate({ inputRange: [0, 1], outputRange: [8, 0] }) },
+        ],
+      }}
+    >
+      {children}
+    </Animated.View>
+  );
+}
 
 interface StudentProfile {
   id: string;
@@ -364,6 +405,7 @@ export default function HomeTab(): React.JSX.Element {
       </View>
 
       {/* Frase del día — antes de la rutina, como en el prototipo */}
+      <AnimatedSection index={0}>
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t("home.quoteOfTheDay")}</Text>
         <Card style={styles.quoteCard}>
@@ -372,8 +414,10 @@ export default function HomeTab(): React.JSX.Element {
           <Text style={styles.quoteSport}>{dailyQuote.sport}</Text>
         </Card>
       </View>
+      </AnimatedSection>
 
       {/* Racha semanal */}
+      <AnimatedSection index={1}>
       <View style={styles.section}>
         <Card style={styles.streakCard}>
           <View style={styles.streakHeader}>
@@ -394,8 +438,10 @@ export default function HomeTab(): React.JSX.Element {
           </View>
         </Card>
       </View>
+      </AnimatedSection>
 
       {/* Banner contextual */}
+      <AnimatedSection index={2}>
       {hasCoach ? (
         <View style={[styles.banner, styles.bannerCoach]}>
           <View style={styles.bannerCoachAvatar}>
@@ -435,8 +481,10 @@ export default function HomeTab(): React.JSX.Element {
           <Text style={styles.bannerArrow}>›</Text>
         </TouchableOpacity>
       )}
+      </AnimatedSection>
 
       {/* Rutina de hoy */}
+      <AnimatedSection index={3}>
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t("home.todayRoutine")}</Text>
         {isLoading ? (
@@ -509,13 +557,17 @@ export default function HomeTab(): React.JSX.Element {
           />
         )}
       </View>
+      </AnimatedSection>
 
       {/* Quick start */}
+      <AnimatedSection index={4}>
       <View style={styles.section}>
         <QuickStartButton onPress={() => router.push("/(tabs)/routines")} />
       </View>
+      </AnimatedSection>
 
       {/* Últimas sesiones */}
+      <AnimatedSection index={5}>
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t("home.lastSessions")}</Text>
         {recentSessions.length > 0 ? (
@@ -530,8 +582,10 @@ export default function HomeTab(): React.JSX.Element {
           </Card>
         )}
       </View>
+      </AnimatedSection>
 
       {/* Meta mensual */}
+      <AnimatedSection index={6}>
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t("home.monthlyGoal")}</Text>
         <Card style={styles.goalCard}>
@@ -553,8 +607,10 @@ export default function HomeTab(): React.JSX.Element {
           </View>
         </Card>
       </View>
+      </AnimatedSection>
 
       {/* Acciones rápidas */}
+      <AnimatedSection index={7}>
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t("home.quickActions")}</Text>
         <View style={styles.quickGrid}>
@@ -617,13 +673,16 @@ export default function HomeTab(): React.JSX.Element {
           )}
         </View>
       </View>
+      </AnimatedSection>
 
       {/* Mensaje del coach */}
       {hasCoach && activeAssignment && (
+        <AnimatedSection index={8}>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{t("home.coachMessage")}</Text>
           <CoachMessageCard coachId={activeAssignment.coach_id} />
         </View>
+        </AnimatedSection>
       )}
     </ScrollView>
   );

@@ -66,7 +66,8 @@ export function WeightInput({
               fontWeight: 600,
               textTransform: "uppercase",
               letterSpacing: "0.5px",
-              transition: "background-color 0.15s, color 0.15s",
+              transition:
+                "background-color var(--duration-dropdown) var(--ease-out), color var(--duration-dropdown) var(--ease-out)",
               minWidth: "48px",
             }}
           >

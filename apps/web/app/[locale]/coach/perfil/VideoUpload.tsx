@@ -23,6 +23,17 @@ export function VideoUpload({ currentVideoSignedUrl }: Props) {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Press feedback: sólo transform, tokens via CSS vars.
+  const pressStyle = { transition: "transform var(--duration-press) var(--ease-out)" };
+  const onPressDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.transform = "scale(var(--press-scale))";
+  };
+  const onPressUp = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.transform = "scale(1)";
+  };
+
+  const busy = uploading || deleting;
+
   function showSuccess(msg: string) {
     setSuccessMsg(msg);
     setTimeout(() => setSuccessMsg(null), 3000);
@@ -117,7 +128,15 @@ export function VideoUpload({ currentVideoSignedUrl }: Props) {
       )}
 
       {currentVideoSignedUrl && (
-        <div className="rounded-lg overflow-hidden border border-border bg-surface-2">
+        <div
+          className="rounded-lg overflow-hidden border border-border bg-surface-2"
+          style={{
+            opacity: busy ? 0.6 : 1,
+            transform: busy ? "scale(var(--press-scale))" : "scale(1)",
+            transition:
+              "opacity var(--duration-dropdown) var(--ease-out), transform var(--duration-dropdown) var(--ease-out)",
+          }}
+        >
           {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
           <video
             controls
@@ -132,6 +151,10 @@ export function VideoUpload({ currentVideoSignedUrl }: Props) {
           type="button"
           disabled={uploading}
           onClick={() => fileInputRef.current?.click()}
+          onMouseDown={onPressDown}
+          onMouseUp={onPressUp}
+          onMouseLeave={onPressUp}
+          style={pressStyle}
           className="px-3 py-2 bg-surface-2 border border-border rounded-lg text-lime hover:border-[#C8FF00] transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {uploading
@@ -153,6 +176,10 @@ export function VideoUpload({ currentVideoSignedUrl }: Props) {
           <button
             type="button"
             onClick={() => setConfirmDelete(true)}
+            onMouseDown={onPressDown}
+            onMouseUp={onPressUp}
+            onMouseLeave={onPressUp}
+            style={pressStyle}
             className="px-3 py-2 bg-surface-2 border border-red-500/30 rounded-lg text-red-400 hover:border-red-500 transition-colors text-sm"
           >
             {t("btnDelete")}
@@ -165,6 +192,10 @@ export function VideoUpload({ currentVideoSignedUrl }: Props) {
               type="button"
               disabled={deleting}
               onClick={() => void handleDelete()}
+              onMouseDown={onPressDown}
+              onMouseUp={onPressUp}
+              onMouseLeave={onPressUp}
+              style={pressStyle}
               className="px-3 py-2 bg-red-500/20 border border-red-500/40 rounded-lg text-red-400 hover:bg-red-500/30 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {deleting ? t("btnDeleting") : t("btnConfirmDelete")}
@@ -173,6 +204,10 @@ export function VideoUpload({ currentVideoSignedUrl }: Props) {
               type="button"
               disabled={deleting}
               onClick={() => setConfirmDelete(false)}
+              onMouseDown={onPressDown}
+              onMouseUp={onPressUp}
+              onMouseLeave={onPressUp}
+              style={pressStyle}
               className="px-3 py-2 bg-surface-2 border border-border rounded-lg text-muted hover:border-[#C8FF00] transition-colors text-sm disabled:opacity-50"
             >
               {t("btnCancelDelete")}

@@ -4,6 +4,7 @@ import { InvoiceUploadButton } from "./InvoiceUploadButton";
 import { InvoiceViewButton } from "./InvoiceViewButton";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ErrorState } from "@forzza/ui/web";
+import { StaggerList } from "../alumnos/StaggerList";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -193,8 +194,9 @@ export default async function CobrosPage({ params }: Props) {
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-2">
+              <StaggerList>
               {rows.map((s) => (
-                <tr key={s.id} className="hover:bg-surface-2 transition-colors">
+                <tr key={s.id} className="hover:bg-surface-2 [transition:background-color_var(--duration-dropdown)_var(--ease-out)]">
                   <td className="px-6 py-4">
                     <p className="text-text font-medium">
                       {formatDate(s.period_start)}
@@ -242,6 +244,7 @@ export default async function CobrosPage({ params }: Props) {
                   </td>
                 </tr>
               ))}
+              </StaggerList>
             </tbody>
           </table>
         </div>

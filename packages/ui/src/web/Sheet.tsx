@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode, type CSSProperties } from "react";
-import { colors, spacing, radius } from "../tokens";
+import { useEffect, useRef, useState, type ReactNode, type CSSProperties } from "react";
+import { colors, spacing, radius, cssEasing, duration } from "../tokens";
 
 export interface SheetProps {
   visible: boolean;
@@ -12,6 +12,22 @@ export interface SheetProps {
 
 export function Sheet({ visible, onClose, children, style }: SheetProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
+  // `rendered` keeps the node mounted while the exit transition plays.
+  const [rendered, setRendered] = useState(visible);
+  // `open` drives the enter/exit transition target (translateY/opacity).
+  const [open, setOpen] = useState(false);
+
+  // Mount, then flip `open` on the next frame so the enter transition runs.
+  useEffect(() => {
+    if (visible) {
+      setRendered(true);
+      const id = requestAnimationFrame(() => setOpen(true));
+      return () => cancelAnimationFrame(id);
+    }
+    setOpen(false);
+    const id = setTimeout(() => setRendered(false), duration.sheet);
+    return () => clearTimeout(id);
+  }, [visible]);
 
   // Focus trap and escape key
   useEffect(() => {
@@ -31,7 +47,7 @@ export function Sheet({ visible, onClose, children, style }: SheetProps) {
     return () => { document.body.style.overflow = prev; };
   }, [visible]);
 
-  if (!visible) return null;
+  if (!rendered) return null;
 
   return (
     <div
@@ -52,7 +68,8 @@ export function Sheet({ visible, onClose, children, style }: SheetProps) {
           position: "absolute",
           inset: 0,
           backgroundColor: "rgba(0,0,0,0.6)",
-          animation: "fadeIn 0.2s ease",
+          opacity: open ? 1 : 0,
+          transition: `opacity var(--duration-sheet, ${duration.sheet}ms) var(--ease-out, ${cssEasing.out})`,
         }}
       />
       {/* Sheet panel */}
@@ -68,7 +85,8 @@ export function Sheet({ visible, onClose, children, style }: SheetProps) {
           borderBottom: "none",
           maxHeight: "90vh",
           overflowY: "auto",
-          animation: "slideUp 0.25s cubic-bezier(0.16,1,0.3,1)",
+          transform: open ? "translateY(0)" : "translateY(100%)",
+          transition: `transform var(--duration-sheet, ${duration.sheet}ms) var(--ease-drawer, ${cssEasing.drawer})`,
           ...style,
         }}
       >
@@ -88,10 +106,6 @@ export function Sheet({ visible, onClose, children, style }: SheetProps) {
           {children}
         </div>
       </div>
-      <style>{`
-        @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-        @keyframes slideUp { from { transform: translateY(100%) } to { transform: translateY(0) } }
-      `}</style>
     </div>
   );
 }

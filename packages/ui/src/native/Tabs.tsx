@@ -1,5 +1,16 @@
-import { ScrollView, View, Text, Pressable, StyleSheet, type ViewProps } from "react-native";
-import { colors, spacing, fontSize } from "../tokens";
+import { useEffect, useRef } from "react";
+import {
+  ScrollView,
+  View,
+  Text,
+  Pressable,
+  Animated,
+  Easing,
+  StyleSheet,
+  type ViewProps,
+} from "react-native";
+import { colors, spacing, fontSize, duration, easing } from "../tokens";
+import { useReducedMotion } from "./useReducedMotion";
 
 export interface TabItem {
   key: string;
@@ -20,7 +31,37 @@ export interface TabsProps extends Omit<ViewProps, "style"> {
   distribute?: boolean;
 }
 
+/**
+ * Subrayado lima del tab activo. Se anima la `opacity` (driver nativo, barato):
+ * el indicador del tab que pasa a activo aparece suave y el saliente se desvanece,
+ * dando la sensación de que el subrayado se mueve sin animar layout.
+ * Reduced-motion: salta al estado final sin transición.
+ */
+function TabUnderline({ active, reduced }: { active: boolean; reduced: boolean }) {
+  const opacity = useRef(new Animated.Value(active ? 1 : 0)).current;
+
+  useEffect(() => {
+    const to = active ? 1 : 0;
+    if (reduced) {
+      opacity.setValue(to);
+      return;
+    }
+    Animated.timing(opacity, {
+      toValue: to,
+      duration: duration.dropdown,
+      easing: Easing.bezier(...easing.out),
+      useNativeDriver: true,
+    }).start();
+  }, [active, reduced, opacity]);
+
+  return (
+    <Animated.View pointerEvents="none" style={[styles.underline, { opacity }]} />
+  );
+}
+
 export function Tabs({ tabs, activeKey, onTabChange, style, distribute = false, ...rest }: TabsProps) {
+  const reduced = useReducedMotion();
+
   if (distribute) {
     return (
       <View style={[styles.wrapper, style]} {...rest}>
@@ -32,11 +73,12 @@ export function Tabs({ tabs, activeKey, onTabChange, style, distribute = false, 
                 key={tab.key}
                 onPress={() => onTabChange(tab.key)}
                 hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
-                style={[styles.distributeTab, isActive && styles.tabActive]}
+                style={styles.distributeTab}
               >
                 <Text style={[styles.distributeTabText, isActive && styles.tabTextActive]}>
                   {tab.label}
                 </Text>
+                <TabUnderline active={isActive} reduced={reduced} />
               </Pressable>
             );
           })}
@@ -59,11 +101,12 @@ export function Tabs({ tabs, activeKey, onTabChange, style, distribute = false, 
               key={tab.key}
               onPress={() => onTabChange(tab.key)}
               hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
-              style={[styles.tab, isActive && styles.tabActive]}
+              style={styles.tab}
             >
               <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
                 {tab.label}
               </Text>
+              <TabUnderline active={isActive} reduced={reduced} />
             </Pressable>
           );
         })}
@@ -85,12 +128,7 @@ const styles = StyleSheet.create({
   tab: {
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[3],
-    borderBottomWidth: 2,
-    borderBottomColor: "transparent",
     marginBottom: -1,
-  },
-  tabActive: {
-    borderBottomColor: colors.lime,
   },
   tabText: {
     fontSize: fontSize.sm,
@@ -101,6 +139,15 @@ const styles = StyleSheet.create({
   tabTextActive: {
     color: colors.lime,
   },
+  // Subrayado lima animado (opacity). Ocupa el borde inferior del tab.
+  underline: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 2,
+    backgroundColor: colors.lime,
+  },
   // ── distribute mode ──
   distributeRow: {
     flexDirection: "row",
@@ -109,8 +156,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     paddingVertical: spacing[3],
-    borderBottomWidth: 2,
-    borderBottomColor: "transparent",
     marginBottom: -1,
   },
   distributeTabText: {

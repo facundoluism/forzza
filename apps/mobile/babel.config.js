@@ -12,6 +12,10 @@ module.exports = function (api) {
           },
         },
       ],
+      // Reanimated 4: el plugin de worklets DEBE ir SIEMPRE el último de la lista.
+      // (En v4 el plugin se movió de `react-native-reanimated/plugin` a
+      // `react-native-worklets/plugin`.)
+      "react-native-worklets/plugin",
     ],
   };
 };

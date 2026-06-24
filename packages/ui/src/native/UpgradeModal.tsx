@@ -1,11 +1,15 @@
+import { useEffect, useRef } from "react";
 import {
+  Animated,
+  Easing,
   Modal,
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { colors, spacing, radius, typography } from "../tokens";
+import { colors, spacing, radius, typography, easing, duration, motion } from "../tokens";
+import { useReducedMotion } from "./useReducedMotion";
 
 export interface UpgradeModalProps {
   visible: boolean;
@@ -20,15 +24,39 @@ export function UpgradeModal({
   onUpgrade,
   feature,
 }: UpgradeModalProps): React.JSX.Element {
+  const reducedMotion = useReducedMotion();
+  // Drives both opacity and the centered scale (0.95 -> 1); never scale(0).
+  const progress = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(progress, {
+      toValue: visible ? 1 : 0,
+      duration: duration.sheet,
+      easing: Easing.bezier(...easing.out),
+      useNativeDriver: true,
+    }).start();
+  }, [visible, progress]);
+
+  const scale = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [motion.enterScale, 1],
+  });
+
   return (
     <Modal
       visible={visible}
       transparent
-      animationType="fade"
+      animationType="none"
       onRequestClose={onClose}
     >
-      <View style={styles.overlay}>
-        <View style={styles.container}>
+      <Animated.View style={[styles.overlay, { opacity: progress }]}>
+        <Animated.View
+          style={[
+            styles.container,
+            // Reduced motion: keep opacity, drop the scale movement.
+            reducedMotion ? null : { transform: [{ scale }] },
+          ]}
+        >
           <Text style={styles.title}>Funcionalidad PRO</Text>
           <Text style={styles.body}>
             Para acceder a {feature}, necesitás el plan PRO.
@@ -49,8 +77,8 @@ export function UpgradeModal({
               <Text style={styles.upgradeText}>Ver planes</Text>
             </TouchableOpacity>
           </View>
-        </View>
-      </View>
+        </Animated.View>
+      </Animated.View>
     </Modal>
   );
 }

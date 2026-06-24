@@ -1,11 +1,37 @@
 import { useEffect, useRef, useState } from "react";
-import { Text, View, StyleSheet } from "react-native";
+import { Animated, Easing, Text, View, StyleSheet } from "react-native";
 import { Tabs } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/providers/AuthProvider";
-import { colors, spacing, typography } from "@forzza/ui/tokens";
+import { colors, spacing, typography, easing, duration, motion } from "@forzza/ui/tokens";
+import { useReducedMotion } from "@forzza/ui/native";
 import type { RealtimeChannel } from "@supabase/supabase-js";
+
+// Suaviza el cambio activo/inactivo del ícono de tab (opacity + un leve scale)
+// sin cambio brusco. Solo transform/opacity, nativeDriver. Curva y duración desde tokens.
+// Con reduced motion el valor salta al estado final (sin movimiento).
+function useTabIconFocus(focused: boolean): Animated.Value {
+  const reducedMotion = useReducedMotion();
+  const value = useRef(new Animated.Value(focused ? 1 : 0)).current;
+
+  useEffect(() => {
+    if (reducedMotion) {
+      value.setValue(focused ? 1 : 0);
+      return;
+    }
+    const animation = Animated.timing(value, {
+      toValue: focused ? 1 : 0,
+      duration: duration.tooltip,
+      easing: Easing.bezier(...easing.out),
+      useNativeDriver: true,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [focused, reducedMotion, value]);
+
+  return value;
+}
 
 interface TabIconProps {
   label: string;
@@ -13,15 +39,22 @@ interface TabIconProps {
 }
 
 function TabIcon({ label, focused }: TabIconProps) {
+  const focus = useTabIconFocus(focused);
   return (
-    <Text
+    <Animated.Text
       style={[
         styles.tabIcon,
         focused ? styles.tabIconActive : styles.tabIconInactive,
+        {
+          opacity: focus.interpolate({ inputRange: [0, 1], outputRange: [0.5, 1] }),
+          transform: [
+            { scale: focus.interpolate({ inputRange: [0, 1], outputRange: [motion.pressScale, 1] }) },
+          ],
+        },
       ]}
     >
       {label}
-    </Text>
+    </Animated.Text>
   );
 }
 
@@ -107,16 +140,24 @@ function HomeTabIcon({ focused }: { focused: boolean }): React.JSX.Element {
     };
   }, [user]);
 
+  const focus = useTabIconFocus(focused);
+
   return (
     <View style={styles.iconWrapper}>
-      <Text
+      <Animated.Text
         style={[
           styles.tabIcon,
           focused ? styles.tabIconActive : styles.tabIconInactive,
+          {
+            opacity: focus.interpolate({ inputRange: [0, 1], outputRange: [0.5, 1] }),
+            transform: [
+              { scale: focus.interpolate({ inputRange: [0, 1], outputRange: [motion.pressScale, 1] }) },
+            ],
+          },
         ]}
       >
         {"🏠"}
-      </Text>
+      </Animated.Text>
       <NotificationBadge count={unreadCount} />
     </View>
   );

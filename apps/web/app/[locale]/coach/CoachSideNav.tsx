@@ -42,10 +42,10 @@ export function CoachSideNav() {
               <Link
                 key={href}
                 href={href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                className={`coach-nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium border border-transparent ${
                   isActive
-                    ? "bg-[#C8FF00]/10 text-lime border border-[#C8FF00]/20"
-                    : "text-muted hover:text-text hover:bg-surface-2"
+                    ? "bg-[#C8FF00]/10 text-lime !border-[#C8FF00]/20"
+                    : "coach-nav-item--inactive text-muted"
                 }`}
               >
                 <Icon size={20} aria-hidden="true" />
@@ -73,8 +73,8 @@ export function CoachSideNav() {
             <Link
               key={href}
               href={href}
-              className={`flex-1 flex flex-col items-center gap-1 py-2 transition-colors ${
-                isActive ? "text-lime" : "text-muted hover:text-lime"
+              className={`coach-nav-item flex-1 flex flex-col items-center gap-1 py-2 ${
+                isActive ? "text-lime" : "coach-nav-tab--inactive text-muted"
               }`}
             >
               <Icon size={20} aria-hidden="true" />

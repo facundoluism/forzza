@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ErrorState } from "@forzza/ui/web";
+import { StaggerList } from "../alumnos/StaggerList";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -113,10 +114,11 @@ export default async function RutinasPage({ params }: Props) {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <StaggerList>
           {rows.map((routine) => (
             <div
               key={routine.id}
-              className="rounded-xl border border-border bg-surface p-5 hover:border-[#C8FF00]/30 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
+              className="card-hover rounded-xl border border-border bg-surface p-5 active:scale-[var(--press-scale)] flex flex-col"
             >
               <h3 className="font-semibold text-text text-base mb-1">
                 {routine.title}
@@ -144,6 +146,7 @@ export default async function RutinasPage({ params }: Props) {
               </div>
             </div>
           ))}
+          </StaggerList>
         </div>
       )}
     </div>

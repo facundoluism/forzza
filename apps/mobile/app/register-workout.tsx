@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,8 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  Animated,
+  Easing,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -20,8 +22,58 @@ import { syncPendingItems } from "@/services/sync";
 import { supabase } from "@/lib/supabase";
 import { track } from "@/lib/analytics";
 import { TRACKED_EVENTS } from "@forzza/core";
-import { Card, EmptyState, ErrorState, Confetti, ScreenHeader } from "@forzza/ui/native";
-import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
+import { Card, EmptyState, ErrorState, Confetti, ScreenHeader, useReducedMotion } from "@forzza/ui/native";
+import { colors, spacing, radius, typography, fontSize, motion, duration, easing } from "@forzza/ui/tokens";
+
+// Entrada sutil y escalonada de cada tarjeta de ejercicio en el paso 2.
+// Stagger topeado (motion.stagger) para que el último item no se sienta lento.
+// Solo opacity + translateY (transform), useNativeDriver: true.
+const MAX_STAGGER_STEPS = 5;
+
+function AnimatedExerciseCard({
+  index,
+  children,
+}: {
+  index: number;
+  children: React.ReactNode;
+}): React.JSX.Element {
+  const reduced = useReducedMotion();
+  const opacity = useRef(new Animated.Value(reduced ? 1 : 0)).current;
+  const translateY = useRef(new Animated.Value(reduced ? 0 : spacing[3])).current;
+
+  useEffect(() => {
+    if (reduced) {
+      opacity.setValue(1);
+      translateY.setValue(0);
+      return;
+    }
+    const delay = Math.min(index, MAX_STAGGER_STEPS) * motion.stagger;
+    const anim = Animated.parallel([
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: duration.dropdown,
+        delay,
+        easing: Easing.bezier(...easing.out),
+        useNativeDriver: true,
+      }),
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: duration.dropdown,
+        delay,
+        easing: Easing.bezier(...easing.out),
+        useNativeDriver: true,
+      }),
+    ]);
+    anim.start();
+    return () => anim.stop();
+  }, [reduced, index, opacity, translateY]);
+
+  return (
+    <Animated.View style={{ opacity, transform: [{ translateY }] }}>
+      {children}
+    </Animated.View>
+  );
+}
 
 interface Routine {
   id: string;
@@ -430,7 +482,8 @@ export default function RegisterWorkoutScreen(): React.JSX.Element {
             <Text style={styles.stepTitle}>{t("registerWorkout.step2Title")}</Text>
 
             {exercises.map((exercise, exerciseIndex) => (
-              <Card key={exercise.id} style={styles.exerciseCard}>
+              <AnimatedExerciseCard key={exercise.id} index={exerciseIndex}>
+              <Card style={styles.exerciseCard}>
                 <Text style={styles.exerciseSectionLabel}>
                   {t("registerWorkout.exercise", { n: exerciseIndex + 1 })}
                 </Text>
@@ -484,6 +537,7 @@ export default function RegisterWorkoutScreen(): React.JSX.Element {
                   <Text style={styles.addSetButtonText}>{t("registerWorkout.addSet")}</Text>
                 </TouchableOpacity>
               </Card>
+              </AnimatedExerciseCard>
             ))}
 
             {/* Feeling selector */}

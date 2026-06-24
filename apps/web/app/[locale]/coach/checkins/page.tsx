@@ -2,6 +2,7 @@ import { requireCoach } from "@/lib/auth/coach";
 import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { StaggerList } from "../alumnos/StaggerList";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -110,8 +111,9 @@ export default async function CheckinsPage({ params }: Props) {
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-2">
+              <StaggerList>
               {enriched.map((tmpl) => (
-                <tr key={tmpl.id} className="hover:bg-surface-2 transition-colors">
+                <tr key={tmpl.id} className="hover:bg-surface-2 [transition:background-color_var(--duration-dropdown)_var(--ease-out),transform_var(--duration-press)_var(--ease-out)] active:scale-[var(--press-scale)]">
                   <td className="px-6 py-4">
                     <span className="font-medium text-text">{tmpl.title}</span>
                     <p className="text-muted text-xs mt-0.5 opacity-60">
@@ -134,6 +136,7 @@ export default async function CheckinsPage({ params }: Props) {
                   </td>
                 </tr>
               ))}
+              </StaggerList>
             </tbody>
           </table>
         </div>

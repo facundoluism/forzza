@@ -1,18 +1,23 @@
-import { useEffect, useRef, type ReactNode } from "react";
-import {
-  Animated,
-  Dimensions,
-  Modal,
-  Pressable,
-  View,
-  StyleSheet,
-  PanResponder,
-  Platform,
-} from "react-native";
-import { colors, spacing, radius } from "../tokens";
+import { useEffect, type ReactNode } from "react";
+import { Dimensions, Modal, Pressable, View, StyleSheet, Platform } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  runOnJS,
+} from "react-native-reanimated";
+import { colors, spacing, radius, duration, spring } from "../tokens";
+import { useReducedMotion } from "./useReducedMotion";
 
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 const DEFAULT_SNAP = SCREEN_HEIGHT * 0.5;
+// Umbral de descarte: arrastrar más de 80px hacia abajo, o soltar con velocidad
+// > 500 px/s (Gesture Handler reporta velocity en px/s, no px/ms). Igual criterio
+// que la versión previa con PanResponder.
+const DISMISS_OFFSET = 80;
+const DISMISS_VELOCITY = 500;
 
 export interface SheetProps {
   visible: boolean;
@@ -24,61 +29,51 @@ export interface SheetProps {
 
 export function Sheet({ visible, onClose, children, snapPoints, testID }: SheetProps) {
   const snap = snapPoints?.[0] ?? DEFAULT_SNAP;
-  const translateY = useRef(new Animated.Value(snap)).current;
-  const backdropOpacity = useRef(new Animated.Value(0)).current;
+  const reducedMotion = useReducedMotion();
+
+  // translateY: posición vertical del panel (snap = oculto abajo, 0 = abierto).
+  const translateY = useSharedValue(snap);
+  const backdropOpacity = useSharedValue(0);
+  // Opacidad del panel: la única "transición" que queda bajo reduced-motion.
+  const sheetOpacity = useSharedValue(0);
 
   useEffect(() => {
     if (visible) {
-      Animated.parallel([
-        Animated.spring(translateY, {
-          toValue: 0,
-          useNativeDriver: true,
-          speed: 20,
-          bounciness: 0,
-        }),
-        Animated.timing(backdropOpacity, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      // Entrada: spring gentle (momentum sutil, interrumpible). Con reduced-motion,
+      // sin slide — la opacidad carga la transición.
+      translateY.value = reducedMotion
+        ? withTiming(0, { duration: duration.sheet })
+        : withSpring(0, spring.gentle);
+      backdropOpacity.value = withTiming(1, { duration: duration.dropdown });
+      sheetOpacity.value = withTiming(1, { duration: duration.dropdown });
     } else {
-      Animated.parallel([
-        Animated.timing(translateY, {
-          toValue: snap,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-        Animated.timing(backdropOpacity, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      translateY.value = withTiming(reducedMotion ? 0 : snap, { duration: duration.sheet });
+      backdropOpacity.value = withTiming(0, { duration: duration.dropdown });
+      sheetOpacity.value = withTiming(0, { duration: duration.dropdown });
     }
-  }, [visible, snap, translateY, backdropOpacity]);
+  }, [visible, snap, reducedMotion, translateY, backdropOpacity, sheetOpacity]);
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: (_, gs) => Math.abs(gs.dy) > 5,
-      onPanResponderMove: (_, gs) => {
-        if (gs.dy > 0) translateY.setValue(gs.dy);
-      },
-      onPanResponderRelease: (_, gs) => {
-        if (gs.dy > 80 || gs.vy > 0.5) {
-          onClose();
-        } else {
-          Animated.spring(translateY, {
-            toValue: 0,
-            useNativeDriver: true,
-            speed: 20,
-            bounciness: 0,
-          }).start();
-        }
-      },
+  // Swipe-to-dismiss: drag del handle. withSpring con velocity inicial = momentum
+  // del gesto, interrumpible (un nuevo toque retoma el valor en curso).
+  const panGesture = Gesture.Pan()
+    .onUpdate((e) => {
+      // Solo permitir arrastrar hacia abajo.
+      translateY.value = Math.max(0, e.translationY);
     })
-  ).current;
+    .onEnd((e) => {
+      if (e.translationY > DISMISS_OFFSET || e.velocityY > DISMISS_VELOCITY) {
+        translateY.value = withSpring(snap, { ...spring.gentle, velocity: e.velocityY });
+        runOnJS(onClose)();
+      } else {
+        translateY.value = withSpring(0, spring.gentle);
+      }
+    });
+
+  const sheetStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+    opacity: sheetOpacity.value,
+  }));
+  const backdropStyle = useAnimatedStyle(() => ({ opacity: backdropOpacity.value }));
 
   return (
     <Modal
@@ -89,16 +84,18 @@ export function Sheet({ visible, onClose, children, snapPoints, testID }: SheetP
       statusBarTranslucent={Platform.OS === "android"}
     >
       <View style={styles.root}>
-        <Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]}>
+        <Animated.View style={[styles.backdrop, backdropStyle]}>
           <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
         </Animated.View>
         <Animated.View
           testID={testID}
-          style={[styles.sheet, { transform: [{ translateY }], height: snap }]}
+          style={[styles.sheet, sheetStyle, { height: snap }]}
         >
-          <View {...panResponder.panHandlers} style={styles.handleArea}>
-            <View style={styles.handle} />
-          </View>
+          <GestureDetector gesture={panGesture}>
+            <View style={styles.handleArea}>
+              <View style={styles.handle} />
+            </View>
+          </GestureDetector>
           <View style={styles.content}>{children}</View>
         </Animated.View>
       </View>

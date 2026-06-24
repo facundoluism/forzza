@@ -1,4 +1,6 @@
-import type { InputHTMLAttributes } from "react";
+"use client";
+
+import { useState, type InputHTMLAttributes } from "react";
 import { colors, spacing, radius } from "../tokens";
 import type { InputState } from "../types";
 
@@ -9,14 +11,18 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   state?: InputState;
 }
 
-export function Input({ label, hint, error, state = "default", id, ...rest }: InputProps) {
+export function Input({ label, hint, error, state = "default", id, onFocus, onBlur, ...rest }: InputProps) {
   const hasError = state === "error" || !!error;
   const isDisabled = state === "disabled";
+  const [focused, setFocused] = useState(false);
 
+  // El color de estado (error/success) manda; si no, lima al foco, gris en reposo.
   const borderColor = hasError
     ? colors.error
     : state === "success"
     ? colors.success
+    : focused
+    ? colors.lime
     : colors.gray700;
 
   return (
@@ -32,6 +38,14 @@ export function Input({ label, hint, error, state = "default", id, ...rest }: In
       <input
         id={id}
         disabled={isDisabled}
+        onFocus={(e) => {
+          setFocused(true);
+          onFocus?.(e);
+        }}
+        onBlur={(e) => {
+          setFocused(false);
+          onBlur?.(e);
+        }}
         style={{
           width: "100%",
           padding: `${spacing[3]}px`,
@@ -43,6 +57,7 @@ export function Input({ label, hint, error, state = "default", id, ...rest }: In
           outline: "none",
           boxSizing: "border-box",
           opacity: isDisabled ? 0.5 : 1,
+          transition: "border-color var(--duration-press) var(--ease-out)",
         }}
         {...rest}
       />

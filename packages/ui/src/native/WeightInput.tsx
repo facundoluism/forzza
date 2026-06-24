@@ -1,6 +1,8 @@
-import { View, Text, Pressable, StyleSheet } from "react-native";
-import { colors, spacing, radius, fontSize } from "../tokens";
+import { useEffect, useRef } from "react";
+import { View, Text, Pressable, Animated, Easing, StyleSheet } from "react-native";
+import { colors, spacing, radius, fontSize, duration, easing } from "../tokens";
 import { NumInput } from "./NumInput";
+import { useReducedMotion } from "./useReducedMotion";
 
 export interface WeightInputProps {
   value: number;
@@ -13,6 +15,51 @@ export interface WeightInputProps {
 const KG_TO_LB = 2.20462;
 const LB_TO_KG = 0.453592;
 
+/**
+ * Botón de unidad (kg/lb). El relleno lima del seleccionado entra/sale suave
+ * (opacity, driver nativo) en vez de saltar, dando continuidad espacial al toggle.
+ * Reduced-motion: salta al estado final.
+ */
+function UnitButton({
+  label,
+  active,
+  disabled,
+  reduced,
+  onPress,
+}: {
+  label: string;
+  active: boolean;
+  disabled: boolean;
+  reduced: boolean;
+  onPress: () => void;
+}) {
+  const fill = useRef(new Animated.Value(active ? 1 : 0)).current;
+
+  useEffect(() => {
+    const to = active ? 1 : 0;
+    if (reduced) {
+      fill.setValue(to);
+      return;
+    }
+    Animated.timing(fill, {
+      toValue: to,
+      duration: duration.dropdown,
+      easing: Easing.bezier(...easing.out),
+      useNativeDriver: true,
+    }).start();
+  }, [active, reduced, fill]);
+
+  return (
+    <Pressable onPress={onPress} disabled={disabled} style={styles.unitButton}>
+      <Animated.View
+        pointerEvents="none"
+        style={[styles.unitFill, { opacity: fill }]}
+      />
+      <Text style={[styles.unitText, active && styles.unitTextActive]}>{label}</Text>
+    </Pressable>
+  );
+}
+
 export function WeightInput({
   value,
   onChange,
@@ -20,6 +67,8 @@ export function WeightInput({
   onUnitChange,
   disabled = false,
 }: WeightInputProps) {
+  const reduced = useReducedMotion();
+
   const handleUnitToggle = (next: "kg" | "lb") => {
     if (next === unit) return;
     if (next === "lb") {
@@ -41,16 +90,14 @@ export function WeightInput({
       />
       <View style={styles.unitToggle}>
         {(["kg", "lb"] as const).map((u) => (
-          <Pressable
+          <UnitButton
             key={u}
-            onPress={() => handleUnitToggle(u)}
+            label={u}
+            active={unit === u}
             disabled={disabled}
-            style={[styles.unitButton, unit === u && styles.unitButtonActive]}
-          >
-            <Text style={[styles.unitText, unit === u && styles.unitTextActive]}>
-              {u}
-            </Text>
-          </Pressable>
+            reduced={reduced}
+            onPress={() => handleUnitToggle(u)}
+          />
         ))}
       </View>
     </View>
@@ -77,7 +124,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     minWidth: 48,
   },
-  unitButtonActive: {
+  // Relleno lima animado del botón activo (debajo del texto).
+  unitFill: {
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: colors.lime,
   },
   unitText: {

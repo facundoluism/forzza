@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, type CSSProperties } from "react";
-import { colors, spacing, radius, fontSize } from "../tokens";
+import { colors, spacing, radius, fontSize, cssEasing, duration as motionDuration } from "../tokens";
 
 export type ToastType = "success" | "error" | "info" | "warning";
 
@@ -39,6 +39,7 @@ export function Toast({
     <div
       role="status"
       aria-live="polite"
+      className="ui-toast"
       style={{
         display: "inline-flex",
         alignItems: "center",
@@ -51,7 +52,11 @@ export function Toast({
         fontWeight: 500,
         maxWidth: "360px",
         pointerEvents: "auto",
-        animation: "toastIn 0.2s ease",
+        opacity: 1,
+        transform: "translateY(0)",
+        // Interruptible transition (not keyframes): a flick/re-trigger can
+        // catch the toast mid-flight. Entry handled by @starting-style below.
+        transition: `opacity var(--duration-dropdown, ${motionDuration.dropdown}ms) var(--ease-out, ${cssEasing.out}), transform var(--duration-dropdown, ${motionDuration.dropdown}ms) var(--ease-out, ${cssEasing.out})`,
         ...style,
       }}
     >
@@ -93,9 +98,8 @@ export function Toast({
         </button>
       )}
       <style>{`
-        @keyframes toastIn {
-          from { opacity: 0; transform: translateY(8px); }
-          to   { opacity: 1; transform: translateY(0); }
+        @starting-style {
+          .ui-toast { opacity: 0; transform: translateY(8px); }
         }
       `}</style>
     </div>

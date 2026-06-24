@@ -26,6 +26,15 @@ export function GalleryUpload() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Press feedback: sólo transform, tokens via CSS vars.
+  const pressStyle = { transition: "transform var(--duration-press) var(--ease-out)" };
+  const onPressDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.transform = "scale(var(--press-scale))";
+  };
+  const onPressUp = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.transform = "scale(1)";
+  };
+
   async function fetchGallery() {
     setLoading(true);
     setError(null);
@@ -161,6 +170,10 @@ export function GalleryUpload() {
           type="button"
           disabled={uploading}
           onClick={() => fileInputRef.current?.click()}
+          onMouseDown={onPressDown}
+          onMouseUp={onPressUp}
+          onMouseLeave={onPressUp}
+          style={pressStyle}
           className="px-3 py-2 bg-surface-2 border border-border rounded-lg text-lime hover:border-[#C8FF00] transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {uploading ? t("btnUploading") : t("btnUpload")}
@@ -196,10 +209,18 @@ export function GalleryUpload() {
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          {items.map((item, index) => (
+          {items.map((item, index) => {
+            const itemBusy = deletingId === item.id || movingId === item.id;
+            return (
             <div
               key={item.id}
               className="relative rounded-lg overflow-hidden border border-border bg-surface-2 aspect-square group"
+              style={{
+                opacity: itemBusy ? 0.6 : 1,
+                transform: itemBusy ? "scale(var(--press-scale))" : "scale(1)",
+                transition:
+                  "opacity var(--duration-dropdown) var(--ease-out), transform var(--duration-dropdown) var(--ease-out)",
+              }}
             >
               {item.signed_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -220,6 +241,10 @@ export function GalleryUpload() {
                   type="button"
                   disabled={index === 0 || movingId === item.id}
                   onClick={() => void handleMove(item.id, "up")}
+                  onMouseDown={onPressDown}
+                  onMouseUp={onPressUp}
+                  onMouseLeave={onPressUp}
+                  style={pressStyle}
                   className="w-full text-xs bg-surface/80 text-text px-2 py-1 rounded hover:bg-surface transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {t("btnMoveUp")}
@@ -228,6 +253,10 @@ export function GalleryUpload() {
                   type="button"
                   disabled={index === items.length - 1 || movingId === item.id}
                   onClick={() => void handleMove(item.id, "down")}
+                  onMouseDown={onPressDown}
+                  onMouseUp={onPressUp}
+                  onMouseLeave={onPressUp}
+                  style={pressStyle}
                   className="w-full text-xs bg-surface/80 text-text px-2 py-1 rounded hover:bg-surface transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {t("btnMoveDown")}
@@ -236,13 +265,18 @@ export function GalleryUpload() {
                   type="button"
                   disabled={deletingId === item.id}
                   onClick={() => void handleDelete(item.id)}
+                  onMouseDown={onPressDown}
+                  onMouseUp={onPressUp}
+                  onMouseLeave={onPressUp}
+                  style={pressStyle}
                   className="w-full text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded hover:bg-red-500/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {deletingId === item.id ? "..." : t("btnDelete")}
                 </button>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </section>

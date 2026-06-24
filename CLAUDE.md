@@ -33,6 +33,11 @@ pnpm + Turborepo · Expo/React Native + expo-router · Next.js App Router · Typ
 - Toda regla de negocio: test unitario. Cobertura ≥80% en core/billing y core/gating. RLS testeada por accesos cruzados prohibidos.
 - Commits pequeños y convencionales: `feat(F7): workout offline queue`. Un PR/commit-set por historia. Nada se mergea con tests rojos.
 
+## Motion y animaciones (skill `emil-design-eng`)
+Skills instalados en `.agents/skills/`: `emil-design-eng` (craft de motion de Emil Kowalski) y `review-animations` (revisión estricta). Invocarlos al construir o revisar animaciones. Reglas base: solo animar `transform`/`opacity`; UI < 300ms (botón 100-160ms, dropdown 150-250ms, modal/drawer 200-500ms); `ease-out` al entrar, nunca `ease-in`; jamás `scale(0)` (arrancar en `scale(0.95)` + opacity); `scale(0.97)` en `:active`; popovers origin-aware, modales centrados; respetar `prefers-reduced-motion`; transiciones (no keyframes) para UI que se dispara rápido.
+- **Atar al DS, no romperlo**: las curvas y duraciones viven como TOKENS en `packages/ui/tokens.ts` (p. ej. `easing.out = cubic-bezier(0.23,1,0.32,1)`, `duration.dropdown = 200`), NUNCA cubic-beziers sueltos por componente. Colores siempre desde `colors.*` (`colors.lime`), nunca hex. La personalidad del motion debe matchear la estética Forzza (dark + lima, crisp y rápido), no la de los ejemplos del skill.
+- **Alcance**: el skill de Emil es web (CSS/Framer Motion). Para construir motion en Forzza usar la skill propia **`forzza-ui-motion`** (`.claude/skills/`), que destila a Emil sobre nuestros tokens y cubre web + **mobile (Reanimated + Gesture Handler)**. Tokens de motion en `tokens.ts`: `easing`, `cssEasing`, `duration`, `spring`, `motion` (NUNCA hardcodear curvas/ms). Construir con `forzza-ui-motion`; revisar con `review-animations`.
+
 ## NO IMPLEMENTAR EN V1
 Grupos/comunidad, sesiones en vivo, nutrición, escáner IA de fichas, ratings/reviews, Stripe, UI/flujos de promotores (tablas sí), Apple Health/Google Fit, export CSV avanzado, Brasil. Si una tarea lo pide, es scope creep: rechazar y anotar en `docs/open-questions.md`.
 

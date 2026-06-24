@@ -1,5 +1,6 @@
-import { View, Text, Pressable, StyleSheet } from "react-native";
-import { colors, spacing, radius, fontSize, typography } from "../tokens";
+import { useRef } from "react";
+import { View, Text, Pressable, Animated, Easing, StyleSheet } from "react-native";
+import { colors, spacing, radius, fontSize, typography, duration, easing } from "../tokens";
 
 export interface NumInputProps {
   value: number;
@@ -23,6 +24,20 @@ export function NumInput({
   const canDecrement = !disabled && (min === undefined || value - step >= min);
   const canIncrement = !disabled && (max === undefined || value + step <= max);
 
+  // Borde lima del display al enfocar cualquiera de los steppers (foco/blur).
+  const focusProgress = useRef(new Animated.Value(0)).current;
+  const animateFocus = (to: number) =>
+    Animated.timing(focusProgress, {
+      toValue: to,
+      duration: duration.press,
+      easing: Easing.bezier(...easing.out),
+      useNativeDriver: false,
+    }).start();
+  const valueBorderColor = focusProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [colors.border, colors.lime],
+  });
+
   const decrement = () => {
     if (canDecrement) onChange(value - step);
   };
@@ -38,6 +53,8 @@ export function NumInput({
         <Pressable
           onPress={decrement}
           disabled={!canDecrement}
+          onFocus={() => animateFocus(1)}
+          onBlur={() => animateFocus(0)}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           style={({ pressed }) => [
             styles.button,
@@ -48,13 +65,15 @@ export function NumInput({
           <Text style={[styles.buttonText, !canDecrement && styles.buttonTextDisabled]}>−</Text>
         </Pressable>
 
-        <View style={styles.valueContainer}>
+        <Animated.View style={[styles.valueContainer, { borderColor: valueBorderColor }]}>
           <Text style={styles.value}>{value}</Text>
-        </View>
+        </Animated.View>
 
         <Pressable
           onPress={increment}
           disabled={!canIncrement}
+          onFocus={() => animateFocus(1)}
+          onBlur={() => animateFocus(0)}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           style={({ pressed }) => [
             styles.button,

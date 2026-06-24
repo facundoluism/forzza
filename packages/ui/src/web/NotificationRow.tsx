@@ -1,4 +1,6 @@
-import type { CSSProperties, ReactNode } from "react";
+"use client";
+
+import { useState, type CSSProperties, type ReactNode } from "react";
 import { colors, spacing, radius, fontSize } from "../tokens";
 
 export interface NotificationRowProps {
@@ -20,12 +22,16 @@ export function NotificationRow({
   onPress,
   style,
 }: NotificationRowProps) {
+  const [pressed, setPressed] = useState(false);
   return (
     <div
       onClick={onPress}
       role={onPress ? "button" : undefined}
       tabIndex={onPress ? 0 : undefined}
       onKeyDown={onPress ? (e) => { if (e.key === "Enter" || e.key === " ") onPress(); } : undefined}
+      onMouseDown={onPress ? () => setPressed(true) : undefined}
+      onMouseUp={onPress ? () => setPressed(false) : undefined}
+      onMouseLeave={onPress ? () => setPressed(false) : undefined}
       style={{
         display: "flex",
         alignItems: "flex-start",
@@ -33,7 +39,8 @@ export function NotificationRow({
         gap: `${spacing[3]}px`,
         backgroundColor: read ? "transparent" : colors.surface2,
         cursor: onPress ? "pointer" : "default",
-        transition: "opacity 0.15s",
+        transition: "opacity 0.15s, transform var(--duration-press) var(--ease-out)",
+        transform: onPress && pressed ? "scale(var(--press-scale))" : "scale(1)",
         ...style,
       }}
     >

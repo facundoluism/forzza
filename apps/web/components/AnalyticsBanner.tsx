@@ -12,6 +12,9 @@ import { getStoredConsent, setConsent, initAnalytics, type ConsentValue } from "
 export function AnalyticsBanner() {
   const t = useTranslations("analyticsBanner");
   const [visible, setVisible] = useState(false);
+  // Entrada suave: arranca en estado oculto (opacity 0 + translateY) y se anima a
+  // visible en el frame siguiente, en vez de aparecer de golpe.
+  const [entered, setEntered] = useState(false);
 
   useEffect(() => {
     // Run analytics init for users who already consented
@@ -23,6 +26,13 @@ export function AnalyticsBanner() {
       setVisible(true);
     }
   }, []);
+
+  // Dispara la transición de entrada en el frame siguiente al montaje del banner.
+  useEffect(() => {
+    if (!visible) return;
+    const id = requestAnimationFrame(() => setEntered(true));
+    return () => cancelAnimationFrame(id);
+  }, [visible]);
 
   // Mientras el banner está visible, reservar espacio al pie para que el banner
   // fixed no tape el contenido del final de la página (ej. botón de eliminar
@@ -60,6 +70,11 @@ export function AnalyticsBanner() {
         padding: "16px 20px",
         zIndex: 1000,
         boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
+        // Entrada suave: sólo opacity + transform, ease-out, duración dropdown (< 300ms).
+        opacity: entered ? 1 : 0,
+        transform: entered ? "translateY(0)" : "translateY(8px)",
+        transition:
+          "opacity var(--duration-dropdown) var(--ease-out), transform var(--duration-dropdown) var(--ease-out)",
       }}
     >
       <p

@@ -7,7 +7,7 @@ import {
   StyleSheet,
   type PressableProps,
 } from "react-native";
-import { colors, spacing, radius } from "../tokens";
+import { colors, spacing, radius, motion } from "../tokens";
 import type { ButtonVariant, ButtonSize } from "../types";
 
 export interface ButtonProps extends Omit<PressableProps, "style"> {
@@ -33,7 +33,7 @@ export function Button({
 
   const onPressIn = () =>
     Animated.spring(scale, {
-      toValue: 0.97,
+      toValue: motion.pressScale,
       useNativeDriver: true,
       speed: 50,
       bounciness: 0,

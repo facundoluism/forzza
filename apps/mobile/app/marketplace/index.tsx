@@ -1,10 +1,12 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef, type ReactNode } from "react";
 import {
   View,
   Text,
   FlatList,
   TextInput,
   StyleSheet,
+  Animated,
+  Easing,
   type ListRenderItemInfo,
 } from "react-native";
 import { useRouter } from "expo-router";
@@ -13,8 +15,48 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { CoachCard, type CoachCardData } from "@/components/CoachCard";
-import { EmptyState, Skeleton, ErrorState, ScreenHeader } from "@forzza/ui/native";
-import { colors, fontSize, spacing, typography, radius } from "@forzza/ui/tokens";
+import { EmptyState, Skeleton, ErrorState, ScreenHeader, useReducedMotion } from "@forzza/ui/native";
+import { colors, fontSize, spacing, typography, radius, easing, duration, motion } from "@forzza/ui/tokens";
+
+// Items más allá de este índice entran juntos (sin stagger acumulado) para no demorar listas largas.
+const STAGGER_CAP = 10;
+
+// Wrapper de entrada para items de lista: opacity 0→1 + translateY(8→0),
+// escalonado por índice (motion.stagger), topeado a STAGGER_CAP. Decorativo,
+// nunca bloquea interacción. Con reduced motion muestra el estado final sin animar.
+function AnimatedListItem({ index, children }: { index: number; children: ReactNode }): React.JSX.Element {
+  const reducedMotion = useReducedMotion();
+  const progress = useRef(new Animated.Value(reducedMotion ? 1 : 0)).current;
+
+  useEffect(() => {
+    if (reducedMotion) {
+      progress.setValue(1);
+      return;
+    }
+    const animation = Animated.timing(progress, {
+      toValue: 1,
+      duration: duration.dropdown,
+      delay: Math.min(index, STAGGER_CAP) * motion.stagger,
+      easing: Easing.bezier(...easing.out),
+      useNativeDriver: true,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [index, reducedMotion, progress]);
+
+  return (
+    <Animated.View
+      style={{
+        opacity: progress,
+        transform: [
+          { translateY: progress.interpolate({ inputRange: [0, 1], outputRange: [8, 0] }) },
+        ],
+      }}
+    >
+      {children}
+    </Animated.View>
+  );
+}
 
 interface CountryConfig {
   currency_symbol: string;
@@ -84,8 +126,12 @@ export default function MarketplaceScreen() {
     );
   }, [coaches, search]);
 
-  function renderItem({ item }: ListRenderItemInfo<CoachCardData>) {
-    return <CoachCard coach={item} currencySymbol={currencySymbol} />;
+  function renderItem({ item, index }: ListRenderItemInfo<CoachCardData>) {
+    return (
+      <AnimatedListItem index={index}>
+        <CoachCard coach={item} currencySymbol={currencySymbol} />
+      </AnimatedListItem>
+    );
   }
 
   return (

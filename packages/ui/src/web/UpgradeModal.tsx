@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, type CSSProperties } from "react";
-import { colors, spacing, radius, typography, fontSize } from "../tokens";
+import { useEffect, useState, type CSSProperties } from "react";
+import { colors, spacing, radius, typography, fontSize, cssEasing, duration, motion } from "../tokens";
 
 export interface UpgradeModalProps {
   visible: boolean;
@@ -18,6 +18,22 @@ export function UpgradeModal({
   feature,
   style,
 }: UpgradeModalProps) {
+  // `rendered` keeps the modal mounted while the exit transition plays;
+  // `open` drives the enter/exit transition target (opacity + scale).
+  const [rendered, setRendered] = useState(visible);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (visible) {
+      setRendered(true);
+      const id = requestAnimationFrame(() => setOpen(true));
+      return () => cancelAnimationFrame(id);
+    }
+    setOpen(false);
+    const id = setTimeout(() => setRendered(false), duration.sheet);
+    return () => clearTimeout(id);
+  }, [visible]);
+
   useEffect(() => {
     if (!visible) return undefined;
     const onKey = (e: KeyboardEvent) => {
@@ -34,7 +50,7 @@ export function UpgradeModal({
     return () => { document.body.style.overflow = prev; };
   }, [visible]);
 
-  if (!visible) return null;
+  if (!rendered) return null;
 
   return (
     <div
@@ -47,7 +63,8 @@ export function UpgradeModal({
         justifyContent: "center",
         padding: `${spacing[6]}px`,
         backgroundColor: "rgba(0,0,0,0.75)",
-        animation: "fadeIn 0.2s ease",
+        opacity: open ? 1 : 0,
+        transition: `opacity var(--duration-sheet, ${duration.sheet}ms) var(--ease-out, ${cssEasing.out})`,
       }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
@@ -62,7 +79,9 @@ export function UpgradeModal({
           padding: `${spacing[6]}px`,
           width: "100%",
           maxWidth: "360px",
-          animation: "scaleIn 0.2s ease",
+          opacity: open ? 1 : 0,
+          transform: open ? "scale(1)" : `scale(${motion.enterScale})`,
+          transition: `opacity var(--duration-sheet, ${duration.sheet}ms) var(--ease-out, ${cssEasing.out}), transform var(--duration-sheet, ${duration.sheet}ms) var(--ease-out, ${cssEasing.out})`,
           ...style,
         }}
       >
@@ -131,10 +150,6 @@ export function UpgradeModal({
           </button>
         </div>
       </div>
-      <style>{`
-        @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95) } to { opacity: 1; transform: scale(1) } }
-      `}</style>
     </div>
   );
 }

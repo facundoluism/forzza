@@ -1,4 +1,6 @@
-import type { CSSProperties } from "react";
+"use client";
+
+import { useState, type CSSProperties } from "react";
 import { colors, spacing, radius, fontSize } from "../tokens";
 
 export interface NumInputProps {
@@ -24,6 +26,7 @@ export function NumInput({
 }: NumInputProps) {
   const canDecrement = !disabled && (min === undefined || value - step >= min);
   const canIncrement = !disabled && (max === undefined || value + step <= max);
+  const [focused, setFocused] = useState(false);
 
   const buttonStyle = (active: boolean): CSSProperties => ({
     width: "40px",
@@ -40,7 +43,8 @@ export function NumInput({
     alignItems: "center",
     justifyContent: "center",
     lineHeight: 1,
-    transition: "background-color 0.15s",
+    transition:
+      "background-color var(--duration-press) var(--ease-out), border-color var(--duration-press) var(--ease-out)",
     flexShrink: 0,
   });
 
@@ -64,6 +68,8 @@ export function NumInput({
           type="button"
           disabled={!canDecrement}
           onClick={() => canDecrement && onChange(value - step)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
           style={buttonStyle(canDecrement)}
         >
           −
@@ -74,10 +80,11 @@ export function NumInput({
             height: "40px",
             borderRadius: `${radius.md}px`,
             backgroundColor: colors.surface2,
-            border: `1px solid ${colors.border}`,
+            border: `1px solid ${focused ? colors.lime : colors.border}`,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            transition: "border-color var(--duration-press) var(--ease-out)",
           }}
         >
           <span
@@ -95,6 +102,8 @@ export function NumInput({
           type="button"
           disabled={!canIncrement}
           onClick={() => canIncrement && onChange(value + step)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
           style={buttonStyle(canIncrement)}
         >
           +

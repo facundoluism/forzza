@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
-import { View, Text, Pressable, StyleSheet, type PressableProps } from "react-native";
-import { colors, spacing, radius, fontSize } from "../tokens";
+import { useRef, type ReactNode } from "react";
+import { Animated, View, Text, Pressable, StyleSheet, type PressableProps } from "react-native";
+import { colors, spacing, radius, fontSize, motion } from "../tokens";
 
 export interface NotificationRowProps {
   icon: ReactNode;
@@ -19,40 +19,64 @@ export function NotificationRow({
   read = false,
   onPress,
 }: NotificationRowProps) {
+  const scale = useRef(new Animated.Value(1)).current;
+
+  const onPressIn = () =>
+    Animated.spring(scale, {
+      toValue: motion.pressScale,
+      useNativeDriver: true,
+      speed: 50,
+      bounciness: 0,
+    }).start();
+
+  const onPressOut = () =>
+    Animated.spring(scale, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 50,
+      bounciness: 2,
+    }).start();
+
   return (
     <Pressable
       onPress={onPress}
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
       style={({ pressed }) => [
         styles.row,
         !read && styles.rowUnread,
         pressed && styles.rowPressed,
       ]}
     >
-      <View style={styles.iconWrapper}>{icon}</View>
-      <View style={styles.content}>
-        <View style={styles.titleRow}>
-          <Text style={[styles.title, !read && styles.titleUnread]} numberOfLines={1}>
-            {title}
+      <Animated.View style={[styles.inner, { transform: [{ scale }] }]}>
+        <View style={styles.iconWrapper}>{icon}</View>
+        <View style={styles.content}>
+          <View style={styles.titleRow}>
+            <Text style={[styles.title, !read && styles.titleUnread]} numberOfLines={1}>
+              {title}
+            </Text>
+            <Text style={styles.time}>{time}</Text>
+          </View>
+          <Text style={styles.body} numberOfLines={2}>
+            {body}
           </Text>
-          <Text style={styles.time}>{time}</Text>
         </View>
-        <Text style={styles.body} numberOfLines={2}>
-          {body}
-        </Text>
-      </View>
-      {!read && <View style={styles.dot} />}
+        {!read && <View style={styles.dot} />}
+      </Animated.View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   row: {
+    backgroundColor: "transparent",
+  },
+  inner: {
     flexDirection: "row",
     alignItems: "flex-start",
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[3],
     gap: spacing[3],
-    backgroundColor: "transparent",
   },
   rowUnread: {
     backgroundColor: colors.surface2,

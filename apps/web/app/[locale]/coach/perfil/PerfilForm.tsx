@@ -71,6 +71,15 @@ export function PerfilForm({
   const [error, setError] = useState<string | null>(null);
   const [tooltipOpen, setTooltipOpen] = useState<number | null>(null);
 
+  // Press feedback: sólo transform, tokens via CSS vars.
+  const pressStyle = { transition: "transform var(--duration-press) var(--ease-out)" };
+  const onPressDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.transform = "scale(var(--press-scale))";
+  };
+  const onPressUp = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.transform = "scale(1)";
+  };
+
   function addSpecialty() {
     const trimmed = specialtyInput.trim();
     if (!trimmed || profile.specialties.includes(trimmed)) return;
@@ -285,6 +294,10 @@ export function PerfilForm({
             <button
               type="button"
               onClick={addSpecialty}
+              onMouseDown={onPressDown}
+              onMouseUp={onPressUp}
+              onMouseLeave={onPressUp}
+              style={pressStyle}
               className="px-3 py-2 bg-surface-2 border border-border rounded-lg text-lime hover:border-[#C8FF00] transition-colors text-sm"
             >
               {t("perfil.addSpecialty")}
@@ -333,6 +346,10 @@ export function PerfilForm({
             <button
               type="button"
               onClick={addInterest}
+              onMouseDown={onPressDown}
+              onMouseUp={onPressUp}
+              onMouseLeave={onPressUp}
+              style={pressStyle}
               className="px-3 py-2 bg-surface-2 border border-border rounded-lg text-lime hover:border-[#C8FF00] transition-colors text-sm"
             >
               {t("perfil.addInterest")}
@@ -369,6 +386,10 @@ export function PerfilForm({
           <button
             type="button"
             onClick={addPackage}
+            onMouseDown={onPressDown}
+            onMouseUp={onPressUp}
+            onMouseLeave={onPressUp}
+            style={pressStyle}
             className="text-lime hover:text-[#AADD00] text-sm font-medium transition-colors"
           >
             {t("perfil.addPackage")}
@@ -619,6 +640,10 @@ export function PerfilForm({
       <button
         type="submit"
         disabled={loading}
+        onMouseDown={onPressDown}
+        onMouseUp={onPressUp}
+        onMouseLeave={onPressUp}
+        style={pressStyle}
         className="w-full py-3 bg-[#C8FF00] text-[#0A0A0A] rounded-lg font-semibold hover:bg-[#AADD00] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {loading ? t("perfil.btnSaving") : t("perfil.btnSave")}

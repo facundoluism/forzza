@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,8 @@ import {
   StyleSheet,
   ActivityIndicator,
   Pressable,
+  Animated,
+  Easing,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -17,8 +19,51 @@ import { useWorkoutStore } from "@/stores/workoutStore";
 import type { RoutineExerciseDefinition } from "@/stores/workoutStore";
 import { getExerciseIcon } from "@/constants/exerciseIcons";
 import { ExercisePreviewSheet } from "@/components/ExercisePreviewSheet";
-import { Button, EmptyState, ScreenHeader, HealthNotice } from "@forzza/ui/native";
-import { colors, fontSize, spacing, typography, radius } from "@forzza/ui/tokens";
+import { Button, EmptyState, ScreenHeader, HealthNotice, useReducedMotion } from "@forzza/ui/native";
+import { colors, fontSize, spacing, typography, radius, motion, duration, easing } from "@forzza/ui/tokens";
+
+// Entrada sutil de cada fila de la lista, escalonada. El stagger es decorativo
+// (motion.stagger) y se topea para que el último item no se sienta lento.
+// Solo animamos opacity + translateY (transform), useNativeDriver: true.
+const MAX_STAGGER_STEPS = 6;
+
+function useEntrance(index: number): {
+  opacity: Animated.Value;
+  translateY: Animated.Value;
+} {
+  const reduced = useReducedMotion();
+  const opacity = useRef(new Animated.Value(reduced ? 1 : 0)).current;
+  const translateY = useRef(new Animated.Value(reduced ? 0 : spacing[3])).current;
+
+  useEffect(() => {
+    if (reduced) {
+      opacity.setValue(1);
+      translateY.setValue(0);
+      return;
+    }
+    const delay = Math.min(index, MAX_STAGGER_STEPS) * motion.stagger;
+    const anim = Animated.parallel([
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: duration.dropdown,
+        delay,
+        easing: Easing.bezier(...easing.out),
+        useNativeDriver: true,
+      }),
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: duration.dropdown,
+        delay,
+        easing: Easing.bezier(...easing.out),
+        useNativeDriver: true,
+      }),
+    ]);
+    anim.start();
+    return () => anim.stop();
+  }, [reduced, index, opacity, translateY]);
+
+  return { opacity, translateY };
+}
 
 // Shape canónico del JSONB routines.exercises (coordinado con el seed)
 interface RoutineExercise {
@@ -60,6 +105,7 @@ function ExerciseRow({ item, index, libraryEntry, onPress, restLabel }: Exercise
   const label = `${item.sets} x ${item.reps}`;
   const rest = item.rest_seconds > 0 ? restLabel : null;
   const isTappable = !!item.exercise_id;
+  const { opacity, translateY } = useEntrance(index);
 
   const content = (
     <View style={styles.exerciseCard}>
@@ -98,18 +144,24 @@ function ExerciseRow({ item, index, libraryEntry, onPress, restLabel }: Exercise
   );
 
   if (!isTappable) {
-    return content;
+    return (
+      <Animated.View style={{ opacity, transform: [{ translateY }] }}>
+        {content}
+      </Animated.View>
+    );
   }
 
   return (
-    <Pressable
-      testID={`routine-exercise-${index}`}
-      accessibilityLabel={`${displayName}. ${label}${rest ? `. ${rest}` : ""}`}
-      onPress={onPress}
-      android_ripple={{ color: colors.limeGlow }}
-    >
-      {content}
-    </Pressable>
+    <Animated.View style={{ opacity, transform: [{ translateY }] }}>
+      <Pressable
+        testID={`routine-exercise-${index}`}
+        accessibilityLabel={`${displayName}. ${label}${rest ? `. ${rest}` : ""}`}
+        onPress={onPress}
+        android_ripple={{ color: colors.limeGlow }}
+      >
+        {content}
+      </Pressable>
+    </Animated.View>
   );
 }
 

@@ -8,6 +8,8 @@ import {
   ScrollView,
   ActivityIndicator,
   AppState,
+  Animated,
+  Easing,
   type AppStateStatus,
 } from "react-native";
 import { useRouter } from "expo-router";
@@ -40,7 +42,7 @@ import type {
   VisualState,
 } from "@forzza/core";
 import { tabataColors } from "@forzza/ui/tokens";
-import { colors, spacing, radius, typography, fontSize } from "@forzza/ui/tokens";
+import { colors, spacing, radius, typography, fontSize, duration, easing } from "@forzza/ui/tokens";
 import {
   AutopromoOverlay,
   Confetti,
@@ -49,6 +51,7 @@ import {
   Input,
   Sheet,
   ScreenHeader,
+  useReducedMotion,
 } from "@forzza/ui/native";
 
 // ── Constantes ────────────────────────────────────────────────────────────────
@@ -180,6 +183,12 @@ export default function TabataScreen(): React.JSX.Element {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const prevVisualStateRef = useRef<VisualState | null>(null);
 
+  // Crossfade sutil del rótulo de fase cuando cambia de fase (work/rest/prep/ending).
+  // NO toca la cuenta regresiva ni la lógica del timer: solo anima opacity del label.
+  const reducedMotion = useReducedMotion();
+  const phaseLabelOpacity = useRef(new Animated.Value(1)).current;
+  const phaseAnimStateRef = useRef<VisualState | null>(null);
+
   // ── Audio players (useAudioPlayer gestiona cleanup automáticamente al desmontar) ──
   const tickPlayer = useAudioPlayer(AUDIO_TICK);
   const startPlayer = useAudioPlayer(AUDIO_START);
@@ -274,6 +283,26 @@ export default function TabataScreen(): React.JSX.Element {
       }
     }
   }, [elapsedMs, activePlan, phase, stopInterval, tickPlayer, startPlayer, finishPlayer]);
+
+  // ── Crossfade del rótulo de fase (solo en cambios de fase, no por tick) ───────
+  useEffect(() => {
+    if (phase !== "running" || activePlan === null) return;
+    const vs = computeRuntimeState(activePlan, elapsedMs).visualState;
+    if (vs === phaseAnimStateRef.current) return;
+    phaseAnimStateRef.current = vs;
+    if (reducedMotion) {
+      phaseLabelOpacity.setValue(1);
+      return;
+    }
+    // Fade-out rápido → fade-in: suaviza el salto de color/copy del rótulo.
+    phaseLabelOpacity.setValue(0.4);
+    Animated.timing(phaseLabelOpacity, {
+      toValue: 1,
+      duration: duration.dropdown,
+      easing: Easing.bezier(...easing.out),
+      useNativeDriver: true,
+    }).start();
+  }, [elapsedMs, activePlan, phase, reducedMotion, phaseLabelOpacity]);
 
   // ── AppState: vuelve del background ──────────────────────────────────────────
   useEffect(() => {
@@ -528,10 +557,12 @@ export default function TabataScreen(): React.JSX.Element {
     return (
       <View style={[StyleSheet.absoluteFill, { backgroundColor: phaseColors.bg }]}>
         <View style={[styles.runningRoot, { paddingTop: insets.top + spacing[5] }]}>
-          {/* Fase actual */}
-          <Text style={[styles.phaseLabel, { color: phaseColors.fg }]}>
+          {/* Fase actual — crossfade sutil al cambiar de fase */}
+          <Animated.Text
+            style={[styles.phaseLabel, { color: phaseColors.fg, opacity: phaseLabelOpacity }]}
+          >
             {displayPhaseLabel}
-          </Text>
+          </Animated.Text>
 
           {/* Label del ejercicio */}
           {runtime.currentSegment?.label != null && (

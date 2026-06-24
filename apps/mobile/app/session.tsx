@@ -7,6 +7,7 @@ import {
   ScrollView,
   Pressable,
   Animated,
+  Easing,
   Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
@@ -19,8 +20,8 @@ import { useEntitlements } from "@/hooks/useEntitlements";
 import { TRACKED_EVENTS } from "@forzza/core";
 import { track } from "@/lib/analytics";
 import { ExercisePreviewSheet } from "@/components/ExercisePreviewSheet";
-import { Button, Card, AutopromoOverlay, RestTimer, ScreenHeader } from "@forzza/ui/native";
-import { colors, spacing, radius, typography } from "@forzza/ui/tokens";
+import { Button, Card, AutopromoOverlay, RestTimer, ScreenHeader, useReducedMotion } from "@forzza/ui/native";
+import { colors, spacing, radius, typography, duration, easing, motion, spring } from "@forzza/ui/tokens";
 
 const AUTOPROMO_SECONDS = 10;
 
@@ -58,7 +59,7 @@ function LogSetButton({ onPress, label }: { onPress: () => void; label: string }
   const scale = useRef(new Animated.Value(1)).current;
 
   const onPressIn = () =>
-    Animated.spring(scale, { toValue: 0.97, useNativeDriver: true, speed: 50, bounciness: 0 }).start();
+    Animated.spring(scale, { toValue: motion.pressScale, useNativeDriver: true, speed: 50, bounciness: 0 }).start();
 
   const onPressOut = () =>
     Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 50, bounciness: 2 }).start();
@@ -93,10 +94,63 @@ export default function SessionScreen(): React.JSX.Element | null {
   const insets = useSafeAreaInsets();
 
   const { isPro, hasCoach, isLoading: entitlementsLoading } = useEntitlements();
+  const reducedMotion = useReducedMotion();
 
   const workoutFinishedRef = useRef(false);
 
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+
+  // Transición suave del bloque del ejercicio actual al avanzar/retroceder.
+  // Solo opacity + translateX (transform), useNativeDriver: true. Bajo reduced
+  // motion el bloque queda en su estado final (sin desplazamiento).
+  const exerciseOpacity = useRef(new Animated.Value(1)).current;
+  const exerciseTranslateX = useRef(new Animated.Value(0)).current;
+  // Pequeño "delight" al registrar un set: el contador de sets hace un pop sutil.
+  const setLoggedPop = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    if (reducedMotion) {
+      exerciseOpacity.setValue(1);
+      exerciseTranslateX.setValue(0);
+      return;
+    }
+    exerciseOpacity.setValue(0);
+    exerciseTranslateX.setValue(spacing[3]);
+    const anim = Animated.parallel([
+      Animated.timing(exerciseOpacity, {
+        toValue: 1,
+        duration: duration.dropdown,
+        easing: Easing.bezier(...easing.out),
+        useNativeDriver: true,
+      }),
+      Animated.timing(exerciseTranslateX, {
+        toValue: 0,
+        duration: duration.dropdown,
+        easing: Easing.bezier(...easing.out),
+        useNativeDriver: true,
+      }),
+    ]);
+    anim.start();
+    return () => anim.stop();
+  }, [currentExerciseIndex, reducedMotion, exerciseOpacity, exerciseTranslateX]);
+
+  const playSetLoggedPop = useCallback(() => {
+    if (reducedMotion) return;
+    setLoggedPop.setValue(1);
+    Animated.sequence([
+      Animated.timing(setLoggedPop, {
+        toValue: 1.18,
+        duration: duration.press,
+        easing: Easing.bezier(...easing.out),
+        useNativeDriver: true,
+      }),
+      Animated.spring(setLoggedPop, {
+        toValue: 1,
+        useNativeDriver: true,
+        ...spring.gentle,
+      }),
+    ]).start();
+  }, [reducedMotion, setLoggedPop]);
   const [reps, setReps] = useState("");
   const [weightKg, setWeightKg] = useState("");
   const [durationSeconds, setDurationSeconds] = useState("");
@@ -219,6 +273,7 @@ export default function SessionScreen(): React.JSX.Element | null {
     setWeightKg("");
     setDurationSeconds("");
     setShowRestTimer(true);
+    playSetLoggedPop();
   };
 
   const handleFinish = (): void => {
@@ -288,7 +343,13 @@ export default function SessionScreen(): React.JSX.Element | null {
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Exercise card */}
+        {/* Exercise card — transición suave al avanzar de ejercicio */}
+        <Animated.View
+          style={{
+            opacity: exerciseOpacity,
+            transform: [{ translateX: exerciseTranslateX }],
+          }}
+        >
         <Card style={styles.exerciseCard} featured>
           <View style={styles.exerciseCardInner}>
             <Text style={styles.exerciseIndexLabel}>
@@ -312,10 +373,15 @@ export default function SessionScreen(): React.JSX.Element | null {
               )}
             </View>
 
-            <Text style={styles.setsLogged}>
+            <Animated.Text
+              style={[
+                styles.setsLogged,
+                { transform: [{ scale: setLoggedPop }] },
+              ]}
+            >
               <Text style={styles.setsLoggedMono}>{currentSetsLogged}</Text>
               {" "}{t('session.setLogged', { count: currentSetsLogged })}
-            </Text>
+            </Animated.Text>
 
             {currentRoutineExercise && (
               <View style={styles.planBox}>
@@ -360,6 +426,7 @@ export default function SessionScreen(): React.JSX.Element | null {
             )}
           </View>
         </Card>
+        </Animated.View>
 
         {/* Rest timer — usa segundos definidos en la rutina, o 90s por defecto */}
         {showRestTimer && (

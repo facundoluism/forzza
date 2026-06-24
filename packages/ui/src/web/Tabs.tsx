@@ -46,7 +46,8 @@ export function Tabs({ tabs, activeKey, onTabChange, style }: TabsProps) {
               letterSpacing: "0.3px",
               cursor: "pointer",
               whiteSpace: "nowrap",
-              transition: "color 0.15s, border-color 0.15s",
+              transition:
+                "color var(--duration-dropdown) var(--ease-out), border-color var(--duration-dropdown) var(--ease-out)",
               flexShrink: 0,
             }}
           >

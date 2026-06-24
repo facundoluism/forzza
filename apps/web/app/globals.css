@@ -22,6 +22,29 @@
   --font-mono: 'Space Mono', monospace;
 }
 
+/* Motion tokens — espejo de packages/ui tokens.ts (easing/duration).
+   Regla: usar var(--ease-*) / var(--duration-*), NUNCA cubic-beziers ni ms sueltos. */
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --duration-press: 140ms;
+  --duration-tooltip: 160ms;
+  --duration-dropdown: 200ms;
+  --duration-sheet: 320ms;
+  --press-scale: 0.97;
+}
+
+/* Accesibilidad: reduced-motion. Quita movimiento, conserva opacity/color. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -51,7 +74,7 @@ a {
 
 /* Card hover */
 .card-hover {
-  transition: transform 200ms ease-out, border-color 200ms ease-out, box-shadow 200ms ease-out;
+  transition: transform var(--duration-dropdown) var(--ease-out), border-color var(--duration-dropdown) var(--ease-out), box-shadow var(--duration-dropdown) var(--ease-out);
 }
 .card-hover:hover {
   transform: translateY(-2px);
@@ -61,7 +84,7 @@ a {
 
 /* Button hover — outline variant */
 .btn-outline {
-  transition: background 200ms, border-color 200ms, transform 150ms, box-shadow 200ms;
+  transition: background var(--duration-dropdown) var(--ease-out), border-color var(--duration-dropdown) var(--ease-out), transform var(--duration-press) var(--ease-out), box-shadow var(--duration-dropdown) var(--ease-out);
 }
 .btn-outline:hover {
   background: rgba(255, 255, 255, 0.06);
@@ -76,7 +99,7 @@ a {
 .btn-lime,
 .bg-\[\#C8FF00\] {
   color: #000 !important;
-  transition: background 200ms, transform 150ms, box-shadow 200ms;
+  transition: background var(--duration-dropdown) var(--ease-out), transform var(--duration-press) var(--ease-out), box-shadow var(--duration-dropdown) var(--ease-out);
 }
 .btn-lime {
   background: #C8FF00 !important;
@@ -110,13 +133,17 @@ a {
 
 /* UI design system Button component hover states */
 .ui-btn {
-  transition: transform 150ms ease-out, box-shadow 200ms ease-out, filter 200ms ease-out, opacity 0.2s !important;
+  transition: transform var(--duration-press) var(--ease-out), box-shadow var(--duration-dropdown) var(--ease-out), filter var(--duration-dropdown) var(--ease-out), opacity var(--duration-dropdown) var(--ease-out) !important;
 }
-.ui-btn:not(:disabled):hover {
-  transform: translateY(-1px);
+/* hover gateado: en touch el tap dispara hover falso */
+@media (hover: hover) and (pointer: fine) {
+  .ui-btn:not(:disabled):hover {
+    transform: translateY(-1px);
+  }
 }
+/* press feedback (Emil): scale, no translateY a 0 */
 .ui-btn:not(:disabled):active {
-  transform: translateY(0);
+  transform: scale(var(--press-scale));
 }
 .ui-btn--primary:not(:disabled):hover {
   filter: brightness(1.1);
@@ -126,6 +153,28 @@ a {
 .ui-btn--secondary:not(:disabled):hover {
   background: rgba(255, 255, 255, 0.06) !important;
   border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Coach backoffice side nav — item motion.
+   Fondo/indicador activo transiciona suave al navegar; hover gateado a punteros
+   finos; press feedback con scale(var(--press-scale)). Look idéntico al actual. */
+.coach-nav-item {
+  transition: color var(--duration-dropdown) var(--ease-out),
+    background-color var(--duration-dropdown) var(--ease-out),
+    border-color var(--duration-dropdown) var(--ease-out),
+    transform var(--duration-press) var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .coach-nav-item--inactive:hover {
+    color: var(--color-text);
+    background-color: var(--color-surface-2);
+  }
+  .coach-nav-tab--inactive:hover {
+    color: var(--color-lime);
+  }
+}
+.coach-nav-item:active {
+  transform: scale(var(--press-scale));
 }
 
 /* Scrollbar */
