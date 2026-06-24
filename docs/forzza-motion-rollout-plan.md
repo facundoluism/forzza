@@ -33,7 +33,7 @@ Objetivo: que el sistema sea consumible y accesible por defecto.
 - [x] **0.2** Skill `forzza-ui-motion`.
 - [x] **0.3** CSS vars de motion en `globals.css` (`--ease-out`, `--ease-in-out`, `--ease-drawer`, `--duration-*`, `--press-scale`) espejando `tokens.ts`. ✅
 - [x] **0.4** `prefers-reduced-motion` global en `globals.css`. ✅
-- [ ] **0.5** Hook `useReducedMotion` para mobile (envuelve `AccessibilityInfo.isReduceMotionEnabled`) en `packages/ui/native`.
+- [x] **0.5** Hook `useReducedMotion` para mobile (envuelve `AccessibilityInfo.isReduceMotionEnabled`) en `packages/ui/native`. ✅
 - [ ] **0.6** (Opcional) Exponer `ease-*` / `duration-*` como utilities Tailwind para usarlas en JSX.
 
 **Criterio de aceptación:** un componente web y uno mobile consumen los tokens; con reduced-motion activo no hay movimiento (se conservan opacity/color).
@@ -73,12 +73,12 @@ Superficies: `CoachSideNav`, `alumnos`, `rutinas`, `calendario`, `checkins`, `co
 
 ## Fase 3 — App del alumno (mobile)
 
-- [ ] **3.0** Instalar y configurar `react-native-reanimated` + `react-native-gesture-handler` (babel plugin, `GestureHandlerRootView` en `_layout`). Solo si las fases siguientes lo requieren.
+- [x] **3.0** Instalar y configurar `react-native-reanimated` (~4.1.7) + `react-native-gesture-handler` (~2.28.0) + `react-native-worklets` (babel plugin `react-native-worklets/plugin` último, `GestureHandlerRootView` en `_layout`). ✅
 - [ ] **3.1 Tabs** de navegación — transición de tab.
 - [ ] **3.2 Workout activo** — `RestTimer` (cuenta regresiva), transición entre sets, revisar `Confetti` (ya existe) contra el bar de craft.
 - [ ] **3.3 Sheets** (preview de ejercicio), `AutopromoOverlay` — entrada/salida con `easing.drawer`.
 - [ ] **3.4 Listas** (rutinas, marketplace de coaches, progreso) — `stagger`.
-- [ ] **3.5 Gestos** — swipe-to-dismiss en sheets/toasts y drag de drawer con Gesture Handler + `withSpring(spring.gentle)` (momentum, interrumpible).
+- [x] **3.5 Gestos** — swipe-to-dismiss en `Sheet` (drag de drawer hacia abajo) y `Toast` (swipe horizontal) con Gesture Handler + `withSpring(spring.gentle)` (momentum, interrumpible), `useReducedMotion`-aware. ✅ *Runtime pendiente de verificar en device/emulador.*
 
 **Criterio:** probado en **dispositivo real** (gestos); `useReducedMotion` respetado; 60fps (solo `transform`/`opacity`).
 
@@ -90,8 +90,8 @@ Superficies: `CoachSideNav`, `alumnos`, `rutinas`, `calendario`, `checkins`, `co
 - [ ] **4.2** Barrido: migrar todo valor de motion hardcodeado restante a tokens (`grep` de `cubic-bezier`, ms sueltos, `translateY` ad-hoc).
 - [ ] **4.3** Cobertura total de `prefers-reduced-motion` / `useReducedMotion`.
 - [ ] **4.4** Auditoría de performance (solo `transform`/`opacity`; sin animar layout).
-- [ ] **4.5** (Opcional) Regla de lint que prohíba `cubic-bezier(...)` y duraciones literales fuera de `tokens.ts`.
-- [ ] **4.6** Página de **Motion** en el `styleguide` web documentando curvas, duraciones y ejemplos.
+- [x] **4.5** Regla de lint `no-restricted-syntax` que prohíbe `cubic-bezier(...)` en literales/templates, en `packages/eslint-config` (ui/mobile/core) y en `apps/web/.eslintrc.json`. `tokens.ts` exento vía override. ✅
+- [x] **4.6** Página de **Motion** en el `styleguide` web (`MotionShowcase`): curvas animadas, duraciones, springs y press scale, todo desde tokens. ✅
 
 ---
 
@@ -112,9 +112,9 @@ Toda animación: (a) sale de tokens, (b) pasa `review-animations`, (c) respeta r
 
 ---
 
-## Estado de ejecución (2026-06-23)
+## Estado de ejecución (2026-06-24)
 
-**Fases 0–4 ejecutadas.** Verificación: `typecheck` verde en `@forzza/ui`, `web` y `mobile`; `lint @forzza/ui` sin errores; `cubic-bezier` solo en `tokens.ts` + las CSS vars de `globals.css` (cero hardcodes en componentes); `prefers-reduced-motion` global (web) + hook `useReducedMotion` (mobile).
+**Fases 0–5 ejecutadas (rollout completo).** Verificación: `typecheck` verde en `@forzza/ui`, `web` y `mobile`; `lint @forzza/ui` y lint del styleguide sin errores; `cubic-bezier` solo en `tokens.ts` + las CSS vars de `globals.css` (cero hardcodes en componentes, ahora también garantizado por lint rule); `prefers-reduced-motion` global (web) + hook `useReducedMotion` (mobile).
 
 | Fase | Hecho |
 | --- | --- |
@@ -124,10 +124,14 @@ Toda animación: (a) sale de tokens, (b) pasa `review-animations`, (c) respeta r
 | 3 | Mobile con RN `Animated`: tabs, home, listas con stagger (routines/progress/marketplace), `session` (transición de set + delight), `tabata` (solo crossfade de fase, timers intactos), `routine/[id]`, `register-workout`. |
 | 4 | Typecheck+lint, barrido de hardcodes, cobertura reduced-motion. |
 
-### Diferido (con justificación)
-- **Reanimated + Gesture Handler (3.0) y gestos swipe-to-dismiss (3.5):** NO instalados. Requieren config nativa (babel plugin) verificable solo en device/emulador, que no hay disponible. El press/entrada/stagger ya funciona con RN `Animated`. Pendiente cuando haya entorno de prueba en dispositivo.
-- **Página de Motion en `styleguide` (4.6)** y **lint rule anti-hardcode (4.5):** opcionales, no ejecutados.
+### Diferidos resueltos (2026-06-24)
+- **Reanimated + Gesture Handler (3.0):** ✅ instalados (`react-native-reanimated@~4.1.7`, `react-native-gesture-handler@~2.28.0`, `react-native-worklets@0.5.1`), babel plugin `react-native-worklets/plugin` (último), `GestureHandlerRootView` como contenedor raíz en `_layout`. Agregados también como peer+devDep en `@forzza/ui`.
+- **Gestos swipe-to-dismiss (3.5):** ✅ `Sheet` migrado a `useSharedValue`/`Gesture.Pan` con drag hacia abajo + `withSpring(spring.gentle)`; `Toast` con swipe horizontal opcional (`onDismiss`). Ambos reduced-motion-aware. **Runtime aún sin verificar en device/emulador** (no disponible); typecheck y lint verdes.
+- **Lint rule anti-hardcode (4.5)** y **página de Motion en styleguide (4.6):** ✅ ejecutadas.
+
+### Pendiente real
+- **Verificar gestos en device/emulador:** correr `expo run:android`/`run:ios` y confirmar que Reanimated arranca (babel worklet OK) y que el swipe-to-dismiss se siente fluido a 60fps.
 
 ### Deuda preexistente detectada (NO de motion, no tocada)
-- Errores de lint previos al trabajo de motion: `(auth)/signup` (`router` unused), `coach/checkins/[templateId]/respuestas` (`Answer`), `coach/perfil/MpConnectButton` (`<a>` en vez de `<Link>`), `coach/perfil/PerfilForm` (`minCoachPrice` unused), `marketplace/[coachId]` (mobile: `isMinor`/`studentProfile`). Conviene limpiarlos aparte.
+- Errores de lint previos al trabajo de motion (siguen abiertos, confirmados 2026-06-24): `(auth)/signup` (`router` unused), `coach/checkins/[templateId]/respuestas` (`Answer`), `coach/perfil/MpConnectButton` (`<a>` en vez de `<Link>` — probable falso positivo, es ruta `/api/`), `coach/perfil/PerfilForm` (`minCoachPrice` unused), `marketplace/[coachId]` (mobile: `isMinor`/`studentProfile`). Conviene limpiarlos aparte. Nota: las constantes de íconos `S2/S3/S4` (deuda del rediseño de íconos) SÍ se limpiaron para dejar `@forzza/ui` lint-verde.
 - `globals.css @theme` diverge de `tokens.ts` (bg `#0A0A0A` vs `#080810`, fuentes Barlow vs Bebas) — reconciliar el DS web.
