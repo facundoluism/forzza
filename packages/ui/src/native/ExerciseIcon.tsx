@@ -39,20 +39,28 @@ function resolveColor(value: string, accentColor: string): string {
 // ---------------------------------------------------------------------------
 function renderShape(shape: Shape, accentColor: string, index: number) {
   switch (shape.type) {
-    case "rect":
-      return (
-        <Rect
-          key={index}
-          x={shape.x}
-          y={shape.y}
-          width={shape.width}
-          height={shape.height}
-          rx={shape.rx ?? 0}
-          fill={resolveColor(shape.fill, accentColor)}
-          opacity={shape.opacity ?? 1}
-          transform={shape.transform}
-        />
-      );
+    case "rect": {
+      const rectProps = {
+        x: shape.x,
+        y: shape.y,
+        width: shape.width,
+        height: shape.height,
+        rx: shape.rx ?? 0,
+        fill: resolveColor(shape.fill, accentColor),
+        opacity: shape.opacity ?? 1,
+        ...(shape.transform !== undefined && { transform: shape.transform }),
+        ...(shape.stroke !== undefined && {
+          stroke: resolveColor(shape.stroke, accentColor),
+        }),
+        ...(shape.strokeWidth !== undefined && {
+          strokeWidth: shape.strokeWidth,
+        }),
+        ...(shape.strokeLinejoin !== undefined && {
+          strokeLinejoin: shape.strokeLinejoin,
+        }),
+      };
+      return <Rect key={index} {...rectProps} />;
+    }
 
     case "circle": {
       const circleProps = {
