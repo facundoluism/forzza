@@ -88,6 +88,8 @@ export class MockMpSplitAdapter implements IMpSplitAdapter {
   async createPaymentPreference(
     params: MpSplitPaymentParams
   ): Promise<MpSplitPaymentResult> {
+    // Mock sin I/O: await trivial para conservar semántica async (throws → rejections)
+    await Promise.resolve();
     if (!params.coachAccessToken || params.coachAccessToken.trim() === "") {
       throw new Error("MockMpSplitAdapter: coachAccessToken is required");
     }
