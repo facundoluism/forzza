@@ -151,6 +151,9 @@ function MpConnectButtonInner({ mpUserId, connected }: MpConnectButtonProps) {
 
       {/* CTA */}
       {!isConnected ? (
+        // Ruta /api/ (redirect OAuth server-side), no una página: <Link> de next/link
+        // no aplica. La regla no-html-link-for-pages es falso positivo acá.
+        // eslint-disable-next-line @next/next/no-html-link-for-pages
         <a
           href="/api/coach/mp-oauth"
           style={{
@@ -169,6 +172,7 @@ function MpConnectButtonInner({ mpUserId, connected }: MpConnectButtonProps) {
           Conectar Mercado Pago
         </a>
       ) : (
+        // eslint-disable-next-line @next/next/no-html-link-for-pages
         <a
           href="/api/coach/mp-oauth"
           style={{

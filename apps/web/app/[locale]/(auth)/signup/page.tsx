@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Link, useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { signupSchema } from "@forzza/core";
 import { LEGAL_DOCS_VERSION } from "@forzza/config";
 
@@ -25,7 +25,6 @@ type PageState = "idle" | "loading" | "success";
 
 export default function SignupPage() {
   const t = useTranslations("auth.signup");
-  const router = useRouter();
 
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");

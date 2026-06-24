@@ -66,11 +66,6 @@ interface GalleryImage {
   signedUrl: string;
 }
 
-interface StudentProfile {
-  birth_date: string | null;
-  parental_consent_at: string | null;
-}
-
 interface CoachRating {
   id: string;
   student_id: string;
@@ -82,13 +77,6 @@ interface CoachRating {
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function isMinor(birthDate: string): boolean {
-  const age =
-    (Date.now() - new Date(birthDate).getTime()) /
-    (365.25 * 24 * 60 * 60 * 1000);
-  return age < 18;
-}
 
 function getInitials(name: string): string {
   return name
@@ -772,20 +760,6 @@ export default function CoachProfileScreen() {
     },
     enabled: !!coachId,
     staleTime: 1000 * 60 * 50, // 50 min (TTL signed URLs es 60 min)
-  });
-
-  const { data: studentProfile } = useQuery({
-    queryKey: ["student_profile_consent", user?.id],
-    queryFn: async (): Promise<StudentProfile | null> => {
-      if (!user) return null;
-      const { data } = await supabase
-        .from("student_profiles")
-        .select("birth_date, parental_consent_at")
-        .eq("user_id", user.id)
-        .single();
-      return data as StudentProfile | null;
-    },
-    enabled: !!user,
   });
 
   const { data: countryConfig } = useQuery({

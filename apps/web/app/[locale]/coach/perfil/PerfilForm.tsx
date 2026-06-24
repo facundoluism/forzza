@@ -45,7 +45,6 @@ function formatCents(cents: number, locale = "es-AR"): string {
 export function PerfilForm({
   initialProfile,
   initialPackages,
-  minCoachPrice,
   currencySymbol,
   commissionRate,
 }: Props) {

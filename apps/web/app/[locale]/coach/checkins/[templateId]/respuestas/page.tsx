@@ -20,12 +20,6 @@ interface QuestionJson {
   [key: string]: unknown;
 }
 
-interface Answer {
-  question_label?: string;
-  value?: unknown;
-  [key: string]: unknown;
-}
-
 interface CheckinResponse {
   id: string;
   submitted_at: string;
